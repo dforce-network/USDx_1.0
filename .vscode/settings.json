@@ -1,0 +1,6 @@
+{
+    "line-counter.includes": [
+        "**/contracts/*"
+    ],
+    "search.usePCRE2": true,
+}

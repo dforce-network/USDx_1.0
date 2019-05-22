@@ -1,0 +1,63 @@
+/* You can add global styles to this file, and also import other style files */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: rgb(32, 41, 48);
+    font-family: Cairo, Arial, sans-serif;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+}
+
+table {
+    display: table;
+    border-collapse: 0;
+    border-spacing: 0;
+}
+
+div.cb {
+    clear: both;
+}
+
+div.line {
+    height: 1px;
+    width: 100%;
+    // margin: 45px 0 70px;
+    margin: 20px 0 30px;
+    background: #313d47;
+    clear: both;
+}
+
+p {
+    font-weight: 100;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+input {
+    float: left;
+    height: 40px;
+    width: 240px;
+    text-align: right;
+    font-size: 16px;
+    border: none;
+    padding-right: 10px;
+    border-radius: 3px 0 0 3px;
+
+    &:focus {
+        outline-color: #1abc9c;
+        outline-width: 1px;
+    }
+}

@@ -1,0 +1,172 @@
+pragma solidity ^0.5.2;
+
+library SecQueue
+{
+    struct SecList {
+        uint size;
+        uint head;
+        uint last;
+        uint seed;
+        uint mintSecPos;
+        uint burnSecPos;
+        uint totalMinted;
+        uint totalBurned;
+        mapping(uint => SecItem) data;
+    }
+
+    struct SecItem {
+        uint prevIdx;
+        uint nextIdx;
+        uint minted;
+        uint burned;
+        address[] ColAddrs;
+        mapping (address => uint) cw;
+    }
+    
+    function addSection(SecList storage self, address[] memory collateral, uint[] memory weight) internal returns (uint) {
+        require(collateral.length == weight.length, "SetSectionInfo: data not enough.");
+        
+        uint idx = self.seed;
+        uint numTokenOfsection = collateral.length;
+        address[] memory addrs = new address[](numTokenOfsection);
+
+        self.data[idx] = SecItem(uint(-1), uint(-1), 0, 0, addrs);
+
+        for (uint i = 0; i < numTokenOfsection; i++) {
+            require(collateral[i] != address(0), "SetSectionInfo: token contract address invalid.");
+            address token = collateral[i];
+            require(weight[i] > 0, "_SetSectionInfo: weight must greater than 0.");
+            uint256 wt = weight[i] * (10 ** 18);
+            
+            self.data[idx].cw[token] = wt;
+            self.data[idx].ColAddrs[i] = token;
+        }
+        
+        self.seed++;
+        self.size++;
+        
+        return idx;
+    }
+    
+    function appendSection(SecList storage self, address[] memory collateral, uint[] memory weight) internal {
+        uint idx = addSection(self, collateral, weight);
+        uint prevIdx = idx - 1;
+        if(idx > 0) {
+           self.data[prevIdx].nextIdx = idx;
+           self.data[idx].prevIdx = prevIdx;
+        }
+        
+        self.mintSecPos = idx;
+        self.last = idx;
+    }
+    
+    function insertSection(SecList storage self, uint pos, address[] memory collateral, uint[] memory weight) internal {
+        uint idx = addSection(self, collateral, weight);
+        uint idxNext = self.data[pos].nextIdx;
+        
+        self.data[idx].minted = self.data[pos].minted;
+        self.data[idx].burned = self.data[pos].burned;
+        
+        self.data[idx].prevIdx = pos;
+        self.data[idx].nextIdx = idxNext;
+        self.data[pos].nextIdx = idx;
+        self.data[idxNext].prevIdx = idx;
+        
+        self.burnSecPos = idx;
+    }
+    
+    function moveSection(SecList storage self) internal {
+        uint p = self.burnSecPos;
+        require(self.data[p].minted == self.data[p].burned, "BurnSection: not ready for move on.");
+        
+        if(self.data[self.burnSecPos].nextIdx != uint(-1)) {
+           self.burnSecPos = self.data[self.burnSecPos].nextIdx;
+           self.size--;
+        }
+    }
+}
+
+contract DataStore
+{
+    event UpdateSection(address[] _collateral, uint256[] number);
+    
+    SecQueue.SecList public sectionInfoList;
+    
+    function mintSectionPosition() public view returns (uint) {
+        return sectionInfoList.mintSecPos;
+    }
+
+    function burnSectionPosition() public view returns (uint) {
+        return sectionInfoList.burnSecPos;
+    }
+
+    function totalMinted() public view returns (uint) {
+        return sectionInfoList.totalMinted;
+    }
+
+    function totalBurned() public view returns (uint) {
+        return sectionInfoList.totalBurned;
+    }
+
+    function sectionMinted(uint pos) public view returns (uint) {
+        return sectionInfoList.data[pos].minted;
+    }
+
+    function sectionBurned(uint pos) public view returns (uint) {
+        return sectionInfoList.data[pos].burned;
+    }
+    
+    function curSecMinted() public view returns (uint) {
+        return sectionInfoList.data[sectionInfoList.mintSecPos].minted;
+    }
+    
+    function curSecBurned() public view returns (uint) {
+        return sectionInfoList.data[sectionInfoList.burnSecPos].burned;
+    }
+    
+    function getSecLength() public view returns (uint) {
+        return sectionInfoList.size;
+    }
+
+    function sectionToken(uint pos) public view returns (address[] memory) {
+        return sectionInfoList.data[pos].ColAddrs;
+    }
+
+    function collateralWeight(uint pos, address collateral) public view returns (uint) {
+        return sectionInfoList.data[pos].cw[collateral];
+    }
+    
+    function setSectionInfo(address[] memory collateral, uint[] memory weight) public {
+        SecQueue.appendSection(sectionInfoList, collateral, weight);
+        emit UpdateSection(collateral, weight);
+    }
+    
+    function updataSectionInfo(address[] memory collateral, uint[] memory weight) public {
+        uint burnSecPos = burnSectionPosition();
+        SecQueue.insertSection(sectionInfoList, burnSecPos, collateral, weight);
+    }
+    
+    function setTotalMinted(uint amount) public {
+        require(amount >= sectionInfoList.totalMinted, "SetTotalMinted: minted number not right.");
+        sectionInfoList.totalMinted = amount;
+    }
+
+    function setTotalBurned(uint amount) public {
+        require(amount >= sectionInfoList.totalBurned, "SetTotalBurned: burned number not right.");
+        sectionInfoList.totalBurned = amount;
+    }
+    
+    function setSectionMinted(uint amount) public {
+        require(amount >= curSecMinted(), "SetSectionMinted: minted number not right.");
+        sectionInfoList.data[sectionInfoList.mintSecPos].minted = amount;
+    }
+
+    function setSectionBurned(uint amount) public {
+        require(amount >= curSecBurned(), "SetSectionBurned: burned number not right.");
+        sectionInfoList.data[sectionInfoList.burnSecPos].burned = amount;
+    }
+    
+    function burnSectionMoveon() public {
+        SecQueue.moveSection(sectionInfoList);
+    }
+}
