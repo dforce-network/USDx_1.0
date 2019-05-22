@@ -211,7 +211,7 @@ contract DFEngine is Utils, DSAuth {
 
         require(_amount <= min(_tokenBalance, _depositorBalance) && _amount > 0, "The depositor balance is not enough");
 
-        _depositorBalance -= _amount;
+        _depositorBalance = sub(_depositorBalance, _amount);
         dfStore.setDepositorBalance(_depositor, _tokenID, _depositorBalance);
         dfStore.setTokenBalance(_tokenID, sub(_tokenBalance, _amount));
         dfPool.transferCollateral(dfStore.getToken(_tokenID) ? _tokenID : dfStore.getSpareToken(_tokenID), _depositor, _amount);
@@ -329,20 +329,24 @@ contract DFEngine is Utils, DSAuth {
 
             if (_burned + _amountTemp <= _minted){
 
-                _burnedAmount = add(_burned, _amountTemp);
+                dfStore.setSectionBurned(add(_burned, _amountTemp));
+                _burnedAmount = _amountTemp;
                 _amountTemp = 0;
-                dfStore.setSectionBurned(_burnedAmount);
             }else{
 
-                _burnedAmount = _minted;
-                _amountTemp = sub(add(_amountTemp, _burned), _minted);
-                dfStore.setSectionBurned(_burnedAmount);
+                _burnedAmount = sub(_minted, _burned);
+                _amountTemp = sub(_amountTemp, _burnedAmount);
+                dfStore.setSectionBurned(_minted);
                 dfStore.burnSectionMoveon();
             }
 
             for (uint i = 0; i < _tokens.length; i++) {
                 dfCollareral.transferCollateral(_tokens[i], _depositor, div(mul(_burnedAmount, _burnCW[i]), _sumBurnCW));
             }
+            _sumBurnCW = 0;
+
+            _burnPosition = dfStore.getBurnPosition();
+            _spareIndex = dfStore.getSectionSpareIndex(_burnPosition);
         }
 
         usdxToken.burn(_depositor, _amount);
