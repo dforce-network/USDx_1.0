@@ -5,19 +5,19 @@ import '../utility/DSAuth.sol';
 
 contract DFFunds is DSAuth {
 
-    address dfnAddr;
+    address dfID;
 
-    constructor (address _dfn) public {
-        dfnAddr = _dfn;
+    constructor (address _assetID) public {
+        dfID = _assetID;
     }
 
-    function transferFee(address _to, uint256 _amount)
+    function transferOut(address _to, uint _amount)
         public
         auth
         returns (bool)
     {
-        require(_to != address(0), "DFCollareral _to The address is empty");
-        assert(IERC20Token(dfnAddr).transfer(_to, _amount));
+        require(_to != address(0), "TransferOut: not allow to 0 address.");
+        assert(IERC20Token(dfID).transfer(_to, _amount));
         return true;
     }
 }

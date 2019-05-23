@@ -6,38 +6,38 @@ import '../utility/Utils.sol';
 
 contract DFPool is DSAuth, Utils {
 
-    address bank;
+    address dfund;
 
-    constructor (address _bank) public {
-        bank = _bank;
+    constructor (address _fund) public {
+        dfund = _fund;
     }
 
-    function transferFromCollateral(address _collateral, address _from, uint256 _amount)
+    function transferFromSender(address _colID, address _from, uint _amount)
         public
         auth
         returns (bool)
     {
-        assert(IERC20Token(_collateral).transferFrom(_from, address(this), _amount));
+        assert(IERC20Token(_colID).transferFrom(_from, address(this), _amount));
         return true;
     }
 
-    function transferCollateral(address _collateral, address _to, uint256 _amount)
+    function transferOut(address _colID, address _to, uint _amount)
         public
         validAddress(_to)
         auth
         returns (bool)
     {
-        assert(IERC20Token(_collateral).transfer(_to, _amount));
+        assert(IERC20Token(_colID).transfer(_to, _amount));
         return true;
     }
 
-    function transferToBank(address _collateral, uint256 _amount)
+    function transferToFunds(address _colID, uint _amount)
         public
         auth
         returns (bool)
     {
-        require(bank != address(0), "DFPool bank The address is empty");
-        assert(IERC20Token(_collateral).transfer(bank, _amount));
+        require(dfund != address(0), "TransferToFund: dfund empty.");
+        assert(IERC20Token(_colID).transfer(dfund, _amount));
         return true;
     }
 }

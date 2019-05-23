@@ -3,7 +3,7 @@ pragma solidity ^0.5.2;
 import '../converter/interfaces/IDFEngine.sol';
 import '../utility/DSAuth.sol';
 
-contract DFEngineUpgrader is DSAuth {
+contract DFUpgrader is DSAuth {
 
     // MEMBERS
     // @dev  The reference to the active converter implementation.
