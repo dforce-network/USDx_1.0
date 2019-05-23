@@ -141,6 +141,7 @@ contract DFEngine is Utils, DSAuth {
         (, _tokens, _mintCW) = dfStore.getSectionData(dfStore.getMintPosition());
 
         uint[] memory _tokenBalance = new uint[](_tokens.length);
+        uint[] memory _tokenLockBalance = new uint[](_tokens.length);
         uint[] memory _depositorBalance = new uint[](_tokens.length);
         uint _depositorMintAmount;
         uint _depositorMintTotal;
@@ -151,8 +152,9 @@ contract DFEngine is Utils, DSAuth {
 
         for (uint i = 0; i < _tokens.length; i++) {
 
-            _depositorBalance[i] = dfStore.getDepositorBalance(_depositor, _tokens[i]);
             _tokenBalance[i] = dfStore.getTokenBalance(_tokens[i]);
+            _tokenLockBalance[i] = dfStore.getTokenLockBalance(_tokens[i]);
+            _depositorBalance[i] = dfStore.getDepositorBalance(_depositor, _tokens[i]);
             if (_tokenID == _tokens[i]){
 
                 _tokenBalance[i] = add(_tokenBalance[i], _amount);
@@ -165,13 +167,13 @@ contract DFEngine is Utils, DSAuth {
 
         if (_times > 0) {
 
-            _convert(_depositor, _tokens, _mintCW, _tokenBalance, _depositorBalance, _times);
+            _convert(_depositor, _tokens, _mintCW, _tokenBalance, _tokenLockBalance, _depositorBalance, _times);
             return (dfStore.getDepositorBalance(_depositor, _tokenID));
         }else{
 
             for (uint i = 0; i < _tokens.length; i++) {
 
-                _depositorMintAmount = min(_depositorBalance[i], dfStore.getTokenLockBalance(_tokens[i]));
+                _depositorMintAmount = min(_depositorBalance[i], _tokenLockBalance[i]);
                 if (_depositorMintAmount == 0){
 
                     if (_tokenID == _tokens[i])
@@ -182,7 +184,7 @@ contract DFEngine is Utils, DSAuth {
 
                 dfStore.setDepositorBalance(_depositor, _tokens[i], _depositorBalance[i] - _depositorMintAmount);
                 dfPool.transferToBank(_tokens[i], _depositorMintAmount);
-                dfStore.setTokenLockBalance(_tokens[i], dfStore.getTokenLockBalance(_tokens[i]) - _depositorMintAmount);
+                dfStore.setTokenLockBalance(_tokens[i], _tokenLockBalance[i] - _depositorMintAmount);
                 _depositorMintTotal = add(_depositorMintTotal, _depositorMintAmount);
             }
 
@@ -307,6 +309,7 @@ contract DFEngine is Utils, DSAuth {
                 (, _tokens, _burnCW) = dfStore.getSectionSpareData(_burnPosition);
             }
 
+            _sumBurnCW = 0;
             for (uint i = 0; i < _burnCW.length; i++) {
 
                 _sumBurnCW = add(_sumBurnCW, _burnCW[i]);
@@ -331,13 +334,13 @@ contract DFEngine is Utils, DSAuth {
             for (uint i = 0; i < _tokens.length; i++) {
                 dfCollareral.transferCollateral(_tokens[i], _depositor, div(mul(_burnedAmount, _burnCW[i]), _sumBurnCW));
             }
-            _sumBurnCW = 0;
 
             _burnPosition = dfStore.getBurnPosition();
             _spareIndex = dfStore.getSectionSpareIndex(_burnPosition);
         }
 
-        usdxToken.burn(_depositor, _amount);
+        usdxToken.transferFrom(_depositor, address(this),_amount);
+        usdxToken.burn(address(this), _amount);
         dfStore.addTotalBurned(_amount);
         //[TODO] fix it, need oracle!
         dfToken.transferFrom(_depositor, address(dfFunds), 5 * 10 ** 18); ///[snow] _depositor approve to converter.
@@ -348,28 +351,30 @@ contract DFEngine is Utils, DSAuth {
         address[] memory _tokens,
         uint[] memory _mintCW,
         uint[] memory _tokenBalance,
+        uint[] memory _tokenLockBalance,
         uint[] memory _depositorBalance,
         uint _times)
         internal
     {
-
         uint _mintAmount;
+        uint _lockAmount;
         uint _depositorMintAmount;
         uint _depositorMintTotal;
 
         for (uint i = 0; i < _tokens.length; i++) {
 
             _mintAmount = mul(_times, _mintCW[i]);
-            _depositorMintAmount = min(_depositorBalance[i], _mintAmount);
+            _lockAmount = add(_tokenLockBalance[i], _mintAmount);
+            _depositorMintAmount = min(_depositorBalance[i], add(_tokenLockBalance[i], _mintAmount));
             dfStore.setTokenBalance(_tokens[i], _tokenBalance[i] - _mintAmount);
             if (_depositorMintAmount == 0){
-                dfStore.setTokenLockBalance(_tokens[i], add(dfStore.getTokenLockBalance(_tokens[i]), _mintAmount));
+                dfStore.setTokenLockBalance(_tokens[i], add(_tokenLockBalance[i], _mintAmount));
                 continue;
             }
 
             dfStore.setDepositorBalance(_depositor, _tokens[i], _depositorBalance[i] - _depositorMintAmount);
             dfPool.transferToBank(_tokens[i], _depositorMintAmount);
-            dfStore.setTokenLockBalance(_tokens[i], add(dfStore.getTokenLockBalance(_tokens[i]), _mintAmount) - _depositorMintAmount);
+            dfStore.setTokenLockBalance(_tokens[i], add(_tokenLockBalance[i], _mintAmount) - _depositorMintAmount);
             _depositorMintTotal = add(_depositorMintTotal, _depositorMintAmount);
         }
 
