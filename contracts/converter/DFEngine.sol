@@ -132,7 +132,7 @@ contract DFEngine is Utils, DSAuth {
     //     return (dfStore.getDepositorBalance(_depositor, _tokenID));
     // }
 
-    function deposit(address _depositor, address _tokenID, uint _amount) public auth returns (uint) {
+    function deposit(address _depositor, address _tokenID, uint _amount) public returns (uint) {
         require(_amount > 0, "Input amount is zero");
         require(dfStore.getMintedToken(_tokenID), "Not allowed token");
 
@@ -201,12 +201,12 @@ contract DFEngine is Utils, DSAuth {
         return (_depositorBalance[_index]);
     }
 
-    function withdraw(address _depositor, address _tokenID, uint _amount) public auth returns (uint) {
+    function withdraw(address _depositor, address _tokenID, uint _amount) public returns (uint) {
 
         if (_tokenID == address(usdxToken))
             return draw(_depositor, _amount);
 
-        uint _depositorBalance = dfStore.getDepositorBalance(_tokenID, _depositor);
+        uint _depositorBalance = dfStore.getDepositorBalance(_depositor, _tokenID);
         uint _tokenBalance = dfStore.getTokenBalance(_tokenID);
 
         require(_amount <= min(_tokenBalance, _depositorBalance) && _amount > 0, "The depositor balance is not enough");
@@ -218,13 +218,11 @@ contract DFEngine is Utils, DSAuth {
         return (_depositorBalance);
     }
 
-    function draw(address _depositor, uint _amount) public auth returns (uint) {
+    function draw(address _depositor, uint _amount) public returns (uint) {
 
         require(_amount > 0, "withdraw usdx input amount is zero");
 
         address[] memory _tokens = dfStore.getSectionToken(dfStore.getMintPosition());
-        // uint[] memory _tokenLockBalance = new uint[](_tokens.length);
-        // uint[] memory _depositorBalance = new uint[](_tokens.length);
         uint _tokenLockBalance;
         uint _depositorBalance;
         uint _depositorMintAmount;
@@ -235,18 +233,8 @@ contract DFEngine is Utils, DSAuth {
             _tokenLockBalance = dfStore.getTokenLockBalance(_tokens[i]);
             _depositorBalance = dfStore.getDepositorBalance(_depositor, _tokens[i]);
 
-            _depositorMintAmount = min(_tokenLockBalance, _depositorBalance);
-
-            if (_amountTemp > _depositorMintAmount){
-
-                _amountTemp = sub(_amountTemp, _depositorMintAmount);
-
-            }else{
-
-                _depositorMintAmount = sub(_depositorMintAmount, _amountTemp);
-                _amountTemp = 0;
-
-            }
+            _depositorMintAmount = min(min(_tokenLockBalance, _depositorBalance), _amountTemp);
+            _amountTemp = sub(_amountTemp, _depositorMintAmount);
 
             if (_depositorMintAmount > 0){
                 dfStore.setTokenBalance(_tokens[i], _tokenLockBalance - _depositorMintAmount);
@@ -264,7 +252,7 @@ contract DFEngine is Utils, DSAuth {
         return (usdxToken.balanceOf(_depositor));
     }
 
-    function draw(address _depositor) public auth returns (uint) {
+    function draw(address _depositor) public returns (uint) {
 
         address[] memory _tokens = dfStore.getSectionToken(dfStore.getMintPosition());
         uint _tokenLockBalance;
@@ -296,7 +284,7 @@ contract DFEngine is Utils, DSAuth {
         return (usdxToken.balanceOf(_depositor));
     }
 
-    function destroy(address _depositor, uint _amount) public auth returns (bool){
+    function destroy(address _depositor, uint _amount) public returns (bool){
 
         require(_amount > 0, "Input destruction is zero");
         require(_amount <= usdxToken.balanceOf(_depositor), "It is not enough for depositors to destroy the usdx balance.");
