@@ -16,7 +16,7 @@ contract IDFStore {
 
     function getSectionToken(uint _position) public view returns (address[] memory);
     function getSectionWeight(uint _position) public view returns (uint[] memory);
-    function getSectionData(uint _position) public view returns (uint, address[] memory, uint[] memory);
+    function getSectionData(uint _position) public view returns (uint, uint, uint, address[] memory, uint[] memory);
     function getBackupSectionData(uint _position) public view returns (uint, address[] memory, uint[] memory);
     function getBackupSectionIndex(uint _position) public view returns (uint);
     function setBackupSectionIndex(uint _position, uint _backupToken) public;

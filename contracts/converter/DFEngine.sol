@@ -44,7 +44,7 @@ contract DFEngine is Utils, DSAuth {
         require(dfStore.getMintedToken(_tokenID), "Deposit: asset not allow.");
         address[] memory _tokens;
         uint[] memory _mintCW;
-        (, _tokens, _mintCW) = dfStore.getSectionData(dfStore.getMintPosition());
+        (, , , _tokens, _mintCW) = dfStore.getSectionData(dfStore.getMintPosition());
 
         uint[] memory _tokenBalance = new uint[](_tokens.length);
         uint[] memory _lockedBalance = new uint[](_tokens.length);
@@ -107,7 +107,7 @@ contract DFEngine is Utils, DSAuth {
         _depositorBalance = sub(_depositorBalance, _amount);
         dfStore.setDepositorBalance(_depositor, _tokenID, _depositorBalance);
         dfStore.setTokenBalance(_tokenID, sub(_tokenBalance, _amount));
-        dfPool.transferOut(dfStore.getToken(_tokenID) ? _tokenID : dfStore.getBackupToken(_tokenID), _depositor, _amount);
+        dfPool.transferOut(_tokenID, _depositor, _amount);
 
         return (_amount);
     }
@@ -176,8 +176,7 @@ contract DFEngine is Utils, DSAuth {
         require(_amount <= sub(dfStore.getTotalMinted(), dfStore.getTotalBurned()), "Destroy: not enough to burn.");
         address[] memory _tokens;
         uint[] memory _burnCW;
-        uint _burnPosition = dfStore.getBurnPosition();
-        uint _backupIndex = dfStore.getBackupSectionIndex(_burnPosition);
+        uint _burnPosition;
         uint _sumBurnCW;
         uint _burned;
         uint _minted;
@@ -185,18 +184,14 @@ contract DFEngine is Utils, DSAuth {
         uint _amountTemp = _amount;
 
         while(_amountTemp > 0) {
-            if (_backupIndex == 0){
-                (, _tokens, _burnCW) = dfStore.getSectionData(_burnPosition);
-            } else {
-                (, _tokens, _burnCW) = dfStore.getBackupSectionData(_burnPosition);
-            }
+
+            _burnPosition = dfStore.getBurnPosition();
+            (_minted, _burned, , _tokens, _burnCW) = dfStore.getSectionData(_burnPosition);
+
             _sumBurnCW = 0;
             for (uint i = 0; i < _burnCW.length; i++) {
                 _sumBurnCW = add(_sumBurnCW, _burnCW[i]);
             }
-
-            _burned = dfStore.getSectionBurned(_burnPosition);
-            _minted = dfStore.getSectionMinted(_burnPosition);
 
             if (_burned + _amountTemp <= _minted){
                 dfStore.setSectionBurned(add(_burned, _amountTemp));
@@ -212,9 +207,6 @@ contract DFEngine is Utils, DSAuth {
             for (uint i = 0; i < _tokens.length; i++) {
                 dfCol.transferOut(_tokens[i], _depositor, div(mul(_burnedAmount, _burnCW[i]), _sumBurnCW));
             }
-
-            _burnPosition = dfStore.getBurnPosition();
-            _backupIndex = dfStore.getBackupSectionIndex(_burnPosition);
         }
 
         usdxToken.transferFrom(_depositor, address(this),_amount);

@@ -97,8 +97,15 @@ contract DFStore is DSAuth, Utils {
         return secList[_position].cw;
     }
 
-    function getSectionData(uint _position) public view returns (uint, address[] memory, uint[] memory) {
-        return (secList[_position].backupIdx, secList[_position].colIDs, secList[_position].cw);
+    function getSectionData(uint _position) public view returns (uint, uint, uint, address[] memory, uint[] memory) {
+
+        return (
+            secList[_position].minted,
+            secList[_position].burned,
+            secList[_position].backupIdx,
+            secList[_position].colIDs,
+            secList[_position].cw
+            );
     }
 
     function getBackupSectionData(uint _position) public view returns (uint, address[] memory, uint[] memory) {
