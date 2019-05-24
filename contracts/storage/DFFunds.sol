@@ -5,19 +5,13 @@ import '../utility/DSAuth.sol';
 
 contract DFFunds is DSAuth {
 
-    address dfID;
-
-    constructor (address _assetID) public {
-        dfID = _assetID;
-    }
-
-    function transferOut(address _to, uint _amount)
+    function transferOut(address _tokenID, address _to, uint _amount)
         public
         auth
         returns (bool)
     {
-        require(_to != address(0), "TransferOut: not allow to 0 address.");
-        assert(IERC20Token(dfID).transfer(_to, _amount));
+        require(_to != address(0), "TransferOut: 0 address not allow.");
+        assert(IERC20Token(_tokenID).transfer(_to, _amount));
         return true;
     }
 }

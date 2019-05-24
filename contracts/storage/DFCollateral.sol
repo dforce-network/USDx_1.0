@@ -5,13 +5,13 @@ import '../utility/DSAuth.sol';
 
 contract DFCollateral is DSAuth {
 
-    function transferTo(address _colID, address _to, uint _amount)
+    function transferOut(address _tokenID, address _to, uint _amount)
         public
         auth
         returns (bool)
     {
-        require(_to != address(0), "TransferTo: 0 address not allow.");
-        assert(IERC20Token(_colID).transfer(_to, _amount));
+        require(_to != address(0), "TransferOut: 0 address not allow.");
+        assert(IERC20Token(_tokenID).transfer(_to, _amount));
         return true;
     }
 }
