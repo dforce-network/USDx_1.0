@@ -100,16 +100,22 @@ contract DFEngine is Utils, DSAuth {
         if (_tokenID == address(usdxToken)) {
             return claim(_depositor); //claim as many as possible.
         }
+
+        require(_amount > 0, "Withdraw: not enough balance.");
+
         uint _depositorBalance = dfStore.getDepositorBalance(_depositor, _tokenID);
         uint _tokenBalance = dfStore.getTokenBalance(_tokenID);
+        uint _withdrawAmount = min(_amount, min(_tokenBalance, _depositorBalance));
 
-        require(_amount <= min(_tokenBalance, _depositorBalance) && _amount > 0, "Withdraw: not enough balance.");
-        _depositorBalance = sub(_depositorBalance, _amount);
+        if (_withdrawAmount <= 0)
+            return (0);
+
+        _depositorBalance = sub(_depositorBalance, _withdrawAmount);
         dfStore.setDepositorBalance(_depositor, _tokenID, _depositorBalance);
-        dfStore.setTokenBalance(_tokenID, sub(_tokenBalance, _amount));
-        dfPool.transferOut(_tokenID, _depositor, _amount);
+        dfStore.setTokenBalance(_tokenID, sub(_tokenBalance, _withdrawAmount));
+        dfPool.transferOut(_tokenID, _depositor, _withdrawAmount);
 
-        return (_amount);
+        return (_withdrawAmount);
     }
 
     function claim(address _depositor, uint _amount) public returns (uint) {
