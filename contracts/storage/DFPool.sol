@@ -6,10 +6,10 @@ import '../utility/Utils.sol';
 
 contract DFPool is DSAuth, Utils {
 
-    address dfund;
+    address dfcol;
 
-    constructor (address _fund) public {
-        dfund = _fund;
+    constructor (address _dfcol) public {
+        dfcol = _dfcol;
     }
 
     function transferFromSender(address _colID, address _from, uint _amount)
@@ -31,13 +31,13 @@ contract DFPool is DSAuth, Utils {
         return true;
     }
 
-    function transferToFunds(address _colID, uint _amount)
+    function transferToCol(address _colID, uint _amount)
         public
         auth
         returns (bool)
     {
-        require(dfund != address(0), "TransferToFund: dfund empty.");
-        assert(IERC20Token(_colID).transfer(dfund, _amount));
+        require(dfcol != address(0), "TransferToCol: collateral empty.");
+        assert(IERC20Token(_colID).transfer(dfcol, _amount));
         return true;
     }
 }
