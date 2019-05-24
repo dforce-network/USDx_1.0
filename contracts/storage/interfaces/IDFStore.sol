@@ -25,10 +25,10 @@ contract IDFStore {
     function setBackupSection(uint _position, address[] memory _tokens, uint[] memory _weight) public;
     function burnSectionMoveon() public;
 
+    function getMintingToken(address _token) public view returns (bool);
+    function setMintingToken(address _token, bool _flag) public;
     function getMintedToken(address _token) public view returns (bool);
     function setMintedToken(address _token, bool _flag) public;
-    function getToken(address _token) public view returns (bool);
-    function setToken(address _token, bool _flag) public;
     function getBackupToken(address _token) public view returns (address);
     function setBackupToken(address _token, address _backupToken) public;
 

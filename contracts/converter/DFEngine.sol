@@ -41,7 +41,7 @@ contract DFEngine is Utils, DSAuth {
 
     function deposit(address _depositor, address _tokenID, uint _amount) public returns (uint) {
         require(_amount > 0, "Deposit: amount not allow.");
-        require(dfStore.getMintedToken(_tokenID), "Deposit: asset not allow.");
+        require(dfStore.getMintingToken(_tokenID), "Deposit: asset not allow.");
         address[] memory _tokens;
         uint[] memory _mintCW;
         (, , , _tokens, _mintCW) = dfStore.getSectionData(dfStore.getMintPosition());
