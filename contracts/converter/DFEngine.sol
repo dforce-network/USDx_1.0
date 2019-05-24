@@ -80,7 +80,7 @@ contract DFEngine is Utils, DSAuth {
                 }
 
                 dfStore.setDepositorBalance(_depositor, _tokens[i], _depositorBalance[i] - _depositorMintAmount);
-                dfPool.transferToFunds(_tokens[i], _depositorMintAmount);
+                dfPool.transferToCol(_tokens[i], _depositorMintAmount);
                 dfStore.setLockedBalance(_tokens[i], _lockedBalance[i] - _depositorMintAmount);
                 _depositorMintTotal = add(_depositorMintTotal, _depositorMintAmount);
             }
@@ -129,7 +129,7 @@ contract DFEngine is Utils, DSAuth {
             if (_depositorMintAmount > 0){
                 dfStore.setTokenBalance(_tokens[i], _lockedBalance - _depositorMintAmount);
                 dfStore.setDepositorBalance(_depositor, _tokens[i], _depositorBalance - _depositorMintAmount);
-                dfPool.transferToFunds(_tokens[i], _depositorMintAmount);
+                dfPool.transferToCol(_tokens[i], _depositorMintAmount);
             }
         }
 
@@ -158,7 +158,7 @@ contract DFEngine is Utils, DSAuth {
             if (_depositorMintAmount > 0){
                 dfStore.setLockedBalance(_tokens[i], _lockedBalance - _depositorMintAmount);
                 dfStore.setDepositorBalance(_depositor, _tokens[i], _depositorBalance - _depositorMintAmount);
-                dfPool.transferToFunds(_tokens[i], _depositorMintAmount);
+                dfPool.transferToCol(_tokens[i], _depositorMintAmount);
             }
         }
 
@@ -243,7 +243,7 @@ contract DFEngine is Utils, DSAuth {
             }
 
             dfStore.setDepositorBalance(_depositor, _tokens[i], _depositorBalance[i] - _depositorMintAmount);
-            dfPool.transferToFunds(_tokens[i], _depositorMintAmount);
+            dfPool.transferToCol(_tokens[i], _depositorMintAmount);
             dfStore.setLockedBalance(_tokens[i], add(_lockedBalance[i], _mintAmount) - _depositorMintAmount);
             _depositorMintTotal = add(_depositorMintTotal, _depositorMintAmount);
         }
