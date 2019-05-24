@@ -13,7 +13,7 @@ contract DFEngine is Utils, DSAuth {
 
     IDFStore public dfStore;
     IDFPool public dfPool;
-    IDFCollareral public dfCol;
+    IDFCollateral public dfCol;
     IDFFunds public dfFunds;
     IDSToken public usdxToken;
     IDSToken public dfToken;
@@ -31,7 +31,7 @@ contract DFEngine is Utils, DSAuth {
         dfToken = IDSToken(_dfToken);
         dfStore = IDFStore(_dfStore);
         dfPool = IDFPool(_dfPool);
-        dfCol = IDFCollareral(_dfCol);
+        dfCol = IDFCollateral(_dfCol);
         dfFunds = IDFFunds(_dfFunds);
     }
 
