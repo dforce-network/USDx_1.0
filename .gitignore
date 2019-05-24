@@ -3,7 +3,7 @@ node_modules
 .DS_Store
 */.DS_Store
 
-test/*.js
+test/test.js
 *.log
 *_t.sol
 

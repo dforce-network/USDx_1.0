@@ -36,6 +36,11 @@ contract DFEngine is Utils, DSAuth {
     }
 
     function updateMintSection(address[] memory _tokens, uint[] memory _weight) public auth {
+        address[] memory _mintTokens = dfStore.getSectionToken(dfStore.getMintPosition());
+        for (uint i = 0; i < _mintTokens.length; i++) {
+            dfStore.setTokenBalance(_mintTokens[i], add(dfStore.getTokenBalance(_mintTokens[i]), dfStore.getLockedBalance(_mintTokens[i])));
+            dfStore.setLockedBalance(_mintTokens[i], 0);
+        }
         dfStore.setSection(_tokens, _weight);
     }
 
@@ -168,7 +173,9 @@ contract DFEngine is Utils, DSAuth {
             }
         }
 
-        require(_mintAmount > 0, "Claim: balance not enough.");
+        if (_mintAmount <= 0)
+            return 0;
+
         usdxToken.mint(address(this), _mintAmount);
         usdxToken.transfer(_depositor, _mintAmount);
         dfStore.addTotalMinted(_mintAmount);
