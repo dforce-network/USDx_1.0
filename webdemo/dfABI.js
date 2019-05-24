@@ -1,4 +1,4 @@
-var dfnABI = [{
+var dfABI = [{
     "constant": true,
     "inputs": [],
     "name": "name",

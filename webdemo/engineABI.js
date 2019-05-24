@@ -1,7 +1,7 @@
-var convertABI = [{
+var engineABI = [{
     "constant": true,
     "inputs": [],
-    "name": "xPool",
+    "name": "dfFunds",
     "outputs": [{
       "name": "",
       "type": "address"
@@ -9,12 +9,12 @@ var convertABI = [{
     "payable": false,
     "stateMutability": "view",
     "type": "function",
-    "signature": "0x3339d246"
+    "signature": "0x06c215ac"
   },
   {
     "constant": true,
     "inputs": [],
-    "name": "dfnToken",
+    "name": "dfToken",
     "outputs": [{
       "name": "",
       "type": "address"
@@ -22,12 +22,12 @@ var convertABI = [{
     "payable": false,
     "stateMutability": "view",
     "type": "function",
-    "signature": "0x34f988d6"
+    "signature": "0x3a25a1a6"
   },
   {
     "constant": true,
     "inputs": [],
-    "name": "xBank",
+    "name": "dfStore",
     "outputs": [{
       "name": "",
       "type": "address"
@@ -35,25 +35,12 @@ var convertABI = [{
     "payable": false,
     "stateMutability": "view",
     "type": "function",
-    "signature": "0x4d330a4d"
+    "signature": "0x3cefae82"
   },
   {
     "constant": true,
     "inputs": [],
-    "name": "sumBurnCW",
-    "outputs": [{
-      "name": "",
-      "type": "uint256"
-    }],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function",
-    "signature": "0x627bbe8d"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "dataStore",
+    "name": "dfCol",
     "outputs": [{
       "name": "",
       "type": "address"
@@ -61,7 +48,7 @@ var convertABI = [{
     "payable": false,
     "stateMutability": "view",
     "type": "function",
-    "signature": "0x660d0d67"
+    "signature": "0x473d18a7"
   },
   {
     "constant": false,
@@ -115,19 +102,6 @@ var convertABI = [{
   {
     "constant": true,
     "inputs": [],
-    "name": "sumMintCW",
-    "outputs": [{
-      "name": "",
-      "type": "uint256"
-    }],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function",
-    "signature": "0xa45a4b60"
-  },
-  {
-    "constant": true,
-    "inputs": [],
     "name": "authority",
     "outputs": [{
       "name": "",
@@ -137,6 +111,19 @@ var convertABI = [{
     "stateMutability": "view",
     "type": "function",
     "signature": "0xbf7e214f"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "dfPool",
+    "outputs": [{
+      "name": "",
+      "type": "address"
+    }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "signature": "0xc4d6a2f2"
   },
   {
     "constant": true,
@@ -165,41 +152,28 @@ var convertABI = [{
     "signature": "0xf2fde38b"
   },
   {
-    "constant": true,
-    "inputs": [],
-    "name": "xFees",
-    "outputs": [{
-      "name": "",
-      "type": "address"
-    }],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function",
-    "signature": "0xf995ed9e"
-  },
-  {
     "inputs": [{
         "name": "_usdxToken",
         "type": "address"
       },
       {
-        "name": "_dfnToken",
+        "name": "_dfToken",
         "type": "address"
       },
       {
-        "name": "_dataStore",
+        "name": "_dfStore",
         "type": "address"
       },
       {
-        "name": "_pool",
+        "name": "_dfPool",
         "type": "address"
       },
       {
-        "name": "_bank",
+        "name": "_dfCol",
         "type": "address"
       },
       {
-        "name": "_fees",
+        "name": "_dfFunds",
         "type": "address"
       }
     ],
@@ -250,7 +224,7 @@ var convertABI = [{
   {
     "constant": false,
     "inputs": [{
-        "name": "_collateral",
+        "name": "_tokens",
         "type": "address[]"
       },
       {
@@ -268,15 +242,15 @@ var convertABI = [{
   {
     "constant": false,
     "inputs": [{
-        "name": "_spender",
+        "name": "_depositor",
         "type": "address"
       },
       {
-        "name": "_token",
+        "name": "_tokenID",
         "type": "address"
       },
       {
-        "name": "_value",
+        "name": "_amount",
         "type": "uint256"
       }
     ],
@@ -293,15 +267,15 @@ var convertABI = [{
   {
     "constant": false,
     "inputs": [{
-        "name": "_spender",
+        "name": "_depositor",
         "type": "address"
       },
       {
-        "name": "_token",
+        "name": "_tokenID",
         "type": "address"
       },
       {
-        "name": "_value",
+        "name": "_amount",
         "type": "uint256"
       }
     ],
@@ -318,11 +292,48 @@ var convertABI = [{
   {
     "constant": false,
     "inputs": [{
-        "name": "_spender",
+      "name": "_depositor",
+      "type": "address"
+    }],
+    "name": "claim",
+    "outputs": [{
+      "name": "",
+      "type": "uint256"
+    }],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x1e83409a"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+        "name": "_depositor",
         "type": "address"
       },
       {
-        "name": "_value",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "claim",
+    "outputs": [{
+      "name": "",
+      "type": "uint256"
+    }],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0xaad3ec96"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+        "name": "_depositor",
+        "type": "address"
+      },
+      {
+        "name": "_amount",
         "type": "uint256"
       }
     ],

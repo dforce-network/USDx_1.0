@@ -14,32 +14,32 @@
     <hr />
     <button onclick="setStoreAuth2Guard()">Owner_setStoreAuth2Guard</button>
     <button onclick="setPoolAuth2Guard()">Owner_setPoolAuth2Guard</button>
-    <button onclick="setBankAuth2Guard()">Owner_setBankAuth2Guard</button>
-    <button onclick="setFeesAuth2Guard()">Owner_setFeesAuth2Guard</button>
+    <button onclick="setCollateralAuth2Guard()">Owner_setCollateralAuth2Guard</button>
+    <button onclick="setFundsAuth2Guard()">Owner_setFundsAuth2Guard</button>
     <br />
     <hr />
     <button onclick="permitStorebyGuard()">Owner_permitStorebyGuard</button>
     <button onclick="permitPoolbyGuard()">Owner_permitPoolbyGuard</button>
-    <button onclick="permitBankbyGuard()">Owner_permitBankbyGuard</button>
-    <button onclick="permitFeesbyGuard()">Owner_permitFeesbyGuard</button>
+    <button onclick="permitCollateralbyGuard()">Owner_permitCollateralbyGuard</button>
+    <button onclick="permitFundsbyGuard()">Owner_permitFundsbyGuard</button>
     <br />
     <hr />
-    <button onclick="convertProxyReq()">Owner_requestConvertImpl</button>
-    <button onclick="convertProxyConfirm()">Owner_confirmConvertImpl</button>
+    <button onclick="engineProtocolReq()">Owner_requestEngineImpl</button>
+    <button onclick="engineProtocolConfirm()">Owner_confirmEngineImpl</button>
     <br />
     <hr />
     <button onclick="usdxSetAuth()">Owner_usdxSetAuth</button>
     <button onclick="updateMintSection()">Owner_updateMintSection</button>
     <br />
     <hr />
-    <button onclick="usdxBurnApprove()">user_usdxBurn_Approve2Convert</button>
-    <button onclick="dfnApprove()">user_dfnTransfrom_Approve2Convert</button>
+    <button onclick="usdxBurnApprove()">user_usdxBurn_Approve2Engine</button>
+    <button onclick="dfApprove()">user_dfTransfrom_Approve2Engine</button>
     <br />
     <hr />
-    <button onclick="unlockDAI()">user_unlockDAI_2Convert </button>
-    <button onclick="unlockPAX()">user_unlockPAX_2Convert </button>
-    <button onclick="unlockTUSD()">user_unlockTUSD_2Convert </button>
-    <button onclick="unlockUSDC()">user_unlockUSDC_2Convert </button>
+    <button onclick="unlockDAI()">user_unlockDAI_2Pool </button>
+    <button onclick="unlockPAX()">user_unlockPAX_2Pool </button>
+    <button onclick="unlockTUSD()">user_unlockTUSD_2Pool </button>
+    <button onclick="unlockUSDC()">user_unlockUSDC_2Pool </button>
     <br />
     <hr />
     <button onclick="depositDAI()">depositDAI </button>
@@ -55,19 +55,19 @@
     <br />
     <hr />
     <button onclick="destroy()">destroy100</button>
-    <button onclick="DAIbalanceofBank()">DAIbalanceofBank</button>
+    <button onclick="DAIbalanceofCol()">DAIbalanceofCol</button>
     <br />
     <hr />
 
 </body>
-<script src="bankABI.js"></script>
-<script src="convertABI.js"></script>
-<script src="dfnABI.js"></script>
+<script src="collateralABI.js"></script>
+<script src="engineABI.js"></script>
+<script src="dfABI.js"></script>
 <script src="erc20ABI.js"></script>
-<script src="feesABI.js"></script>
+<script src="fundsABI.js"></script>
 <script src="guardABI.js"></script>
 <script src="poolABI.js"></script>
-<script src="proxyABI.js"></script>
+<script src="protocolABI.js"></script>
 <script src="storeABI.js"></script>
 <script src="usdxABI.js"></script>
 <script src="main.js"></script>

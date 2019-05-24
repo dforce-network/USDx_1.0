@@ -1,32 +1,64 @@
 var storeABI = [{
     "constant": true,
     "inputs": [{
-        "name": "",
-        "type": "address"
-      },
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "collateralQueue",
+      "name": "",
+      "type": "uint256"
+    }],
+    "name": "secList",
     "outputs": [{
-        "name": "depositor",
-        "type": "address"
-      },
-      {
-        "name": "total",
+        "name": "minted",
         "type": "uint256"
       },
       {
-        "name": "balance",
+        "name": "burned",
+        "type": "uint256"
+      },
+      {
+        "name": "backupIdx",
         "type": "uint256"
       }
     ],
     "payable": false,
     "stateMutability": "view",
     "type": "function",
-    "signature": "0x59fed907"
+    "signature": "0x344fbe82"
+  },
+  {
+    "constant": true,
+    "inputs": [{
+        "name": "",
+        "type": "address"
+      },
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "depositorsBalance",
+    "outputs": [{
+      "name": "",
+      "type": "uint256"
+    }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "signature": "0x664b013c"
+  },
+  {
+    "constant": true,
+    "inputs": [{
+      "name": "",
+      "type": "address"
+    }],
+    "name": "mintedTokens",
+    "outputs": [{
+      "name": "",
+      "type": "bool"
+    }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "signature": "0x7241dfa0"
   },
   {
     "constant": false,
@@ -68,9 +100,41 @@ var storeABI = [{
     "constant": true,
     "inputs": [{
       "name": "",
+      "type": "address"
+    }],
+    "name": "mintingTokens",
+    "outputs": [{
+      "name": "",
+      "type": "bool"
+    }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "signature": "0x9a4dffd9"
+  },
+  {
+    "constant": true,
+    "inputs": [{
+      "name": "",
+      "type": "address"
+    }],
+    "name": "lockedBalance",
+    "outputs": [{
+      "name": "",
       "type": "uint256"
     }],
-    "name": "sectionInfoList",
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "signature": "0x9ae697bf"
+  },
+  {
+    "constant": true,
+    "inputs": [{
+      "name": "",
+      "type": "uint256"
+    }],
+    "name": "secListBackup",
     "outputs": [{
         "name": "minted",
         "type": "uint256"
@@ -78,12 +142,16 @@ var storeABI = [{
       {
         "name": "burned",
         "type": "uint256"
+      },
+      {
+        "name": "backupIdx",
+        "type": "uint256"
       }
     ],
     "payable": false,
     "stateMutability": "view",
     "type": "function",
-    "signature": "0x92e697a8"
+    "signature": "0xad7138d3"
   },
   {
     "constant": true,
@@ -100,6 +168,22 @@ var storeABI = [{
   },
   {
     "constant": true,
+    "inputs": [{
+      "name": "",
+      "type": "address"
+    }],
+    "name": "colsBalance",
+    "outputs": [{
+      "name": "",
+      "type": "uint256"
+    }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "signature": "0xc51aa09b"
+  },
+  {
+    "constant": true,
     "inputs": [],
     "name": "newOwner",
     "outputs": [{
@@ -110,6 +194,22 @@ var storeABI = [{
     "stateMutability": "view",
     "type": "function",
     "signature": "0xd4ee1d90"
+  },
+  {
+    "constant": true,
+    "inputs": [{
+      "name": "",
+      "type": "address"
+    }],
+    "name": "tokenBackup",
+    "outputs": [{
+      "name": "",
+      "type": "address"
+    }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "signature": "0xd6e14cd2"
   },
   {
     "constant": false,
@@ -126,11 +226,11 @@ var storeABI = [{
   },
   {
     "inputs": [{
-        "name": "_collateral",
+        "name": "_colIDs",
         "type": "address[]"
       },
       {
-        "name": "_weight",
+        "name": "_weights",
         "type": "uint256[]"
       }
     ],
@@ -143,18 +243,18 @@ var storeABI = [{
     "anonymous": false,
     "inputs": [{
         "indexed": false,
-        "name": "_collateral",
+        "name": "_colIDs",
         "type": "address[]"
       },
       {
         "indexed": false,
-        "name": "number",
+        "name": "_number",
         "type": "uint256[]"
       }
     ],
-    "name": "UpdateTokens",
+    "name": "UpdateSection",
     "type": "event",
-    "signature": "0x6d86ff36b343fae45d647d6db3960802d5788c497ee9d0608d29ce5d372277e9"
+    "signature": "0x69b498e975f93232bd0bd7fa4fde9063c08e4a452f87f8612fa6777c7951001d"
   },
   {
     "anonymous": false,
@@ -197,152 +297,73 @@ var storeABI = [{
   },
   {
     "constant": true,
-    "inputs": [],
-    "name": "mintSectionPosition",
-    "outputs": [{
-      "name": "",
-      "type": "uint256"
-    }],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function",
-    "signature": "0x1be5a60f"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "burnSectionPosition",
-    "outputs": [{
-      "name": "",
-      "type": "uint256"
-    }],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function",
-    "signature": "0xd5802f39"
-  },
-  {
-    "constant": true,
-    "inputs": [{
-      "name": "_token",
-      "type": "address"
-    }],
-    "name": "tokenPool",
-    "outputs": [{
-      "name": "",
-      "type": "uint256"
-    }],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function",
-    "signature": "0x8238e9da"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "totalMinted",
-    "outputs": [{
-      "name": "",
-      "type": "uint256"
-    }],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function",
-    "signature": "0xa2309ff8"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "totalBurned",
-    "outputs": [{
-      "name": "",
-      "type": "uint256"
-    }],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function",
-    "signature": "0xd89135cd"
-  },
-  {
-    "constant": true,
-    "inputs": [{
-        "name": "_token",
-        "type": "address"
-      },
-      {
-        "name": "_owner",
-        "type": "address"
-      }
-    ],
-    "name": "balanceOfTokens",
-    "outputs": [{
-      "name": "",
-      "type": "uint256"
-    }],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function",
-    "signature": "0x72cd383a"
-  },
-  {
-    "constant": false,
-    "inputs": [{
-        "name": "_collateral",
-        "type": "address[]"
-      },
-      {
-        "name": "_weight",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "setSectionInfo",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function",
-    "signature": "0xffbfb7c6"
-  },
-  {
-    "constant": true,
     "inputs": [{
       "name": "_position",
       "type": "uint256"
     }],
-    "name": "sectionToken",
+    "name": "getSectionMinted",
     "outputs": [{
       "name": "",
-      "type": "address[]"
+      "type": "uint256"
     }],
     "payable": false,
     "stateMutability": "view",
     "type": "function",
-    "signature": "0xdd2d3205"
+    "signature": "0x8d7bde49"
   },
   {
-    "constant": true,
+    "constant": false,
     "inputs": [{
         "name": "_position",
         "type": "uint256"
       },
       {
-        "name": "_collateral",
-        "type": "address"
+        "name": "_amount",
+        "type": "uint256"
       }
     ],
-    "name": "collateralWeight",
-    "outputs": [{
-      "name": "",
-      "type": "uint256"
-    }],
+    "name": "addSectionMinted",
+    "outputs": [],
     "payable": false,
-    "stateMutability": "view",
+    "stateMutability": "nonpayable",
     "type": "function",
-    "signature": "0xfc3c96a4"
+    "signature": "0x40806844"
   },
   {
     "constant": false,
     "inputs": [{
-      "name": "_newMinted",
+      "name": "_amount",
+      "type": "uint256"
+    }],
+    "name": "addSectionMinted",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0xc4c731df"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+        "name": "_position",
+        "type": "uint256"
+      },
+      {
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "setSectionMinted",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0xee026808"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+      "name": "_amount",
       "type": "uint256"
     }],
     "name": "setSectionMinted",
@@ -358,7 +379,7 @@ var storeABI = [{
       "name": "_position",
       "type": "uint256"
     }],
-    "name": "sectionMinted",
+    "name": "getSectionBurned",
     "outputs": [{
       "name": "",
       "type": "uint256"
@@ -366,12 +387,61 @@ var storeABI = [{
     "payable": false,
     "stateMutability": "view",
     "type": "function",
-    "signature": "0xf2c93d92"
+    "signature": "0xe3cc8414"
   },
   {
     "constant": false,
     "inputs": [{
-      "name": "_newBurned",
+      "name": "_amount",
+      "type": "uint256"
+    }],
+    "name": "addSectionBurned",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0xc58c74c2"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+        "name": "_position",
+        "type": "uint256"
+      },
+      {
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "addSectionBurned",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x3e989950"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+        "name": "_position",
+        "type": "uint256"
+      },
+      {
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "setSectionBurned",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0xad353a97"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+      "name": "_amount",
       "type": "uint256"
     }],
     "name": "setSectionBurned",
@@ -383,77 +453,50 @@ var storeABI = [{
   },
   {
     "constant": true,
-    "inputs": [],
-    "name": "sectionBurned",
-    "outputs": [{
-      "name": "",
+    "inputs": [{
+      "name": "_position",
       "type": "uint256"
     }],
+    "name": "getSectionToken",
+    "outputs": [{
+      "name": "",
+      "type": "address[]"
+    }],
     "payable": false,
     "stateMutability": "view",
     "type": "function",
-    "signature": "0x8d0c722a"
-  },
-  {
-    "constant": false,
-    "inputs": [],
-    "name": "burnSectionMoveon",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function",
-    "signature": "0xe8974efc"
-  },
-  {
-    "constant": false,
-    "inputs": [{
-        "name": "_token",
-        "type": "address"
-      },
-      {
-        "name": "_depositor",
-        "type": "address"
-      },
-      {
-        "name": "_total",
-        "type": "uint256"
-      }
-    ],
-    "name": "pushCollateralQueue",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function",
-    "signature": "0xf571dbe0"
-  },
-  {
-    "constant": false,
-    "inputs": [{
-        "name": "_token",
-        "type": "address"
-      },
-      {
-        "name": "_length",
-        "type": "uint256"
-      }
-    ],
-    "name": "popCollateralQueue",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function",
-    "signature": "0x51008104"
+    "signature": "0xb811a25f"
   },
   {
     "constant": true,
     "inputs": [{
-      "name": "_token",
-      "type": "address"
+      "name": "_position",
+      "type": "uint256"
     }],
-    "name": "headCollateralQueue",
+    "name": "getSectionWeight",
+    "outputs": [{
+      "name": "",
+      "type": "uint256[]"
+    }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "signature": "0x56cd885e"
+  },
+  {
+    "constant": true,
+    "inputs": [{
+      "name": "_position",
+      "type": "uint256"
+    }],
+    "name": "getSectionData",
     "outputs": [{
         "name": "",
-        "type": "address"
+        "type": "uint256"
+      },
+      {
+        "name": "",
+        "type": "uint256"
       },
       {
         "name": "",
@@ -461,26 +504,25 @@ var storeABI = [{
       },
       {
         "name": "",
-        "type": "uint256"
+        "type": "address[]"
+      },
+      {
+        "name": "",
+        "type": "uint256[]"
       }
     ],
     "payable": false,
     "stateMutability": "view",
     "type": "function",
-    "signature": "0x3b9b00fe"
+    "signature": "0xd648703c"
   },
   {
     "constant": true,
     "inputs": [{
-        "name": "_token",
-        "type": "address"
-      },
-      {
-        "name": "_consume",
-        "type": "uint256"
-      }
-    ],
-    "name": "getCollateralQueue",
+      "name": "_position",
+      "type": "uint256"
+    }],
+    "name": "getBackupSectionData",
     "outputs": [{
         "name": "",
         "type": "uint256"
@@ -497,7 +539,107 @@ var storeABI = [{
     "payable": false,
     "stateMutability": "view",
     "type": "function",
-    "signature": "0x99228493"
+    "signature": "0x9a10ddc5"
+  },
+  {
+    "constant": true,
+    "inputs": [{
+      "name": "_position",
+      "type": "uint256"
+    }],
+    "name": "getBackupSectionIndex",
+    "outputs": [{
+      "name": "",
+      "type": "uint256"
+    }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "signature": "0xffb629be"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+        "name": "_position",
+        "type": "uint256"
+      },
+      {
+        "name": "_backupIdx",
+        "type": "uint256"
+      }
+    ],
+    "name": "setBackupSectionIndex",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0xda1998cc"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+        "name": "_colIDs",
+        "type": "address[]"
+      },
+      {
+        "name": "_weight",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "setSection",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x3bdfdb53"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+        "name": "_position",
+        "type": "uint256"
+      },
+      {
+        "name": "_colIDs",
+        "type": "address[]"
+      },
+      {
+        "name": "_weight",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "setBackupSection",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x8305f078"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "burnSectionMoveon",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0xe8974efc"
+  },
+  {
+    "constant": true,
+    "inputs": [{
+      "name": "_token",
+      "type": "address"
+    }],
+    "name": "getMintingToken",
+    "outputs": [{
+      "name": "",
+      "type": "bool"
+    }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "signature": "0x23165430"
   },
   {
     "constant": false,
@@ -506,20 +648,32 @@ var storeABI = [{
         "type": "address"
       },
       {
-        "name": "_depositor",
-        "type": "address"
-      },
-      {
-        "name": "_balance",
-        "type": "uint256"
+        "name": "_flag",
+        "type": "bool"
       }
     ],
-    "name": "updateCollateralQueue",
+    "name": "setMintingToken",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function",
-    "signature": "0x14ad8987"
+    "signature": "0xddd18f2e"
+  },
+  {
+    "constant": true,
+    "inputs": [{
+      "name": "_token",
+      "type": "address"
+    }],
+    "name": "getMintedToken",
+    "outputs": [{
+      "name": "",
+      "type": "bool"
+    }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "signature": "0xd699e472"
   },
   {
     "constant": false,
@@ -528,20 +682,32 @@ var storeABI = [{
         "type": "address"
       },
       {
-        "name": "_depositor",
-        "type": "address"
-      },
-      {
-        "name": "_amount",
-        "type": "uint256"
+        "name": "_flag",
+        "type": "bool"
       }
     ],
-    "name": "takeOffCollateralQueue",
+    "name": "setMintedToken",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function",
-    "signature": "0xd6627dbf"
+    "signature": "0x2514867c"
+  },
+  {
+    "constant": true,
+    "inputs": [{
+      "name": "_token",
+      "type": "address"
+    }],
+    "name": "getBackupToken",
+    "outputs": [{
+      "name": "",
+      "type": "address"
+    }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "signature": "0x8a2966c0"
   },
   {
     "constant": false,
@@ -550,38 +716,68 @@ var storeABI = [{
         "type": "address"
       },
       {
-        "name": "_newSupply",
-        "type": "uint256"
+        "name": "_backupToken",
+        "type": "address"
       }
     ],
-    "name": "setTokenPool",
+    "name": "setBackupToken",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function",
-    "signature": "0x3d982951"
+    "signature": "0xf39b75da"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getMintPosition",
+    "outputs": [{
+      "name": "",
+      "type": "uint256"
+    }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "signature": "0x69112246"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getBurnPosition",
+    "outputs": [{
+      "name": "",
+      "type": "uint256"
+    }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "signature": "0x590ee16d"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getTotalMinted",
+    "outputs": [{
+      "name": "",
+      "type": "uint256"
+    }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "signature": "0x0ca1c5c9"
   },
   {
     "constant": false,
     "inputs": [{
-        "name": "_token",
-        "type": "address"
-      },
-      {
-        "name": "_owner",
-        "type": "address"
-      },
-      {
-        "name": "_amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "setBalanceOfTokens",
+      "name": "_amount",
+      "type": "uint256"
+    }],
+    "name": "addTotalMinted",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function",
-    "signature": "0x7c7bdb96"
+    "signature": "0x27ef91da"
   },
   {
     "constant": false,
@@ -597,6 +793,32 @@ var storeABI = [{
     "signature": "0x16dbf906"
   },
   {
+    "constant": true,
+    "inputs": [],
+    "name": "getTotalBurned",
+    "outputs": [{
+      "name": "",
+      "type": "uint256"
+    }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "signature": "0xb55cd04b"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+      "name": "_amount",
+      "type": "uint256"
+    }],
+    "name": "addTotalBurned",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x93f0f55a"
+  },
+  {
     "constant": false,
     "inputs": [{
       "name": "_amount",
@@ -608,5 +830,116 @@ var storeABI = [{
     "stateMutability": "nonpayable",
     "type": "function",
     "signature": "0x553b3d29"
+  },
+  {
+    "constant": true,
+    "inputs": [{
+      "name": "_tokenID",
+      "type": "address"
+    }],
+    "name": "getTokenBalance",
+    "outputs": [{
+      "name": "",
+      "type": "uint256"
+    }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "signature": "0x3aecd0e3"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+        "name": "_tokenID",
+        "type": "address"
+      },
+      {
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "setTokenBalance",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x4ceb1f13"
+  },
+  {
+    "constant": true,
+    "inputs": [{
+      "name": "_tokenID",
+      "type": "address"
+    }],
+    "name": "getLockedBalance",
+    "outputs": [{
+      "name": "",
+      "type": "uint256"
+    }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "signature": "0xc4086893"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+        "name": "_tokenID",
+        "type": "address"
+      },
+      {
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "setLockedBalance",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0xa4203fe5"
+  },
+  {
+    "constant": true,
+    "inputs": [{
+        "name": "_depositor",
+        "type": "address"
+      },
+      {
+        "name": "_tokenID",
+        "type": "address"
+      }
+    ],
+    "name": "getDepositorBalance",
+    "outputs": [{
+      "name": "",
+      "type": "uint256"
+    }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "signature": "0xcec3449a"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+        "name": "_depositor",
+        "type": "address"
+      },
+      {
+        "name": "_tokenID",
+        "type": "address"
+      },
+      {
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "setDepositorBalance",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x59168e78"
   }
 ];

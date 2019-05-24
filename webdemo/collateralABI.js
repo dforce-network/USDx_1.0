@@ -1,4 +1,4 @@
-var bankABI = [{
+var collateralABI = [{
     "constant": false,
     "inputs": [],
     "name": "acceptOwnership",
@@ -115,7 +115,7 @@ var bankABI = [{
   {
     "constant": false,
     "inputs": [{
-        "name": "_collateral",
+        "name": "_tokenID",
         "type": "address"
       },
       {
@@ -123,18 +123,18 @@ var bankABI = [{
         "type": "address"
       },
       {
-        "name": "_value",
+        "name": "_amount",
         "type": "uint256"
       }
     ],
-    "name": "transferCollateral",
+    "name": "transferOut",
     "outputs": [{
-      "name": "success",
+      "name": "",
       "type": "bool"
     }],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function",
-    "signature": "0xcd60f59f"
+    "signature": "0x078d3b79"
   }
 ];

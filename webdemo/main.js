@@ -1,31 +1,26 @@
 var usdxAddr = "0x17996ea27d03d68ddc618f9b8f0faf43838acaf6";
-var dfnAddr = "0xfaacf3d2a2ce1102073038e035d24c1c78b6e9c4";
+var dfAddr = "0xfaacf3d2a2ce1102073038e035d24c1c78b6e9c4";
 
-// var proxyAddr = "0x577fF076Fa10B29e46B35F4Bba6ed58a22919B44";
-// var storeAddr = "0x0f47cA9e1f692E535829835FfDC086C45585DF1c";
-// var poolAddr = "0xF51ef9DDdCFCa1B495C3bbfBc44446dd662F1400";
-// var bankAddr = "0xa2a6AbFE39a835c35073B46e3614c059B3Dd5840";
-// var feesAddr = "0x68e36a5e04384FCB019F79B9D7ce014649df24FB";
-// var convertAddr = "0xfcaf6B782B484509A27D08403aCE1E2D3C066BC0";
-// var guardAddr = "0x4b025B9B713FCBd8a635c6b34c2a10ECf12Ae6a1";
-
-var proxyAddr = "0x458C21b2F0eEef8Cf97D4a3A36DB89d5343010CE";
-var storeAddr = "0x901069049Ffc67F053c3B77597218FdBEfa3Bb2C";
-var poolAddr = "0xFA82A7522B01A0fAFb1c9cBB651A5d6a8d8963Fc";
-var bankAddr = "0x28BBEFdE119D3d092FbBD1fb554253F7D3A40149";
-var feesAddr = "0xE064d694c6043aE9154287aC96AD1212A70d619E";
-var convertAddr = "0xDfBa945139272d484e33DD241A01Dc3Fc739A5f9";
-var guardAddr = "0x565e93Daa4A9989Bd657c5416A91c16E2B02DA25";
+var protocolAddr = "0xA8a57b08235e40b4c76303AeE6E3051942E8a7D1";
+var storeAddr = "0x780e4B1f0e779488C3C2f1D2D0A06211a0E80311";
+var poolAddr = "0x203466d49c3Ebb8C7f2eFA8058844E1dadDa029e";
+var collateralAddr = "0xCBC0d02c6F67de9185f670bba89ad5189Aa3DEA6";
+var fundsAddr = "0x600A23758bF963BD549113B81b778C2E56681DD1";
+var engineAddr = "0x06cAa25b17Bb588EAb300A51DF4A4F8169dDd5F0";
+var guardAddr = "0xaAA6bfdEa01F41d285158aE8cc555e78d261da44";
+var medianizer = "0x7E3B8f34fc427DA42B24C102972E6781d5A91a22";
+var pricefeed = "0x2db4Dfbba8768207d7dA9Afd85A07b2934c3bB9A";
+var sender = "0x18c30D9569fEb3ea3644573b013D329dD9fd01Af";
 
 var contractUsdx = web3.eth.contract(usdxABI).at(usdxAddr);
-var contractDFN = web3.eth.contract(dfnABI).at(dfnAddr);
+var contractDF = web3.eth.contract(dfABI).at(dfAddr);
 
-var contractProxy = web3.eth.contract(proxyABI).at(proxyAddr);
+var contractProtocol = web3.eth.contract(protocolABI).at(protocolAddr);
 var contractStore = web3.eth.contract(storeABI).at(storeAddr);
 var contractPool = web3.eth.contract(poolABI).at(poolAddr);
-var contractBank = web3.eth.contract(bankABI).at(bankAddr);
-var contractFees = web3.eth.contract(feesABI).at(feesAddr);
-var contractConvert = web3.eth.contract(convertABI).at(convertAddr);
+var contractCollateral = web3.eth.contract(collateralABI).at(collateralAddr);
+var contractFunds = web3.eth.contract(fundsABI).at(fundsAddr);
+var contractEngine = web3.eth.contract(engineABI).at(engineAddr);
 var contractGuard = web3.eth.contract(guardABI).at(guardAddr);
 
 var daiAddr = "0x235b370de0b0cd3fb9e987e4957a9db0f1c3dd5a";
@@ -60,8 +55,8 @@ function setPoolAuth2Guard() {
   );
 }
 
-function setBankAuth2Guard() {
-  contractBank.setAuthority.sendTransaction(
+function setCollateralAuth2Guard() {
+  contractCollateral.setAuthority.sendTransaction(
     guardAddr, {
       gas: 1000000
     },
@@ -71,8 +66,8 @@ function setBankAuth2Guard() {
   );
 }
 
-function setFeesAuth2Guard() {
-  contractFees.setAuthority.sendTransaction(
+function setFundsAuth2Guard() {
+  contractFunds.setAuthority.sendTransaction(
     guardAddr, {
       gas: 1000000
     },
@@ -84,7 +79,7 @@ function setFeesAuth2Guard() {
 
 function permitStorebyGuard() {
   contractGuard.permitx.sendTransaction(
-    convertAddr, storeAddr, {
+    engineAddr, storeAddr, {
       gas: 1000000
     },
     function (err, ret) {
@@ -95,7 +90,7 @@ function permitStorebyGuard() {
 
 function permitPoolbyGuard() {
   contractGuard.permitx.sendTransaction(
-    convertAddr, poolAddr, {
+    engineAddr, poolAddr, {
       gas: 1000000
     },
     function (err, ret) {
@@ -104,9 +99,9 @@ function permitPoolbyGuard() {
   );
 }
 
-function permitBankbyGuard() {
+function permitCollateralbyGuard() {
   contractGuard.permitx.sendTransaction(
-    convertAddr, bankAddr, {
+    engineAddr, collateralAddr, {
       gas: 1000000
     },
     function (err, ret) {
@@ -115,9 +110,9 @@ function permitBankbyGuard() {
   );
 }
 
-function permitFeesbyGuard() {
+function permitFundsbyGuard() {
   contractGuard.permitx.sendTransaction(
-    convertAddr, feesAddr, {
+    engineAddr, fundsAddr, {
       gas: 1000000
     },
     function (err, ret) {
@@ -129,9 +124,9 @@ function permitFeesbyGuard() {
 /*
   let protocol know the instance of engine.
 */
-function convertProxyReq() {
-  contractProxy.requestImplChange.sendTransaction(
-    convertAddr, {
+function engineProtocolReq() {
+  contractProtocol.requestImplChange.sendTransaction(
+    engineAddr, {
       gas: 1000000
     },
     function (err, ret) {
@@ -140,8 +135,8 @@ function convertProxyReq() {
   );
 }
 
-function convertProxyConfirm() {
-  contractProxy.confirmImplChange.sendTransaction({
+function engineProtocolConfirm() {
+  contractProtocol.confirmImplChange.sendTransaction({
       gas: 1000000
     },
     function (err, ret) {
@@ -155,7 +150,7 @@ function convertProxyConfirm() {
 */
 function usdxSetAuth() {
   contractUsdx.setAuthority.sendTransaction(
-    convertAddr, {
+    engineAddr, {
       gas: 1000000
     },
     function (err, ret) {
@@ -168,7 +163,7 @@ function usdxSetAuth() {
   set Auth carefully, only Owner can do this job.
 */
 function updateMintSection() {
-  contractConvert.updateMintSection.sendTransaction(
+  contractEngine.updateMintSection.sendTransaction(
     [
       "0x235b370de0b0cd3fb9e987e4957a9db0f1c3dd5a",
       "0x9aa0fa0a4e2634fbbf1b716fcabf8650a8fa330f",
@@ -188,7 +183,7 @@ function updateMintSection() {
   user actions.
 */
 function usdxBurnApprove() {
-  contractUsdx.approvex.sendTransaction(convertAddr, {
+  contractUsdx.approvex.sendTransaction(engineAddr, {
     gas: 1000000
   }, function (
     err,
@@ -198,8 +193,8 @@ function usdxBurnApprove() {
   });
 }
 
-function dfnApprove() {
-  contractDFN.approvex.sendTransaction(convertAddr, {
+function dfApprove() {
+  contractDF.approvex.sendTransaction(engineAddr, {
     gas: 1000000
   }, function (
     err,
@@ -258,7 +253,7 @@ function unlockUSDC() {
 }
 
 function depositDAI() {
-  contractProxy.deposit.sendTransaction(
+  contractProtocol.deposit.sendTransaction(
     daiAddr,
     100 * 1000000000000000000, {
       gas: 1000000
@@ -270,7 +265,7 @@ function depositDAI() {
 }
 
 function depositPAX() {
-  contractProxy.deposit.sendTransaction(
+  contractProtocol.deposit.sendTransaction(
     paxAddr,
     200 * 1000000000000000000, {
       gas: 1000000
@@ -282,7 +277,7 @@ function depositPAX() {
 }
 
 function depositTUSD() {
-  contractProxy.deposit.sendTransaction(
+  contractProtocol.deposit.sendTransaction(
     tusdAddr,
     300 * 1000000000000000000, {
       gas: 1000000
@@ -294,7 +289,7 @@ function depositTUSD() {
 }
 
 function depositUSDC() {
-  contractProxy.deposit.sendTransaction(
+  contractProtocol.deposit.sendTransaction(
     usdcAddr,
     500 * 1000000000000000000, {
       gas: 5000000
@@ -306,7 +301,7 @@ function depositUSDC() {
 }
 
 function withdrawDAI() {
-  contractProxy.withdraw.sendTransaction(
+  contractProtocol.withdraw.sendTransaction(
     daiAddr,
     20 * 1000000000000000000, {
       gas: 2000000
@@ -318,7 +313,7 @@ function withdrawDAI() {
 }
 
 function withdrawPAX() {
-  contractProxy.withdraw.sendTransaction(
+  contractProtocol.withdraw.sendTransaction(
     paxAddr,
     20 * 1000000000000000000, {
       gas: 2000000
@@ -330,7 +325,7 @@ function withdrawPAX() {
 }
 
 function withdrawTUSD() {
-  contractProxy.withdraw.sendTransaction(
+  contractProtocol.withdraw.sendTransaction(
     tusdAddr,
     20 * 1000000000000000000, {
       gas: 2000000
@@ -342,7 +337,7 @@ function withdrawTUSD() {
 }
 
 function withdrawUSDC() {
-  contractProxy.withdraw.sendTransaction(
+  contractProtocol.withdraw.sendTransaction(
     usdcAddr,
     20 * 1000000000000000000, {
       gas: 2000000
@@ -354,7 +349,7 @@ function withdrawUSDC() {
 }
 
 function destroy() {
-  contractProxy.destroy.sendTransaction(
+  contractProtocol.destroy.sendTransaction(
     100 * 1000000000000000000, {
       gas: 2000000
     },
@@ -364,9 +359,9 @@ function destroy() {
   );
 }
 
-function DAIbalanceofBank() {
+function DAIbalanceofCol() {
   contractPAX.balanceOf.call(
-    bankAddr,
+    collateralAddr,
     function (err, ret) {
       console.log(ret.toFixed(), err);
     }
