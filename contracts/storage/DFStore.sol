@@ -127,6 +127,12 @@ contract DFStore is DSAuth, Utils {
         secList.push(Section(0, 0, 0, new address[](_colIDs.length), new uint[](_weight.length)));
         uint _mintPosition = secList.length - 1;
 
+        if (_mintPosition > 0) {
+            address[] memory _cruColIDs = getSectionToken(mintPosition);
+            for (uint i = 0; i < _cruColIDs.length; i++)
+                delete mintingTokens[_cruColIDs[i]];
+        }
+
         for (uint i = 0; i < _colIDs.length; i++) {
             require(_colIDs[i] != address(0), "_SetSection: 0 address not allow.");
             require(_weight[i] > 0, "_SetSection: cw not allow.");
@@ -137,14 +143,8 @@ contract DFStore is DSAuth, Utils {
             mintedTokens[_colIDs[i]] = true;
         }
 
-        if (_mintPosition > 0){
-            address[] memory _cruColIDs = getSectionToken(mintPosition);
-            for (uint i = 0; i < _cruColIDs.length; i++)
-                delete mintingTokens[_cruColIDs[i]];
-
-            mintPosition = _mintPosition;
-        }
-        emit UpdateSection(secList[_mintPosition].colIDs, secList[_mintPosition].cw);
+        mintPosition = _mintPosition;
+        emit UpdateSection(secList[mintPosition].colIDs, secList[mintPosition].cw);
     }
 
     function setSection(address[] memory _colIDs, uint[] memory _weight) public auth {

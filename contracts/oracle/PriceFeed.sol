@@ -2,7 +2,7 @@ pragma solidity ^0.5.2;
 
 import '../utility/DSThing.sol';
 
-interface Medianizer {
+interface iMedianizer {
     function poke() external;
 }
 
@@ -25,7 +25,7 @@ contract PriceFeed is DSThing {
         zzz = zzz_;
     }
 
-    function post(uint128 val_, uint32 zzz_, Medianizer med_) external note auth {
+    function post(uint128 val_, uint32 zzz_, iMedianizer med_) external note auth {
         val = val_;
         zzz = zzz_;
         med_.poke();
