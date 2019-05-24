@@ -1,4 +1,4 @@
-var proxyABI = [{
+var protocolABI = [{
     "constant": false,
     "inputs": [],
     "name": "confirmImplChange",
@@ -9,9 +9,22 @@ var proxyABI = [{
     "signature": "0x224a8432"
   },
   {
+    "constant": true,
+    "inputs": [],
+    "name": "iDFEngine",
+    "outputs": [{
+      "name": "",
+      "type": "address"
+    }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "signature": "0x42a02b18"
+  },
+  {
     "constant": false,
     "inputs": [{
-      "name": "_newConverter",
+      "name": "_newDFEngine",
       "type": "address"
     }],
     "name": "requestImplChange",
@@ -43,19 +56,6 @@ var proxyABI = [{
     "stateMutability": "nonpayable",
     "type": "function",
     "signature": "0x7a9e5e4b"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "iConverter",
-    "outputs": [{
-      "name": "",
-      "type": "address"
-    }],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function",
-    "signature": "0x7ad458ec"
   },
   {
     "constant": true,
@@ -113,22 +113,22 @@ var proxyABI = [{
     "anonymous": false,
     "inputs": [{
         "indexed": true,
-        "name": "token",
+        "name": "_tokenID",
         "type": "address"
       },
       {
         "indexed": true,
-        "name": "user",
+        "name": "_sender",
         "type": "address"
       },
       {
         "indexed": false,
-        "name": "amount",
+        "name": "_amount",
         "type": "uint256"
       },
       {
         "indexed": false,
-        "name": "balance",
+        "name": "_balance",
         "type": "uint256"
       }
     ],
@@ -140,22 +140,22 @@ var proxyABI = [{
     "anonymous": false,
     "inputs": [{
         "indexed": true,
-        "name": "token",
+        "name": "_tokenID",
         "type": "address"
       },
       {
         "indexed": true,
-        "name": "user",
+        "name": "_sender",
         "type": "address"
       },
       {
         "indexed": false,
-        "name": "amount",
+        "name": "_amount",
         "type": "uint256"
       },
       {
         "indexed": false,
-        "name": "balance",
+        "name": "_balance",
         "type": "uint256"
       }
     ],
@@ -167,12 +167,12 @@ var proxyABI = [{
     "anonymous": false,
     "inputs": [{
         "indexed": true,
-        "name": "user",
+        "name": "_sender",
         "type": "address"
       },
       {
         "indexed": false,
-        "name": "amount",
+        "name": "_amount",
         "type": "uint256"
       }
     ],
@@ -250,11 +250,11 @@ var proxyABI = [{
   {
     "constant": false,
     "inputs": [{
-        "name": "_token",
+        "name": "_tokenID",
         "type": "address"
       },
       {
-        "name": "_value",
+        "name": "_amount",
         "type": "uint256"
       }
     ],
@@ -268,11 +268,11 @@ var proxyABI = [{
   {
     "constant": false,
     "inputs": [{
-        "name": "_token",
+        "name": "_tokenID",
         "type": "address"
       },
       {
-        "name": "_value",
+        "name": "_amount",
         "type": "uint256"
       }
     ],
@@ -286,7 +286,7 @@ var proxyABI = [{
   {
     "constant": false,
     "inputs": [{
-      "name": "_value",
+      "name": "_amount",
       "type": "uint256"
     }],
     "name": "destroy",

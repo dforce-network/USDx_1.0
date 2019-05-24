@@ -1,4 +1,4 @@
-var feesABI = [{
+var fundsABI = [{
     "constant": false,
     "inputs": [],
     "name": "acceptOwnership",
@@ -74,16 +74,6 @@ var feesABI = [{
     "signature": "0xf2fde38b"
   },
   {
-    "inputs": [{
-      "name": "dfn",
-      "type": "address"
-    }],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "constructor",
-    "signature": "constructor"
-  },
-  {
     "anonymous": false,
     "inputs": [{
       "indexed": true,
@@ -125,22 +115,26 @@ var feesABI = [{
   {
     "constant": false,
     "inputs": [{
+        "name": "_tokenID",
+        "type": "address"
+      },
+      {
         "name": "_to",
         "type": "address"
       },
       {
-        "name": "_value",
+        "name": "_amount",
         "type": "uint256"
       }
     ],
-    "name": "transferFee",
+    "name": "transferOut",
     "outputs": [{
-      "name": "success",
+      "name": "",
       "type": "bool"
     }],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function",
-    "signature": "0xbf363b18"
+    "signature": "0x078d3b79"
   }
 ];

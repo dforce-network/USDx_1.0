@@ -75,7 +75,7 @@ var poolABI = [{
   },
   {
     "inputs": [{
-      "name": "_bank",
+      "name": "_dfcol",
       "type": "address"
     }],
     "payable": false,
@@ -125,7 +125,7 @@ var poolABI = [{
   {
     "constant": false,
     "inputs": [{
-        "name": "_collateral",
+        "name": "_tokenID",
         "type": "address"
       },
       {
@@ -133,24 +133,24 @@ var poolABI = [{
         "type": "address"
       },
       {
-        "name": "_value",
+        "name": "_amount",
         "type": "uint256"
       }
     ],
-    "name": "transferFromCollateral",
+    "name": "transferFromSender",
     "outputs": [{
-      "name": "success",
+      "name": "",
       "type": "bool"
     }],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function",
-    "signature": "0xae25215c"
+    "signature": "0x721d036b"
   },
   {
     "constant": false,
     "inputs": [{
-        "name": "_collateral",
+        "name": "_tokenID",
         "type": "address"
       },
       {
@@ -158,39 +158,39 @@ var poolABI = [{
         "type": "address"
       },
       {
-        "name": "_value",
+        "name": "_amount",
         "type": "uint256"
       }
     ],
-    "name": "transferCollateral",
+    "name": "transferOut",
     "outputs": [{
-      "name": "success",
+      "name": "",
       "type": "bool"
     }],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function",
-    "signature": "0xcd60f59f"
+    "signature": "0x078d3b79"
   },
   {
     "constant": false,
     "inputs": [{
-        "name": "_collateral",
+        "name": "_tokenID",
         "type": "address"
       },
       {
-        "name": "_value",
+        "name": "_amount",
         "type": "uint256"
       }
     ],
-    "name": "transferToBank",
+    "name": "transferToCol",
     "outputs": [{
-      "name": "success",
+      "name": "",
       "type": "bool"
     }],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function",
-    "signature": "0x67b4c409"
+    "signature": "0x0577dd14"
   }
 ];
