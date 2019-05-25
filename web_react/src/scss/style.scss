@@ -1,0 +1,63 @@
+@import './not-found.scss';
+@import './notify.scss';
+@import './header.scss';
+@import './body.scss';
+@import './welcome.scss';
+@import './select.scss';
+
+@font-face {
+  font-family: myFont;
+  src: url('../assets/font/pxgroteskregular.ttf')
+}
+
+body {
+  background: rgba(251, 252, 253, 1)!important;
+  // background: green!important;
+  margin: 0;
+  padding: 0;
+  // font-family: sans-serif;
+  font-family: myFont;
+  color: #333;
+
+  -moz-user-select: -moz-none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+
+  div {
+    box-sizing: border-box;
+  }
+
+  div.clear {
+    clear: both;
+  }
+
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+
+  ul,
+  li {
+    list-style: none;
+  }
+
+
+
+  .ant-spin-dot i {
+    background: #fff;
+  }
+
+  .MuiTab-root-47 {
+    font-size: 24px;
+  }
+
+}

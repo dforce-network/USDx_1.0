@@ -1,0 +1,66 @@
+// notify
+.notifications-container {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 340px;
+    z-index: 999;
+    padding-top: 10px;
+    padding-right: 20px;
+
+    div.colItem {
+        color: #333;
+        background-size: 25px!important;
+        border-radius: 5px;
+        position: relative;
+        margin-top: 10px;
+        border:1px solid rgba(230, 234, 238, 1);
+        box-shadow: 0px 0px 35px 0px rgba(0, 0, 0, 0.05);
+
+        button.close-box {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            border: 1px solid transparent;
+            background: url('../assets/img/close.png') no-repeat center center;
+            background-size: 90%;
+            width: 15px;
+            height: 15px;
+
+            &:hover {
+                cursor: pointer;
+            }
+        }
+
+        h3 {
+            margin: 0;
+            margin-top: 7px;
+            padding-left: 44px;
+            width: 225px;
+            font-size: 16px;
+        }
+
+        div.notification-text {
+            font-size: 14px;
+            width: 280px;
+            padding-left: 44px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+        }
+    }
+
+    div.col-inprocess {
+        background: #fff url('../assets/img/process.png') no-repeat 10px 20px;
+        border-left: 3px solid rgba(91, 152, 250, 1);
+    }
+
+    div.col-error {
+        background: #fff url('../assets/img/err.png') no-repeat 10px 20px;
+        border-left: 3px solid rgba(252, 158, 45, 1);
+    }
+
+    div.col-success {
+        background: #fff url('../assets/img/success.png') no-repeat 10px 20px;
+        border-left: 3px solid rgba(28, 209, 92, 1);
+    }
+}

@@ -1,0 +1,188 @@
+div.headerWrap {
+    color: #fff;
+    background: rgba(34, 44, 60, 1);
+    width: 100%;
+    min-width: 1200px;
+
+    div.myHeader {
+        // background: red;
+        width: 100%;
+        height: 85px;
+
+        div.logo {
+            float: left;
+            padding-top: 17px;
+            margin-left: 20px;
+            margin-right: 20px;
+
+            img {
+                width: 50px;
+            }
+        }
+
+        table.balanceTable {
+            float: left;
+            border-spacing: 0;
+            margin-top: 17px;
+
+            tr {
+                height: 48px;
+                // background: red;
+            }
+
+            td {
+                &.noborder {
+                    border: none;
+                }
+
+                border-right: 1px solid rgba(255, 255, 255, 0.1);
+                // background: red;
+                padding-left: 13px;
+                padding-right: 13px;
+
+                span.token {
+                    color: rgba(139, 143, 149, 1);
+                    font-size: 12px;
+                    font-weight: 100;
+                }
+
+                img {
+                    margin-left: 10px;
+                    margin-top: -3px;
+                    width: 10px;
+                    cursor: pointer;
+                }
+
+                span.balance {
+                    display: block;
+                    font-size: 14px;
+                    line-height: 30px;
+                    font-weight: 200;
+                }
+            }
+        }
+
+        div.dfPrice {
+            float: right;
+            // background: red;
+            margin-top: 17px;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            padding-right: 13px;
+            margin-right: 13px;
+            height: 53px;
+            line-height: 53px;
+
+            span.dftoken {
+                font-size: 12px;
+                font-weight: 100;
+                color: rgba(139, 143, 149, 1);
+                margin-right: 7px;
+            }
+
+            span.dftokenPrice {
+                font-size: 14px;
+                font-weight: 200;
+                color: #fff;
+            }
+        }
+
+        div.status {
+            float: right;
+            // background: green;
+            width: 180px;
+            padding-top: 20px;
+
+            p.title {
+                margin-bottom: 5px;
+                // background: green;
+                position: relative;
+                padding-left: 15px;
+                color: rgba(175, 179, 187, 1);
+                font-size: 12px;
+                font-weight: 100;
+
+                span.netdot {
+                    display: inline-block;
+                    position: absolute;
+                    top: 5px;
+                    left: 0;
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                }    
+            }
+
+            div.logoin {
+                margin-top: 8px;
+                font-size: 14px;
+                // padding-left: 3px;
+                background: url('../assets/img/downwhite.png') no-repeat 160px 4px;
+                // background: green;
+                background-size: 10px;
+                position: relative;
+                height: 30px;
+                font-weight: 200;
+
+                &:hover {
+                    .popup {
+                        display: block;
+                    }
+                }
+
+                .popup {
+                    display: none;
+                    z-index: 999;
+                    width: 180px;
+                    background: #fff;
+                    padding: 3px;
+                    color: #333;
+                    border-radius: 4px;
+                    position: absolute;
+                    top: 24px;
+                    left: 0px;
+                    border: 1px solid rgba(217, 222, 227, 1);
+                    box-shadow: 0px 5px 12px 0px rgba(42, 49, 56, 0.15);
+
+                    p {
+                        margin: 0;
+                        background: url('../assets/img/connection.png') no-repeat 44px center;
+                        background-size: 15px;
+                        padding: 6px;
+                        text-align: center;
+                        padding-left: 25px;
+                        cursor: pointer;
+
+                        &.out {
+                            background: url('../assets/img/out.png') no-repeat 44px center;
+                            background-size: 17px;
+                        }
+                    }
+
+                    span {
+                        display: block;
+                        width: 0;
+                        height: 0;
+                        border-width: 0 6px 6px;
+                        border-style: solid;
+                        border-color: transparent transparent rgba(217, 222, 227, 1);
+                        position: absolute;
+                        top: -6px;
+                        right: 8px;
+                    }
+
+                    em {
+                        display: block;
+                        width: 0;
+                        height: 0;
+                        border-width: 0 5px 5px;
+                        border-style: solid;
+                        border-color: transparent transparent #fff;
+                        position: absolute;
+                        top: 2px;
+                        left: -5px;
+                    }
+                }
+            }
+        }
+    }
+}

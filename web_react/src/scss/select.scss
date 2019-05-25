@@ -1,0 +1,30 @@
+
+.mySelect {
+    width: 120px;
+    height: 45px;
+}
+.ant-select-selection {
+    height: 45px!important;
+}
+.ant-select-selection__rendered {
+    line-height: 45px!important;
+    font-size: 16px;
+    padding-left: 8px;
+}
+
+@media screen and (max-width: 1400px) {
+    .mySelect {
+        width: 90px;
+        height: 35px;
+    }
+    .ant-select-selection {
+        height: 35px!important;
+    }
+    .ant-select-selection__rendered {
+        line-height: 35px!important;
+        font-size: 16px;
+        padding-left: 0px;
+    }
+}
+
+

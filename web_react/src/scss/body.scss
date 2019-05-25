@@ -1,0 +1,772 @@
+div.body {
+    box-sizing: border-box;
+    width: 100%;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 30px;
+    // background: red;
+
+    div.bodyleft {
+        float: left;
+        background: #fff;
+        width: 280px;
+        border: 1px solid rgba(230, 234, 238, 1);
+        border-radius: 4px;
+        box-shadow: 0px 0px 35px 0px rgba(0, 0, 0, 0.05);
+        padding-top: 20px;
+        padding-bottom: 20px;
+
+        div.title {
+            padding-left: 10px;
+            font-size: 16px;
+            font-weight: 400;
+            color: rgba(150, 150, 162, 1);
+        }
+
+        div.pool {
+            background: rgba(255, 245, 228, 1);
+            width: 260px;
+            margin: 0 auto;
+            border-radius: 4px;
+            margin-top: 15px;
+
+            div.left {
+                // background: red;
+                float: left;
+                width: 100px;
+                text-align: center;
+                padding-top: 12px;
+                padding-bottom: 7px;
+
+                img {
+                    width: 36px;
+                }
+
+                p.token {
+                    margin: 0;
+                    // margin-top: 5px;
+                    font-size: 16px;
+                    font-weight: 300;
+                    color: rgba(51, 51, 68, 0.7);
+                }
+            }
+
+            div.right {
+                // background: green;
+                float: left;
+
+                p {
+                    margin: 0;
+                }
+
+                p.section {
+                    font-size: 18px;
+                    font-weight: 400;
+                    color: rgba(51, 51, 68, 0.7);
+                    padding-top: 13px;
+                }
+
+                p.sectionNum {
+                    font-size: 20px;
+                    font-weight: 500;
+                    color: rgba(51, 51, 68, 1);
+                    margin-top: 3px;
+                }
+            }
+        }
+
+        div.poolColor2 {
+            background: rgba(219, 255, 249, 1);
+        }
+
+        div.poolColor3 {
+            background: rgba(255, 236, 236, 1);
+        }
+
+        div.poolColor4 {
+            background: rgba(226, 244, 255, 1);
+        }
+
+        div.totalUSDx {
+            padding-top: 30px;
+
+            div.usdxNum {
+                margin: 0;
+                margin-top: 5px;
+                font-size: 20px;
+                font-weight: 500;
+                color: rgba(51, 51, 68, 1);
+                padding-left: 20px;
+            }
+        }
+
+        div.globalpool {
+            padding-top: 20px;
+
+            div.sectionToken {
+                padding-left: 20px;
+
+                span.token {
+                    display: inline-block;
+                    font-size: 16px;
+                    font-weight: 300;
+                    color: rgba(51, 51, 68, 0.7);
+                    width: 70px;
+                    // background: red;
+                    line-height: 34px;
+                }
+
+                span.tokenNum {
+                    font-size: 20px;
+                    font-weight: 500;
+                    color: rgba(51, 51, 68, 1);
+                }
+            }
+        }
+    }
+
+
+    div.bodyright {
+        float: left;
+        width: calc(100% - 280px);
+        // background: goldenrod;
+        padding-left: 30px;
+
+        div.tab1 {
+            float: left;
+            background: #fff;
+            width: calc(50% - 15px);
+            margin-right: 30px;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid rgba(230, 234, 238, 1);
+            box-shadow: 0px 0px 35px 0px rgba(0, 0, 0, 0.05);
+
+            button {
+                font-size: 20px;
+            }
+
+            div.titleInTab {
+                // background: red;
+                height: 70px;
+                position: relative;
+
+                &::after {
+                    content: '';
+                    display: block;
+                    position: absolute;
+                    width: 5px;
+                    height: 20px;
+                    left: 30px;
+                    top: 30px;
+                    background: rgba(91, 152, 250, 1);
+                }
+
+                div.leftTitle {
+                    float: left;
+                    font-size: 20px;
+                    color: rgba(56, 132, 255, 1);
+                    font-weight: 500;
+                    padding-top: 25px;
+                    padding-left: 45px;
+                }
+
+                div.rightIcon {
+                    // background: green;
+                    float: right;
+                    padding-top: 15px;
+                    margin-right: 30px;
+
+                    img {
+                        width: 20px;
+                        height: 20px;
+                    }
+                }
+            }
+
+            div.generate {
+                width: 100%;
+                min-height: 410px;
+                position: relative;
+
+                p.details {
+                    margin: 0;
+                    margin-top: 40px;
+                    padding-left: 30px;
+                    font-size: 16px;
+                    font-weight: 200;
+                    color: rgba(150, 150, 162, 1);
+                    // background: red;
+                }
+
+                div.input {
+                    margin-top: 20px;
+
+                    input {
+                        float: left;
+                        padding: 0px;
+                        border: 1px solid rgba(221, 221, 230, 1);
+                        border-radius: 4px;
+                        // border-radius: 6px 0 0 6px;
+                        // border-right: 0 solid transparent;
+                        height: 45px;
+                        margin-left: 30px;
+                        padding-left: 15px;
+                        font-size: 16px;
+                        width: 350px;
+
+                        &:focus {
+                            outline: 1px solid #40a9ff;
+                        }
+                    }
+                }
+
+                div.ButtonWrap {
+                    width: 470px;
+                    height: 45px;
+                    margin-left: 30px;
+                    margin-top: 50px;
+
+                    button {
+                        height: 45px;
+                    }
+                }
+
+                div.diverLine {
+                    width: 100%;
+                    height: 1px;
+                    background: rgba(230, 234, 238, 1);
+                    margin-top: 30px;
+
+                    @media screen and (min-width: 1401px) {
+                        margin-top: 50px;
+                    }
+                }
+
+                div.errtips {
+                    width: 470px;
+                    box-shadow: 0px 0px 15px 0px rgba(116, 116, 116, 0.2);
+                    border-radius: 4px;
+                    font-size: 14px;
+                    color: rgba(150, 150, 162, 1);
+                    border: 1px solid rgba(221, 221, 230, 1);
+                    border-left: 3px solid rgba(252, 86, 69, 1);
+                    background: #fff url('../assets/img/warning.png') no-repeat 10px 12px;
+                    background-size: 20px;
+                    padding-left: 40px;
+                    padding-right: 10px;
+                    padding-bottom: 5px;
+                    transition: 0.5s;
+                    font-weight: 300;
+                    position: absolute;
+                    left: 30px;
+                    top: 125px;
+
+                    h4 {
+                        margin: 0;
+                        padding-top: 8px;
+                        color: #888;
+                        font-weight: 400;
+                        font-size: 16px;
+                    }
+                }
+
+                div.tipsMax {
+                    position: absolute;
+                    transition: 0.3s;
+                    text-align: right;
+                    // background: red;
+                    padding-left: 20px;
+                    top: 92px;
+                    // right: 0px;
+                    width: 470px;
+
+                    @media screen and (min-width: 1401px) {
+                        margin-left: 30px;
+                    }
+
+                    div.imgWrap {
+                        // background: green;
+
+                        img {
+                            width: 16px;
+                            position: absolute;
+                            right: 104px;
+                            margin-top: 3px;
+                            margin-right: 7px;
+                            opacity: 0.7;
+                            cursor: pointer;
+                        }
+
+                        div.detials {
+                            display: none;
+                            text-align: left;
+                            box-sizing: border-box;
+                            background: #fff;
+                            position: absolute;
+                            top: -57px;
+                            left: 0px;
+                            width: 470px;
+                            font-size: 12px;
+                            font-weight: 200;
+                            border-radius: 3px;
+                            border: 1px solid rgba(221, 221, 230, 1);
+                            box-shadow: 0px 0px 15px 0px rgba(116, 116, 116, 0.2);
+                            padding: 8px 7px;
+
+                            &::after {
+                                content: '';
+                                display: block;
+                                width: 0;
+                                height: 0;
+                                border: 5px solid transparent;
+                                border-top: 5px solid #fff;
+                                top: 52px;
+                                right: 113px;
+                                position: absolute;
+                            }
+
+                            &::before {
+                                content: '';
+                                display: block;
+                                width: 0;
+                                height: 0;
+                                border: 6px solid transparent;
+                                border-top: 6px solid rgba(221, 221, 230, 1);
+                                top: 52px;
+                                right: 112px;
+                                position: absolute;
+                            }
+                        }
+
+                        &:hover {
+                            div.detials {
+                                display: block;
+                            }
+                            img {
+                                opacity: 1;
+                            }
+                        }
+                    }
+                }
+
+                div.myBalanceOnPoolSection {
+                    // background: pink;
+                    padding-top: 40px;
+                    padding-left: 30px;
+                    padding-right: 30px;
+
+                    div.title {
+                        font-size: 16px;
+                        font-weight: 300;
+                        margin-top: 30px;
+                        color: rgba(150, 150, 162, 1);
+                        margin-bottom: 10px;
+                    }
+
+                    p.partToken {
+                        float: left;
+                        // background: red;
+                        font-size: 18px;
+                        font-weight: 400;
+                        width: 50%;
+                        margin: 0;
+                        line-height: 38px;
+                        padding-left: 20px;
+
+                        span {
+                            display: inline-block;
+                            width: 50px;
+                            font-size: 16px;
+                            color: rgba(150, 150, 162, 1);
+                            font-weight: 200;
+                            // background: green;
+                        }
+                    }
+                }
+
+                div.myBalanceOnPoolMax {
+                    // background: red;
+                    @media screen and (min-width: 1401px) {
+                        margin-left: 260px;
+                        // background: red;
+                        float: left;
+                    }
+                    margin-top: 5px;
+                    text-align: right;
+                    font-weight: 300;
+                    font-size: 14px;
+                    color: rgba(150, 150, 162, 1);
+
+                    span {
+                        font-weight: 400;
+                        color: #333;
+                        margin-left: 7px;
+                    }
+                }
+
+                div.claim {
+                    font-size: 16px;
+                    font-weight: 300;
+                    margin-top: 40px;
+                    padding-left: 30px;
+                    color: rgba(150, 150, 162, 1);
+
+                    span {
+                        font-weight: 500;
+                        color: #333;
+                    }
+                }
+
+                @media screen and (min-width: 1401px) {
+                    div.marginMax {
+                        margin-top: 30px;
+                    }
+                }
+            }
+        }
+
+        div.noRightMargin {
+            margin-right: 0;
+        }
+    }
+
+}
+
+
+@media screen and (max-width: 1400px) {
+    div.body {
+
+        div.bodyleft {
+            width: 220px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+
+            div.title {
+                font-size: 14px;
+                font-weight: 300;
+            }
+
+            div.pool {
+                width: 200px;
+                margin-top: 10px;
+
+                div.left {
+                    width: 80px;
+                    padding-top: 8px;
+                    padding-bottom: 3px;
+
+                    img {
+                        width: 28px;
+                    }
+
+                    p.token {
+                        font-size: 14px;
+                    }
+                }
+
+                div.right {
+
+                    p.section {
+                        font-size: 14px;
+                        font-weight: 300;
+                        padding-top: 8px;
+                    }
+
+                    p.sectionNum {
+                        font-size: 16px;
+                        font-weight: 400;
+                        margin-top: 3px;
+                    }
+                }
+
+            }
+
+            div.totalUSDx {
+                padding-top: 20px;
+
+                div.usdxNum {
+                    margin: 0;
+                    margin-top: 4px;
+                    font-size: 16px;
+                    font-weight: 400;
+                }
+            }
+
+            div.globalpool {
+                padding-top: 10px;
+
+                div.sectionToken {
+
+                    span.token {
+                        font-size: 14px;
+                        width: 60px;
+                        // background: red;
+                        line-height: 30px;
+                    }
+
+                    span.tokenNum {
+                        font-size: 16px;
+                        font-weight: 400;
+                    }
+                }
+            }
+        }
+
+        div.bodyright {
+            width: calc(100% - 220px);
+            padding-left: 30px;
+
+            div.tab1 {
+                width: calc(50% - 15px);
+                margin-right: 30px;
+
+                div.titleInTab {
+                    // background: red;
+                    height: 50px;
+                    position: relative;
+
+                    &::after {
+                        content: '';
+                        display: block;
+                        position: absolute;
+                        width: 4px;
+                        height: 15px;
+                        left: 20px;
+                        top: 20px;
+                        background: rgba(91, 152, 250, 1);
+                    }
+
+                    div.leftTitle {
+                        float: left;
+                        font-size: 18px;
+                        color: rgba(56, 132, 255, 1);
+                        font-weight: 400;
+                        padding-top: 14px;
+                        padding-left: 35px;
+                    }
+
+                    div.rightIcon {
+                        // background: green;
+                        float: right;
+                        padding-top: 6px;
+                        margin-right: 20px;
+
+                        img {
+                            width: 16px;
+                            height: 16px;
+                        }
+                    }
+                }
+
+                button {
+                    font-size: 14px;
+                }
+
+                div.generate {
+                    min-height: 316px;
+
+                    p.details {
+                        margin-top: 20px;
+                        padding-left: 20px;
+                        font-size: 14px;
+                    }
+
+                    div.input {
+                        margin-top: 30px;
+                        // background: red;
+                        padding-left: 20px;
+                        padding-right: 20px;
+                        display: flex;
+
+                        input {
+                            height: 35px;
+                            padding-left: 10px;
+                            flex: 1;
+                            margin-left: 0;
+                        }
+                    }
+
+                    div.ButtonWrap {
+                        // background: red;
+                        margin-left: 0;
+                        width: 100%;
+                        height: 35px;
+                        padding-left: 20px;
+                        padding-right: 20px;
+                        margin-top: 25px;
+
+                        button {
+                            height: 35px;
+                            line-height: 26px;
+                        }
+                    }
+
+                    div.marginTop10 {
+                        margin-top: 15px;
+                        // margin-bottom: 15px;
+                    }
+                    div.ButtonWrapWithdraw {
+                        margin-top: 48px;
+                    }
+
+                    div.diverLine {
+                        width: 100%;
+                        height: 1px;
+                        background: rgba(230, 234, 238, 1);
+                        margin-top: 30px;
+                    }
+
+                    div.errtips {
+                        width: calc(100% - 40px);
+                        left: 20px;
+                        top: 123px;
+                    }
+
+                    div.tips {
+                        transition: 0.3s;
+                        text-align: right;
+                        // background: red;
+                        padding-left: 20px;
+                        top: 92px;
+                        right: 20px;
+                        width: 100%;
+
+                        div.imgWrap {
+                            // background: green;
+
+                            img {
+                                width: 16px;
+                                position: absolute;
+                                right: 104px;
+                                opacity: 0.7;
+                                margin-top: 3px;
+                                margin-right: 7px;
+                                cursor: pointer;
+                            }
+
+                            div.detials {
+                                display: none;
+                                text-align: left;
+                                box-sizing: border-box;
+                                background: #fff;
+                                position: absolute;
+                                top: -52px;
+                                left: 40px;
+                                width: calc(100% - 40px);
+                                font-size: 12px;
+                                font-weight: 200;
+                                border-radius: 3px;
+                                border: 1px solid rgba(221, 221, 230, 1);
+                                box-shadow: 0px 0px 15px 0px rgba(116, 116, 116, 0.2);
+                                padding: 4px 7px;
+    
+                                &::after {
+                                    content: '';
+                                    display: block;
+                                    width: 0;
+                                    height: 0;
+                                    border: 5px solid transparent;
+                                    border-top: 5px solid #fff;
+                                    top: 43px;
+                                    right: 113px;
+                                    position: absolute;
+                                }
+    
+                                &::before {
+                                    content: '';
+                                    display: block;
+                                    width: 0;
+                                    height: 0;
+                                    border: 6px solid transparent;
+                                    border-top: 6px solid rgba(221, 221, 230, 1);
+                                    top: 44px;
+                                    right: 112px;
+                                    position: absolute;
+                                }
+                            }
+
+                            &:hover {
+                                div.detials {
+                                    display: block;
+                                }
+                                img {
+                                    opacity: 1;
+                                }
+                            }
+                        }
+                    }
+
+                    div.myBalanceOnPool {
+                        // background: red;
+                        margin-top: 5px;
+                        padding-right: 20px;
+                        text-align: right;
+                        font-weight: 200;
+                        font-size: 12px;
+                        color: rgba(150, 150, 162, 1);
+
+                        span {
+                            font-weight: 400;
+                            color: #333;
+                            margin-left: 7px;
+                        }
+                    }
+
+                    div.myBalanceOnPoolSection {
+                        // background: pink;
+                        padding-top: 20px;
+                        padding-left: 20px;
+                        padding-right: 20px;
+
+                        div.title {
+                            font-size: 14px;
+                            font-weight: 200;
+                            margin-top: 20px;
+                            color: rgba(150, 150, 162, 1);
+                            margin-bottom: 10px;
+                        }
+
+                        p.partToken {
+                            float: left;
+                            // background: red;
+                            font-size: 16px;
+                            font-weight: 400;
+                            width: 50%;
+                            margin: 0;
+                            line-height: 28px;
+                            padding-left: 10px;
+
+                            span {
+                                display: inline-block;
+                                width: 50px;
+                                font-size: 14px;
+                                color: rgba(150, 150, 162, 1);
+                                font-weight: 200;
+                                // background: green;
+                            }
+                        }
+                    }
+
+                    div.claim {
+                        font-size: 14px;
+                        font-weight: 200;
+                        margin-top: 20px;
+                        padding-left: 20px;
+                        color: rgba(150, 150, 162, 1);
+
+                        span {
+                            font-weight: 400;
+                            color: #333;
+                        }
+                    }
+                }
+            }
+
+            div.noRightMargin {
+                margin-right: 0;
+            }
+        }
+    }
+}
+
