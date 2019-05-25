@@ -1,15 +1,14 @@
 pragma solidity ^0.5.2;
 
-import '../token/interfaces/IERC20Token.sol';
 import '../token/interfaces/IDSToken.sol';
 import '../storage/interfaces/IDFStore.sol';
 import '../storage/interfaces/IDFPool.sol';
 import '../storage/interfaces/IDFCollateral.sol';
 import '../storage/interfaces/IDFFunds.sol';
 import '../utility/DSAuth.sol';
-import '../utility/Utils.sol';
+import "../utility/DSMath.sol";
 
-contract DFEngine is Utils, DSAuth {
+contract DFEngine is DSMath, DSAuth {
 
     IDFStore public dfStore;
     IDFPool public dfPool;

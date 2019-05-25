@@ -1,9 +1,9 @@
 pragma solidity ^0.5.2;
 
 import '../utility/DSAuth.sol';
-import '../utility/Utils.sol';
+import '../utility/DSMath.sol';
 
-contract DFStore is DSAuth, Utils {
+contract DFStore is DSMath, DSAuth {
     // MEMBERS
     /// @dev  cw - The Weight of collateral
     struct Section {

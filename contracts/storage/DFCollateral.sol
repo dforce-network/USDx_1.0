@@ -2,11 +2,13 @@ pragma solidity ^0.5.2;
 
 import '../token/interfaces/IERC20Token.sol';
 import '../utility/DSAuth.sol';
+import '../utility/Utils.sol';
 
-contract DFCollateral is DSAuth {
+contract DFCollateral is DSAuth, Utils {
 
     function transferOut(address _tokenID, address _to, uint _amount)
         public
+        validAddress(_to)
         auth
         returns (bool)
     {
