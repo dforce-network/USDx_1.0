@@ -39,45 +39,24 @@ contract('DFEngine', accounts => {
     var runConfig = [
         [
             {
-                'type':'deposit',
+                'type':'updateSection',
                 // 'times':100,
                 'data':[
                     {
-                    'tokenAddress':1,
-                    'accountAddress':1,
-                    'amount':100,
+                        'tokens':[1, 2, 3],
+                        'weight':[1, 2, 3],
                     },
                     {
-                    'tokenAddress':2,
-                    'accountAddress':2,
-                    'amount':200,
+                        'tokens':[1, 2, 4],
+                        'weight':[3, 2, 3],
                     },
                     {
-                    'tokenAddress':3,
-                    'accountAddress':3,
-                    'amount':300,
+                        'tokens':[4, 2, 3, 0],
+                        'weight':[1, 2, 3, 0],
                     },
                     {
-                    'tokenAddress':4,
-                    'accountAddress':4,
-                    'amount':400,
-                    },
-                ]
-            },
-            {
-                'type':'claim',
-                'data':[
-                    {
-                    'accountAddress':1
-                    },
-                    {
-                    'accountAddress':2
-                    },
-                    {
-                    'accountAddress':3
-                    },
-                    {
-                    'accountAddress':4
+                        'tokens':[0, 0, 0],
+                        'weight':[111, 211, 311],
                     },
                 ]
             },
@@ -964,16 +943,17 @@ contract('DFEngine', accounts => {
                             console.log(accountTokenBalanceOrigin.toString());
                             console.log('\n');
                             
-                            if(amountNB.lte(new BN(0))){
-                                console.log('withdraw random the amount is zero !!!\n');
-                                condition++;
-                                continue;
-                            }
+                            // if(amountNB.lte(new BN(0))){
+                            //     console.log('withdraw random the amount is zero !!!\n');
+                            //     condition++;
+                            //     continue;
+                            // }
 
                             amountMin = recordAccountMap[tokenAddress][accountAddress].lt(recordToken[tokenAddress]) ?
                                 recordAccountMap[tokenAddress][accountAddress] : recordToken[tokenAddress];
                             
-                            amountNB = amountMin.lt(amountNB) ? amountMin : amountNB;
+                            // amountNB = amountMin.lt(amountNB) ? amountMin : amountNB;
+                            amountMin = amountMin.lt(amountNB) ? amountMin : amountNB;
 
                             console.log('withdraw Real the amount');
                             console.log(amountNB);
@@ -983,7 +963,7 @@ contract('DFEngine', accounts => {
                             console.log('record origin token :');
                             console.log(recordToken[tokenAddress]);
                             console.log(recordToken[tokenAddress].toString());
-                            recordToken[tokenAddress] = recordToken[tokenAddress].sub(amountNB);
+                            recordToken[tokenAddress] = recordToken[tokenAddress].sub(amountMin);
                             console.log('record current token :');
                             console.log(recordToken[tokenAddress]);
                             console.log(recordToken[tokenAddress].toString());
@@ -992,7 +972,7 @@ contract('DFEngine', accounts => {
                             console.log('record origin token total:');
                             console.log(recordTokenTotal);
                             console.log(recordTokenTotal.toString());
-                            recordTokenTotal = recordTokenTotal.sub(amountNB);
+                            recordTokenTotal = recordTokenTotal.sub(amountMin);
                             console.log('record current token total:');
                             console.log(recordTokenTotal);
                             console.log(recordTokenTotal.toString());
@@ -1001,7 +981,7 @@ contract('DFEngine', accounts => {
                             console.log('record origin account token:');
                             console.log(recordAccountMap[tokenAddress][accountAddress]);
                             console.log(recordAccountMap[tokenAddress][accountAddress].toString());
-                            recordAccountMap[tokenAddress][accountAddress] = recordAccountMap[tokenAddress][accountAddress].sub(amountNB);
+                            recordAccountMap[tokenAddress][accountAddress] = recordAccountMap[tokenAddress][accountAddress].sub(amountMin);
                             console.log('record current account token:');
                             console.log(recordAccountMap[tokenAddress][accountAddress]);
                             console.log(recordAccountMap[tokenAddress][accountAddress].toString());
@@ -1010,7 +990,7 @@ contract('DFEngine', accounts => {
                             console.log('record origin account total token:');
                             console.log(recordAccountTotalMap[accountAddress]);
                             console.log(recordAccountTotalMap[accountAddress].toString());
-                            recordAccountTotalMap[accountAddress] = recordAccountTotalMap[accountAddress].sub(amountNB);
+                            recordAccountTotalMap[accountAddress] = recordAccountTotalMap[accountAddress].sub(amountMin);
                             console.log('record current account total token:');
                             console.log(recordAccountTotalMap[accountAddress]);
                             console.log(recordAccountTotalMap[accountAddress].toString());
@@ -1067,11 +1047,11 @@ contract('DFEngine', accounts => {
                             
                             assert.equal(dfStoreTokenBalanceOrigin.add(dfStoreLockTokenBalanceOrigin).toString(), dfPoolTokenBalanceOrigin.toString());
                             assert.equal(dfStoreTokenBalanceCurrent.add(dfStoreLockTokenBalanceCurrent).toString(), dfPoolTokenBalanceCurrent.toString());
-                            assert.equal(dfStoreTokenBalanceCurrent.toString(), dfStoreTokenBalanceOrigin.sub(amountNB).toString());
-                            assert.equal(dfPoolTokenBalanceCurrent.toString(), dfPoolTokenBalanceOrigin.sub(amountNB).toString());
+                            assert.equal(dfStoreTokenBalanceCurrent.toString(), dfStoreTokenBalanceOrigin.sub(amountMin).toString());
+                            assert.equal(dfPoolTokenBalanceCurrent.toString(), dfPoolTokenBalanceOrigin.sub(amountMin).toString());
 
-                            assert.equal(dfStoreAccountTokenOrigin.toString(), dfStoreAccountTokenCurrent.add(amountNB).toString());
-                            assert.equal(accountTokenBalanceOrigin.toString(), accountTokenBalanceCurrent.sub(amountNB).toString());
+                            assert.equal(dfStoreAccountTokenOrigin.toString(), dfStoreAccountTokenCurrent.add(amountMin).toString());
+                            assert.equal(accountTokenBalanceOrigin.toString(), accountTokenBalanceCurrent.sub(amountMin).toString());
 
                             condition++;
                         }
@@ -1232,39 +1212,100 @@ contract('DFEngine', accounts => {
                             console.log('config : ' + (configIndex + 1) + ' dfEngine : ' + (dfEngineTimes + 1) + ' runType : ' + runType + ' runTimes ' + (condition + 1) + '\n');
                             
                             for (let index = 0; index < tokenAddressList.length; index++) {
-                                recordToken[tokenAddressList[index]] = recordToken[tokenAddressList[index]].add(recordLockToken[tokenAddressList[index]]);
-                                recordLockToken[tokenAddressList[index]] = new BN(0);
+
+                                if (recordToken.hasOwnProperty(tokenAddressList[index]) && recordLockToken.hasOwnProperty(tokenAddressList[index])) {
+
+                                    recordToken[tokenAddressList[index]] = recordToken[tokenAddressList[index]].add(recordLockToken[tokenAddressList[index]]);
+                                    recordLockToken[tokenAddressList[index]] = new BN(0);
+                                }
                             }
 
-                            tokenAddressList = [];
-                            tokenAddressList = DataMethod.createData(collateralAddress, 3, 3);
-                            collateralIndex++;
-
-                            var nameIndex = MathTool.randomNum(0, collateralNames.length - 1)
-
-                            var collaterals = await Collaterals.new(collateralNames[nameIndex] + collateralIndex,
-                                collateralNames[nameIndex] + collateralIndex + '1.0', accounts[accounts.length - 1]);
-
-                            var amount = await collaterals.balanceOf.call(accounts[accounts.length - 1])
-                            var accountsIndex = 1
-                            while (accountsIndex < (accounts.length - 1)) {
-                                await collaterals.transfer(accounts[accountsIndex], amount);
-                                accountsIndex++;
-                            }
-
-                            collateralAddress.push(collaterals.address);
-                            collateralObject[collaterals.address] = collaterals;
-                            tokenAddressList.push(collaterals.address);
-
+                            tokenAddressIndex = [];
                             tokenWeightList = [];
-                            // tokenWeightList = DataMethod.createData(weightTest, tokenAddressList.length, tokenAddressList.length);
-                            tokenWeightList = weightTest;
+                            if(runConfig[configIndex][dfEngineTimes].hasOwnProperty('data')){
+                    
+                                if (runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length].hasOwnProperty('tokens')) {
+
+                                    tokenAddressIndex = runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['tokens'];
+                                }
+
+                                if (runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length].hasOwnProperty('weight')) {
+
+                                    tokenWeightList = runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['weight'];
+                                }
+
+                                tokenAddressList = [];
+                                var collateralAddressLength = collateralAddress.length;
+                                for (let index = 0; index < tokenAddressIndex.length; index++) {
+                                    
+                                    if (tokenAddressIndex[index] == 0 || tokenAddressIndex[index] > collateralAddressLength) {
+
+                                        var nameIndex = MathTool.randomNum(0, collateralNames.length - 1);
+                                        var collaterals = await Collaterals.new(collateralNames[nameIndex] + collateralIndex,
+                                            collateralNames[nameIndex] + collateralIndex + '1.0', accounts[accounts.length - 1]);
+        
+                                        var amount = await collaterals.balanceOf.call(accounts[accounts.length - 1])
+                                        var accountsIndex = 1
+                                        while (accountsIndex < (accounts.length - 1)) {
+                                            await collaterals.transfer(accounts[accountsIndex], amount);
+                                            accountsIndex++;
+                                        }
+        
+                                        collateralAddress.push(collaterals.address);
+                                        collateralObject[collaterals.address] = collaterals;
+                                        tokenAddressList.push(collaterals.address);
+                                        collateralIndex++;
+                                        
+                                    }else{
+
+                                        tokenAddressList.push(collateralAddress[tokenAddressIndex[index] - 1]);
+                                    }
+                                }
+                                
+                                if (tokenWeightList.length == 0) {
+
+                                    tokenWeightList = DataMethod.createData(weightTest, tokenAddressList.length, tokenAddressList.length);
+                                }
+                                
+                            }else{
+
+                                tokenAddressList = [];
+                                tokenAddressList = DataMethod.createData(collateralAddress, 3, 3);
+                                collateralIndex++;
+
+                                var nameIndex = MathTool.randomNum(0, collateralNames.length - 1)
+
+                                var collaterals = await Collaterals.new(collateralNames[nameIndex] + collateralIndex,
+                                    collateralNames[nameIndex] + collateralIndex + '1.0', accounts[accounts.length - 1]);
+
+                                var amount = await collaterals.balanceOf.call(accounts[accounts.length - 1])
+                                var accountsIndex = 1
+                                while (accountsIndex < (accounts.length - 1)) {
+                                    await collaterals.transfer(accounts[accountsIndex], amount);
+                                    accountsIndex++;
+                                }
+
+                                collateralAddress.push(collaterals.address);
+                                collateralObject[collaterals.address] = collaterals;
+                                tokenAddressList.push(collaterals.address);
+
+                                // tokenWeightList = DataMethod.createData(weightTest, tokenAddressList.length, tokenAddressList.length);
+                                tokenWeightList = weightTest;
+
+                            }
+
+                            console.log('collateralAddress:');
+                            console.log(collateralAddress);
+                            console.log('\n');
                             console.log('tokenAddressList:');
                             console.log(tokenAddressList);
                             console.log('\n');
                             console.log('tokenWeightList:');
                             console.log(tokenWeightList);
                             console.log('\n');
+
+                            console.log(tokenAddressIndex);
+                            console.log(tokenWeightList);
 
                             transactionData = await dfEngine.updateMintSection(tokenAddressList, tokenWeightList);
                             updateGasUsed = updateGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : updateGasUsed;
