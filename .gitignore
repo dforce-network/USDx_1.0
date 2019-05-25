@@ -4,6 +4,7 @@ node_modules
 */.DS_Store
 
 test/test.js
+test/ERC20Token.js
 *.log
 *_t.sol
 
