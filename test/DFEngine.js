@@ -2495,7 +2495,7 @@ contract('DFEngine', accounts => {
                                 if(recordToken.hasOwnProperty(collateralAddress[index]))
                                     assert.equal(recordToken[collateralAddress[index]].toString(), (await dfStore.getTokenBalance.call(collateralAddress[index])).toString());
 
-                                assert.equal(recordLockToken[collateralAddress[index]].toString(), '0');
+                                assert.equal((await dfStore.getLockedBalance.call(collateralAddress[index])).toString(), '0');
                                 if(recordLockToken.hasOwnProperty(collateralAddress[index]))
                                     assert.equal(recordLockToken[collateralAddress[index]].toString(), (await dfStore.getLockedBalance.call(collateralAddress[index])).toString());
 
