@@ -1987,7 +1987,7 @@ contract('DFEngine', accounts => {
                             console.log('\n');
 
                             assert.equal(recordBurnedTotal.toString(), burnedTotalCurrent.toString());
-                            assert.equal(burnedTotalOrigin.toString(), (burnedTotalCurrent.add(amountNB)).toString());
+                            assert.equal(burnedTotalOrigin.toString(), (burnedTotalCurrent.sub(amountNB)).toString());
                             assert.equal(recordBurnedPosition.toString(), (await dfStore.getBurnPosition.call()).toString());
                             if (recordBurned.hasOwnProperty(recordBurnedPosition))
                                 assert.equal(recordBurned[recordBurnedPosition].toString(), burnedCurrent.toString());
