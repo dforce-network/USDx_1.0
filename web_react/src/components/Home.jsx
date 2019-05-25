@@ -106,6 +106,19 @@ export default class Home extends React.Component {
             }
             console.log('net or account changed')
         }, 2000);
+
+        setInterval(() => {
+            if (this.state.isConnected) {
+                console.log('get new status...');
+                this.getMyBalance();
+                this.getPoolBankTotalStatus();
+                this.getMyBalanceOnPool();
+                this.checkApprove();
+            }else {
+                console.log('not connected...');
+                return;
+            }
+        }, 1000 * 15)
     }
 
     componentWillMount () {}
@@ -127,7 +140,7 @@ export default class Home extends React.Component {
                                         <p className="token">DAI</p>
                                     </div>
                                     <div className="right">
-                                        <p className="section">{this.state.sectionDAI? this.state.sectionDAI : 'NaN'} (10%)</p>
+                                        <p className="section">{this.state.sectionDAI? this.state.sectionDAI : 'NaN'} ({(this.state.sectionDAI * 100 /this.state.tatolSection).toFixed(2)}%)</p>
                                         <p className="sectionNum">{this.state.DAIonPool? this.state.DAIonPool : '0.0'}</p>
                                     </div>
                                     <div className="clear"></div>
@@ -138,7 +151,7 @@ export default class Home extends React.Component {
                                         <p className="token">PAX</p>
                                     </div>
                                     <div className="right">
-                                        <p className="section">{this.state.sectionPAX? this.state.sectionPAX : 'NaN'} (10%)</p>
+                                        <p className="section">{this.state.sectionPAX? this.state.sectionPAX : 'NaN'} ({(this.state.sectionPAX * 100 /this.state.tatolSection).toFixed(2)}%)</p>
                                         <p className="sectionNum">{this.state.PAXonPool? this.state.PAXonPool : '0.0'}</p>
                                     </div>
                                     <div className="clear"></div>
@@ -149,7 +162,7 @@ export default class Home extends React.Component {
                                         <p className="token">USDC</p>
                                     </div>
                                     <div className="right">
-                                        <p className="section">{this.state.sectionUSDC? this.state.sectionUSDC : 'NaN'} (10%)</p>
+                                        <p className="section">{this.state.sectionUSDC? this.state.sectionUSDC : 'NaN'} ({(this.state.sectionUSDC * 100 /this.state.tatolSection).toFixed(2)}%)</p>
                                         <p className="sectionNum">{this.state.USDConPool? this.state.USDConPool : '0.0'}</p>
                                     </div>
                                     <div className="clear"></div>
@@ -160,7 +173,7 @@ export default class Home extends React.Component {
                                         <p className="token">TUSD</p>
                                     </div>
                                     <div className="right">
-                                        <p className="section">{this.state.sectionTUSD? this.state.sectionTUSD : 'NaN'} (10%)</p>
+                                        <p className="section">{this.state.sectionTUSD? this.state.sectionTUSD : 'NaN'} ({(this.state.sectionTUSD * 100 /this.state.tatolSection).toFixed(2)}%)</p>
                                         <p className="sectionNum">{this.state.TUSDonPool? this.state.TUSDonPool : '0.0'}</p>
                                     </div>
                                     <div className="clear"></div>

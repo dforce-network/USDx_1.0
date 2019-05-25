@@ -136,6 +136,7 @@ div.body {
             float: left;
             background: #fff;
             width: calc(50% - 15px);
+            max-width: 530px;
             margin-right: 30px;
             border-radius: 4px;
             overflow: hidden;
@@ -238,7 +239,7 @@ div.body {
                     background: rgba(230, 234, 238, 1);
                     margin-top: 30px;
 
-                    @media screen and (min-width: 1401px) {
+                    @media screen and (min-width: 1501px) {
                         margin-top: 50px;
                     }
                 }
@@ -281,7 +282,7 @@ div.body {
                     // right: 0px;
                     width: 470px;
 
-                    @media screen and (min-width: 1401px) {
+                    @media screen and (min-width: 1501px) {
                         margin-left: 30px;
                     }
 
@@ -387,7 +388,7 @@ div.body {
 
                 div.myBalanceOnPoolMax {
                     // background: red;
-                    @media screen and (min-width: 1401px) {
+                    @media screen and (min-width: 1501px) {
                         margin-left: 260px;
                         // background: red;
                         float: left;
@@ -418,7 +419,7 @@ div.body {
                     }
                 }
 
-                @media screen and (min-width: 1401px) {
+                @media screen and (min-width: 1501px) {
                     div.marginMax {
                         margin-top: 30px;
                     }
@@ -434,7 +435,7 @@ div.body {
 }
 
 
-@media screen and (max-width: 1400px) {
+@media screen and (max-width: 1500px) {
     div.body {
 
         div.bodyleft {
