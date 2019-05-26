@@ -1,9 +1,9 @@
 pragma solidity ^0.5.2;
 
 import '../utility/DSAuth.sol';
-import '../utility/Utils.sol';
+import '../utility/DSMath.sol';
 
-contract DFStore is DSAuth, Utils {
+contract DFStore is DSMath, DSAuth {
     // MEMBERS
     /// @dev  cw - The Weight of collateral
     struct Section {
@@ -152,8 +152,8 @@ contract DFStore is DSAuth, Utils {
     }
 
     function setBackupSection(uint _position, address[] memory _colIDs, uint[] memory _weight) public auth {
-        require(_colIDs.length == _weight.length, "SetBackupSection: 0 address not allow.");
-        require(_position < mintPosition, "SetBackupSection: cw not allow.");
+        require(_colIDs.length == _weight.length, "SetBackupSection: data not allow.");
+        require(_position < mintPosition, "SetBackupSection: update mint section first.");
 
         uint _backupIdx = secList[_position].backupIdx;
 
@@ -185,19 +185,19 @@ contract DFStore is DSAuth, Utils {
         burnPosition += 1;
     }
 
-    function getMintedToken(address _token) public view returns (bool) {
+    function getMintingToken(address _token) public view returns (bool) {
         return mintingTokens[_token];
     }
 
-    function setMintedToken(address _token, bool _flag) public auth {
+    function setMintingToken(address _token, bool _flag) public auth {
         mintingTokens[_token] = _flag;
     }
 
-    function getToken(address _token) public view returns (bool) {
+    function getMintedToken(address _token) public view returns (bool) {
         return mintedTokens[_token];
     }
 
-    function setToken(address _token, bool _flag) public auth {
+    function setMintedToken(address _token, bool _flag) public auth {
         mintedTokens[_token] = _flag;
     }
 
