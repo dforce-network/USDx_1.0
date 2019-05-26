@@ -1,4 +1,4 @@
-const abiProxy = [{
+const abiProtocol = [{
     "constant": false,
     "inputs": [],
     "name": "confirmImplChange",
@@ -298,4 +298,4 @@ const abiProxy = [{
   }
 ];
 
-export default abiProxy;
+export default abiProtocol;

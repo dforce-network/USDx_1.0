@@ -1,4 +1,4 @@
-const abiData = [{
+const abiStore = [{
     "constant": true,
     "inputs": [{
       "name": "",
@@ -944,5 +944,5 @@ const abiData = [{
   }
 ];
 
-export default abiData;
+export default abiStore;
 

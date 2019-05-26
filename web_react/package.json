@@ -86,6 +86,20 @@
       "^react-native$": "react-native-web"
     }
   },
+  "babel": {
+    "presets": [
+      "react-app"
+    ],
+    "plugins": [
+      [
+        "import",
+        {
+          "libraryName": "antd",
+          "style": "css"
+        }
+      ]
+    ]
+  },
   "eslintConfig": {
     "extends": "react-app"
   }

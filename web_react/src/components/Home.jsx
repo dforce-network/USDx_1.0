@@ -11,17 +11,17 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import 'antd/dist/antd.css';
 // import { Spin } from 'antd';
 import { Select } from 'antd';
+
 // abi
-// import abiBank from '../abi/abiBank';
-// import abiPool from '../abi/abiPool';
-import abiDF from '../abi/abiDF';
 import abiDAI from '../abi/abiDAI';
-import abiData from '../abi/abiData';
 import abiPAX from '../abi/abiPAX';
-import abiProxy from '../abi/abiProxy';
 import abiTUSD from '../abi/abiTUSD';
 import abiUSDC from '../abi/abiUSDC';
+import abiDF from '../abi/abiDF';
 import abiUSDx from '../abi/abiUSDx';
+import abiStore from '../abi/abiStore';
+import abiProtocol from '../abi/abiProtocol';
+
 // components
 import Notify from './Notify';
 import Header from './Header';
@@ -45,11 +45,11 @@ export default class Home extends React.Component {
     addressDF = '0xfaacf3d2a2ce1102073038e035d24c1c78b6e9c4';
     addressUSDx = '0x17996ea27d03d68ddc618f9b8f0faf43838acaf6';
 
-    addressProxy = '0xA8a57b08235e40b4c76303AeE6E3051942E8a7D1';
-    addressBank = '0xCBC0d02c6F67de9185f670bba89ad5189Aa3DEA6';
-    addressConvert = '0x06cAa25b17Bb588EAb300A51DF4A4F8169dDd5F0';
+    addressProtocol = '0xA8a57b08235e40b4c76303AeE6E3051942E8a7D1';
+    addressCollateral = '0xCBC0d02c6F67de9185f670bba89ad5189Aa3DEA6';
+    addressEngine = '0x06cAa25b17Bb588EAb300A51DF4A4F8169dDd5F0';
     addressPool = '0x203466d49c3Ebb8C7f2eFA8058844E1dadDa029e';
-    addressData = '0x780e4B1f0e779488C3C2f1D2D0A06211a0E80311';
+    addressStore = '0x780e4B1f0e779488C3C2f1D2D0A06211a0E80311';
     units = 10 ** 18;
     tatolSection = 0;
 
@@ -85,8 +85,8 @@ export default class Home extends React.Component {
             this.contractUSDC = this.Web3.eth.contract(abiUSDC).at(this.addressUSDC);
             this.contractDF = this.Web3.eth.contract(abiDF).at(this.addressDF);
             this.contractUSDx = this.Web3.eth.contract(abiUSDx).at(this.addressUSDx);
-            this.contractProxy = this.Web3.eth.contract(abiProxy).at(this.addressProxy);
-            this.contractData = this.Web3.eth.contract(abiData).at(this.addressData);
+            this.contractProtocol = this.Web3.eth.contract(abiProtocol).at(this.addressProtocol);
+            this.contractStore = this.Web3.eth.contract(abiStore).at(this.addressStore);
         } else {
             alert ('pls install metamask first.');
         }
@@ -441,12 +441,12 @@ export default class Home extends React.Component {
 
     // get the Token section
     getTokenSection () {
-        this.contractData.getMintPosition.call((err, ret) => {
+        this.contractStore.getMintPosition.call((err, ret) => {
             if (ret) {
-                this.contractData.getSectionToken.call(ret.toFixed(), (e, r) => {
+                this.contractStore.getSectionToken.call(ret.toFixed(), (e, r) => {
                     // console.log(e, r); // r: [addr, addr, addr, addr]
                     if (r) {
-                        this.contractData.getSectionWeight.call(ret.toFixed(), (error, result) => {
+                        this.contractStore.getSectionWeight.call(ret.toFixed(), (error, result) => {
                             // console.log(error, result);
                             if (result) {
                                 for (let i = 0; i < r.length; i++) {
@@ -575,25 +575,25 @@ export default class Home extends React.Component {
             });
         });
 
-        this.contractDAI.balanceOf.call(this.addressBank, (err, ret) => {
+        this.contractDAI.balanceOf.call(this.addressCollateral, (err, ret) => {
             this.setState({
                 ...this.state,
                 DAIonBank: this.formatNumber(ret)
             });
         });
-        this.contractPAX.balanceOf.call(this.addressBank, (err, ret) => {
+        this.contractPAX.balanceOf.call(this.addressCollateral, (err, ret) => {
             this.setState({
                 ...this.state,
                 PAXonBank: this.formatNumber(ret)
             });
         });
-        this.contractTUSD.balanceOf.call(this.addressBank, (err, ret) => {
+        this.contractTUSD.balanceOf.call(this.addressCollateral, (err, ret) => {
             this.setState({
                 ...this.state,
                 TUSDonBank: this.formatNumber(ret)
             });
         });
-        this.contractUSDC.balanceOf.call(this.addressBank, (err, ret) => {
+        this.contractUSDC.balanceOf.call(this.addressCollateral, (err, ret) => {
             this.setState({
                 ...this.state,
                 USDConBank: this.formatNumber(ret)
@@ -602,25 +602,25 @@ export default class Home extends React.Component {
     }
     // getMyBalanceOnPool
     getMyBalanceOnPool () {
-        this.contractData.getDepositorBalance.call(this.state.accountAddress, this.addressDAI, (err, ret) => {
+        this.contractStore.getDepositorBalance.call(this.state.accountAddress, this.addressDAI, (err, ret) => {
             this.setState({
                 ...this.state,
                 myDAIonPool: this.formatNumber(ret)
             });
         });
-        this.contractData.getDepositorBalance.call(this.state.accountAddress, this.addressPAX, (err, ret) => {
+        this.contractStore.getDepositorBalance.call(this.state.accountAddress, this.addressPAX, (err, ret) => {
             this.setState({
                 ...this.state,
                 myPAXonPool: this.formatNumber(ret)
             });
         });
-        this.contractData.getDepositorBalance.call(this.state.accountAddress, this.addressTUSD, (err, ret) => {
+        this.contractStore.getDepositorBalance.call(this.state.accountAddress, this.addressTUSD, (err, ret) => {
             this.setState({
                 ...this.state,
                 myTUSDonPool: this.formatNumber(ret)
             });
         });
-        this.contractData.getDepositorBalance.call(this.state.accountAddress, this.addressUSDC, (err, ret) => {
+        this.contractStore.getDepositorBalance.call(this.state.accountAddress, this.addressUSDC, (err, ret) => {
             this.setState({
                 ...this.state,
                 myUSDConPool: this.formatNumber(ret)
@@ -706,7 +706,7 @@ export default class Home extends React.Component {
                 });
             }
         });
-        this.contractDF.allowance.call(this.state.accountAddress, this.addressConvert, (err, ret) => {
+        this.contractDF.allowance.call(this.state.accountAddress, this.addressEngine, (err, ret) => {
             if (err) {
                 this.setState({
                     ...this.state,
@@ -720,7 +720,7 @@ export default class Home extends React.Component {
                 });
             }
         });
-        this.contractUSDx.allowance.call(this.state.accountAddress, this.addressConvert, (err, ret) => {
+        this.contractUSDx.allowance.call(this.state.accountAddress, this.addressEngine, (err, ret) => {
             if (err) {
                 this.setState({
                     ...this.state,
@@ -1196,7 +1196,7 @@ export default class Home extends React.Component {
             );
         } else if (token === 'DF') {
             this.contractDF.approve.sendTransaction(
-                this.addressConvert,
+                this.addressEngine,
                 -1,
                 {
                     from: this.state.accountAddress,
@@ -1304,7 +1304,7 @@ export default class Home extends React.Component {
             );
         } else if (token === 'USDX') {
             this.contractUSDx.approve.sendTransaction(
-                this.addressConvert,
+                this.addressEngine,
                 -1,
                 {
                     from: this.state.accountAddress,
@@ -1828,7 +1828,7 @@ export default class Home extends React.Component {
             );
         } else if (token === 'DF') {
             this.contractDF.approve.sendTransaction(
-                this.addressConvert,
+                this.addressEngine,
                 0,
                 {
                     from: this.state.accountAddress,
@@ -1926,7 +1926,7 @@ export default class Home extends React.Component {
             );
         } else if (token === 'USDX') {
             this.contractUSDx.approve.sendTransaction(
-                this.addressConvert,
+                this.addressEngine,
                 0,
                 {
                     from: this.state.accountAddress,
@@ -2172,7 +2172,7 @@ export default class Home extends React.Component {
             title: 'Withdraw DAI',
         }
         this.setState({tmepState});
-        this.contractProxy.withdraw.sendTransaction(
+        this.contractProtocol.withdraw.sendTransaction(
             addr,
             num,
             {
@@ -2291,7 +2291,7 @@ export default class Home extends React.Component {
             title: 'Withdraw PAX',
         }
         this.setState({tmepState});
-        this.contractProxy.withdraw.sendTransaction(
+        this.contractProtocol.withdraw.sendTransaction(
             addr,
             num,
             {
@@ -2410,7 +2410,7 @@ export default class Home extends React.Component {
             title: 'Withdraw TUSD',
         }
         this.setState({tmepState});
-        this.contractProxy.withdraw.sendTransaction(
+        this.contractProtocol.withdraw.sendTransaction(
             addr,
             num,
             {
@@ -2529,7 +2529,7 @@ export default class Home extends React.Component {
             title: 'Withdraw USDC',
         }
         this.setState({tmepState});
-        this.contractProxy.withdraw.sendTransaction(
+        this.contractProtocol.withdraw.sendTransaction(
             addr,
             num,
             {
@@ -2823,7 +2823,7 @@ export default class Home extends React.Component {
             title: 'Deposit DAI',
         }
         this.setState({tmepState});
-        this.contractProxy.deposit.sendTransaction(
+        this.contractProtocol.deposit.sendTransaction(
             addr,
             num,
             {
@@ -2952,7 +2952,7 @@ export default class Home extends React.Component {
             title: 'Deposit PAX',
         }
         this.setState({tmepState});
-        this.contractProxy.deposit.sendTransaction(
+        this.contractProtocol.deposit.sendTransaction(
             addr,
             num,
             {
@@ -3081,7 +3081,7 @@ export default class Home extends React.Component {
             title: 'Deposit TUSD',
         }
         this.setState({tmepState});
-        this.contractProxy.deposit.sendTransaction(
+        this.contractProtocol.deposit.sendTransaction(
             addr,
             num,
             {
@@ -3210,7 +3210,7 @@ export default class Home extends React.Component {
             title: 'Deposit USDC',
         }
         this.setState({tmepState});
-        this.contractProxy.deposit.sendTransaction(
+        this.contractProtocol.deposit.sendTransaction(
             addr,
             num,
             {
@@ -3400,7 +3400,7 @@ export default class Home extends React.Component {
             title: 'Destroy USDX',
         }
         this.setState({tmepState});
-        this.contractProxy.destroy.sendTransaction(
+        this.contractProtocol.destroy.sendTransaction(
             this.state.toDestroyNum * this.units,
             {
                 from: this.state.accountAddress,
@@ -3520,7 +3520,7 @@ export default class Home extends React.Component {
             title: 'CLAIM USDX',
         }
         this.setState({tmepState});
-        this.contractProxy.withdraw.sendTransaction(
+        this.contractProtocol.withdraw.sendTransaction(
             this.addressUSDx,
             1,
             {
