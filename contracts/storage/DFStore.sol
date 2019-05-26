@@ -267,12 +267,12 @@ contract DFStore is DSMath, DSAuth {
     function setDepositorBalance(address _depositor, address _tokenID, uint _amount) public auth {
         depositorsBalance[_depositor][_tokenID] = _amount;
     }
-    
-    function setFeeRate(uint op, uint rate) public auth {
-        FeeRate[op] = rate;
+
+    function setFeeRate(uint ct, uint rate) public auth {
+        FeeRate[ct] = rate;
     }
 
-    function getFeeRate(uint op) public view returns (uint) {
-        return FeeRate[op];
+    function getFeeRate(uint ct) public view returns (uint) {
+        return FeeRate[ct];
     }
 }

@@ -19,13 +19,9 @@ contract DFEngine is DSMath, DSAuth {
     IDSToken public dfToken;
     IMedianizer public medianizer;
 
-    uint public feeOfDeposite;
-    uint public feeOfDestroy;
-
-    enum Operate {
-        Deposit,
-        Destroy,
-        Withdraw
+    enum CommissionType {
+        CT_DEPOSIT,
+        CT_DESTROY
     }
 
     constructor (
@@ -47,11 +43,11 @@ contract DFEngine is DSMath, DSAuth {
         medianizer = IMedianizer(_oracle);
     }
 
-    function setFeeRate(Operate op, uint rate) public auth {
-        dfStore.setFeeRate(uint(op), rate);
+    function setCommissionRate(CommissionType ct, uint rate) public auth {
+        dfStore.setFeeRate(uint(ct), rate);
     }
 
-    function getAssetPrice(address oracle) public view returns (uint) {
+    function getThePrice(address oracle) public view returns (uint) {
         bytes32 price = IMedianizer(oracle).read();
         return uint(price);
     }
@@ -65,10 +61,10 @@ contract DFEngine is DSMath, DSAuth {
         dfStore.setSection(_tokens, _weight);
     }
 
-    function deduction(Operate op, address depositor) internal {
-        uint rate = dfStore.getFeeRate(uint(op));
+    function _unifiedCommission(CommissionType ct, address depositor) internal {
+        uint rate = dfStore.getFeeRate(uint(ct));
         if(rate > 0) {
-            uint dfPrice = getAssetPrice(address(medianizer));
+            uint dfPrice = getThePrice(address(medianizer));
             uint dfFee = dfPrice * rate / 10000;
             dfToken.transferFrom(depositor, address(dfFunds), dfFee);
         }
@@ -89,7 +85,7 @@ contract DFEngine is DSMath, DSAuth {
         uint _index;
         uint _step = uint(-1);
 
-        deduction(Operate.Deposit, _depositor);
+        _unifiedCommission(CommissionType.CT_DEPOSIT, _depositor);
 
         dfPool.transferFromSender(_tokenID, _depositor, _amount);
         for (uint i = 0; i < _tokens.length; i++) {
@@ -147,8 +143,6 @@ contract DFEngine is DSMath, DSAuth {
 
         if (_withdrawAmount <= 0)
             return (0);
-
-        deduction(Operate.Withdraw, _depositor);
 
         _depositorBalance = sub(_depositorBalance, _withdrawAmount);
         dfStore.setDepositorBalance(_depositor, _tokenID, _depositorBalance);
@@ -232,8 +226,8 @@ contract DFEngine is DSMath, DSAuth {
         uint _minted;
         uint _burnedAmount;
         uint _amountTemp = _amount;
-        
-        deduction(Operate.Destroy, _depositor);
+
+        _unifiedCommission(CommissionType.CT_DESTROY, _depositor);
 
         while(_amountTemp > 0) {
 
