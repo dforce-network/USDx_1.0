@@ -24,8 +24,8 @@ module.exports = async function (deployer, network, accounts) {
     await deployer.deploy(Collateral);
     await deployer.deploy(Funds, "0xfaacf3d2a2ce1102073038e035d24c1c78b6e9c4");
     await deployer.deploy(Pool, Collateral.address);
-    await deployer.deploy(Engine, "0x17996ea27d03d68ddc618f9b8f0faf43838acaf6", "0xfaacf3d2a2ce1102073038e035d24c1c78b6e9c4",
-        Store.address, Pool.address, Collateral.address, Funds.address);
     await deployer.deploy(Medianizer);
     await deployer.deploy(PriceFeed);
+    await deployer.deploy(Engine, "0x17996ea27d03d68ddc618f9b8f0faf43838acaf6", "0xfaacf3d2a2ce1102073038e035d24c1c78b6e9c4",
+        Store.address, Pool.address, Collateral.address, Funds.address, Medianizer.address);
 };
