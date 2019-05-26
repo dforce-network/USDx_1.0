@@ -44,14 +44,14 @@ export default class Home extends React.Component {
     addressPAX = '0x561b11000e95ac053eccec5bcefdc37e16c2491b';
     addressTUSD = '0x25470030aa105bca679752e5c5e482c295de2b68';
     addressUSDC = '0xbc34e50f589e389c507e0213501114bd2e70b1d7';
-    addressDF = '0xfaacf3d2a2ce1102073038e035d24c1c78b6e9c4';
-    addressUSDx = '0x17996ea27d03d68ddc618f9b8f0faf43838acaf6';
+    addressDF = '0x4AF82b7C2F049574C9fc742A896DAbEA379b7d51';
+    addressUSDx = '0x4A99afF6A91d3181fAc09D5382CF6B6668f555c1';
 
-    addressProtocol = '0xA8a57b08235e40b4c76303AeE6E3051942E8a7D1';
-    addressCollateral = '0xCBC0d02c6F67de9185f670bba89ad5189Aa3DEA6';
-    addressEngine = '0x06cAa25b17Bb588EAb300A51DF4A4F8169dDd5F0';
-    addressPool = '0x203466d49c3Ebb8C7f2eFA8058844E1dadDa029e';
-    addressStore = '0x780e4B1f0e779488C3C2f1D2D0A06211a0E80311';
+    addressProtocol = '0x98d30bCF390c508d25a2932f05BCbdEd9198fD57';
+    addressCollateral = '0xfBE90A4939063ed2502A672148B30eDb0cF78788';
+    addressEngine = '0xdDc4a39724Ea57d5B93f75E7bA9A652d174D8A1e';
+    addressPool = '0x2d57e8B64908359e2A3fd894B39dA21ae64A266F';
+    addressStore = '0x573A014ea4aBb79a17cb46AB3E5982fe65cCef43';
     units = 10 ** 18;
     tatolSection = 0;
 
@@ -86,7 +86,8 @@ export default class Home extends React.Component {
             this.contractTUSD = this.Web3.eth.contract(abiTokens).at(this.addressTUSD);
             this.contractUSDC = this.Web3.eth.contract(abiTokens).at(this.addressUSDC);
 
-            this.contractDF = this.Web3.eth.contract(abiDF).at(this.addressDF);
+            this.contractDF = this.Web3.eth.contract(abiTokens).at(this.addressDF);
+
             this.contractUSDx = this.Web3.eth.contract(abiUSDx).at(this.addressUSDx);
             this.contractProtocol = this.Web3.eth.contract(abiProtocol).at(this.addressProtocol);
             this.contractStore = this.Web3.eth.contract(abiStore).at(this.addressStore);
@@ -166,17 +167,6 @@ export default class Home extends React.Component {
                                     </div>
                                     <div className="clear"></div>
                                 </div>
-                                <div className="pool poolColor3">
-                                    <div className="left">
-                                        <img src={usdc} alt=""/>
-                                        <p className="token">USDC</p>
-                                    </div>
-                                    <div className="right">
-                                        <p className="section">{this.state.sectionUSDC? this.state.sectionUSDC : '-'} ({this.state.sectionUSDC? (this.state.sectionUSDC * 100 /this.state.tatolSection).toFixed(2) : '-'}%)</p>
-                                        <p className="sectionNum">{this.state.USDConPool? this.state.USDConPool : '0.0'}</p>
-                                    </div>
-                                    <div className="clear"></div>
-                                </div>
                                 <div className="pool poolColor4">
                                     <div className="left">
                                         <img src={tusd} alt=""/>
@@ -185,6 +175,17 @@ export default class Home extends React.Component {
                                     <div className="right">
                                         <p className="section">{this.state.sectionTUSD? this.state.sectionTUSD : '-'} ({this.state.sectionTUSD? (this.state.sectionTUSD * 100 /this.state.tatolSection).toFixed(2) : '-'}%)</p>
                                         <p className="sectionNum">{this.state.TUSDonPool? this.state.TUSDonPool : '0.0'}</p>
+                                    </div>
+                                    <div className="clear"></div>
+                                </div>
+                                <div className="pool poolColor3">
+                                    <div className="left">
+                                        <img src={usdc} alt=""/>
+                                        <p className="token">USDC</p>
+                                    </div>
+                                    <div className="right">
+                                        <p className="section">{this.state.sectionUSDC? this.state.sectionUSDC : '-'} ({this.state.sectionUSDC? (this.state.sectionUSDC * 100 /this.state.tatolSection).toFixed(2) : '-'}%)</p>
+                                        <p className="sectionNum">{this.state.USDConPool? this.state.USDConPool : '0.0'}</p>
                                     </div>
                                     <div className="clear"></div>
                                 </div>
@@ -515,30 +516,37 @@ export default class Home extends React.Component {
             });
         });
         this.contractDAI.balanceOf.call(this.state.accountAddress, (err, ret) => {
+            console.log('-----DAI-----', ret)
+            console.log('-----DAI--.toFixed()/ (10 ** 18)---', ret.toFixed() / (10 ** 18))
+            console.log('-----DAI--.toFixed()---', ret.toFixed())
             this.setState({
                 ...this.state,
                 myDAI: this.formatNumber(ret)
             });
         });
         this.contractPAX.balanceOf.call(this.state.accountAddress, (err, ret) => {
+            // console.log('-------PAX---', ret)
             this.setState({
                 ...this.state,
                 myPAX: this.formatNumber(ret)
             });
         });
         this.contractTUSD.balanceOf.call(this.state.accountAddress, (err, ret) => {
+            // console.log('-----TUSD-----', ret)
             this.setState({
                 ...this.state,
                 myTUSD: this.formatNumber(ret)
             });
         });
         this.contractUSDC.balanceOf.call(this.state.accountAddress, (err, ret) => {
+            // console.log('----USDC-----', ret)
             this.setState({
                 ...this.state,
                 myUSDC: this.formatNumber(ret)
             });
         });
         this.contractDF.balanceOf.call(this.state.accountAddress, (err, ret) => {
+            // console.log('-----DF-----', ret)
             this.setState({
                 ...this.state,
                 myDF: this.formatNumber(ret)
