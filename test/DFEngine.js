@@ -23,7 +23,7 @@ var collateralNames = new Array('DAI', 'PAX', 'TUSD', 'USDC');
 
 // var weightTest = new Array(10, 20, 30, 40, 50, 60, 70, 80, 90, 100);
 // var weightTest = new Array(4, 3, 2, 1);
-var weightTest = new Array(1, 2, 3, 4);
+var weightTest = new Array(100, 200, 300, 400);
 
 var runTypeArr = new Array('deposit', 'destroy', 'withdraw', 'updateSection', 'claim');
 var dfEngineTimes = 1000;
@@ -37,1270 +37,266 @@ contract('DFEngine', accounts => {
 // data 具体执行方式，如需插入随机模式可以，添加{}
 // 各项配置如不填写，测采用随机模式执行
     var runConfig = [
-        // deposit
-                [
-                    {
-                        'type':'deposit',
-                        // 'times':100,
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':6,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'accountAddress':1,
-                                'amount':12,
-                            },
-                            {
-                                'tokenAddress':3,
-                                'accountAddress':1,
-                                'amount':18,
-                            },
-                            {
-                                'tokenAddress':4,
-                                'accountAddress':1,
-                                'amount':24,
-                            },
-                        ]
-                    },
-                    {
-                        'type':'updateSection'
-                    },
-                    {
-                        'type':'deposit',
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':7,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'accountAddress':1,
-                                'amount':14,
-                            },
-                            {
-                                'tokenAddress':3,
-                                'accountAddress':1,
-                                'amount':21,
-                            },
-                            {
-                                'tokenAddress':4,
-                                'accountAddress':1,
-                                'amount':28,
-                            },
-                        ]
-                    },
-                    {
-                        'type':'updateSection'
-                    },
-                    {
-                        'type':'deposit',
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':8,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'accountAddress':1,
-                                'amount':16,
-                            },
-                            {
-                                'tokenAddress':3,
-                                'accountAddress':1,
-                                'amount':24,
-                            },
-                            {
-                                'tokenAddress':4,
-                                'accountAddress':1,
-                                'amount':32,
-                            },
-                        ]
-                    }
-                ],
-        // destroy
-                [
-                    {
-                        'type':'deposit',
-                        // 'times':100,
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':6,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'accountAddress':1,
-                                'amount':12,
-                            },
-                            {
-                                'tokenAddress':3,
-                                'accountAddress':1,
-                                'amount':18,
-                            },
-                            {
-                                'tokenAddress':4,
-                                'accountAddress':1,
-                                'amount':24,
-                            },
-                        ]
-                    },
-                    {
-                        'type':'updateSection'
-                    },
-                    {
-                        'type':'deposit',
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':7,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'accountAddress':1,
-                                'amount':14,
-                            },
-                            {
-                                'tokenAddress':3,
-                                'accountAddress':1,
-                                'amount':21,
-                            },
-                            {
-                                'tokenAddress':4,
-                                'accountAddress':1,
-                                'amount':28,
-                            },
-                        ]
-                    },
-                    {
-                        'type':'updateSection'
-                    },
-                    {
-                        'type':'deposit',
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':8,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'accountAddress':1,
-                                'amount':16,
-                            },
-                            {
-                                'tokenAddress':3,
-                                'accountAddress':1,
-                                'amount':24,
-                            },
-                            {
-                                'tokenAddress':4,
-                                'accountAddress':1,
-                                'amount':32,
-                            },
-                        ]
-                    },
-                    {
-                        'type':'destroy',
-                        'data':[
-                            {
-                                'accountAddress':1,
-                                'amount':10,
-                            }
-                        ]
-                    },
-                ],
-        
-                [
-                    {
-                        'type':'deposit',
-                        // 'times':100,
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':6,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'accountAddress':1,
-                                'amount':12,
-                            },
-                            {
-                                'tokenAddress':3,
-                                'accountAddress':1,
-                                'amount':18,
-                            },
-                            {
-                                'tokenAddress':4,
-                                'accountAddress':1,
-                                'amount':24,
-                            },
-                        ]
-                    },
-                    {
-                        'type':'updateSection'
-                    },
-                    {
-                        'type':'deposit',
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':7,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'accountAddress':1,
-                                'amount':14,
-                            },
-                            {
-                                'tokenAddress':3,
-                                'accountAddress':1,
-                                'amount':21,
-                            },
-                            {
-                                'tokenAddress':4,
-                                'accountAddress':1,
-                                'amount':28,
-                            },
-                        ]
-                    },
-                    {
-                        'type':'updateSection'
-                    },
-                    {
-                        'type':'deposit',
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':8,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'accountAddress':1,
-                                'amount':16,
-                            },
-                            {
-                                'tokenAddress':3,
-                                'accountAddress':1,
-                                'amount':24,
-                            },
-                            {
-                                'tokenAddress':4,
-                                'accountAddress':1,
-                                'amount':32,
-                            },
-                        ]
-                    },
-                    {
-                        'type':'destroy',
-                        'data':[
-                            {
-                                'accountAddress':1,
-                                'amount':60,
-                            }
-                        ]
-                    },
-                ],
-                
-                [
-                    {
-                        'type':'deposit',
-                        // 'times':100,
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':6,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'accountAddress':1,
-                                'amount':12,
-                            },
-                            {
-                                'tokenAddress':3,
-                                'accountAddress':1,
-                                'amount':18,
-                            },
-                            {
-                                'tokenAddress':4,
-                                'accountAddress':1,
-                                'amount':24,
-                            },
-                        ]
-                    },
-                    {
-                        'type':'updateSection'
-                    },
-                    {
-                        'type':'deposit',
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':7,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'accountAddress':1,
-                                'amount':14,
-                            },
-                            {
-                                'tokenAddress':3,
-                                'accountAddress':1,
-                                'amount':21,
-                            },
-                            {
-                                'tokenAddress':4,
-                                'accountAddress':1,
-                                'amount':28,
-                            },
-                        ]
-                    },
-                    {
-                        'type':'updateSection'
-                    },
-                    {
-                        'type':'deposit',
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':8,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'accountAddress':1,
-                                'amount':16,
-                            },
-                            {
-                                'tokenAddress':3,
-                                'accountAddress':1,
-                                'amount':24,
-                            },
-                            {
-                                'tokenAddress':4,
-                                'accountAddress':1,
-                                'amount':32,
-                            },
-                        ]
-                    },
-                    {
-                        'type':'destroy',
-                        'data':[
-                            {
-                                'accountAddress':1,
-                                'amount':61,
-                            }
-                        ]
-                    },
-                ],
-        
-                [
-                    {
-                        'type':'deposit',
-                        // 'times':100,
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':6,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'accountAddress':1,
-                                'amount':12,
-                            },
-                            {
-                                'tokenAddress':3,
-                                'accountAddress':1,
-                                'amount':18,
-                            },
-                            {
-                                'tokenAddress':4,
-                                'accountAddress':1,
-                                'amount':24,
-                            },
-                        ]
-                    },
-                    {
-                        'type':'updateSection'
-                    },
-                    {
-                        'type':'deposit',
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':7,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'accountAddress':1,
-                                'amount':14,
-                            },
-                            {
-                                'tokenAddress':3,
-                                'accountAddress':1,
-                                'amount':21,
-                            },
-                            {
-                                'tokenAddress':4,
-                                'accountAddress':1,
-                                'amount':28,
-                            },
-                        ]
-                    },
-                    {
-                        'type':'updateSection'
-                    },
-                    {
-                        'type':'deposit',
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':8,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'accountAddress':1,
-                                'amount':16,
-                            },
-                            {
-                                'tokenAddress':3,
-                                'accountAddress':1,
-                                'amount':24,
-                            },
-                            {
-                                'tokenAddress':4,
-                                'accountAddress':1,
-                                'amount':32,
-                            },
-                        ]
-                    },
-                    {
-                        'type':'destroy',
-                        'data':[
-                            {
-                                'accountAddress':1,
-                                'amount':130,
-                            }
-                        ]
-                    },
-                ],
-        
-                [
-                    {
-                        'type':'deposit',
-                        // 'times':100,
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':6,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'accountAddress':1,
-                                'amount':12,
-                            },
-                            {
-                                'tokenAddress':3,
-                                'accountAddress':1,
-                                'amount':18,
-                            },
-                            {
-                                'tokenAddress':4,
-                                'accountAddress':1,
-                                'amount':24,
-                            },
-                        ]
-                    },
-                    {
-                        'type':'updateSection'
-                    },
-                    {
-                        'type':'deposit',
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':7,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'accountAddress':1,
-                                'amount':14,
-                            },
-                            {
-                                'tokenAddress':3,
-                                'accountAddress':1,
-                                'amount':21,
-                            },
-                            {
-                                'tokenAddress':4,
-                                'accountAddress':1,
-                                'amount':28,
-                            },
-                        ]
-                    },
-                    {
-                        'type':'updateSection'
-                    },
-                    {
-                        'type':'deposit',
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':8,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'accountAddress':1,
-                                'amount':16,
-                            },
-                            {
-                                'tokenAddress':3,
-                                'accountAddress':1,
-                                'amount':24,
-                            },
-                            {
-                                'tokenAddress':4,
-                                'accountAddress':1,
-                                'amount':32,
-                            },
-                        ]
-                    },
-                    {
-                        'type':'destroy',
-                        'data':[
-                            {
-                                'accountAddress':1,
-                                'amount':131,
-                            }
-                        ]
-                    },
-                ],
-                
-                [
-                    {
-                        'type':'deposit',
-                        // 'times':100,
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':6,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'accountAddress':1,
-                                'amount':12,
-                            },
-                            {
-                                'tokenAddress':3,
-                                'accountAddress':1,
-                                'amount':18,
-                            },
-                            {
-                                'tokenAddress':4,
-                                'accountAddress':1,
-                                'amount':24,
-                            },
-                        ]
-                    },
-                    {
-                        'type':'updateSection'
-                    },
-                    {
-                        'type':'deposit',
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':7,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'accountAddress':1,
-                                'amount':14,
-                            },
-                            {
-                                'tokenAddress':3,
-                                'accountAddress':1,
-                                'amount':21,
-                            },
-                            {
-                                'tokenAddress':4,
-                                'accountAddress':1,
-                                'amount':28,
-                            },
-                        ]
-                    },
-                    {
-                        'type':'updateSection'
-                    },
-                    {
-                        'type':'deposit',
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':8,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'accountAddress':1,
-                                'amount':16,
-                            },
-                            {
-                                'tokenAddress':3,
-                                'accountAddress':1,
-                                'amount':24,
-                            },
-                            {
-                                'tokenAddress':4,
-                                'accountAddress':1,
-                                'amount':32,
-                            },
-                        ]
-                    },
-                    {
-                        'type':'destroy',
-                        'data':[
-                            {
-                                'accountAddress':1,
-                                'amount':210,
-                            }
-                        ]
-                    },
-                ],
-            
-                [
-                    {
-                        'type':'deposit',
-                        // 'times':100,
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':6,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'accountAddress':1,
-                                'amount':12,
-                            },
-                            {
-                                'tokenAddress':3,
-                                'accountAddress':1,
-                                'amount':18,
-                            },
-                            {
-                                'tokenAddress':4,
-                                'accountAddress':1,
-                                'amount':24,
-                            },
-                        ]
-                    },
-                    {
-                        'type':'updateSection'
-                    },
-                    {
-                        'type':'deposit',
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':7,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'accountAddress':1,
-                                'amount':14,
-                            },
-                            {
-                                'tokenAddress':3,
-                                'accountAddress':1,
-                                'amount':21,
-                            },
-                            {
-                                'tokenAddress':4,
-                                'accountAddress':1,
-                                'amount':28,
-                            },
-                        ]
-                    },
-                    {
-                        'type':'updateSection'
-                    },
-                    {
-                        'type':'deposit',
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':8,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'accountAddress':1,
-                                'amount':16,
-                            },
-                            {
-                                'tokenAddress':3,
-                                'accountAddress':1,
-                                'amount':24,
-                            },
-                            {
-                                'tokenAddress':4,
-                                'accountAddress':1,
-                                'amount':32,
-                            },
-                        ]
-                    },
-                    {
-                        'type':'destroy',
-                        'data':[
-                            {
-                                'accountAddress':1,
-                                'amount':10,
-                            },
-                            {
-                                'accountAddress':1,
-                                'amount':10,
-                            }
-                        ]
-                    },
-                ],
-            
-                [
-                    {
-                        'type':'deposit',
-                        // 'times':100,
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':6,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'accountAddress':1,
-                                'amount':12,
-                            },
-                            {
-                                'tokenAddress':3,
-                                'accountAddress':1,
-                                'amount':18,
-                            },
-                            {
-                                'tokenAddress':4,
-                                'accountAddress':1,
-                                'amount':24,
-                            },
-                        ]
-                    },
-                    {
-                        'type':'updateSection'
-                    },
-                    {
-                        'type':'deposit',
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':7,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'accountAddress':1,
-                                'amount':14,
-                            },
-                            {
-                                'tokenAddress':3,
-                                'accountAddress':1,
-                                'amount':21,
-                            },
-                            {
-                                'tokenAddress':4,
-                                'accountAddress':1,
-                                'amount':28,
-                            },
-                        ]
-                    },
-                    {
-                        'type':'updateSection'
-                    },
-                    {
-                        'type':'deposit',
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':8,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'accountAddress':1,
-                                'amount':16,
-                            },
-                            {
-                                'tokenAddress':3,
-                                'accountAddress':1,
-                                'amount':24,
-                            },
-                            {
-                                'tokenAddress':4,
-                                'accountAddress':1,
-                                'amount':32,
-                            },
-                        ]
-                    },
-                    {
-                        'type':'destroy',
-                        'data':[
-                            {
-                                'accountAddress':1,
-                                'amount':10,
-                            },
-                            {
-                                'accountAddress':1,
-                                'amount':50,
-                            }
-                        ]
-                    },
-                ],
-            
-                [
-                    {
-                        'type':'deposit',
-                        // 'times':100,
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':6,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'accountAddress':1,
-                                'amount':12,
-                            },
-                            {
-                                'tokenAddress':3,
-                                'accountAddress':1,
-                                'amount':18,
-                            },
-                            {
-                                'tokenAddress':4,
-                                'accountAddress':1,
-                                'amount':24,
-                            },
-                        ]
-                    },
-                    {
-                        'type':'updateSection'
-                    },
-                    {
-                        'type':'deposit',
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':7,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'accountAddress':1,
-                                'amount':14,
-                            },
-                            {
-                                'tokenAddress':3,
-                                'accountAddress':1,
-                                'amount':21,
-                            },
-                            {
-                                'tokenAddress':4,
-                                'accountAddress':1,
-                                'amount':28,
-                            },
-                        ]
-                    },
-                    {
-                        'type':'updateSection'
-                    },
-                    {
-                        'type':'deposit',
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':8,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'accountAddress':1,
-                                'amount':16,
-                            },
-                            {
-                                'tokenAddress':3,
-                                'accountAddress':1,
-                                'amount':24,
-                            },
-                            {
-                                'tokenAddress':4,
-                                'accountAddress':1,
-                                'amount':32,
-                            },
-                        ]
-                    },
-                    {
-                        'type':'destroy',
-                        'data':[
-                            {
-                                'accountAddress':1,
-                                'amount':10,
-                            },
-                            {
-                                'accountAddress':1,
-                                'amount':51,
-                            }
-                        ]
-                    },
-                ],
-            
-                [
-                    {
-                        'type':'deposit',
-                        // 'times':100,
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':6,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'accountAddress':1,
-                                'amount':12,
-                            },
-                            {
-                                'tokenAddress':3,
-                                'accountAddress':1,
-                                'amount':18,
-                            },
-                            {
-                                'tokenAddress':4,
-                                'accountAddress':1,
-                                'amount':24,
-                            },
-                        ]
-                    },
-                    {
-                        'type':'updateSection'
-                    },
-                    {
-                        'type':'deposit',
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':7,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'accountAddress':1,
-                                'amount':14,
-                            },
-                            {
-                                'tokenAddress':3,
-                                'accountAddress':1,
-                                'amount':21,
-                            },
-                            {
-                                'tokenAddress':4,
-                                'accountAddress':1,
-                                'amount':28,
-                            },
-                        ]
-                    },
-                    {
-                        'type':'updateSection'
-                    },
-                    {
-                        'type':'deposit',
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':8,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'accountAddress':1,
-                                'amount':16,
-                            },
-                            {
-                                'tokenAddress':3,
-                                'accountAddress':1,
-                                'amount':24,
-                            },
-                            {
-                                'tokenAddress':4,
-                                'accountAddress':1,
-                                'amount':32,
-                            },
-                        ]
-                    },
-                    {
-                        'type':'destroy',
-                        'data':[
-                            {
-                                'accountAddress':1,
-                                'amount':61,
-                            },
-                            {
-                                'accountAddress':1,
-                                'amount':71,
-                            }
-                        ]
-                    },
-                ],
-        // withdraw    
-                [
-                    {
-                        'type':'deposit',
-                        // 'times':100,
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':50,
-                            }
-                        ]
-                    },
-                    {
-                        'type':'withdraw',
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':1,
-                            }
-                        ]
-                    }
-                ],
-        
-                [
-                    {
-                        'type':'deposit',
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':50,
-                            }
-                        ]
-                    },
-                    {
-                        'type':'withdraw',
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':50,
-                            }
-                        ]
-                    }
-                ],
-        
-                [
-                    {
-                        'type':'deposit',
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':50,
-                            },
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':2,
-                                'amount':100,
-                            }
-                        ]
-                    },
-                    {
-                        'type':'withdraw',
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':49,
-                            }
-                        ]
-                    }
-                ],
-        
-                [
-                    {
-                        'type':'deposit',
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':50,
-                            },
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':2,
-                                'amount':100,
-                            }
-                        ]
-                    },
-                    {
-                        'type':'withdraw',
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':50,
-                            }
-                        ]
-                    }
-                ],
-            
-                [
-                    {
-                        'type':'deposit',
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':1,
-                                'amount':50,
-                            },
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':2,
-                                'amount':100,
-                            }
-                        ]
-                    },
-                    {
-                        'type':'withdraw',
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':2,
-                                'amount':49,
-                            },
-                            {
-                                'tokenAddress':1,
-                                'accountAddress':2,
-                                'amount':50,
-                            }
-                        ]
-                    }
-                ],
-            
-                [
-                    {
-                        'type':'deposit',
-                        'times': 300,
-                        'data':[
-                            {
-                                'tokenAddress':1
-                            },
-                            {
-                                'tokenAddress':2
-                            },
-                            {
-                                'tokenAddress':3
-                            }
-                        ]
-                    },
-                    {
-                        'type':'withdraw',
-                        'times':20,
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'amount':49,
-                            },
-                            {
-                                'tokenAddress':1,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'total':true
-                            },
-                            {
-                                'tokenAddress':3,
-                                'total':true
-                            },
-                            {
-        
-                            }
-                        ]
-                    }
-                ],
-            
-                [
-                    {
-                        'type':'deposit',
-                        'times': 300,
-                        'data':[
-                            {
-                                'tokenAddress':1
-                            },
-                            {
-                                'tokenAddress':2
-                            },
-                            {
-                                'tokenAddress':3
-                            }
-                        ]
-                    },
-                    {
-                        'type':'withdraw',
-                        'times':20,
-                        'data':[
-                            {
-                                'tokenAddress':1,
-                                'amount':49,
-                            },
-                            {
-                                'tokenAddress':1,
-                            },
-                            {
-                                'tokenAddress':2,
-                                'total':true
-                            },
-                            {
-                                'tokenAddress':3,
-                                'total':true
-                            },
-                            {
-        
-                            }
-                        ]
-                    }
-                ],
-            
-            ];
-        
+// deposit
+            [
+//deposit-pool
+                {
+                    'type':'deposit',
+                    // 'times':100,
+                    'data':[
+                        {
+                            'tokenAddress':1,
+                            'accountAddress':1,
+                            'amount':100,
+                        },
+                        {
+                            'tokenAddress':2,
+                            'accountAddress':2,
+                            'amount':200,
+                        },
+                        {
+                            'tokenAddress':3,
+                            'accountAddress':3,
+                            'amount':300,
+                        },
+                        {
+                            'tokenAddress':4,
+                            'accountAddress':4,
+                            'amount':299,
+                        },
+                    ]
+                },
+//deposit-claim 
+                {
+                    'type':'claim',
+                    'data':[
+                        {
+                        'accountAddress':1
+                        },
+                        {
+                        'accountAddress':2
+                        },
+                        {
+                        'accountAddress':3
+                        },
+                        {
+                        'accountAddress':4
+                        },
+                    ]
+                },
+//deposit-withdraw               
+                {
+                    'type':'withdraw',
+                    'data':[
+                        {
+                            'tokenAddress':1,
+                            'accountAddress':1,
+                            'amount':1,
+                        }
+                    ]
+                }
+            ],
+//deposit-convert            
+            [
+                {
+                    'type':'deposit',
+                    // 'times':100,
+                    'data':[
+                        {
+                            'tokenAddress':1,
+                            'accountAddress':1,
+                            'amount':100,
+                        },
+                        {
+                            'tokenAddress':2,
+                            'accountAddress':2,
+                            'amount':200,
+                        },
+                        {
+                            'tokenAddress':3,
+                            'accountAddress':3,
+                            'amount':300,
+                        },
+                        {
+                            'tokenAddress':4,
+                            'accountAddress':4,
+                            'amount':400,
+                        },
+                    ]
+                },
+                {
+                    'type':'destroy',
+                    'data':[
+                        {
+                            'accountAddress':1,
+                            'amount':1,
+                        }
+                    ]
+                },
+//section[1]                
+                {
+                    'type':'updateSection',
+                    // 'times':100,
+                    'data':[
+                        {
+                            'tokens':[1, 2, 3],
+                            'weight':[1, 2, 3],
+                        },
+                    ]
+                },
+//section-deposit-convert                  
+                {
+                    'type':'deposit',
+                    // 'times':100,
+                    'data':[
+                        {
+                            'tokenAddress':1,
+                            'accountAddress':1,
+                            'amount':50,
+                        },
+                    ]
+                },
+//deposit-convert-withdraw                 
+                {
+                    'type':'withdraw',
+                    'data':[
+                        {
+                            'tokenAddress':1,
+                            'accountAddress':1,
+                            'amount':1,
+                        }
+                    ]
+                },
+//deposit-convert-claim                 
+                {
+                    'type':'claim',
+                    'data':[
+                        {
+                        'accountAddress':1
+                        },
+                        {
+                        'accountAddress':2
+                        },
+                        {
+                        'accountAddress':3
+                        },
+                        {
+                        'accountAddress':4
+                        },
+                    ]
+                },
+            ],  
+//deposit-convert-deposit-withdraw              
+            [
+                {
+                    'type':'deposit',
+                    // 'times':100,
+                    'data':[
+                        {
+                            'tokenAddress':1,
+                            'accountAddress':1,
+                            'amount':100,
+                        },
+                        {
+                            'tokenAddress':2,
+                            'accountAddress':2,
+                            'amount':200,
+                        },
+                        {
+                            'tokenAddress':3,
+                            'accountAddress':3,
+                            'amount':300,
+                        },
+                        {
+                            'tokenAddress':4,
+                            'accountAddress':4,
+                            'amount':400,
+                        },
+                    ]
+                },
+//section[2]                
+                {
+                    'type':'updateSection',
+                    // 'times':100,
+                    'data':[
+                        {
+                            'tokens':[1],
+                            'weight':[50],
+                        },
+                    ]
+                },                
+                {
+                    'type':'deposit',
+                    // 'times':100,
+                    'data':[
+                        {
+                            'tokenAddress':1,
+                            'accountAddress':5,
+                            'amount':100,
+                        }
+                    ]
+                },
+                {
+                    'type':'withdraw',
+                    'data':[
+                        {
+                            'tokenAddress':1,
+                            'accountAddress':1,
+                            'amount':101,
+                        }
+                    ]
+                },
+            ], 
+            [
+                {
+                    'type':'deposit',
+                    // 'times':100,
+                    'data':[
+                        {
+                            'tokenAddress':1,
+                            'accountAddress':1,
+                            'amount':100,
+                        },
+                        {
+                            'tokenAddress':2,
+                            'accountAddress':2,
+                            'amount':200,
+                        },
+                        {
+                            'tokenAddress':3,
+                            'accountAddress':3,
+                            'amount':300,
+                        },
+                        {
+                            'tokenAddress':4,
+                            'accountAddress':4,
+                            'amount':400,
+                        },
+                    ]
+                },               
+                {
+                    'type':'deposit',
+                    // 'times':100,
+                    'data':[
+                        {
+                            'tokenAddress':1,
+                            'accountAddress':5,
+                            'amount':100,
+                        }
+                    ]
+                },
+                {
+                    'type':'withdraw',
+                    'data':[
+                        {
+                            'tokenAddress':1,
+                            'accountAddress':1,
+                            'amount':1,
+                        }
+                    ]
+                },
+            ],             
+        ];
     for (let configIndex = 0; configIndex < runConfig.length; configIndex++) {
         
         {
@@ -1389,9 +385,9 @@ contract('DFEngine', accounts => {
             var dfPoolTokenTotalCurrent = new BN(0);
 
             var dfCollateralTokenTotal = new BN(0);
+            var dfCollateralToken = new BN(0);
             var dfCollateralTokenBalance = {};
-            var dfCollateralTokenBalance = new BN(0);
-
+            
             // var dfCollateralTokenBalanceOrigin = new BN(0);
             var dfCollateralTokenTotalOrigin = new BN(0);
             // var dfCollateralTokenBalanceCurrent = new BN(0);
@@ -1673,6 +669,7 @@ contract('DFEngine', accounts => {
                             dfStoreAccountToken = {};
                             dfStoreAccountTokenTotal = new BN(0);
                             dfPoolTokenTotal = new BN(0);
+                            dfCollateralTokenBalance = {};
                             dfCollateralTokenTotal = new BN(0);
                             for (let index = 0; index < collateralAddress.length; index++) {
 
@@ -1874,13 +871,14 @@ contract('DFEngine', accounts => {
                             burnedOrigin = await dfStore.getSectionBurned.call(await dfStore.getBurnPosition.call());
 
                             dfCollateralTokenTotalOrigin = new BN(0);
+                            dfCollateralTokenBalance = {};
                             for (let index = 0; index < collateralAddress.length; index++) {
 
-                                balanceOfTokens = await collateralObject[collateralAddress[index]].balanceOf.call(dfCollateral.address);
-                                dfCollateralTokenTotalOrigin = dfCollateralTokenTotalOrigin.add(balanceOfTokens);
+                                dfCollateralTokenBalance[collateralAddress[index]] = await collateralObject[collateralAddress[index]].balanceOf.call(dfCollateral.address);
+                                dfCollateralTokenTotalOrigin = dfCollateralTokenTotalOrigin.add(dfCollateralTokenBalance[collateralAddress[index]]);
 
                                 if (recordDfCollateralToken.hasOwnProperty(collateralAddress[index])) 
-                                    assert.equal(recordDfCollateralToken[collateralAddress[index]].toString(), balanceOfTokens.toString());
+                                    assert.equal(recordDfCollateralToken[collateralAddress[index]].toString(), dfCollateralTokenBalance[collateralAddress[index]].toString());
                             }
                             console.log('origin burned token total :');
                             console.log(burnedTotalOrigin);
@@ -1897,6 +895,28 @@ contract('DFEngine', accounts => {
                             assert.equal(recordBurnedPosition.toString(), (await dfStore.getBurnPosition.call()).toString());
                             if (recordBurned.hasOwnProperty(recordBurnedPosition))
                                 assert.equal(recordBurned[recordBurnedPosition].toString(), burnedOrigin.toString());
+
+                            // await dfToken.approvex(dfEngine.address, {from: accountAddress});
+                            await dfToken.approve(dfEngine.address, dfnFee, {from: accountAddress});
+                            await usdxToken.approve(dfEngine.address, amountNB, {from: accountAddress});
+                            // await usdxToken.approvex(dfEngine.address, {from: accountAddress});
+                            var approvals = await usdxToken.allowance.call(accountAddress, dfEngine.address);
+                            console.log('usdx approvals token :');
+                            console.log(approvals);
+                            console.log(approvals.toString());
+                            console.log('\n');
+                            var approvals = await dfToken.allowance.call(accountAddress, dfEngine.address);
+                            console.log('dfn approvals token :');
+                            console.log(approvals);
+                            console.log(approvals.toString());
+                            console.log('\n');
+                            transactionData = await dfEngine.destroy(accountAddress, amountNB, {from: accountAddress});
+                            destroyGasUsed = destroyGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : destroyGasUsed;
+                            destroyGasData[destroyGasData.length] = transactionData.receipt.gasUsed;
+                            console.log('dfEngine ' + (dfEngineTimes + 1) + ' ' + runType + ' runTimes ' + (condition + 1) + ' gasUsed:' + transactionData.receipt.gasUsed + '\n');
+
+                            assert.equal((await usdxToken.allowance.call(accountAddress, dfEngine.address)).toString(), '0');
+                            assert.equal((await dfToken.allowance.call(accountAddress, dfEngine.address)).toString(), '0');
 
                             var burnedTokens = [];
                             var burnedWeight = [];
@@ -1940,28 +960,6 @@ contract('DFEngine', accounts => {
                                     );
                             }
                             recordBurnedTotal = recordBurnedTotal.add(amountNB);
-                            
-                            // await dfToken.approvex(dfEngine.address, {from: accountAddress});
-                            await dfToken.approve(dfEngine.address, dfnFee, {from: accountAddress});
-                            await usdxToken.approve(dfEngine.address, amountNB, {from: accountAddress});
-                            // await usdxToken.approvex(dfEngine.address, {from: accountAddress});
-                            var approvals = await usdxToken.allowance.call(accountAddress, dfEngine.address);
-                            console.log('usdx approvals token :');
-                            console.log(approvals);
-                            console.log(approvals.toString());
-                            console.log('\n');
-                            var approvals = await dfToken.allowance.call(accountAddress, dfEngine.address);
-                            console.log('dfn approvals token :');
-                            console.log(approvals);
-                            console.log(approvals.toString());
-                            console.log('\n');
-                            transactionData = await dfEngine.destroy(accountAddress, amountNB, {from: accountAddress});
-                            destroyGasUsed = destroyGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : destroyGasUsed;
-                            destroyGasData[destroyGasData.length] = transactionData.receipt.gasUsed;
-                            console.log('dfEngine ' + (dfEngineTimes + 1) + ' ' + runType + ' runTimes ' + (condition + 1) + ' gasUsed:' + transactionData.receipt.gasUsed + '\n');
-
-                            assert.equal((await usdxToken.allowance.call(accountAddress, dfEngine.address)).toString(), '0');
-                            assert.equal((await dfToken.allowance.call(accountAddress, dfEngine.address)).toString(), '0');
 
                             burnedTotalCurrent = await dfStore.getTotalBurned.call();
                             burnedCurrent = await dfStore.getSectionBurned.call(await dfStore.getBurnPosition.call());
@@ -2177,16 +1175,17 @@ contract('DFEngine', accounts => {
                             console.log(accountTokenBalanceOrigin.toString());
                             console.log('\n');
                             
-                            if(amountNB.lte(new BN(0))){
-                                console.log('withdraw random the amount is zero !!!\n');
-                                condition++;
-                                continue;
-                            }
+                            // if(amountNB.lte(new BN(0))){
+                            //     console.log('withdraw random the amount is zero !!!\n');
+                            //     condition++;
+                            //     continue;
+                            // }
 
                             amountMin = recordAccountMap[tokenAddress][accountAddress].lt(recordToken[tokenAddress]) ?
                                 recordAccountMap[tokenAddress][accountAddress] : recordToken[tokenAddress];
                             
-                            amountNB = amountMin.lt(amountNB) ? amountMin : amountNB;
+                            // amountNB = amountMin.lt(amountNB) ? amountMin : amountNB;
+                            amountMin = amountMin.lt(amountNB) ? amountMin : amountNB;
 
                             console.log('withdraw Real the amount');
                             console.log(amountNB);
@@ -2196,7 +1195,7 @@ contract('DFEngine', accounts => {
                             console.log('record origin token :');
                             console.log(recordToken[tokenAddress]);
                             console.log(recordToken[tokenAddress].toString());
-                            recordToken[tokenAddress] = recordToken[tokenAddress].sub(amountNB);
+                            recordToken[tokenAddress] = recordToken[tokenAddress].sub(amountMin);
                             console.log('record current token :');
                             console.log(recordToken[tokenAddress]);
                             console.log(recordToken[tokenAddress].toString());
@@ -2205,7 +1204,7 @@ contract('DFEngine', accounts => {
                             console.log('record origin token total:');
                             console.log(recordTokenTotal);
                             console.log(recordTokenTotal.toString());
-                            recordTokenTotal = recordTokenTotal.sub(amountNB);
+                            recordTokenTotal = recordTokenTotal.sub(amountMin);
                             console.log('record current token total:');
                             console.log(recordTokenTotal);
                             console.log(recordTokenTotal.toString());
@@ -2214,7 +1213,7 @@ contract('DFEngine', accounts => {
                             console.log('record origin account token:');
                             console.log(recordAccountMap[tokenAddress][accountAddress]);
                             console.log(recordAccountMap[tokenAddress][accountAddress].toString());
-                            recordAccountMap[tokenAddress][accountAddress] = recordAccountMap[tokenAddress][accountAddress].sub(amountNB);
+                            recordAccountMap[tokenAddress][accountAddress] = recordAccountMap[tokenAddress][accountAddress].sub(amountMin);
                             console.log('record current account token:');
                             console.log(recordAccountMap[tokenAddress][accountAddress]);
                             console.log(recordAccountMap[tokenAddress][accountAddress].toString());
@@ -2223,7 +1222,7 @@ contract('DFEngine', accounts => {
                             console.log('record origin account total token:');
                             console.log(recordAccountTotalMap[accountAddress]);
                             console.log(recordAccountTotalMap[accountAddress].toString());
-                            recordAccountTotalMap[accountAddress] = recordAccountTotalMap[accountAddress].sub(amountNB);
+                            recordAccountTotalMap[accountAddress] = recordAccountTotalMap[accountAddress].sub(amountMin);
                             console.log('record current account total token:');
                             console.log(recordAccountTotalMap[accountAddress]);
                             console.log(recordAccountTotalMap[accountAddress].toString());
@@ -2241,8 +1240,8 @@ contract('DFEngine', accounts => {
                             dfStoreLockTokenBalanceCurrent = await dfStore.getLockedBalance.call(tokenAddress);
                             dfStoreAccountTokenCurrent = await dfStore.getDepositorBalance.call(accountAddress, tokenAddress);
                             dfPoolTokenBalanceCurrent = await collateralObject[tokenAddress].balanceOf.call(dfPool.address);
-                            dfCollateralTokenBalance = await collateralObject[tokenAddress].balanceOf.call(dfCollateral.address);
                             accountTokenBalanceCurrent = await collateralObject[tokenAddress].balanceOf.call(accountAddress);
+                            dfCollateralToken = await collateralObject[tokenAddress].balanceOf.call(dfCollateral.address);
                             usdxBalance = await usdxToken.balanceOf.call(accountAddress);
 
                             console.log('dfStore current token total:');
@@ -2263,8 +1262,8 @@ contract('DFEngine', accounts => {
                             console.log(accountTokenBalanceCurrent.toString());
                             console.log('\n');
                             console.log('dfCollateral current token balance:');
-                            console.log(dfCollateralTokenBalance);
-                            console.log(dfCollateralTokenBalance.toString());
+                            console.log(dfCollateralToken);
+                            console.log(dfCollateralToken.toString());
                             console.log('usdx current token balance:');
                             console.log(usdxBalance);
                             console.log(usdxBalance.toString());
@@ -2280,11 +1279,11 @@ contract('DFEngine', accounts => {
                             
                             assert.equal(dfStoreTokenBalanceOrigin.add(dfStoreLockTokenBalanceOrigin).toString(), dfPoolTokenBalanceOrigin.toString());
                             assert.equal(dfStoreTokenBalanceCurrent.add(dfStoreLockTokenBalanceCurrent).toString(), dfPoolTokenBalanceCurrent.toString());
-                            assert.equal(dfStoreTokenBalanceCurrent.toString(), dfStoreTokenBalanceOrigin.sub(amountNB).toString());
-                            assert.equal(dfPoolTokenBalanceCurrent.toString(), dfPoolTokenBalanceOrigin.sub(amountNB).toString());
+                            assert.equal(dfStoreTokenBalanceCurrent.toString(), dfStoreTokenBalanceOrigin.sub(amountMin).toString());
+                            assert.equal(dfPoolTokenBalanceCurrent.toString(), dfPoolTokenBalanceOrigin.sub(amountMin).toString());
 
-                            assert.equal(dfStoreAccountTokenOrigin.toString(), dfStoreAccountTokenCurrent.add(amountNB).toString());
-                            assert.equal(accountTokenBalanceOrigin.toString(), accountTokenBalanceCurrent.sub(amountNB).toString());
+                            assert.equal(dfStoreAccountTokenOrigin.toString(), dfStoreAccountTokenCurrent.add(amountMin).toString());
+                            assert.equal(accountTokenBalanceOrigin.toString(), accountTokenBalanceCurrent.sub(amountMin).toString());
 
                             condition++;
                         }
@@ -2310,6 +1309,7 @@ contract('DFEngine', accounts => {
                             dfStoreAccountToken = {};
                             dfStoreAccountTokenTotalOrigin = new BN(0);
                             dfPoolTokenTotalOrigin = new BN(0);
+                            dfCollateralTokenBalance = {};
                             dfCollateralTokenTotalOrigin = new BN(0);
                             for (let index = 0; index < collateralAddress.length; index++) {
 
@@ -2317,11 +1317,17 @@ contract('DFEngine', accounts => {
                                 // dfStoreTokenTotal = dfStoreTokenTotal.add(dfStoreTokenBalance[collateralAddress[index]]);
 
                                 dfStoreLockTokenBalance[collateralAddress[index]] = await dfStore.getLockedBalance.call(collateralAddress[index]);
-                                assert.equal(dfStoreLockTokenBalance[collateralAddress[index]].toString(), recordLockToken[collateralAddress[index]].toString());
+                                
+                                if (recordLockToken.hasOwnProperty(collateralAddress[index]))
+                                    assert.equal(dfStoreLockTokenBalance[collateralAddress[index]].toString(), recordLockToken[collateralAddress[index]].toString());
+                                
                                 dfStoreLockTokenTotalOrigin = dfStoreLockTokenTotalOrigin.add(dfStoreLockTokenBalance[collateralAddress[index]]);
 
                                 dfStoreAccountToken[collateralAddress[index]] = await dfStore.getDepositorBalance.call(accountAddress, collateralAddress[index]);
-                                assert.equal(dfStoreAccountToken[collateralAddress[index]].toString(), recordAccountMap[collateralAddress[index]][accountAddress].toString());
+
+                                if (recordAccountMap.hasOwnProperty(collateralAddress[index]) && recordAccountMap[collateralAddress[index]].hasOwnProperty(accountAddress))
+                                    assert.equal(dfStoreAccountToken[collateralAddress[index]].toString(), recordAccountMap[collateralAddress[index]][accountAddress].toString());
+
                                 dfStoreAccountTokenTotalOrigin = dfStoreAccountTokenTotalOrigin.add(dfStoreAccountToken[collateralAddress[index]]);
 
                                 dfPoolTokenBalance[collateralAddress[index]] = await collateralObject[collateralAddress[index]].balanceOf.call(dfPool.address);
@@ -2353,12 +1359,16 @@ contract('DFEngine', accounts => {
                             amountMin = new BN(0);
                             amountMinTotal = new BN(0);
                             for (let index = 0; index < tokenAddressList.length; index++) {
-                                amountMin = recordAccountMap[tokenAddressList[index]][accountAddress].lt(recordLockToken[tokenAddressList[index]]) ?
-                                    recordAccountMap[tokenAddressList[index]][accountAddress] : recordLockToken[tokenAddressList[index]];
+                                amountMin = new BN(0);
+                                if (recordAccountMap.hasOwnProperty(tokenAddressList[index]) && recordAccountMap[tokenAddressList[index]].hasOwnProperty(accountAddress)){
 
-                                recordLockToken[tokenAddressList[index]] = recordLockToken[tokenAddressList[index]].sub(amountMin);
-                                recordAccountMap[tokenAddressList[index]][accountAddress] = recordAccountMap[tokenAddressList[index]][accountAddress].sub(amountMin);
+                                    amountMin = recordAccountMap[tokenAddressList[index]][accountAddress].lt(recordLockToken[tokenAddressList[index]]) ?
+                                        recordAccountMap[tokenAddressList[index]][accountAddress] : recordLockToken[tokenAddressList[index]];
 
+                                    recordLockToken[tokenAddressList[index]] = recordLockToken[tokenAddressList[index]].sub(amountMin);
+                                    recordAccountMap[tokenAddressList[index]][accountAddress] = recordAccountMap[tokenAddressList[index]][accountAddress].sub(amountMin);
+
+                                }
                                 amountMinTotal = amountMinTotal.add(amountMin);
                             }
 
@@ -2372,12 +1382,13 @@ contract('DFEngine', accounts => {
                             console.log('\n');
     
                             transactionData = await dfEngine.withdraw(accountAddress, usdxToken.address, amountNB, {from: accountAddress});
+                            // transactionData = await dfEngine.claim(accountAddress, {from: accountAddress});
                             claimGasUsed = claimGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : claimGasUsed;
                             claimGasData[claimGasData.length] = transactionData.receipt.gasUsed;
                             console.log('dfEngine ' + (dfEngineTimes + 1) + ' ' + runType + ' runTimes ' + (condition + 1) + ' gasUsed:' + transactionData.receipt.gasUsed + '\n');
 
                             assert.equal(recordMintedTotal.toString(), (await dfStore.getTotalMinted.call()).toString());
-                            assert.equal(recordMintedTotal.toString(), (await dfStore.getSectionMinted.call(await dfStore.getTotalMinted.call())).toString());
+                            assert.equal(recordMinted[recordMintedPosition].toString(), (await dfStore.getSectionMinted.call(await dfStore.getMintPosition.call())).toString());
                             // dfStoreTokenBalance = {};
                             dfStoreLockTokenBalance = {};
                             // dfStoreTokenTotal = new BN(0);
@@ -2385,6 +1396,7 @@ contract('DFEngine', accounts => {
                             dfStoreAccountToken = {};
                             dfStoreAccountTokenTotalCurrent = new BN(0);
                             dfPoolTokenTotalCurrent = new BN(0);
+                            dfCollateralTokenBalance = {};
                             dfCollateralTokenTotalCurrent = new BN(0);
                             for (let index = 0; index < collateralAddress.length; index++) {
 
@@ -2392,11 +1404,17 @@ contract('DFEngine', accounts => {
                                 // dfStoreTokenTotal = dfStoreTokenTotal.add(dfStoreTokenBalance[collateralAddress[index]]);
 
                                 dfStoreLockTokenBalance[collateralAddress[index]] = await dfStore.getLockedBalance.call(collateralAddress[index]);
-                                assert.equal(dfStoreLockTokenBalance[collateralAddress[index]].toString(), recordLockToken[collateralAddress[index]].toString());
+
+                                if (recordLockToken.hasOwnProperty(collateralAddress[index]))
+                                    assert.equal(dfStoreLockTokenBalance[collateralAddress[index]].toString(), recordLockToken[collateralAddress[index]].toString());
+                                
                                 dfStoreLockTokenTotalCurrent = dfStoreLockTokenTotalCurrent.add(dfStoreLockTokenBalance[collateralAddress[index]]);
 
                                 dfStoreAccountToken[collateralAddress[index]] = await dfStore.getDepositorBalance.call(accountAddress, collateralAddress[index]);
-                                assert.equal(dfStoreAccountToken[collateralAddress[index]].toString(), recordAccountMap[collateralAddress[index]][accountAddress].toString());
+
+                                if (recordAccountMap.hasOwnProperty(collateralAddress[index]) && recordAccountMap[collateralAddress[index]].hasOwnProperty(accountAddress))
+                                    assert.equal(dfStoreAccountToken[collateralAddress[index]].toString(), recordAccountMap[collateralAddress[index]][accountAddress].toString());
+                                    
                                 dfStoreAccountTokenTotalCurrent = dfStoreAccountTokenTotalCurrent.add(dfStoreAccountToken[collateralAddress[index]]);
 
                                 dfPoolTokenBalance[collateralAddress[index]] = await collateralObject[collateralAddress[index]].balanceOf.call(dfPool.address);
@@ -2414,8 +1432,8 @@ contract('DFEngine', accounts => {
                             usdxTotalSupplyCurrent = await usdxToken.totalSupply.call();
                             usdxBalanceCurrent = await usdxToken.balanceOf.call(accountAddress);
 
-                            assert.equal(usdxTotalSupplyCurrent.toString(), usdxTotalSupplyOrigin.sub(amountNB).toString());
-                            assert.equal(usdxBalanceCurrent.toString(), usdxBalanceOrigin.sub(amountNB).toString());
+                            assert.equal(usdxTotalSupplyCurrent.toString(), usdxTotalSupplyOrigin.add(amountNB).toString());
+                            assert.equal(usdxBalanceCurrent.toString(), usdxBalanceOrigin.add(amountNB).toString());
 
                             condition++;
                         }
@@ -2426,39 +1444,100 @@ contract('DFEngine', accounts => {
                             console.log('config : ' + (configIndex + 1) + ' dfEngine : ' + (dfEngineTimes + 1) + ' runType : ' + runType + ' runTimes ' + (condition + 1) + '\n');
                             
                             for (let index = 0; index < tokenAddressList.length; index++) {
-                                recordToken[tokenAddressList[index]] = recordToken[tokenAddressList[index]].add(recordLockToken[tokenAddressList[index]]);
-                                recordLockToken[tokenAddressList[index]] = new BN(0);
+
+                                if (recordToken.hasOwnProperty(tokenAddressList[index]) && recordLockToken.hasOwnProperty(tokenAddressList[index])) {
+
+                                    recordToken[tokenAddressList[index]] = recordToken[tokenAddressList[index]].add(recordLockToken[tokenAddressList[index]]);
+                                    recordLockToken[tokenAddressList[index]] = new BN(0);
+                                }
                             }
 
-                            tokenAddressList = [];
-                            tokenAddressList = DataMethod.createData(collateralAddress, 3, 3);
-                            collateralIndex++;
-
-                            var nameIndex = MathTool.randomNum(0, collateralNames.length - 1)
-
-                            var collaterals = await Collaterals.new(collateralNames[nameIndex] + collateralIndex,
-                                collateralNames[nameIndex] + collateralIndex + '1.0', accounts[accounts.length - 1]);
-
-                            var amount = await collaterals.balanceOf.call(accounts[accounts.length - 1])
-                            var accountsIndex = 1
-                            while (accountsIndex < (accounts.length - 1)) {
-                                await collaterals.transfer(accounts[accountsIndex], amount);
-                                accountsIndex++;
-                            }
-
-                            collateralAddress.push(collaterals.address);
-                            collateralObject[collaterals.address] = collaterals;
-                            tokenAddressList.push(collaterals.address);
-
+                            tokenAddressIndex = [];
                             tokenWeightList = [];
-                            // tokenWeightList = DataMethod.createData(weightTest, tokenAddressList.length, tokenAddressList.length);
-                            tokenWeightList = weightTest;
+                            if(runConfig[configIndex][dfEngineTimes].hasOwnProperty('data')){
+                    
+                                if (runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length].hasOwnProperty('tokens')) {
+
+                                    tokenAddressIndex = runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['tokens'];
+                                }
+
+                                if (runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length].hasOwnProperty('weight')) {
+
+                                    tokenWeightList = runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['weight'];
+                                }
+
+                                tokenAddressList = [];
+                                var collateralAddressLength = collateralAddress.length;
+                                for (let index = 0; index < tokenAddressIndex.length; index++) {
+                                    
+                                    if (tokenAddressIndex[index] == 0 || tokenAddressIndex[index] > collateralAddressLength) {
+
+                                        var nameIndex = MathTool.randomNum(0, collateralNames.length - 1);
+                                        var collaterals = await Collaterals.new(collateralNames[nameIndex] + collateralIndex,
+                                            collateralNames[nameIndex] + collateralIndex + '1.0', accounts[accounts.length - 1]);
+        
+                                        var amount = await collaterals.balanceOf.call(accounts[accounts.length - 1])
+                                        var accountsIndex = 1
+                                        while (accountsIndex < (accounts.length - 1)) {
+                                            await collaterals.transfer(accounts[accountsIndex], amount);
+                                            accountsIndex++;
+                                        }
+        
+                                        collateralAddress.push(collaterals.address);
+                                        collateralObject[collaterals.address] = collaterals;
+                                        tokenAddressList.push(collaterals.address);
+                                        collateralIndex++;
+                                        
+                                    }else{
+
+                                        tokenAddressList.push(collateralAddress[tokenAddressIndex[index] - 1]);
+                                    }
+                                }
+                                
+                                if (tokenWeightList.length == 0) {
+
+                                    tokenWeightList = DataMethod.createData(weightTest, tokenAddressList.length, tokenAddressList.length);
+                                }
+                                
+                            }else{
+
+                                tokenAddressList = [];
+                                tokenAddressList = DataMethod.createData(collateralAddress, 3, 3);
+                                collateralIndex++;
+
+                                var nameIndex = MathTool.randomNum(0, collateralNames.length - 1)
+
+                                var collaterals = await Collaterals.new(collateralNames[nameIndex] + collateralIndex,
+                                    collateralNames[nameIndex] + collateralIndex + '1.0', accounts[accounts.length - 1]);
+
+                                var amount = await collaterals.balanceOf.call(accounts[accounts.length - 1])
+                                var accountsIndex = 1
+                                while (accountsIndex < (accounts.length - 1)) {
+                                    await collaterals.transfer(accounts[accountsIndex], amount);
+                                    accountsIndex++;
+                                }
+
+                                collateralAddress.push(collaterals.address);
+                                collateralObject[collaterals.address] = collaterals;
+                                tokenAddressList.push(collaterals.address);
+
+                                // tokenWeightList = DataMethod.createData(weightTest, tokenAddressList.length, tokenAddressList.length);
+                                tokenWeightList = weightTest;
+
+                            }
+
+                            console.log('collateralAddress:');
+                            console.log(collateralAddress);
+                            console.log('\n');
                             console.log('tokenAddressList:');
                             console.log(tokenAddressList);
                             console.log('\n');
                             console.log('tokenWeightList:');
                             console.log(tokenWeightList);
                             console.log('\n');
+
+                            console.log(tokenAddressIndex);
+                            console.log(tokenWeightList);
 
                             transactionData = await dfEngine.updateMintSection(tokenAddressList, tokenWeightList);
                             updateGasUsed = updateGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : updateGasUsed;

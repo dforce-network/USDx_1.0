@@ -300,6 +300,18 @@ function depositUSDC() {
   );
 }
 
+function claimUSDX() {
+  contractProtocol.withdraw.sendTransaction(
+    usdxAddr,
+    10 * 1000000000000000000, {
+      gas: 2000000
+    },
+    function (err, ret) {
+      console.log(ret, err);
+    }
+  );
+}
+
 function withdrawDAI() {
   contractProtocol.withdraw.sendTransaction(
     daiAddr,
@@ -362,6 +374,42 @@ function destroy() {
 function DAIbalanceofCol() {
   contractPAX.balanceOf.call(
     collateralAddr,
+    function (err, ret) {
+      console.log(ret.toFixed(), err);
+    }
+  );
+}
+
+function getLockedUSDX2DAI() {
+  contractStore.getLockedBalance.call(
+    daiAddr,
+    function (err, ret) {
+      console.log(ret.toFixed(), err);
+    }
+  );
+}
+
+function getLockedUSDX2PAX() {
+  contractStore.getLockedBalance.call(
+    paxAddr,
+    function (err, ret) {
+      console.log(ret.toFixed(), err);
+    }
+  );
+}
+
+function getLockedUSDX2USDC() {
+  contractStore.getLockedBalance.call(
+    usdcAddr,
+    function (err, ret) {
+      console.log(ret.toFixed(), err);
+    }
+  );
+}
+
+function getLockedUSDX2TUSD() {
+  contractStore.getLockedBalance.call(
+    tusdAddr,
     function (err, ret) {
       console.log(ret.toFixed(), err);
     }
