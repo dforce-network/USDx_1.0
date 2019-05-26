@@ -703,6 +703,15 @@ contract('DFEngine', accounts => {
                                     recordLockToken[tokenAddressList[index]] = recordLockToken.hasOwnProperty(tokenAddressList[index]) ? 
                                         recordLockToken[tokenAddressList[index]].add(amountLock) : amountLock;
 
+                                    recordDfCollateralToken[tokenAddressList[index]] = recordDfCollateralToken.hasOwnProperty([tokenAddressList[index]]) ?
+                                        recordDfCollateralToken[tokenAddressList[index]].add(amountLock) : amountLock;
+
+                                    recordMintedTotal = recordMintedTotal.add(amountLock);
+                                    recordMinted[recordMintedPosition] = recordMinted.hasOwnProperty(recordMintedPosition) ? 
+                                        recordMinted[recordMintedPosition].add(amountLock) : amountLock;
+                                    recordDfCollateralToken[tokenAddressList[index]] = recordDfCollateralToken.hasOwnProperty([tokenAddressList[index]]) ?
+                                        recordDfCollateralToken[tokenAddressList[index]].add(amountLock) : amountLock;
+
                                     console.log('token address : ' + tokenAddressList[index]);
                                     console.log('record: token belance:');
                                     console.log(recordToken[tokenAddressList[index]]);
@@ -726,11 +735,7 @@ contract('DFEngine', accounts => {
 
                                     recordAccountMap[tokenAddressList[index]][accountAddress] = recordAccountMap[tokenAddressList[index]][accountAddress].sub(amountMint);
                                     recordLockToken[tokenAddressList[index]] = recordLockToken[tokenAddressList[index]].sub(amountMint);
-                                    recordMintedTotal = recordMintedTotal.add(amountMint);
-                                    recordMinted[recordMintedPosition] = recordMinted.hasOwnProperty(recordMintedPosition) ? 
-                                        recordMinted[recordMintedPosition].add(amountMint) : amountMint;
-                                    recordDfCollateralToken[tokenAddressList[index]] = recordDfCollateralToken.hasOwnProperty([tokenAddressList[index]]) ?
-                                        recordDfCollateralToken[tokenAddressList[index]].add(amountMint) : amountMint;
+                                    
                                 }
                             }
 
@@ -1518,8 +1523,8 @@ contract('DFEngine', accounts => {
                                 amountMinTotal = amountMinTotal.add(amountMin);
                             }
 
-                            recordMintedTotal = recordMintedTotal.add(amountMinTotal);
-                            recordMinted[recordMintedPosition] = recordMinted.hasOwnProperty(recordMintedPosition) ? recordMinted[recordMintedPosition].add(amountMinTotal) : amountMinTotal;
+                            // recordMintedTotal = recordMintedTotal.add(amountMinTotal);
+                            // recordMinted[recordMintedPosition] = recordMinted.hasOwnProperty(recordMintedPosition) ? recordMinted[recordMintedPosition].add(amountMinTotal) : amountMinTotal;
 
                             amountNB = amountMinTotal.lt(amountNB) ? amountMinTotal : amountNB;
                             console.log('claim Real the amount');
@@ -1583,14 +1588,14 @@ contract('DFEngine', accounts => {
                         while (condition < runTimes){
                             console.log('config : ' + (configIndex + 1) + ' dfEngine : ' + (dfEngineTimes + 1) + ' runType : ' + runType + ' runTimes ' + (condition + 1) + '\n');
                             
-                            for (let index = 0; index < tokenAddressList.length; index++) {
+                            // for (let index = 0; index < tokenAddressList.length; index++) {
 
-                                if (recordToken.hasOwnProperty(tokenAddressList[index]) && recordLockToken.hasOwnProperty(tokenAddressList[index])) {
+                            //     if (recordToken.hasOwnProperty(tokenAddressList[index]) && recordLockToken.hasOwnProperty(tokenAddressList[index])) {
 
-                                    recordToken[tokenAddressList[index]] = recordToken[tokenAddressList[index]].add(recordLockToken[tokenAddressList[index]]);
-                                    recordLockToken[tokenAddressList[index]] = new BN(0);
-                                }
-                            }
+                            //         recordToken[tokenAddressList[index]] = recordToken[tokenAddressList[index]].add(recordLockToken[tokenAddressList[index]]);
+                            //         recordLockToken[tokenAddressList[index]] = new BN(0);
+                            //     }
+                            // }
 
                             tokenAddressIndex = [];
                             tokenWeightList = [];
