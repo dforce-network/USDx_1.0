@@ -40,9 +40,9 @@ export default class Header extends React.Component {
                                     <span className="balance">{this.props.status.myETH ? this.props.status.myETH : '0.0'}</span>
                                 </td>
                                 <td>
-                                    <span className="token">USDx</span>
-                                    <img style={{ display: this.props.status.approvedUSDx ? 'none' : 'inline-block' }} src={lock} alt="" onClick={() => { this.approve('USDx') }} />
-                                    <img style={{ display: this.props.status.approvedUSDx ? 'inline-block' : 'none' }} src={unlock} alt="" onClick={() => { this.lock('USDx') }} />
+                                    <span className="token">USDX</span>
+                                    <img style={{ display: this.props.status.approvedUSDx ? 'none' : 'inline-block' }} src={lock} alt="" onClick={() => { this.approve('USDX') }} />
+                                    <img style={{ display: this.props.status.approvedUSDx ? 'inline-block' : 'none' }} src={unlock} alt="" onClick={() => { this.lock('USDX') }} />
                                     <span className="balance">{this.props.status.myUSDx ? this.props.status.myUSDx : '0.0'}</span>
                                 </td>
                                 <td>

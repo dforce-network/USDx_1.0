@@ -125,7 +125,7 @@ export default class Home extends React.Component {
     componentDidMount () {}
     render () {
         return (
-            <DocuentTitle title='USDx portal'>
+            <DocuentTitle title='USDX portal'>
                 <React.Fragment>
                     {/* <Welcome ifShow={this.state.isConnected} connectMetamask={()=>{this.connectMetamask()}}/> */}
                     <Notify transcations={this.state.transcations}/>
@@ -140,7 +140,7 @@ export default class Home extends React.Component {
                                         <p className="token">DAI</p>
                                     </div>
                                     <div className="right">
-                                        <p className="section">{this.state.sectionDAI? this.state.sectionDAI : 'NaN'} ({(this.state.sectionDAI * 100 /this.state.tatolSection).toFixed(2)}%)</p>
+                                        <p className="section">{this.state.sectionDAI? this.state.sectionDAI : '-'} ({this.state.sectionDAI? (this.state.sectionDAI * 100 /this.state.tatolSection).toFixed(2) : '-'}%)</p>
                                         <p className="sectionNum">{this.state.DAIonPool? this.state.DAIonPool : '0.0'}</p>
                                     </div>
                                     <div className="clear"></div>
@@ -151,7 +151,7 @@ export default class Home extends React.Component {
                                         <p className="token">PAX</p>
                                     </div>
                                     <div className="right">
-                                        <p className="section">{this.state.sectionPAX? this.state.sectionPAX : 'NaN'} ({(this.state.sectionPAX * 100 /this.state.tatolSection).toFixed(2)}%)</p>
+                                        <p className="section">{this.state.sectionPAX? this.state.sectionPAX : '-'} ({this.state.sectionPAX? (this.state.sectionPAX * 100 /this.state.tatolSection).toFixed(2) : '-'}%)</p>
                                         <p className="sectionNum">{this.state.PAXonPool? this.state.PAXonPool : '0.0'}</p>
                                     </div>
                                     <div className="clear"></div>
@@ -162,7 +162,7 @@ export default class Home extends React.Component {
                                         <p className="token">USDC</p>
                                     </div>
                                     <div className="right">
-                                        <p className="section">{this.state.sectionUSDC? this.state.sectionUSDC : 'NaN'} ({(this.state.sectionUSDC * 100 /this.state.tatolSection).toFixed(2)}%)</p>
+                                        <p className="section">{this.state.sectionUSDC? this.state.sectionUSDC : '-'} ({this.state.sectionUSDC? (this.state.sectionUSDC * 100 /this.state.tatolSection).toFixed(2) : '-'}%)</p>
                                         <p className="sectionNum">{this.state.USDConPool? this.state.USDConPool : '0.0'}</p>
                                     </div>
                                     <div className="clear"></div>
@@ -173,14 +173,14 @@ export default class Home extends React.Component {
                                         <p className="token">TUSD</p>
                                     </div>
                                     <div className="right">
-                                        <p className="section">{this.state.sectionTUSD? this.state.sectionTUSD : 'NaN'} ({(this.state.sectionTUSD * 100 /this.state.tatolSection).toFixed(2)}%)</p>
+                                        <p className="section">{this.state.sectionTUSD? this.state.sectionTUSD : '-'} ({this.state.sectionTUSD? (this.state.sectionTUSD * 100 /this.state.tatolSection).toFixed(2) : '-'}%)</p>
                                         <p className="sectionNum">{this.state.TUSDonPool? this.state.TUSDonPool : '0.0'}</p>
                                     </div>
                                     <div className="clear"></div>
                                 </div>
 
                                 <div className="totalUSDx">
-                                    <div className="title">Total USDx Outstanding</div>
+                                    <div className="title">Total USDX Outstanding</div>
                                     <div className="usdxNum">{this.state.totalSupplyUSDx? this.state.totalSupplyUSDx : '0.0'}</div>
                                 </div>
 
@@ -228,7 +228,7 @@ export default class Home extends React.Component {
                                             </Select>
                                         </div>
                                         <div className="myBalanceOnPool myBalanceOnPoolMax">
-                                            Max USDx available to generate: <span>{this.state.maxGenerateUSDx ? this.state.maxGenerateUSDx : '0.0'}</span>
+                                            Max USDX available to generate: <span>{this.state.maxGenerateUSDx ? this.state.maxGenerateUSDx : '0.0'}</span>
                                         </div>
                                         <div className="ButtonWrap">
                                             <Button
@@ -245,10 +245,10 @@ export default class Home extends React.Component {
                                         <div className="claim">Maximal USDX to claim <span>0.0</span></div>
                                         <div className="ButtonWrap marginTop10 marginMax">
                                             <Button
-                                                onClick={() => { this.deposit() }}
+                                                onClick={() => { this.claim() }}
                                                 variant="contained"
                                                 color="secondary"
-                                                disabled={this.state.couldDeposit ? false : true}
+                                                // disabled={this.state.couldDeposit ? false : true}
                                                 fullWidth={true}
                                             >
                                                 CLAIM
@@ -261,10 +261,10 @@ export default class Home extends React.Component {
                                     </div>
                                     
                                     <div style={{ display: !this.state.tab1 ? 'block' : 'none' }} className="generate">
-                                        <p className="details">How much USDx would you like to disaggregate?</p>
+                                        <p className="details">How much USDX would you like to disaggregate?</p>
                                         <div className="input">
                                             <input type="number" onChange={(val) => { this.destroyNumChange(val.target.value) }} value={this.state.toDestroyNum} />
-                                            <Select className="mySelect" defaultValue="USDx" disabled></Select>
+                                            <Select className="mySelect" defaultValue="USDX" disabled></Select>
                                         </div>
                                         <div className="clear"></div>
                                         <div className="ButtonWrap ButtonWrapWithdraw">
@@ -280,7 +280,7 @@ export default class Home extends React.Component {
                                         <div className="tips tipsMax">
                                             <div className="imgWrap">
                                                 <img src={doubt} alt="" />
-                                                <div className="detials">When you proceed destroying USDx, certain amount of DF coin is going to charge for brassage. The current fee is 5DF.</div>
+                                                <div className="detials">When you proceed destroying USDX, certain amount of DF coin is going to charge for brassage. The current fee is 5DF.</div>
                                             </div>
                                             DF fee needed {this.state.couldDestroy ? '5' : '0'}
                                         </div>
@@ -602,25 +602,25 @@ export default class Home extends React.Component {
     }
     // getMyBalanceOnPool
     getMyBalanceOnPool () {
-        this.contractData.getDepositorBalance.call(this.addressDAI, this.state.accountAddress, (err, ret) => {
+        this.contractData.getDepositorBalance.call(this.state.accountAddress, this.addressDAI, (err, ret) => {
             this.setState({
                 ...this.state,
                 myDAIonPool: this.formatNumber(ret)
             });
         });
-        this.contractData.getDepositorBalance.call(this.addressPAX, this.state.accountAddress, (err, ret) => {
+        this.contractData.getDepositorBalance.call(this.state.accountAddress, this.addressPAX, (err, ret) => {
             this.setState({
                 ...this.state,
                 myPAXonPool: this.formatNumber(ret)
             });
         });
-        this.contractData.getDepositorBalance.call(this.addressTUSD, this.state.accountAddress, (err, ret) => {
+        this.contractData.getDepositorBalance.call(this.state.accountAddress, this.addressTUSD, (err, ret) => {
             this.setState({
                 ...this.state,
                 myTUSDonPool: this.formatNumber(ret)
             });
         });
-        this.contractData.getDepositorBalance.call(this.addressUSDC, this.state.accountAddress, (err, ret) => {
+        this.contractData.getDepositorBalance.call(this.state.accountAddress, this.addressUSDC, (err, ret) => {
             this.setState({
                 ...this.state,
                 myUSDConPool: this.formatNumber(ret)
@@ -1302,7 +1302,7 @@ export default class Home extends React.Component {
                     }
                 }
             );
-        } else if (token === 'USDx') {
+        } else if (token === 'USDX') {
             this.contractUSDx.approve.sendTransaction(
                 this.addressConvert,
                 -1,
@@ -1348,7 +1348,7 @@ export default class Home extends React.Component {
                         });
 
                         var approveUSDxtimer = setInterval(() => {
-                            console.log('i am checking approve USDx...');
+                            console.log('i am checking approve USDX...');
                             this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
                                 if (data && data.status === '0x1') {
                                     clearInterval(approveUSDxtimer);
@@ -1924,7 +1924,7 @@ export default class Home extends React.Component {
                     }
                 }
             );
-        } else if (token === 'USDx') {
+        } else if (token === 'USDX') {
             this.contractUSDx.approve.sendTransaction(
                 this.addressConvert,
                 0,
@@ -1969,7 +1969,7 @@ export default class Home extends React.Component {
                         });
 
                         var lockUSDxtimer = setInterval(() => {
-                            console.log('i am checking lock USDx...');
+                            console.log('i am checking lock USDX...');
                             this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
                                 if (data && data.status === '0x1') {
                                     clearInterval(lockUSDxtimer);
@@ -2882,6 +2882,7 @@ export default class Home extends React.Component {
                                         }
                                         tmepState.toDepositNum = '';
                                         tmepState.couldDeposit = false;
+                                        tmepState.maxGenerateUSDx = '';
                                         this.setState({tmepState});
 
                                         setTimeout(() => {
@@ -3010,6 +3011,7 @@ export default class Home extends React.Component {
                                         }
                                         tmepState.toDepositNum = '';
                                         tmepState.couldDeposit = false;
+                                        tmepState.maxGenerateUSDx = '';
                                         this.setState({tmepState});
 
                                         setTimeout(() => {
@@ -3138,6 +3140,7 @@ export default class Home extends React.Component {
                                         }
                                         tmepState.toDepositNum = '';
                                         tmepState.couldDeposit = false;
+                                        tmepState.maxGenerateUSDx = '';
                                         this.setState({tmepState});
 
                                         setTimeout(() => {
@@ -3266,6 +3269,7 @@ export default class Home extends React.Component {
                                         }
                                         tmepState.toDepositNum = '';
                                         tmepState.couldDeposit = false;
+                                        tmepState.maxGenerateUSDx = '';
                                         this.setState({tmepState});
 
                                         setTimeout(() => {
@@ -3376,13 +3380,13 @@ export default class Home extends React.Component {
                 ...this.state,
                 fromDestroy2: true
             });
-            this.approve('USDx');
+            this.approve('USDX');
             return;
         }
 
         const keys = Object.keys(this.state.transcations);
         for (var i = 0; i < keys.length; i++) {
-            if (this.state.transcations[keys[i]].title === 'Destroy USDx') {
+            if (this.state.transcations[keys[i]].title === 'Destroy USDX') {
                 return;
             }
         }
@@ -3393,7 +3397,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Destroy USDx',
+            title: 'Destroy USDX',
         }
         this.setState({tmepState});
         this.contractProxy.destroy.sendTransaction(
@@ -3407,7 +3411,7 @@ export default class Home extends React.Component {
                     const keys = Object.keys(this.state.transcations);
                     const tmepState = this.state;
                     keys.map((key) => {
-                        if (tmepState.transcations[key].title === 'Destroy USDx') {
+                        if (tmepState.transcations[key].title === 'Destroy USDX') {
                             tmepState.transcations[key] = {
                                 ...tmepState.transcations[key],
                                 class: 'error'
@@ -3427,7 +3431,7 @@ export default class Home extends React.Component {
                     const tmepState = this.state;
 
                     keys.map((key) => {
-                        if (tmepState.transcations[key].title === 'Destroy USDx') {
+                        if (tmepState.transcations[key].title === 'Destroy USDX') {
                             tmepState.transcations[key].txhash = ret;
                             tmepState.transcations[key] = {
                                 ...tmepState.transcations[key],
@@ -3439,7 +3443,7 @@ export default class Home extends React.Component {
                     });
 
                     var destroyUSDxtimer = setInterval(() => {
-                        console.log('i am checking destroy USDx...');
+                        console.log('i am checking destroy USDX...');
                         this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
                             if (data && data.status === '0x1') {
                                 clearInterval(destroyUSDxtimer);
@@ -3498,7 +3502,123 @@ export default class Home extends React.Component {
         )
     }
 
+    // claim
+    claim () {
+        const keys = Object.keys(this.state.transcations);
+        for (var i = 0; i < keys.length; i++) {
+            if (this.state.transcations[keys[i]].title === 'CLAIM USDX') {
+                return;
+            }
+        }
+        const id = Math.random();
+        const msg = 'Waiting for transaction signature...';
+        const tmepState = this.state;
+        tmepState.transcations[id] = {
+            id: id,
+            msg: msg,
+            class: 'inprocess',
+            title: 'CLAIM USDX',
+        }
+        this.setState({tmepState});
+        this.contractProxy.withdraw.sendTransaction(
+            this.addressUSDx,
+            1,
+            {
+                from: this.state.accountAddress,
+                gas: 3000000
+            },
+            (err, ret) => {
+                if (err) {
+                    const keys = Object.keys(this.state.transcations);
+                    const tmepState = this.state;
+                    keys.map((key) => {
+                        if (tmepState.transcations[key].title === 'CLAIM USDX') {
+                            tmepState.transcations[key] = {
+                                ...tmepState.transcations[key],
+                                class: 'error'
+                            }
+                            this.setState({tmepState});
 
+                            setTimeout(() => {
+                                delete tmepState.transcations[key];
+                                this.setState({tmepState});
+                            }, 3000);
+                        };
+                        return false;
+                    });
+                }
+                if (ret) {
+                    const keys = Object.keys(this.state.transcations);
+                    const tmepState = this.state;
+
+                    keys.map((key) => {
+                        if (tmepState.transcations[key].title === 'CLAIM USDX') {
+                            tmepState.transcations[key].txhash = ret;
+                            tmepState.transcations[key] = {
+                                ...tmepState.transcations[key],
+                                msg: 'Waiting for confirmation...'
+                            }
+                            this.setState({tmepState});
+                        };
+                        return false;
+                    });
+
+                    var claimUSDxtimer = setInterval(() => {
+                        console.log('i am checking claim USDX...');
+                        this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                            if (data && data.status === '0x1') {
+                                clearInterval(claimUSDxtimer);
+                                const keys = Object.keys(this.state.transcations);
+                                const tmepState = this.state;
+                                keys.map((key) => {
+                                    if (tmepState.transcations[key].txhash === ret) {
+                                        tmepState.transcations[key] = {
+                                            ...tmepState.transcations[key],
+                                            class: 'success',
+                                            msg: 'Transaction success'
+                                        }
+                                        this.setState({tmepState});
+
+                                        setTimeout(() => {
+                                            delete tmepState.transcations[key];
+                                            this.setState({tmepState});
+                                        }, 3000);
+                                    };
+                                    return false;
+                                })
+                                setTimeout(() => {
+                                    this.getMyBalance();
+                                    this.getPoolBankTotalStatus();
+                                    this.getMyBalanceOnPool();
+                                }, 3000)
+                            }
+                            if (data && data.status === '0x0') {
+                                clearInterval(claimUSDxtimer);
+                                const keys = Object.keys(this.state.transcations);
+                                const tmepState = this.state;
+                                keys.map((key) => {
+                                    if (tmepState.transcations[key].txhash === ret) {
+                                        tmepState.transcations[key] = {
+                                            ...tmepState.transcations[key],
+                                            class: 'error',
+                                            msg: 'Transaction failed'
+                                        }
+                                        this.setState({tmepState});
+
+                                        setTimeout(() => {
+                                            delete tmepState.transcations[key];
+                                            this.setState({tmepState});
+                                        }, 3000);
+                                    };
+                                    return false;
+                                })
+                            }
+                        })
+                    }, 2000);
+                }
+            }
+        )
+    }
 
 
 }
