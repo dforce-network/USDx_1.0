@@ -1,9 +1,9 @@
 pragma solidity ^0.5.2;
 
 import '../utility/DSAuth.sol';
-import '../utility/DSMath.sol';
+import '../utility/Utils.sol';
 
-contract DFStore is DSMath, DSAuth {
+contract DFStore is DSAuth, Utils {
     // MEMBERS
     /// @dev  cw - The Weight of collateral
     struct Section {
@@ -36,7 +36,7 @@ contract DFStore is DSMath, DSAuth {
     uint private totalBurned;
 
     mapping(address => uint) public colsBalance;
-    mapping(address => uint) public lockedBalance;
+    mapping(address => uint) public resUSDXBalance;
     mapping(address => mapping (address => uint)) public depositorsBalance;
 
     event UpdateSection(address[] _colIDs, uint[] _number);
@@ -98,6 +98,7 @@ contract DFStore is DSMath, DSAuth {
     }
 
     function getSectionData(uint _position) public view returns (uint, uint, uint, address[] memory, uint[] memory) {
+
         return (
             secList[_position].minted,
             secList[_position].burned,
@@ -151,8 +152,8 @@ contract DFStore is DSMath, DSAuth {
     }
 
     function setBackupSection(uint _position, address[] memory _colIDs, uint[] memory _weight) public auth {
-        require(_colIDs.length == _weight.length, "SetBackupSection: data not allow.");
-        require(_position < mintPosition, "SetBackupSection: update mint section first.");
+        require(_colIDs.length == _weight.length, "SetBackupSection: 0 address not allow.");
+        require(_position < mintPosition, "SetBackupSection: cw not allow.");
 
         uint _backupIdx = secList[_position].backupIdx;
 
@@ -184,19 +185,19 @@ contract DFStore is DSMath, DSAuth {
         burnPosition += 1;
     }
 
-    function getMintingToken(address _token) public view returns (bool) {
+    function getMintedToken(address _token) public view returns (bool) {
         return mintingTokens[_token];
     }
 
-    function setMintingToken(address _token, bool _flag) public auth {
+    function setMintedToken(address _token, bool _flag) public auth {
         mintingTokens[_token] = _flag;
     }
 
-    function getMintedToken(address _token) public view returns (bool) {
+    function getToken(address _token) public view returns (bool) {
         return mintedTokens[_token];
     }
 
-    function setMintedToken(address _token, bool _flag) public auth {
+    function setToken(address _token, bool _flag) public auth {
         mintedTokens[_token] = _flag;
     }
 
@@ -250,12 +251,12 @@ contract DFStore is DSMath, DSAuth {
         colsBalance[_tokenID] = _amount;
     }
 
-    function getLockedBalance(address _tokenID) public view returns (uint) {
-        return lockedBalance[_tokenID];
+    function getResUSDXBalance(address _tokenID) public view returns (uint) {
+        return resUSDXBalance[_tokenID];
     }
 
-    function setLockedBalance(address _tokenID, uint _amount) public auth {
-        lockedBalance[_tokenID] = _amount;
+    function setResUSDXBalance(address _tokenID, uint _amount) public auth {
+        resUSDXBalance[_tokenID] = _amount;
     }
 
     function getDepositorBalance(address _depositor, address _tokenID) public view returns (uint) {

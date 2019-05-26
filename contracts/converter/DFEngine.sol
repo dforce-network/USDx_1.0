@@ -35,11 +35,11 @@ contract DFEngine is DSMath, DSAuth {
     }
 
     function updateMintSection(address[] memory _tokens, uint[] memory _weight) public auth {
-        address[] memory _mintTokens = dfStore.getSectionToken(dfStore.getMintPosition());
-        for (uint i = 0; i < _mintTokens.length; i++) {
-            dfStore.setTokenBalance(_mintTokens[i], add(dfStore.getTokenBalance(_mintTokens[i]), dfStore.getLockedBalance(_mintTokens[i])));
-            dfStore.setLockedBalance(_mintTokens[i], 0);
-        }
+        // address[] memory _mintTokens = dfStore.getSectionToken(dfStore.getMintPosition());
+        // for (uint i = 0; i < _mintTokens.length; i++) {
+        //     dfStore.setTokenBalance(_mintTokens[i], add(dfStore.getTokenBalance(_mintTokens[i]), dfStore.getResUSDXBalance(_mintTokens[i])));
+        //     dfStore.setResUSDXBalance(_mintTokens[i], 0);
+        // }
         dfStore.setSection(_tokens, _weight);
     }
 
@@ -51,7 +51,7 @@ contract DFEngine is DSMath, DSAuth {
         (, , , _tokens, _mintCW) = dfStore.getSectionData(dfStore.getMintPosition());
 
         uint[] memory _tokenBalance = new uint[](_tokens.length);
-        uint[] memory _lockedBalance = new uint[](_tokens.length);
+        uint[] memory _resUSDXBalance = new uint[](_tokens.length);
         uint[] memory _depositorBalance = new uint[](_tokens.length);
         uint _depositorMintAmount;
         uint _depositorMintTotal;
@@ -61,7 +61,7 @@ contract DFEngine is DSMath, DSAuth {
         dfPool.transferFromSender(_tokenID, _depositor, _amount);
         for (uint i = 0; i < _tokens.length; i++) {
             _tokenBalance[i] = dfStore.getTokenBalance(_tokens[i]);
-            _lockedBalance[i] = dfStore.getLockedBalance(_tokens[i]);
+            _resUSDXBalance[i] = dfStore.getResUSDXBalance(_tokens[i]);
             _depositorBalance[i] = dfStore.getDepositorBalance(_depositor, _tokens[i]);
             if (_tokenID == _tokens[i]){
                 _tokenBalance[i] = add(_tokenBalance[i], _amount);
@@ -71,10 +71,10 @@ contract DFEngine is DSMath, DSAuth {
             _step = min(div(_tokenBalance[i], _mintCW[i]), _step);
         }
         if (_step > 0) {
-            _convert(_depositor, _tokens, _mintCW, _tokenBalance, _lockedBalance, _depositorBalance, _step);
+            _convert(_depositor, _tokens, _mintCW, _tokenBalance, _resUSDXBalance, _depositorBalance, _step);
         } else {
             for (uint i = 0; i < _tokens.length; i++) {
-                _depositorMintAmount = min(_depositorBalance[i], _lockedBalance[i]);
+                _depositorMintAmount = min(_depositorBalance[i], _resUSDXBalance[i]);
 
                 if (_depositorMintAmount == 0) {
                     if (_tokenID == _tokens[i]) {
@@ -84,16 +84,17 @@ contract DFEngine is DSMath, DSAuth {
                 }
 
                 dfStore.setDepositorBalance(_depositor, _tokens[i], _depositorBalance[i] - _depositorMintAmount);
-                dfPool.transferToCol(_tokens[i], _depositorMintAmount);
-                dfStore.setLockedBalance(_tokens[i], _lockedBalance[i] - _depositorMintAmount);
+                // dfPool.transferToCol(_tokens[i], _depositorMintAmount);
+                dfStore.setResUSDXBalance(_tokens[i], _resUSDXBalance[i] - _depositorMintAmount);
                 _depositorMintTotal = add(_depositorMintTotal, _depositorMintAmount);
             }
 
             if (_depositorMintTotal > 0) {
-                usdxToken.mint(address(this), _depositorMintTotal);
-                usdxToken.transfer(_depositor, _depositorMintTotal);
-                dfStore.addTotalMinted(_depositorMintTotal);
-                dfStore.addSectionMinted(_depositorMintTotal);
+                // usdxToken.mint(address(dfPool), _depositorMintTotal);
+                dfPool.transferOut(address(usdxToken), _depositor, _depositorMintTotal);
+                // usdxToken.transfer(_depositor, _depositorMintTotal);
+                // dfStore.addTotalMinted(_depositorMintTotal);
+                // dfStore.addSectionMinted(_depositorMintTotal);
             }
             dfStore.setTokenBalance(_tokenID, _tokenBalance[_index]);
         }
@@ -125,60 +126,62 @@ contract DFEngine is DSMath, DSAuth {
     function claim(address _depositor, uint _amount) public returns (uint) {
         require(_amount > 0, "Claim: amount not correct.");
         address[] memory _tokens = dfStore.getSectionToken(dfStore.getMintPosition());
-        uint _lockedBalance;
+        uint _resUSDXBalance;
         uint _depositorBalance;
         uint _depositorMintAmount;
         uint _remain = _amount;
 
         for (uint i = 0; i < _tokens.length && _remain > 0; i++) {
-            _lockedBalance = dfStore.getLockedBalance(_tokens[i]);
+            _resUSDXBalance = dfStore.getResUSDXBalance(_tokens[i]);
             _depositorBalance = dfStore.getDepositorBalance(_depositor, _tokens[i]);
-            _depositorMintAmount = min(min(_lockedBalance, _depositorBalance), _remain);
+            _depositorMintAmount = min(min(_resUSDXBalance, _depositorBalance), _remain);
             _remain = sub(_remain, _depositorMintAmount);
 
             if (_depositorMintAmount > 0){
-                dfStore.setTokenBalance(_tokens[i], _lockedBalance - _depositorMintAmount);
+                dfStore.setResUSDXBalance(_tokens[i], _resUSDXBalance - _depositorMintAmount);
                 dfStore.setDepositorBalance(_depositor, _tokens[i], _depositorBalance - _depositorMintAmount);
-                dfPool.transferToCol(_tokens[i], _depositorMintAmount);
+                // dfPool.transferToCol(_tokens[i], _depositorMintAmount);
             }
         }
 
         require(_remain > 0, "Claim: balance not enough.");
-        usdxToken.mint(address(this), _amount);
-        usdxToken.transfer(_depositor, _amount);
-        dfStore.addTotalMinted(_amount);
-        dfStore.addSectionMinted(_amount);
+        dfPool.transferOut(address(usdxToken), _depositor, _amount);
+        // usdxToken.mint(address(this), _amount);
+        // usdxToken.transfer(_depositor, _amount);
+        // dfStore.addTotalMinted(_amount);
+        // dfStore.addSectionMinted(_amount);
         return _amount;
     }
 
     function claim(address _depositor) public returns (uint) {
         address[] memory _tokens = dfStore.getSectionToken(dfStore.getMintPosition());
-        uint _lockedBalance;
+        uint _resUSDXBalance;
         uint _depositorBalance;
         uint _depositorMintAmount;
         uint _mintAmount;
 
         for (uint i = 0; i < _tokens.length; i++) {
-            _lockedBalance = dfStore.getLockedBalance(_tokens[i]);
+            _resUSDXBalance = dfStore.getResUSDXBalance(_tokens[i]);
             _depositorBalance = dfStore.getDepositorBalance(_depositor, _tokens[i]);
 
-            _depositorMintAmount = min(_lockedBalance, _depositorBalance);
+            _depositorMintAmount = min(_resUSDXBalance, _depositorBalance);
             _mintAmount = add(_mintAmount, _depositorMintAmount);
 
             if (_depositorMintAmount > 0){
-                dfStore.setLockedBalance(_tokens[i], _lockedBalance - _depositorMintAmount);
+                dfStore.setResUSDXBalance(_tokens[i], _resUSDXBalance - _depositorMintAmount);
                 dfStore.setDepositorBalance(_depositor, _tokens[i], _depositorBalance - _depositorMintAmount);
-                dfPool.transferToCol(_tokens[i], _depositorMintAmount);
+                // dfPool.transferToCol(_tokens[i], _depositorMintAmount);
             }
         }
 
         if (_mintAmount <= 0)
             return 0;
 
-        usdxToken.mint(address(this), _mintAmount);
-        usdxToken.transfer(_depositor, _mintAmount);
-        dfStore.addTotalMinted(_mintAmount);
-        dfStore.addSectionMinted(_mintAmount);
+        dfPool.transferOut(address(usdxToken), _depositor, _mintAmount);
+        // usdxToken.mint(address(this), _mintAmount);
+        // usdxToken.transfer(_depositor, _mintAmount);
+        // dfStore.addTotalMinted(_mintAmount);
+        // dfStore.addSectionMinted(_mintAmount);
         return _mintAmount;
     }
 
@@ -233,37 +236,41 @@ contract DFEngine is DSMath, DSAuth {
         address[] memory _tokens,
         uint[] memory _mintCW,
         uint[] memory _tokenBalance,
-        uint[] memory _lockedBalance,
+        uint[] memory _resUSDXBalance,
         uint[] memory _depositorBalance,
         uint _step)
         internal
     {
         uint _mintAmount;
+        uint _mintTotal;
         uint _lockAmount;
         uint _depositorMintAmount;
         uint _depositorMintTotal;
 
         for (uint i = 0; i < _tokens.length; i++) {
             _mintAmount = mul(_step, _mintCW[i]);
-            _lockAmount = add(_lockedBalance[i], _mintAmount);
-            _depositorMintAmount = min(_depositorBalance[i], add(_lockedBalance[i], _mintAmount));
+            _lockAmount = add(_resUSDXBalance[i], _mintAmount);
+            _depositorMintAmount = min(_depositorBalance[i], add(_resUSDXBalance[i], _mintAmount));
             dfStore.setTokenBalance(_tokens[i], _tokenBalance[i] - _mintAmount);
+            dfPool.transferToCol(_tokens[i], _mintAmount);
+            _mintTotal = add(_mintTotal, _mintAmount);
 
             if (_depositorMintAmount == 0){
-                dfStore.setLockedBalance(_tokens[i], add(_lockedBalance[i], _mintAmount));
+                dfStore.setResUSDXBalance(_tokens[i], add(_resUSDXBalance[i], _mintAmount));
                 continue;
             }
 
             dfStore.setDepositorBalance(_depositor, _tokens[i], _depositorBalance[i] - _depositorMintAmount);
-            dfPool.transferToCol(_tokens[i], _depositorMintAmount);
-            dfStore.setLockedBalance(_tokens[i], add(_lockedBalance[i], _mintAmount) - _depositorMintAmount);
+            // dfPool.transferToCol(_tokens[i], _depositorMintAmount);
+            // dfPool.transferToCol(_tokens[i], _mintAmount);
+            dfStore.setResUSDXBalance(_tokens[i], add(_resUSDXBalance[i], _mintAmount) - _depositorMintAmount);
             _depositorMintTotal = add(_depositorMintTotal, _depositorMintAmount);
         }
 
-        usdxToken.mint(address(this), _depositorMintTotal);
-        usdxToken.transfer(_depositor, _depositorMintTotal);
-
-        dfStore.addTotalMinted(_depositorMintTotal);
-        dfStore.addSectionMinted(_depositorMintTotal);
+        dfStore.addTotalMinted(_mintTotal);
+        dfStore.addSectionMinted(_mintTotal);
+        usdxToken.mint(address(dfPool), _mintTotal);
+        dfPool.transferOut(address(usdxToken), _depositor, _depositorMintTotal);
+        // usdxToken.transfer(_depositor, _depositorMintTotal);
     }
 }

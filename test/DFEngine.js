@@ -38,6 +38,67 @@ contract('DFEngine', accounts => {
 // 各项配置如不填写，测采用随机模式执行
     var runConfig = [
 // deposit
+        [
+    //deposit-pool
+            {
+                'type':'deposit',
+                // 'times':100,
+                'data':[
+                    {
+                        'tokenAddress':1,
+                        'accountAddress':1,
+                        'amount':100,
+                    },
+                    {
+                        'tokenAddress':2,
+                        'accountAddress':2,
+                        'amount':200,
+                    },
+                    {
+                        'tokenAddress':3,
+                        'accountAddress':3,
+                        'amount':300,
+                    },
+                    {
+                        'tokenAddress':4,
+                        'accountAddress':4,
+                        'amount':299,
+                    },
+                ]
+            },
+//deposit-claim 
+            {
+                'type':'updateSection',
+                // 'times':100,
+                'data':[
+                    {
+                        'tokens':[1, 2, 3],
+                        'weight':[1, 2, 3],
+                    },
+                ]
+            },
+            {
+                'type':'deposit',
+                // 'times':100,
+                'data':[
+                    {
+                        'tokenAddress':1,
+                        'accountAddress':1,
+                        'amount':0,
+                    },
+                    {
+                        'tokenAddress':3,
+                        'accountAddress':1,
+                        'amount':888,
+                    },
+                    {
+                        'tokenAddress':2,
+                        'accountAddress':1,
+                        'amount':666,
+                    },
+                ]
+            },
+        ],
             [
 //deposit-pool
                 {
@@ -128,8 +189,8 @@ contract('DFEngine', accounts => {
                     'type':'destroy',
                     'data':[
                         {
-                            'accountAddress':1,
-                            'amount':1,
+                            'accountAddress':4,
+                            'amount':100,
                         }
                     ]
                 },
@@ -544,7 +605,7 @@ contract('DFEngine', accounts => {
                     
                                 if (runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length].hasOwnProperty('tokenAddress')) {
             
-                                    tokenAddress = tokenAddressList[runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['tokenAddress'] - 1];                        
+                                    tokenAddress = collateralAddress[runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['tokenAddress'] - 1];                        
                                 }
             
                                 if (runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length].hasOwnProperty('accountAddress')) {
@@ -558,18 +619,40 @@ contract('DFEngine', accounts => {
                                 }
                             }
                             var amountNB = new BN(Number(amount * 10 ** 18).toLocaleString().replace(/,/g,''));
+                            console.log('deposit token index : ' + (collateralAddress.indexOf(tokenAddress) + 1));
                             console.log('deposit token name : ' + await collateralObject[tokenAddress].name.call());
                             console.log('deposit token address : ' + tokenAddress);
                             console.log('deposit account index : ' + (accounts.indexOf(accountAddress) + 1));
                             console.log('deposit account address : ' + accountAddress);
                             console.log('\n');
-                            console.log('create deposit amount');
+                            console.log('deposit amount');
                             console.log(amount);
                             console.log(amount.toLocaleString().replace(/,/g,''));
                             console.log(amountNB);
                             console.log(amountNB.toString());
                             console.log('\n');
-                            
+
+                            accountTokenBalanceOrigin = await collateralObject[tokenAddress].balanceOf.call(accountAddress);
+                            await collateralObject[tokenAddress].approve(dfPool.address, amountNB, {from: accountAddress});
+
+                            // transactionData = await dfEngine.deposit(accountAddress, tokenAddress, amountNB, {from: accountAddress});
+                            // depositGasUsed = depositGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : depositGasUsed;
+                            // depositGasData[depositGasData.length] = transactionData.receipt.gasUsed;
+                            // console.log('dfEngine ' + (dfEngineTimes + 1) + ' ' + runType + ' runTimes ' + (condition + 1) + ' gasUsed:' + transactionData.receipt.gasUsed + '\n');
+
+                            try {
+                                transactionData = await dfEngine.deposit(accountAddress, tokenAddress, amountNB, {from: accountAddress});
+                                depositGasUsed = depositGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : depositGasUsed;
+                                depositGasData[depositGasData.length] = transactionData.receipt.gasUsed;
+                                runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['gasUsed'] = transactionData.receipt.gasUsed;
+                                console.log('dfEngine ' + (dfEngineTimes + 1) + ' ' + runType + ' runTimes ' + (condition + 1) + ' gasUsed:' + transactionData.receipt.gasUsed + '\n');
+                            }
+                            catch (error) {
+                                console.log(error.message + '\n');
+                                condition++;
+                                continue;
+                            }
+
                             recordToken[tokenAddress] = recordToken.hasOwnProperty(tokenAddress) ? recordToken[tokenAddress].add(amountNB) : amountNB;
                             recordTokenTotal = recordTokenTotal.add(amountNB);
 
@@ -594,7 +677,7 @@ contract('DFEngine', accounts => {
                             console.log(recordAccountTotalMap[accountAddress].toString());
                             console.log('\n');
 
-                            var times = new BN(0);
+                            var times = new BN(-1);
                             var cw = new BN(0);
                             for (let index = 0; index < tokenWeightList.length; index++) {
 
@@ -603,9 +686,12 @@ contract('DFEngine', accounts => {
                                     times = new BN(0);
                                     continue;
                                 }
-                                times = times.eq(new BN(0)) ? recordToken[tokenAddressList[index]].div(cw) : 
+                                times = times.eq(new BN(-1)) ? recordToken[tokenAddressList[index]].div(cw) : 
                                     (times.gt(recordToken[tokenAddressList[index]].div(cw)) ? recordToken[tokenAddressList[index]].div(cw) : times);
                             }
+                            console.log('minted times');
+                            console.log(times);
+                            console.log('\n');
 
                             if (times.gt(new BN(0))){
 
@@ -652,15 +738,6 @@ contract('DFEngine', accounts => {
                             console.log(recordToken[tokenAddress]);
                             console.log(recordToken[tokenAddress].toString());
                             console.log('\n');
-
-                            accountTokenBalanceOrigin = await collateralObject[tokenAddress].balanceOf.call(accountAddress);
-
-                            await collateralObject[tokenAddress].approve(dfPool.address, amountNB, {from: accountAddress});
-
-                            transactionData = await dfEngine.deposit(accountAddress, tokenAddress, amountNB, {from: accountAddress});
-                            depositGasUsed = depositGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : depositGasUsed;
-                            depositGasData[depositGasData.length] = transactionData.receipt.gasUsed;
-                            console.log('dfEngine ' + (dfEngineTimes + 1) + ' ' + runType + ' runTimes ' + (condition + 1) + ' gasUsed:' + transactionData.receipt.gasUsed + '\n');
                             
                             dfStoreTokenBalance = {};
                             dfStoreLockTokenBalance = {};
@@ -798,10 +875,10 @@ contract('DFEngine', accounts => {
                             console.log('config : ' + (configIndex + 1) + ' dfEngine : ' + (dfEngineTimes + 1) + ' runType : ' + runType + ' runTimes ' + (condition + 1) + '\n');
 
                             usdxTotalSupplyOrigin = await usdxToken.totalSupply.call();
-                            if(usdxTotalSupplyOrigin.lte(new BN(0))){
-                                console.log(usdxTotalSupplyOrigin + ' : Usdx token total is zero !!!\n');
-                                break;
-                            }
+                            // if(usdxTotalSupplyOrigin.lte(new BN(0))){
+                            //     console.log(usdxTotalSupplyOrigin + ' : Usdx token total is zero !!!\n');
+                            //     break;
+                            // }
 
                             accountAddress = accounts[MathTool.randomNum(0, accounts.length - 1)];
                             if(runConfig[configIndex][dfEngineTimes].hasOwnProperty('data')){
@@ -824,13 +901,13 @@ contract('DFEngine', accounts => {
                             console.log(usdxBalanceOrigin);
                             console.log(usdxBalanceOrigin.toString());
                             console.log('\n');
-                            if(usdxBalanceOrigin.lte(new BN(0))){
+                            // if(usdxBalanceOrigin.lte(new BN(0))){
 
-                                console.log(usdxTotalSupplyOrigin);
-                                console.log(usdxBalanceOrigin + ' : usdx Token balance is zero !!!\n');
-                                condition++;
-                                continue;
-                            }
+                            //     console.log(usdxTotalSupplyOrigin);
+                            //     console.log(usdxBalanceOrigin + ' : usdx Token balance is zero !!!\n');
+                            //     condition++;
+                            //     continue;
+                            // }
                             
                             amount = MathTool.randomNum(1, Number(usdxBalanceOrigin.div(new BN(Number(10 ** 10).toLocaleString().replace(/,/g,'')))));
                             if(runConfig[configIndex][dfEngineTimes].hasOwnProperty('data')){
@@ -847,11 +924,11 @@ contract('DFEngine', accounts => {
                                 }
                             }
                             var amountNB = typeof(amount) == 'number' ? new BN((amount * 10 ** 10).toLocaleString().replace(/,/g,'')) : amount;
-                            if (amountNB.gt(usdxBalanceOrigin)) {
-                                console.log(usdxBalanceOrigin);
-                                console.log('usdx token balance less than ' + 10**10 + '!!!\n');
-                                continue;
-                            }
+                            // if (amountNB.gt(usdxBalanceOrigin)) {
+                            //     console.log(usdxBalanceOrigin);
+                            //     console.log('usdx token balance less than ' + 10**10 + '!!!\n');
+                            //     continue;
+                            // }
                             console.log('destroy account index : ' + (accounts.indexOf(accountAddress) + 1));
                             console.log('destroy account address : ' + accountAddress);
                             console.log('create destroy random the amount');
@@ -861,11 +938,11 @@ contract('DFEngine', accounts => {
                             console.log(amountNB.toString());
                             console.log('\n');
                             
-                            if(amountNB.lte(new BN(0))){
-                                console.log('destroy random the amount is zero !!!\n');
-                                condition++;
-                                continue;
-                            }
+                            // if(amountNB.lte(new BN(0))){
+                            //     console.log('destroy random the amount is zero !!!\n');
+                            //     condition++;
+                            //     continue;
+                            // }
 
                             burnedTotalOrigin = await dfStore.getTotalBurned.call();
                             burnedOrigin = await dfStore.getSectionBurned.call(await dfStore.getBurnPosition.call());
@@ -910,10 +987,24 @@ contract('DFEngine', accounts => {
                             console.log(approvals);
                             console.log(approvals.toString());
                             console.log('\n');
-                            transactionData = await dfEngine.destroy(accountAddress, amountNB, {from: accountAddress});
-                            destroyGasUsed = destroyGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : destroyGasUsed;
-                            destroyGasData[destroyGasData.length] = transactionData.receipt.gasUsed;
-                            console.log('dfEngine ' + (dfEngineTimes + 1) + ' ' + runType + ' runTimes ' + (condition + 1) + ' gasUsed:' + transactionData.receipt.gasUsed + '\n');
+
+                            try {
+                                transactionData = await dfEngine.destroy(accountAddress, amountNB, {from: accountAddress});
+                                destroyGasUsed = destroyGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : destroyGasUsed;
+                                destroyGasData[destroyGasData.length] = transactionData.receipt.gasUsed;
+                                runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['gasUsed'] = transactionData.receipt.gasUsed;
+                                console.log('dfEngine ' + (dfEngineTimes + 1) + ' ' + runType + ' runTimes ' + (condition + 1) + ' gasUsed:' + transactionData.receipt.gasUsed + '\n');
+                            }
+                            catch (error) {
+                                console.log(error.message + '\n');
+                                condition++;
+                                continue;
+                            }
+                            
+                            // transactionData = await dfEngine.destroy(accountAddress, amountNB, {from: accountAddress});
+                            // destroyGasUsed = destroyGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : destroyGasUsed;
+                            // destroyGasData[destroyGasData.length] = transactionData.receipt.gasUsed;
+                            // console.log('dfEngine ' + (dfEngineTimes + 1) + ' ' + runType + ' runTimes ' + (condition + 1) + ' gasUsed:' + transactionData.receipt.gasUsed + '\n');
 
                             assert.equal((await usdxToken.allowance.call(accountAddress, dfEngine.address)).toString(), '0');
                             assert.equal((await dfToken.allowance.call(accountAddress, dfEngine.address)).toString(), '0');
@@ -1111,14 +1202,14 @@ contract('DFEngine', accounts => {
                             }
 
                             dfStoreAccountTokenOrigin = await dfStore.getDepositorBalance.call(accountAddress, tokenAddress);
-                            if(dfStoreAccountTokenOrigin.lte(new BN(0))){
+                            // if(dfStoreAccountTokenOrigin.lte(new BN(0))){
 
-                                console.log('token address : ' + tokenAddress);
-                                console.log('account address : ' + accountAddress);
-                                console.log('dfStore token balance is zero !!!\n');
-                                condition++;
-                                continue;
-                            }
+                            //     console.log('token address : ' + tokenAddress);
+                            //     console.log('account address : ' + accountAddress);
+                            //     console.log('dfStore token balance is zero !!!\n');
+                            //     condition++;
+                            //     continue;
+                            // }
                             amount = MathTool.randomNum(0, Number(dfStoreAccountTokenOrigin));
                             if(runConfig[configIndex][dfEngineTimes].hasOwnProperty('data')){
                         
@@ -1181,8 +1272,28 @@ contract('DFEngine', accounts => {
                             //     continue;
                             // }
 
-                            amountMin = recordAccountMap[tokenAddress][accountAddress].lt(recordToken[tokenAddress]) ?
-                                recordAccountMap[tokenAddress][accountAddress] : recordToken[tokenAddress];
+                            try {
+                                transactionData = await dfEngine.withdraw(accountAddress, tokenAddress, amountNB, {from: accountAddress});
+                                withdrawGasUsed = withdrawGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : withdrawGasUsed;
+                                withdrawGasData[withdrawGasData.length] = transactionData.receipt.gasUsed;
+                                runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['gasUsed'] = transactionData.receipt.gasUsed;
+                                console.log('dfEngine ' + (dfEngineTimes + 1) + ' ' + runType + ' runTimes ' + (condition + 1) + ' gasUsed:' + transactionData.receipt.gasUsed + '\n');
+                            }
+                            catch (error) {
+                                console.log(error.message + '\n');
+                                condition++;
+                                continue;
+                            }
+
+                            amountMin = new BN(0);
+                            if (recordAccountMap.hasOwnProperty(tokenAddress) 
+                                    && recordAccountMap[tokenAddress].hasOwnProperty(accountAddress)
+                                    && recordToken.hasOwnProperty(tokenAddress)
+                                )
+                            {
+                                amountMin = recordAccountMap[tokenAddress][accountAddress].lt(recordToken[tokenAddress]) ?
+                                    recordAccountMap[tokenAddress][accountAddress] : recordToken[tokenAddress];
+                            }
                             
                             // amountNB = amountMin.lt(amountNB) ? amountMin : amountNB;
                             amountMin = amountMin.lt(amountNB) ? amountMin : amountNB;
@@ -1192,13 +1303,24 @@ contract('DFEngine', accounts => {
                             console.log(amountNB.toString());
                             console.log('\n');
 
+                            console.log('withdraw Real the amount Min');
+                            console.log(amountMin);
+                            console.log(amountMin.toString());
+                            console.log('\n');
+
                             console.log('record origin token :');
-                            console.log(recordToken[tokenAddress]);
-                            console.log(recordToken[tokenAddress].toString());
-                            recordToken[tokenAddress] = recordToken[tokenAddress].sub(amountMin);
-                            console.log('record current token :');
-                            console.log(recordToken[tokenAddress]);
-                            console.log(recordToken[tokenAddress].toString());
+                            if (recordToken.hasOwnProperty(tokenAddress)){
+                                console.log(recordToken[tokenAddress]);
+                                console.log(recordToken[tokenAddress].toString());
+                                recordToken[tokenAddress] = recordToken[tokenAddress].sub(amountMin);
+                                console.log('record current token :');
+                                console.log(recordToken[tokenAddress]);
+                                console.log(recordToken[tokenAddress].toString());
+                            }else{
+                                console.log(new BN(0));
+                                console.log('record current token :');
+                                console.log(new BN(0));
+                            }
                             console.log('\n');
 
                             console.log('record origin token total:');
@@ -1211,30 +1333,34 @@ contract('DFEngine', accounts => {
                             console.log('\n');
 
                             console.log('record origin account token:');
-                            console.log(recordAccountMap[tokenAddress][accountAddress]);
-                            console.log(recordAccountMap[tokenAddress][accountAddress].toString());
-                            recordAccountMap[tokenAddress][accountAddress] = recordAccountMap[tokenAddress][accountAddress].sub(amountMin);
-                            console.log('record current account token:');
-                            console.log(recordAccountMap[tokenAddress][accountAddress]);
-                            console.log(recordAccountMap[tokenAddress][accountAddress].toString());
+                            if (recordAccountMap.hasOwnProperty(tokenAddress) && recordAccountMap[tokenAddress].hasOwnProperty(accountAddress)){
+                                console.log(recordAccountMap[tokenAddress][accountAddress]);
+                                console.log(recordAccountMap[tokenAddress][accountAddress].toString());
+                                recordAccountMap[tokenAddress][accountAddress] = recordAccountMap[tokenAddress][accountAddress].sub(amountMin);
+                                console.log('record current account token:');
+                                console.log(recordAccountMap[tokenAddress][accountAddress]);
+                                console.log(recordAccountMap[tokenAddress][accountAddress].toString());
+                            }else{
+                                console.log(new BN(0));
+                                console.log('record current account token:');
+                                console.log(new BN(0));
+                            }
                             console.log('\n');
 
                             console.log('record origin account total token:');
-                            console.log(recordAccountTotalMap[accountAddress]);
-                            console.log(recordAccountTotalMap[accountAddress].toString());
-                            recordAccountTotalMap[accountAddress] = recordAccountTotalMap[accountAddress].sub(amountMin);
-                            console.log('record current account total token:');
-                            console.log(recordAccountTotalMap[accountAddress]);
-                            console.log(recordAccountTotalMap[accountAddress].toString());
+                            if (recordAccountTotalMap.hasOwnProperty(accountAddress)){
+                                console.log(recordAccountTotalMap[accountAddress]);
+                                console.log(recordAccountTotalMap[accountAddress].toString());
+                                recordAccountTotalMap[accountAddress] = recordAccountTotalMap[accountAddress].sub(amountMin);
+                                console.log('record current account total token:');
+                                console.log(recordAccountTotalMap[accountAddress]);
+                                console.log(recordAccountTotalMap[accountAddress].toString());
+                            }else{
+                                console.log(new BN(0));
+                                console.log('record current account total token:');
+                                console.log(new BN(0));
+                            }
                             console.log('\n');
-    
-                            console.log('withdraw amountNB');
-                            console.log(amountNB);
-                            console.log(amountNB.toString());
-                            transactionData = await dfEngine.withdraw(accountAddress, tokenAddress, amountNB, {from: accountAddress});
-                            withdrawGasUsed = withdrawGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : withdrawGasUsed;
-                            withdrawGasData[withdrawGasData.length] = transactionData.receipt.gasUsed;
-                            console.log('dfEngine ' + (dfEngineTimes + 1) + ' ' + runType + ' runTimes ' + (condition + 1) + ' gasUsed:' + transactionData.receipt.gasUsed + '\n');
 
                             dfStoreTokenBalanceCurrent = await dfStore.getTokenBalance.call(tokenAddress);
                             dfStoreLockTokenBalanceCurrent = await dfStore.getLockedBalance.call(tokenAddress);
@@ -1340,13 +1466,29 @@ contract('DFEngine', accounts => {
                             usdxTotalSupplyOrigin = await usdxToken.totalSupply.call();
                             usdxBalanceOrigin = await usdxToken.balanceOf.call(accountAddress);
                             var amountNB = dfStoreAccountTokenTotalOrigin.lt(dfStoreLockTokenTotalOrigin) ? dfStoreAccountTokenTotalOrigin : dfStoreLockTokenTotalOrigin;
-                            if(amountNB.lte(new BN(0))){
+                            // if(amountNB.lte(new BN(0))){
 
-                                console.log('account address : ' + accountAddress);
-                                console.log('dfStore lock or account token balance is zero !!!\n');
+                            //     console.log('account address : ' + accountAddress);
+                            //     console.log('dfStore lock or account token balance is zero !!!\n');
+                            //     condition++;
+                            //     continue;
+                            // }
+
+                            try {
+                                transactionData = await dfEngine.withdraw(accountAddress, usdxToken.address, amountNB, {from: accountAddress});
+                                // transactionData = await dfEngine.claim(accountAddress, {from: accountAddress});
+                                claimGasUsed = claimGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : claimGasUsed;
+                                claimGasData[claimGasData.length] = transactionData.receipt.gasUsed;
+                                runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['gasUsed'] = transactionData.receipt.gasUsed;
+                                console.log('dfEngine ' + (dfEngineTimes + 1) + ' ' + runType + ' runTimes ' + (condition + 1) + ' gasUsed:' + transactionData.receipt.gasUsed + '\n');
+                            }
+                            catch (error) {
+                                console.log(error.message + '\n');
                                 condition++;
                                 continue;
                             }
+    
+                            
 
                             console.log('claim account index : ' + (accounts.indexOf(accountAddress) + 1));
                             console.log('claim account address : ' + accountAddress);
@@ -1360,7 +1502,11 @@ contract('DFEngine', accounts => {
                             amountMinTotal = new BN(0);
                             for (let index = 0; index < tokenAddressList.length; index++) {
                                 amountMin = new BN(0);
-                                if (recordAccountMap.hasOwnProperty(tokenAddressList[index]) && recordAccountMap[tokenAddressList[index]].hasOwnProperty(accountAddress)){
+                                if (recordAccountMap.hasOwnProperty(tokenAddressList[index]) 
+                                    && recordAccountMap[tokenAddressList[index]].hasOwnProperty(accountAddress)
+                                    && recordLockToken.hasOwnProperty(tokenAddressList[index])
+                                )
+                                {
 
                                     amountMin = recordAccountMap[tokenAddressList[index]][accountAddress].lt(recordLockToken[tokenAddressList[index]]) ?
                                         recordAccountMap[tokenAddressList[index]][accountAddress] : recordLockToken[tokenAddressList[index]];
@@ -1380,12 +1526,6 @@ contract('DFEngine', accounts => {
                             console.log(amountNB);
                             console.log(amountNB.toString());
                             console.log('\n');
-    
-                            transactionData = await dfEngine.withdraw(accountAddress, usdxToken.address, amountNB, {from: accountAddress});
-                            // transactionData = await dfEngine.claim(accountAddress, {from: accountAddress});
-                            claimGasUsed = claimGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : claimGasUsed;
-                            claimGasData[claimGasData.length] = transactionData.receipt.gasUsed;
-                            console.log('dfEngine ' + (dfEngineTimes + 1) + ' ' + runType + ' runTimes ' + (condition + 1) + ' gasUsed:' + transactionData.receipt.gasUsed + '\n');
 
                             assert.equal(recordMintedTotal.toString(), (await dfStore.getTotalMinted.call()).toString());
                             assert.equal(recordMinted[recordMintedPosition].toString(), (await dfStore.getSectionMinted.call(await dfStore.getMintPosition.call())).toString());
@@ -1526,6 +1666,9 @@ contract('DFEngine', accounts => {
 
                             }
 
+                            console.log(tokenAddressIndex);
+                            console.log(tokenWeightList);
+
                             console.log('collateralAddress:');
                             console.log(collateralAddress);
                             console.log('\n');
@@ -1536,11 +1679,9 @@ contract('DFEngine', accounts => {
                             console.log(tokenWeightList);
                             console.log('\n');
 
-                            console.log(tokenAddressIndex);
-                            console.log(tokenWeightList);
-
                             transactionData = await dfEngine.updateMintSection(tokenAddressList, tokenWeightList);
                             updateGasUsed = updateGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : updateGasUsed;
+                            runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['gasUsed'] = transactionData.receipt.gasUsed;
                             console.log('dfEngine ' + (dfEngineTimes + 1) + ' ' + runType + ' runTimes ' + (condition + 1) + ' gasUsed:' + transactionData.receipt.gasUsed + '\n');
                             
                             recordMintedPosition = recordMintedPosition.add(new BN(1));
@@ -1605,6 +1746,13 @@ contract('DFEngine', accounts => {
             console.log(withdrawGasData);
             console.log('\nclaim gas data:');
             console.log(claimGasData);
+
+            if (configIndex == runConfig.length - 1) {
+
+                console.log(JSON.stringify(runConfig));
+                
+            }
+
             
         });
     }
