@@ -7,11 +7,15 @@ const Engine = artifacts.require('DFEngine.sol');
 const Guard = artifacts.require('DSGuard.sol');
 const PriceFeed = artifacts.require('PriceFeed.sol');
 const Medianizer = artifacts.require('Medianizer.sol');
+const USDx = artifacts.require('USDXToken.sol');
+const DF = artifacts.require('DFToken.sol');
 
 const USDx_Addr = "0x17996ea27d03d68ddc618f9b8f0faf43838acaf6";
 const DFN_Addr = "0xfaacf3d2a2ce1102073038e035d24c1c78b6e9c4";
 
 module.exports = async function (deployer, network, accounts) {
+    await deployer.deploy(USDx, "0x6b6b00000000000000000000000000");
+    await deployer.deploy(DF, "0x6b6600000000000000000000000000");
     await deployer.deploy(Guard);
     await deployer.deploy(Protocol);
     await deployer.deploy(Store,

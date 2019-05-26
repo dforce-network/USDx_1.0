@@ -56,7 +56,7 @@ module.exports = {
       port: 7545,
       network_id: "*", // Match any network id
       gasPrice: 20000000000, // Gas price used for deploys
-      gas: 5000000 // Gas limit used for deploys
+      gas: 8000000 // Gas limit used for deploys
     },
 
     production: {

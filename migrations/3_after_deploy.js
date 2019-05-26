@@ -1,3 +1,5 @@
+const BN = require('bn.js');
+
 const Funds = artifacts.require('DFFunds.sol');
 const Protocol = artifacts.require('DFProtocol.sol');
 const Store = artifacts.require('DFStore.sol');
@@ -7,8 +9,10 @@ const Engine = artifacts.require('DFEngine.sol');
 const Guard = artifacts.require('DSGuard.sol');
 const PriceFeed = artifacts.require('PriceFeed.sol');
 const Medianizer = artifacts.require('Medianizer.sol');
+const USDx = artifacts.require('USDXToken.sol');
+const DF = artifacts.require('DFToken.sol');
 
-module.exports = async function(deployer) {
+module.exports = async function(deployer, network, accounts) {
 
     let contractFunds = await Funds.deployed();
     let contractProtocol = await Protocol.deployed();
@@ -19,64 +23,144 @@ module.exports = async function(deployer) {
     let contractGuard = await Guard.deployed();
     let contractPriceFeed = await PriceFeed.deployed();
     let contractMedianizer = await Medianizer.deployed();
+    let contractUSDx = await USDx.deployed();
+    let contractDF = await DF.deployed();
+
+    let count = 0
 
     function print(str) {
-        console.log("\n#######", str);
+        count++;
+        console.log(`\n${count} #######`, str);
     }
 
+    function printTx(str) {
+        console.log(`\n-#######`, str);
+    }
+
+    function error(str) {
+        console.log(`\n!!!!!!!`, str); 
+    }
+
+    // USDx
+    await contractUSDx.setAuthority.sendTransaction(contarctEngine.address).then(result => {
+        print("contractUSDx.setAuthority");
+        printTx(result.tx);
+    }).catch(error => {
+        error("contractUSDx.setAuthority")
+    })
+
+    await contractUSDx.mint.sendTransaction(accounts[0], 0).then(result => {
+        print("contractUSDx.mint");
+        printTx(result.tx);
+    }).catch(error => {
+        error("contractUSDx.mint")
+    })
+
+    // DF
+    await contractDF.setAuthority.sendTransaction(contarctEngine.address).then(result => {
+        print("contractDF.setAuthority");
+        printTx(result.tx);
+    }).catch(error => {
+        error("contractDF.setAuthority")
+    })
+
+    let ten = new BN(Number(10000000000 * 10 ** 18).toLocaleString().replace(/,/g,''));
+
+    await contractDF.mint.sendTransaction(accounts[0], ten).then(result => {
+        print("contractDF.mint");
+        printTx(result.tx);
+    }).catch(error => {
+        error("contractDF.mint")
+    })
+
     // store
-    contractStore.setAuthority.sendTransaction(contractGuard.address).then(result => {
+    await contractStore.setAuthority.sendTransaction(contractGuard.address).then(result => {
         print("contractStore.setAuthority");
-        print(result.tx);
+        printTx(result.tx);
+    }).catch(error => {
+        error("contractStore.setAuthority")
     })
 
     // Pool
-    contractPool.setAuthority.sendTransaction(contractGuard.address).then(result => {
+    await contractPool.setAuthority.sendTransaction(contractGuard.address).then(result => {
         print("contractPool.setAuthority");
-        print(result.tx);
+        printTx(result.tx);
+    }).catch(error => {
+        error("contractPool.setAuthority")
     })
 
     // Collateral
-    contractCollateral.setAuthority.sendTransaction(contractGuard.address).then(result => {
+    await contractCollateral.setAuthority.sendTransaction(contractGuard.address).then(result => {
         print("contractCollateral.setAuthority");
-        print(result.tx);
+        printTx(result.tx);
+    }).catch(error => {
+        error("contractCollateral.setAuthority")
     })
 
     // Funds
-    contractFunds.setAuthority.sendTransaction(contractGuard.address).then(result => {
+    await contractFunds.setAuthority.sendTransaction(contractGuard.address).then(result => {
         print("contractFunds.setAuthority");
-        print(result.tx);
+        printTx(result.tx);
+    }).catch(error => {
+        error("contractFunds.setAuthority")
+    })
+
+    // Engine
+    await contarctEngine.setAuthority.sendTransaction(contractGuard.address).then(result => {
+        print("contarctEngine.setAuthority");
+        printTx(result.tx);
+    }).catch(error => {
+        error("contarctEngine.setAuthority")
     })
 
     // Guard
-    contractGuard.permitx.sendTransaction(contarctEngine.address, contractStore.address).then(result => {
+    await contractGuard.permitx.sendTransaction(contarctEngine.address, contractStore.address).then(result => {
         print("contractGuard.permitx Store");
-        print(result.tx);
+        printTx(result.tx);
+    }).catch(error => {
+        error("contractGuard.permitx Store")
     })
 
-    contractGuard.permitx.sendTransaction(contarctEngine.address, contractPool.address).then(result => {
+    await contractGuard.permitx.sendTransaction(contarctEngine.address, contractPool.address).then(result => {
         print("contractGuard.permitx Pool");
-        print(result.tx);
+        printTx(result.tx);
+    }).catch(error => {
+        error("contractGuard.permitx Pool")
     })
 
-    contractGuard.permitx.sendTransaction(contarctEngine.address, contractCollateral.address).then(result => {
+    await contractGuard.permitx.sendTransaction(contarctEngine.address, contractCollateral.address).then(result => {
         print("contractGuard.permitx Collateral");
-        print(result.tx);
+        printTx(result.tx);
+    }).catch(error => {
+        error("contractGuard.permitx Collateral")
     })
 
-    contractGuard.permitx.sendTransaction(contarctEngine.address, contractFunds.address).then(result => {
+    await contractGuard.permitx.sendTransaction(contarctEngine.address, contractFunds.address).then(result => {
         print("contractGuard.permitx Funds");
-        print(result.tx);
+        printTx(result.tx);
+    }).catch(error => {
+        error("contractGuard.permitx Funds")
+    })
+
+    await contractGuard.permitx.sendTransaction(contractProtocol.address, contarctEngine.address).then(result => {
+        print("contractGuard.permitx Engine");
+        printTx(result.tx);
+    }).catch(error => {
+        error("contractGuard.permitx Engine")
     })
 
     // Protocol
-    contractProtocol.requestImplChange.sendTransaction(contarctEngine.address).then(result => {
+    await contractProtocol.requestImplChange.sendTransaction(contarctEngine.address).then(result => {
         print("contractProtocol.requestImplChange");
-        print(result.tx);
+        printTx(result.tx);
+    }).catch(error => {
+        error("contractProtocol.requestImplChange")
     })
 
-    contractProtocol.confirmImplChange.sendTransaction().then(result => {
+    await contractProtocol.confirmImplChange.sendTransaction().then(result => {
         print("contractProtocol.confirmImplChange");
-        print(result.tx);
+        printTx(result.tx);
+    }).catch(error => {
+        error("contractProtocol.confirmImplChange")
     })
 };
