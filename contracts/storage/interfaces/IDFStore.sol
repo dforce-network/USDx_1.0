@@ -48,4 +48,8 @@ contract IDFStore {
     function setResUSDXBalance(address _tokenID, uint _amount) public;
     function getDepositorBalance(address _depositor, address _tokenID) public view returns (uint);
     function setDepositorBalance(address _depositor, address _tokenID, uint _amount) public;
+
+    function getFeeRate(uint op) public view returns (uint);
+    function setFeeRate(uint op, uint rate) public;
+    function getAssetPrice(address tokenID) public view returns (uint);
 }

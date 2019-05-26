@@ -35,6 +35,7 @@ contract DFStore is DSMath, DSAuth {
     /// @dev  The total amount of burned.
     uint private totalBurned;
 
+    mapping(uint => uint) public FeeRate;
     mapping(address => uint) public colsBalance;
     mapping(address => uint) public resUSDXBalance;
     mapping(address => mapping (address => uint)) public depositorsBalance;
@@ -265,5 +266,13 @@ contract DFStore is DSMath, DSAuth {
 
     function setDepositorBalance(address _depositor, address _tokenID, uint _amount) public auth {
         depositorsBalance[_depositor][_tokenID] = _amount;
+    }
+    
+    function setFeeRate(uint op, uint rate) public auth {
+        FeeRate[op] = rate;
+    }
+
+    function getFeeRate(uint op) public view returns (uint) {
+        return FeeRate[op];
     }
 }

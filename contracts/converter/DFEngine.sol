@@ -5,6 +5,7 @@ import '../storage/interfaces/IDFStore.sol';
 import '../storage/interfaces/IDFPool.sol';
 import '../storage/interfaces/IDFCollateral.sol';
 import '../storage/interfaces/IDFFunds.sol';
+import '../oracle/interfaces/IMedianizer.sol';
 import '../utility/DSAuth.sol';
 import "../utility/DSMath.sol";
 
@@ -16,6 +17,16 @@ contract DFEngine is DSMath, DSAuth {
     IDFFunds public dfFunds;
     IDSToken public usdxToken;
     IDSToken public dfToken;
+    IMedianizer public medianizer;
+
+    uint public feeOfDeposite;
+    uint public feeOfDestroy;
+
+    enum Operate {
+        Deposit,
+        Destroy,
+        Withdraw
+    }
 
     constructor (
         address _usdxToken,
@@ -23,7 +34,8 @@ contract DFEngine is DSMath, DSAuth {
         address _dfStore,
         address _dfPool,
         address _dfCol,
-        address _dfFunds)
+        address _dfFunds,
+        address _oracle)
         public
     {
         usdxToken = IDSToken(_usdxToken);
@@ -32,6 +44,16 @@ contract DFEngine is DSMath, DSAuth {
         dfPool = IDFPool(_dfPool);
         dfCol = IDFCollateral(_dfCol);
         dfFunds = IDFFunds(_dfFunds);
+        medianizer = IMedianizer(_oracle);
+    }
+
+    function setFeeRate(Operate op, uint rate) public auth {
+        dfStore.setFeeRate(uint(op), rate);
+    }
+
+    function getAssetPrice(address oracle) public view returns (uint) {
+        bytes32 price = IMedianizer(oracle).read();
+        return uint(price);
     }
 
     function updateMintSection(address[] memory _tokens, uint[] memory _weight) public auth {
@@ -41,6 +63,15 @@ contract DFEngine is DSMath, DSAuth {
         //     dfStore.setResUSDXBalance(_mintTokens[i], 0);
         // }
         dfStore.setSection(_tokens, _weight);
+    }
+
+    function deduction(Operate op, address depositor) internal {
+        uint rate = dfStore.getFeeRate(uint(op));
+        if(rate > 0) {
+            uint dfPrice = getAssetPrice(address(medianizer));
+            uint dfFee = dfPrice * rate / 10000;
+            dfToken.transferFrom(depositor, address(dfFunds), dfFee);
+        }
     }
 
     function deposit(address _depositor, address _tokenID, uint _amount) public returns (uint) {
@@ -57,6 +88,8 @@ contract DFEngine is DSMath, DSAuth {
         uint _depositorMintTotal;
         uint _index;
         uint _step = uint(-1);
+
+        deduction(Operate.Deposit, _depositor);
 
         dfPool.transferFromSender(_tokenID, _depositor, _amount);
         for (uint i = 0; i < _tokens.length; i++) {
@@ -114,6 +147,8 @@ contract DFEngine is DSMath, DSAuth {
 
         if (_withdrawAmount <= 0)
             return (0);
+
+        deduction(Operate.Withdraw, _depositor);
 
         _depositorBalance = sub(_depositorBalance, _withdrawAmount);
         dfStore.setDepositorBalance(_depositor, _tokenID, _depositorBalance);
@@ -197,6 +232,8 @@ contract DFEngine is DSMath, DSAuth {
         uint _minted;
         uint _burnedAmount;
         uint _amountTemp = _amount;
+        
+        deduction(Operate.Destroy, _depositor);
 
         while(_amountTemp > 0) {
 
@@ -227,8 +264,6 @@ contract DFEngine is DSMath, DSAuth {
         usdxToken.transferFrom(_depositor, address(this),_amount);
         usdxToken.burn(address(this), _amount);
         dfStore.addTotalBurned(_amount);
-        //[TODO] fix it, need oracle!
-        dfToken.transferFrom(_depositor, address(dfFunds), 5 * 10 ** 18); ///[snow] _depositor approve to converter.
     }
 
     function _convert(
