@@ -5,6 +5,7 @@ import '../storage/interfaces/IDFStore.sol';
 import '../storage/interfaces/IDFPool.sol';
 import '../storage/interfaces/IDFCollateral.sol';
 import '../storage/interfaces/IDFFunds.sol';
+import '../oracle/interfaces/IMedianizer.sol';
 import '../utility/DSAuth.sol';
 import "../utility/DSMath.sol";
 
@@ -16,6 +17,12 @@ contract DFEngine is DSMath, DSAuth {
     IDFFunds public dfFunds;
     IDSToken public usdxToken;
     IDSToken public dfToken;
+    IMedianizer public medianizer;
+
+    enum CommissionType {
+        CT_DEPOSIT,
+        CT_DESTROY
+    }
 
     constructor (
         address _usdxToken,
@@ -23,7 +30,8 @@ contract DFEngine is DSMath, DSAuth {
         address _dfStore,
         address _dfPool,
         address _dfCol,
-        address _dfFunds)
+        address _dfFunds,
+        address _oracle)
         public
     {
         usdxToken = IDSToken(_usdxToken);
@@ -32,13 +40,33 @@ contract DFEngine is DSMath, DSAuth {
         dfPool = IDFPool(_dfPool);
         dfCol = IDFCollateral(_dfCol);
         dfFunds = IDFFunds(_dfFunds);
+        medianizer = IMedianizer(_oracle);
+    }
+
+    function setCommissionRate(CommissionType ct, uint rate) public auth {
+        dfStore.setFeeRate(uint(ct), rate);
+    }
+
+    function getThePrice(address oracle) public view returns (uint) {
+        bytes32 price = IMedianizer(oracle).read();
+        return uint(price);
     }
 
     function updateMintSection(address[] memory _tokens, uint[] memory _weight) public auth {
         dfStore.setSection(_tokens, _weight);
     }
 
-    function deposit(address _depositor, address _tokenID, uint _amount) public returns (uint) {
+    function _unifiedCommission(CommissionType ct, address depositor, uint _amount) internal {
+        uint rate = dfStore.getFeeRate(uint(ct));
+        if(rate > 0) {
+            uint dfPrice = getThePrice(address(medianizer));
+            // uint dfFee = dfPrice * rate / 10000;
+            uint dfFee = div(mul(mul(_amount, rate), mul(WAD, WAD)), mul(10000, dfPrice));
+            dfToken.transferFrom(depositor, address(dfFunds), dfFee);
+        }
+    }
+
+    function deposit(address _depositor, address _tokenID, uint _amount) public auth returns (uint) {
         require(_amount > 0, "Deposit: amount not allow.");
         require(dfStore.getMintingToken(_tokenID), "Deposit: asset not allow.");
         address[] memory _tokens;
@@ -52,6 +80,8 @@ contract DFEngine is DSMath, DSAuth {
         uint _depositorMintTotal;
         uint _index;
         uint _step = uint(-1);
+
+        _unifiedCommission(CommissionType.CT_DEPOSIT, _depositor, _amount);
 
         dfPool.transferFromSender(_tokenID, _depositor, _amount);
         for (uint i = 0; i < _tokens.length; i++) {
@@ -91,7 +121,7 @@ contract DFEngine is DSMath, DSAuth {
         return (_depositorMintTotal);
     }
 
-    function withdraw(address _depositor, address _tokenID, uint _amount) public returns (uint) {
+    function withdraw(address _depositor, address _tokenID, uint _amount) public auth returns (uint) {
         if (_tokenID == address(usdxToken)) {
             return claim(_depositor); //claim as many as possible.
         }
@@ -113,7 +143,7 @@ contract DFEngine is DSMath, DSAuth {
         return (_withdrawAmount);
     }
 
-    function claim(address _depositor, uint _amount) public returns (uint) {
+    function claim(address _depositor, uint _amount) public auth returns (uint) {
         require(_amount > 0, "Claim: amount not correct.");
         address[] memory _tokens = dfStore.getMintedTokenList();
         uint _resUSDXBalance;
@@ -165,7 +195,7 @@ contract DFEngine is DSMath, DSAuth {
         return _mintAmount;
     }
 
-    function destroy(address _depositor, uint _amount) public returns (bool){
+    function destroy(address _depositor, uint _amount) public auth returns (bool){
         require(_amount > 0, "Destroy: amount not correct.");
         require(_amount <= usdxToken.balanceOf(_depositor), "Destroy: exceed max USDX balance.");
         require(_amount <= sub(dfStore.getTotalMinted(), dfStore.getTotalBurned()), "Destroy: not enough to burn.");
@@ -177,6 +207,8 @@ contract DFEngine is DSMath, DSAuth {
         uint _minted;
         uint _burnedAmount;
         uint _amountTemp = _amount;
+
+        _unifiedCommission(CommissionType.CT_DESTROY, _depositor, _amount);
 
         while(_amountTemp > 0) {
 
@@ -207,8 +239,6 @@ contract DFEngine is DSMath, DSAuth {
         usdxToken.transferFrom(_depositor, address(this),_amount);
         usdxToken.burn(address(this), _amount);
         dfStore.addTotalBurned(_amount);
-        //[TODO] fix it, need oracle!
-        dfToken.transferFrom(_depositor, address(dfFunds), 5 * 10 ** 18); ///[snow] _depositor approve to converter.
     }
 
     function _convert(

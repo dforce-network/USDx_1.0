@@ -38,13 +38,22 @@ div.headerWrap {
 
                 border-right: 1px solid rgba(255, 255, 255, 0.1);
                 // background: red;
-                padding-left: 13px;
-                padding-right: 13px;
+                padding-left: 8px;
+                padding-right: 8px;
 
                 span.token {
                     color: rgba(139, 143, 149, 1);
                     font-size: 12px;
                     font-weight: 100;
+                }
+
+                span.faucet {
+                    border: 1px solid gold;
+                    margin-left: 5px;
+                    padding: 3px 2px;
+                    font-size: 10px;
+                    border-radius: 3px;
+                    cursor: pointer;
                 }
 
                 img {

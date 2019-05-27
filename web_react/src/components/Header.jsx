@@ -19,6 +19,9 @@ export default class Header extends React.Component {
     lock (token) {
         this.props.lock(token);
     }
+    allocateTo (token) {
+        this.props.allocateTo(token);
+    }
 
 
     render() {
@@ -33,6 +36,7 @@ export default class Header extends React.Component {
                                     <span className="token">DF</span>
                                     <img style={{ display: this.props.status.approvedDF ? 'none' : 'inline-block' }} src={lock} alt="" onClick={() => { this.approve('DF') }} />
                                     <img style={{ display: this.props.status.approvedDF ? 'inline-block' : 'none' }} src={unlock} alt="" onClick={() => { this.lock('DF') }} />
+                                    <span onClick={() => { this.allocateTo('DF')}} className="faucet">Faucet</span>
                                     <span className="balance">{this.props.status.myDF ? this.props.status.myDF : '0.0'}</span>
                                 </td>
                                 <td>
@@ -49,24 +53,28 @@ export default class Header extends React.Component {
                                     <span className="token">DAI</span>
                                     <img style={{ display: this.props.status.approvedDAI ? 'none' : 'inline-block' }} src={lock} alt="" onClick={() => { this.approve('DAI') }} />
                                     <img style={{ display: this.props.status.approvedDAI ? 'inline-block' : 'none' }} src={unlock} alt="" onClick={() => { this.lock('DAI') }} />
+                                    <span onClick={() => { this.allocateTo('DAI')}} className="faucet">Faucet</span>
                                     <span className="balance">{this.props.status.myDAI ? this.props.status.myDAI : '0.0'}</span>
                                 </td>
                                 <td>
                                     <span className="token">PAX</span>
                                     <img style={{ display: this.props.status.approvedPAX ? 'none' : 'inline-block' }} src={lock} alt="" onClick={() => { this.approve('PAX') }} />
                                     <img style={{ display: this.props.status.approvedPAX ? 'inline-block' : 'none' }} src={unlock} alt="" onClick={() => { this.lock('PAX') }} />
+                                    <span onClick={() => { this.allocateTo('PAX')}} className="faucet">Faucet</span>
                                     <span className="balance">{this.props.status.myPAX ? this.props.status.myPAX : '0.0'}</span>
                                 </td>
                                 <td>
                                     <span className="token">USDC</span>
                                     <img style={{ display: this.props.status.approvedUSDC ? 'none' : 'inline-block' }} src={lock} alt="" onClick={() => { this.approve('USDC') }} />
                                     <img style={{ display: this.props.status.approvedUSDC ? 'inline-block' : 'none' }} src={unlock} alt="" onClick={() => { this.lock('USDC') }} />
+                                    <span onClick={() => { this.allocateTo('USDC')}} className="faucet">Faucet</span>
                                     <span className="balance">{this.props.status.myUSDC ? this.props.status.myUSDC : '0.0'}</span>
                                 </td>
                                 <td className='noborder'>
                                     <span className="token">TUSD</span>
                                     <img style={{ display: this.props.status.approvedTUSD ? 'none' : 'inline-block' }} src={lock} alt="" onClick={() => { this.approve('TUSD') }} />
                                     <img style={{ display: this.props.status.approvedTUSD ? 'inline-block' : 'none' }} src={unlock} alt="" onClick={() => { this.lock('TUSD') }} />
+                                    <span onClick={() => { this.allocateTo('TUSD')}} className="faucet">Faucet</span>
                                     <span className="balance">{this.props.status.myTUSD ? this.props.status.myTUSD : '0.0'}</span>
                                 </td>
                             </tr>
