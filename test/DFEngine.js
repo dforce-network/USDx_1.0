@@ -450,7 +450,7 @@ var runConfig = [
             await dfEngine.setCommissionRate(0, 0);
             await dfEngine.setCommissionRate(1, 50);
             await medianizer.set(priceFeed.address);
-            await priceFeed.post(new BN(Number(5.88 * 10 ** 18).toLocaleString().replace(/,/g, '')), 2058870102, medianizer.address);
+            await priceFeed.post(new BN(Number(2 * 10 ** 18).toLocaleString().replace(/,/g, '')), 2058870102, medianizer.address);
 
             amount = Number(1000000 * 10 ** 18).toLocaleString().replace(/,/g,'');
             await dfToken.mint(accounts[0], amount);
@@ -962,7 +962,7 @@ var runConfig = [
 
                             // await dfToken.approvex(dfEngine.address, {from: accountAddress});
                             await dfToken.approve(dfEngine.address, new BN(0), {from: accountAddress});
-                            await dfToken.approve(dfEngine.address, amountNB.mul(new BN(5)).div(new BN(1000)), {from: accountAddress});
+                            await dfToken.approve(dfEngine.address, amountNB.mul(new BN(5)).div(new BN(2000)), {from: accountAddress});
                             await usdxToken.approve(dfEngine.address, new BN(0), {from: accountAddress});
                             await usdxToken.approve(dfEngine.address, amountNB, {from: accountAddress});
                             // await usdxToken.approvex(dfEngine.address, {from: accountAddress});
