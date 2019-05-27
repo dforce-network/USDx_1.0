@@ -8,6 +8,8 @@ const DFStore = artifacts.require('DFStore.sol');
 const DFPool = artifacts.require('DFPool.sol');
 const DFCollateral = artifacts.require('DFCollateral.sol');
 const DFFunds = artifacts.require('DFFunds.sol');
+const PriceFeed = artifacts.require('PriceFeed.sol');
+const Medianizer = artifacts.require('Medianizer.sol');
 
 const DFEngine = artifacts.require('DFEngine.sol');
 
@@ -737,13 +739,15 @@ var runConfig = [
             var dfCollateral;
             var dfPool;
             var dfFunds;
+            var priceFeed;
+            var medianizer;
             var dfEngine;
 
             var collateralAddress = [];
             var collateralObject = {};
             var collateralIndex;
-            var tokenAddressList;
-            var tokenWeightList;
+            var tokenAddressList = [];
+            var tokenWeightList = [];
 
             var transactionData = 0;
             var depositGasUsed = 0;
@@ -868,7 +872,12 @@ var runConfig = [
             // tokenAddressList = DataMethod.createData(collateralAddress, 4, 4);
             // tokenWeightList = DataMethod.createData(weightTest, tokenAddressList.length, tokenAddressList.length);
             tokenAddressList = collateralAddress;
-            tokenWeightList = weightTest;
+
+            tokenWeightList = [];
+            for (let index = 0; index < weightTest.length; index++)
+                tokenWeightList[tokenWeightList.length] = new BN((weightTest[index] * 10 ** 18).toLocaleString().replace(/,/g, ''));
+                
+            // tokenWeightList = weightTest;
 
             console.log('\ntokenAddressList');
             console.log(tokenAddressList);
@@ -884,6 +893,8 @@ var runConfig = [
             dfCollateral = await DFCollateral.new();
             dfPool = await DFPool.new(dfCollateral.address);
             dfFunds = await DFFunds.new(dfToken.address);
+            priceFeed = await PriceFeed.new();
+            medianizer = await Medianizer.new();
 
             dfEngine = await DFEngine.new(
                 usdxToken.address,
@@ -891,7 +902,8 @@ var runConfig = [
                 dfStore.address,
                 dfPool.address,
                 dfCollateral.address,
-                dfFunds.address
+                dfFunds.address,
+                medianizer.address
                 );
 
             await usdxToken.setAuthority(dfEngine.address);
@@ -907,6 +919,11 @@ var runConfig = [
             await dSGuard.permitx(dfEngine.address, dfPool.address);
             await dSGuard.permitx(dfEngine.address, dfFunds.address);
 
+            await dfEngine.setCommissionRate(0, 0);
+            await dfEngine.setCommissionRate(1, 50);
+            await medianizer.set(priceFeed.address);
+            await priceFeed.post(new BN(Number(5.88 * 10 ** 18).toLocaleString().replace(/,/g, '')), 2058870102, medianizer.address);
+
             amount = Number(1000000 * 10 ** 18).toLocaleString().replace(/,/g,'');
             await dfToken.mint(accounts[0], amount);
 
@@ -914,6 +931,7 @@ var runConfig = [
             for (let index = 1; index < accounts.length; index++) {
                 await dfToken.transfer(accounts[index], amount);
                 balance = await collaterals.balanceOf.call(accounts[index]);
+                await dSGuard.permitx(accounts[index], dfEngine.address);
             }
 
             recordToken = {};
@@ -1054,7 +1072,8 @@ var runConfig = [
                             var cw = new BN(0);
                             for (let index = 0; index < tokenWeightList.length; index++) {
 
-                                cw = new BN(Number(tokenWeightList[index] * 10 ** 18).toLocaleString().replace(/,/g,''));
+                                // cw = new BN(Number(tokenWeightList[index] * 10 ** 18).toLocaleString().replace(/,/g,''));
+                                cw = tokenWeightList[index];
                                 if (!recordToken.hasOwnProperty(tokenAddressList[index])){
                                     times = new BN(0);
                                     continue;
@@ -1074,7 +1093,8 @@ var runConfig = [
                                 var amountLock = new BN(0);
                                 for (let index = 0; index < tokenWeightList.length; index++) {
 
-                                    amountLock = times.mul(new BN(Number(tokenWeightList[index] * 10 ** 18).toLocaleString().replace(/,/g,'')));
+                                    // amountLock = times.mul(new BN(Number(tokenWeightList[index] * 10 ** 18).toLocaleString().replace(/,/g,'')));
+                                    amountLock = times.mul(tokenWeightList[index]);
                                     recordToken[tokenAddressList[index]] = recordToken[tokenAddressList[index]].sub(amountLock);
                                     recordLockToken[tokenAddressList[index]] = recordLockToken.hasOwnProperty(tokenAddressList[index]) ? 
                                         recordLockToken[tokenAddressList[index]].add(amountLock) : amountLock;
@@ -1089,6 +1109,7 @@ var runConfig = [
                                     console.log('--------------- token index : ' + index);
                                     console.log('token address : ' + tokenAddressList[index]);
                                     console.log('token weight : ' + tokenWeightList[index]);
+                                    console.log('token weight : ' + tokenWeightList[index].toString());
                                     console.log('times' + times);
                                     console.log('minted amount ' + amountLock);
                                     console.log('\n');
@@ -1413,7 +1434,7 @@ var runConfig = [
 
                             // await dfToken.approvex(dfEngine.address, {from: accountAddress});
                             await dfToken.approve(dfEngine.address, new BN(0), {from: accountAddress});
-                            await dfToken.approve(dfEngine.address, dfnFee, {from: accountAddress});
+                            await dfToken.approve(dfEngine.address, amountNB.mul(new BN(5)).div(new BN(1000)), {from: accountAddress});
                             await usdxToken.approve(dfEngine.address, new BN(0), {from: accountAddress});
                             await usdxToken.approve(dfEngine.address, amountNB, {from: accountAddress});
                             // await usdxToken.approvex(dfEngine.address, {from: accountAddress});
@@ -2049,7 +2070,7 @@ var runConfig = [
                             // }
 
                             tokenAddressIndex = [];
-                            tokenWeightList = [];
+                            tokenWeightListNew = [];
                             if(runConfig[configIndex][dfEngineTimes].hasOwnProperty('data')){
                     
                                 if (runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length].hasOwnProperty('tokens')) {
@@ -2059,7 +2080,7 @@ var runConfig = [
 
                                 if (runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length].hasOwnProperty('weight')) {
 
-                                    tokenWeightList = runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['weight'];
+                                    tokenWeightListNew = runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['weight'];
                                 }
 
                                 tokenAddressList = [];
@@ -2090,9 +2111,9 @@ var runConfig = [
                                     }
                                 }
                                 
-                                if (tokenWeightList.length == 0) {
+                                if (tokenWeightListNew.length == 0) {
 
-                                    tokenWeightList = DataMethod.createData(weightTest, tokenAddressList.length, tokenAddressList.length);
+                                    tokenWeightListNew = DataMethod.createData(weightTest, tokenAddressList.length, tokenAddressList.length);
                                 }
                                 
                             }else{
@@ -2117,13 +2138,13 @@ var runConfig = [
                                 collateralObject[collaterals.address] = collaterals;
                                 tokenAddressList.push(collaterals.address);
 
-                                // tokenWeightList = DataMethod.createData(weightTest, tokenAddressList.length, tokenAddressList.length);
-                                tokenWeightList = weightTest;
+                                // tokenWeightListNew = DataMethod.createData(weightTest, tokenAddressList.length, tokenAddressList.length);
+                                tokenWeightListNew = weightTest;
 
                             }
 
                             console.log(tokenAddressIndex);
-                            console.log(tokenWeightList);
+                            console.log(tokenWeightListNew);
 
                             console.log('collateralAddress:');
                             console.log(collateralAddress);
@@ -2131,6 +2152,11 @@ var runConfig = [
                             console.log('tokenAddressList:');
                             console.log(tokenAddressList);
                             console.log('\n');
+                            tokenWeightList = [];
+                            for (let index = 0; index < tokenWeightListNew.length; index++) {
+                                tokenWeightList.push(new BN((tokenWeightListNew[index] * 10 ** 18).toLocaleString().replace(/,/g, '')));
+                                
+                            }
                             console.log('tokenWeightList:');
                             console.log(tokenWeightList);
                             console.log('\n');
@@ -2174,7 +2200,7 @@ var runConfig = [
                             
                             for (let index = 0; index < dfStoreTokenAddress.length; index++) {
                                 assert.equal(dfStoreTokenAddress[index], tokenAddressList[index]);
-                                assert.equal(dfStoreTokenWeight[index].toString(), Number(tokenWeightList[index] * 10 ** 18).toLocaleString().replace(/,/g,''));
+                                assert.equal(dfStoreTokenWeight[index].toString(), tokenWeightList[index].toString());
                             }
 
                             for (let index = 0; index < collateralAddress.length; index++) {
