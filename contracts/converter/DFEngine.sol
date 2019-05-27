@@ -60,8 +60,7 @@ contract DFEngine is DSMath, DSAuth {
         uint rate = dfStore.getFeeRate(uint(ct));
         if(rate > 0) {
             uint dfPrice = getThePrice(address(medianizer));
-            // uint dfFee = dfPrice * rate / 10000;
-            uint dfFee = div(mul(mul(_amount, rate), mul(WAD, WAD)), mul(10000, dfPrice));
+            uint dfFee = div(mul(mul(_amount, rate), WAD), mul(10000, dfPrice));
             dfToken.transferFrom(depositor, address(dfFunds), dfFee);
         }
     }
