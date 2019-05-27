@@ -61,11 +61,12 @@ contract DFEngine is DSMath, DSAuth {
         dfStore.setSection(_tokens, _weight);
     }
 
-    function _unifiedCommission(CommissionType ct, address depositor) internal {
+    function _unifiedCommission(CommissionType ct, address depositor, uint _amount) internal {
         uint rate = dfStore.getFeeRate(uint(ct));
         if(rate > 0) {
             uint dfPrice = getThePrice(address(medianizer));
-            uint dfFee = dfPrice * rate / 10000;
+            // uint dfFee = dfPrice * rate / 10000;
+            uint dfFee = div(mul(mul(_amount, rate), mul(WAD, WAD)), mul(10000, dfPrice));
             dfToken.transferFrom(depositor, address(dfFunds), dfFee);
         }
     }
@@ -85,7 +86,7 @@ contract DFEngine is DSMath, DSAuth {
         uint _index;
         uint _step = uint(-1);
 
-        _unifiedCommission(CommissionType.CT_DEPOSIT, _depositor);
+        _unifiedCommission(CommissionType.CT_DEPOSIT, _depositor, _amount);
 
         dfPool.transferFromSender(_tokenID, _depositor, _amount);
         for (uint i = 0; i < _tokens.length; i++) {
@@ -227,7 +228,7 @@ contract DFEngine is DSMath, DSAuth {
         uint _burnedAmount;
         uint _amountTemp = _amount;
 
-        _unifiedCommission(CommissionType.CT_DESTROY, _depositor);
+        _unifiedCommission(CommissionType.CT_DESTROY, _depositor, _amount);
 
         while(_amountTemp > 0) {
 
