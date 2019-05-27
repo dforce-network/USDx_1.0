@@ -721,7 +721,7 @@ var runConfig = [
                         'data':[
                             {
                                 'accountAddress':4,
-                                'amount':399,
+                                'amount':394,
                             }
                         ]
                     },
@@ -1015,9 +1015,12 @@ var runConfig = [
                                 depositGasUsed = depositGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : depositGasUsed;
                                 depositGasData[depositGasData.length] = transactionData.receipt.gasUsed;
                                 runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['gasUsed'] = transactionData.receipt.gasUsed;
+                                runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['result'] = 'success';
                                 console.log('dfEngine ' + (dfEngineTimes + 1) + ' ' + runType + ' runTimes ' + (condition + 1) + ' gasUsed:' + transactionData.receipt.gasUsed + '\n');
                             }
                             catch (error) {
+                                runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['result'] = 'fail';
+                                runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['error'] = error.message;
                                 console.log(error.message + '\n');
                                 condition++;
                                 continue;
@@ -1066,6 +1069,8 @@ var runConfig = [
 
                             if (times.gt(new BN(0))){
 
+                                console.log('--------------------record minted--------------------');
+                                console.log('--------------------minting start--------------------\n');
                                 var amountLock = new BN(0);
                                 for (let index = 0; index < tokenWeightList.length; index++) {
 
@@ -1080,10 +1085,13 @@ var runConfig = [
                                     recordMintedTotal = recordMintedTotal.add(amountLock);
                                     recordMinted[recordMintedPosition] = recordMinted.hasOwnProperty(recordMintedPosition) ? 
                                         recordMinted[recordMintedPosition].add(amountLock) : amountLock;
-                                    // recordDfCollateralToken[tokenAddressList[index]] = recordDfCollateralToken.hasOwnProperty([tokenAddressList[index]]) ?
-                                    //     recordDfCollateralToken[tokenAddressList[index]].add(amountLock) : amountLock;
 
+                                    console.log('--------------- token index : ' + index);
                                     console.log('token address : ' + tokenAddressList[index]);
+                                    console.log('token weight : ' + tokenWeightList[index]);
+                                    console.log('times' + times);
+                                    console.log('minted amount ' + amountLock);
+                                    console.log('\n');
                                     console.log('record: token belance:');
                                     console.log(recordToken[tokenAddressList[index]]);
                                     console.log(recordToken[tokenAddressList[index]].toString());
@@ -1091,10 +1099,59 @@ var runConfig = [
                                     console.log(recordLockToken[tokenAddressList[index]]);
                                     console.log(recordLockToken[tokenAddressList[index]].toString());
                                     console.log('\n');
+                                    console.log('record: token belance:');
+                                    console.log(recordToken[tokenAddressList[index]]);
+                                    console.log(recordToken[tokenAddressList[index]].toString());
+                                    console.log('record: DfCollateral token belance:');
+                                    console.log(recordDfCollateralToken[tokenAddressList[index]]);
+                                    console.log(recordDfCollateralToken[tokenAddressList[index]].toString());
+                                    console.log('\n');
+                                    console.log('record: minting token total:');
+                                    console.log(recordMintedTotal);
+                                    console.log(recordMintedTotal.toString());
+                                    console.log('record: minting position:');
+                                    console.log(recordMintedPosition);
+                                    console.log(recordMintedPosition.toString());
+                                    console.log('record: minting token belance:');
+                                    console.log(recordMinted[recordMintedPosition]);
+                                    console.log(recordMinted[recordMintedPosition].toString());
+                                    console.log('\n');
                                 }
+                                console.log('--------------------minting end--------------------\n');
                             }
 
+                            console.log('record: minted token total:');
+                            console.log(recordMintedTotal);
+                            console.log(recordMintedTotal.toString());
+                            console.log('record: minted position:');
+                            console.log(recordMintedPosition);
+                            console.log(recordMintedPosition.toString());
+                            console.log('record: minted token belance:');
+                            if (recordMinted.hasOwnProperty(recordMintedPosition)) {
+                                console.log(recordMinted[recordMintedPosition]);
+                                console.log(recordMinted[recordMintedPosition].toString());
+                            }else
+                                console.log('0');
+                            
+                            console.log('\n');
+                            console.log('record: burned token total:');
+                            console.log(recordBurnedTotal);
+                            console.log(recordBurnedTotal.toString());
+                            console.log('record: burned position:');
+                            console.log(recordBurnedPosition);
+                            console.log(recordBurnedPosition.toString());
+                            console.log('record: burned token belance:');
+                            if (recordBurned.hasOwnProperty(recordBurnedPosition)) {
+                                console.log(recordBurned[recordBurnedPosition]);
+                                console.log(recordBurned[recordBurnedPosition].toString());
+                            }else
+                                console.log('0');
+                            
+                            console.log('\n');
+
                             var amountMint = new BN(0);
+                            console.log('--------------------record deposit claim--------------------');
+                            console.log('--------------------claim start--------------------\n');
                             for (let index = 0; index < tokenAddressList.length; index++) {
                                 
                                 if (recordAccountMap.hasOwnProperty(tokenAddressList[index]) 
@@ -1106,15 +1163,21 @@ var runConfig = [
 
                                     recordAccountMap[tokenAddressList[index]][accountAddress] = recordAccountMap[tokenAddressList[index]][accountAddress].sub(amountMint);
                                     recordLockToken[tokenAddressList[index]] = recordLockToken[tokenAddressList[index]].sub(amountMint);
-                                    
+
+                                    console.log('--------------- token index : ' + index);
+                                    console.log('token address : ' + tokenAddressList[index]);
+                                    console.log('[deposit claim] amount ' + amountMint);
+                                    console.log('record: [deposit claim] lock token belance:');
+                                    console.log(recordLockToken[tokenAddressList[index]]);
+                                    console.log(recordLockToken[tokenAddressList[index]].toString());
+                                    console.log('\n');
+                                    console.log('record: [deposit claim] account tokens balance:');
+                                    console.log(recordAccountMap[tokenAddressList[index]][accountAddress]);
+                                    console.log(recordAccountMap[tokenAddressList[index]][accountAddress].toString());
                                 }
                             }
+                            console.log('--------------------claim end--------------------\n');
 
-                            console.log('record: token belance:');
-                            console.log(recordToken[tokenAddress]);
-                            console.log(recordToken[tokenAddress].toString());
-                            console.log('\n');
-                            
                             dfStoreTokenBalance = {};
                             dfStoreLockTokenBalance = {};
                             dfStoreTokenTotal = new BN(0);
@@ -1370,9 +1433,12 @@ var runConfig = [
                                 destroyGasUsed = destroyGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : destroyGasUsed;
                                 destroyGasData[destroyGasData.length] = transactionData.receipt.gasUsed;
                                 runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['gasUsed'] = transactionData.receipt.gasUsed;
+                                runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['result'] = 'success';
                                 console.log('dfEngine ' + (dfEngineTimes + 1) + ' ' + runType + ' runTimes ' + (condition + 1) + ' gasUsed:' + transactionData.receipt.gasUsed + '\n');
                             }
                             catch (error) {
+                                runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['result'] = 'fail';
+                                runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['error'] = error.message;
                                 console.log(error.message + '\n');
                                 condition++;
                                 continue;
@@ -1655,9 +1721,12 @@ var runConfig = [
                                 withdrawGasUsed = withdrawGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : withdrawGasUsed;
                                 withdrawGasData[withdrawGasData.length] = transactionData.receipt.gasUsed;
                                 runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['gasUsed'] = transactionData.receipt.gasUsed;
+                                runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['result'] = 'success';
                                 console.log('dfEngine ' + (dfEngineTimes + 1) + ' ' + runType + ' runTimes ' + (condition + 1) + ' gasUsed:' + transactionData.receipt.gasUsed + '\n');
                             }
                             catch (error) {
+                                runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['result'] = 'fail';
+                                runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['error'] = error.message;
                                 console.log(error.message + '\n');
                                 condition++;
                                 continue;
@@ -1860,16 +1929,17 @@ var runConfig = [
                                 claimGasUsed = claimGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : claimGasUsed;
                                 claimGasData[claimGasData.length] = transactionData.receipt.gasUsed;
                                 runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['gasUsed'] = transactionData.receipt.gasUsed;
+                                runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['result'] = 'success';
                                 console.log('dfEngine ' + (dfEngineTimes + 1) + ' ' + runType + ' runTimes ' + (condition + 1) + ' gasUsed:' + transactionData.receipt.gasUsed + '\n');
                             }
                             catch (error) {
+                                runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['result'] = 'fail';
+                                runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['error'] = error.message;
                                 console.log(error.message + '\n');
                                 condition++;
                                 continue;
                             }
     
-                            
-
                             console.log('claim account index : ' + (accounts.indexOf(accountAddress) + 1));
                             console.log('claim account address : ' + accountAddress);
                             console.log('\n');
@@ -1880,19 +1950,19 @@ var runConfig = [
 
                             amountMin = new BN(0);
                             amountMinTotal = new BN(0);
-                            for (let index = 0; index < tokenAddressList.length; index++) {
+                            for (let index = 0; index < collateralAddress.length; index++) {
                                 amountMin = new BN(0);
-                                if (recordAccountMap.hasOwnProperty(tokenAddressList[index]) 
-                                    && recordAccountMap[tokenAddressList[index]].hasOwnProperty(accountAddress)
-                                    && recordLockToken.hasOwnProperty(tokenAddressList[index])
+                                if (recordAccountMap.hasOwnProperty(collateralAddress[index]) 
+                                    && recordAccountMap[collateralAddress[index]].hasOwnProperty(accountAddress)
+                                    && recordLockToken.hasOwnProperty(collateralAddress[index])
                                 )
                                 {
 
-                                    amountMin = recordAccountMap[tokenAddressList[index]][accountAddress].lt(recordLockToken[tokenAddressList[index]]) ?
-                                        recordAccountMap[tokenAddressList[index]][accountAddress] : recordLockToken[tokenAddressList[index]];
+                                    amountMin = recordAccountMap[collateralAddress[index]][accountAddress].lt(recordLockToken[collateralAddress[index]]) ?
+                                        recordAccountMap[collateralAddress[index]][accountAddress] : recordLockToken[collateralAddress[index]];
 
-                                    recordLockToken[tokenAddressList[index]] = recordLockToken[tokenAddressList[index]].sub(amountMin);
-                                    recordAccountMap[tokenAddressList[index]][accountAddress] = recordAccountMap[tokenAddressList[index]][accountAddress].sub(amountMin);
+                                    recordLockToken[collateralAddress[index]] = recordLockToken[collateralAddress[index]].sub(amountMin);
+                                    recordAccountMap[collateralAddress[index]][accountAddress] = recordAccountMap[collateralAddress[index]][accountAddress].sub(amountMin);
 
                                 }
                                 amountMinTotal = amountMinTotal.add(amountMin);
@@ -2065,10 +2135,21 @@ var runConfig = [
                             console.log(tokenWeightList);
                             console.log('\n');
 
-                            transactionData = await dfEngine.updateMintSection(tokenAddressList, tokenWeightList);
-                            updateGasUsed = updateGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : updateGasUsed;
-                            runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['gasUsed'] = transactionData.receipt.gasUsed;
-                            console.log('dfEngine ' + (dfEngineTimes + 1) + ' ' + runType + ' runTimes ' + (condition + 1) + ' gasUsed:' + transactionData.receipt.gasUsed + '\n');
+                            try {
+                                transactionData = await dfEngine.updateMintSection(tokenAddressList, tokenWeightList);
+                                updateGasUsed = updateGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : updateGasUsed;
+                                runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['gasUsed'] = transactionData.receipt.gasUsed;
+                                runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['result'] = 'success';
+                                console.log('dfEngine ' + (dfEngineTimes + 1) + ' ' + runType + ' runTimes ' + (condition + 1) + ' gasUsed:' + transactionData.receipt.gasUsed + '\n');                            
+                            }
+                            catch (error) {
+                                runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['result'] = 'fail';
+                                runConfig[configIndex][dfEngineTimes]['data'][condition % runConfig[configIndex][dfEngineTimes]['data'].length]['error'] = error.message;
+                                console.log(error.message + '\n');
+                                condition++;
+                                continue;
+                            }
+
                             
                             recordMintedPosition = recordMintedPosition.add(new BN(1));
                             dfStoreMintPosition = await dfStore.getMintPosition.call();

@@ -35,11 +35,6 @@ contract DFEngine is DSMath, DSAuth {
     }
 
     function updateMintSection(address[] memory _tokens, uint[] memory _weight) public auth {
-        // address[] memory _mintTokens = dfStore.getSectionToken(dfStore.getMintPosition());
-        // for (uint i = 0; i < _mintTokens.length; i++) {
-        //     dfStore.setTokenBalance(_mintTokens[i], add(dfStore.getTokenBalance(_mintTokens[i]), dfStore.getResUSDXBalance(_mintTokens[i])));
-        //     dfStore.setResUSDXBalance(_mintTokens[i], 0);
-        // }
         dfStore.setSection(_tokens, _weight);
     }
 
@@ -84,18 +79,13 @@ contract DFEngine is DSMath, DSAuth {
                 }
 
                 dfStore.setDepositorBalance(_depositor, _tokens[i], _depositorBalance[i] - _depositorMintAmount);
-                // dfPool.transferToCol(_tokens[i], _depositorMintAmount);
                 dfStore.setResUSDXBalance(_tokens[i], _resUSDXBalance[i] - _depositorMintAmount);
                 _depositorMintTotal = add(_depositorMintTotal, _depositorMintAmount);
             }
 
-            if (_depositorMintTotal > 0) {
-                // usdxToken.mint(address(dfPool), _depositorMintTotal);
+            if (_depositorMintTotal > 0)
                 dfPool.transferOut(address(usdxToken), _depositor, _depositorMintTotal);
-                // usdxToken.transfer(_depositor, _depositorMintTotal);
-                // dfStore.addTotalMinted(_depositorMintTotal);
-                // dfStore.addSectionMinted(_depositorMintTotal);
-            }
+
             dfStore.setTokenBalance(_tokenID, _tokenBalance[_index]);
         }
         return (_depositorMintTotal);
@@ -125,7 +115,7 @@ contract DFEngine is DSMath, DSAuth {
 
     function claim(address _depositor, uint _amount) public returns (uint) {
         require(_amount > 0, "Claim: amount not correct.");
-        address[] memory _tokens = dfStore.getSectionToken(dfStore.getMintPosition());
+        address[] memory _tokens = dfStore.getMintedTokenList();
         uint _resUSDXBalance;
         uint _depositorBalance;
         uint _depositorMintAmount;
@@ -140,21 +130,16 @@ contract DFEngine is DSMath, DSAuth {
             if (_depositorMintAmount > 0){
                 dfStore.setResUSDXBalance(_tokens[i], _resUSDXBalance - _depositorMintAmount);
                 dfStore.setDepositorBalance(_depositor, _tokens[i], _depositorBalance - _depositorMintAmount);
-                // dfPool.transferToCol(_tokens[i], _depositorMintAmount);
             }
         }
 
         require(_remain > 0, "Claim: balance not enough.");
         dfPool.transferOut(address(usdxToken), _depositor, _amount);
-        // usdxToken.mint(address(this), _amount);
-        // usdxToken.transfer(_depositor, _amount);
-        // dfStore.addTotalMinted(_amount);
-        // dfStore.addSectionMinted(_amount);
         return _amount;
     }
 
     function claim(address _depositor) public returns (uint) {
-        address[] memory _tokens = dfStore.getSectionToken(dfStore.getMintPosition());
+        address[] memory _tokens = dfStore.getMintedTokenList();
         uint _resUSDXBalance;
         uint _depositorBalance;
         uint _depositorMintAmount;
@@ -170,7 +155,6 @@ contract DFEngine is DSMath, DSAuth {
             if (_depositorMintAmount > 0){
                 dfStore.setResUSDXBalance(_tokens[i], _resUSDXBalance - _depositorMintAmount);
                 dfStore.setDepositorBalance(_depositor, _tokens[i], _depositorBalance - _depositorMintAmount);
-                // dfPool.transferToCol(_tokens[i], _depositorMintAmount);
             }
         }
 
@@ -178,10 +162,6 @@ contract DFEngine is DSMath, DSAuth {
             return 0;
 
         dfPool.transferOut(address(usdxToken), _depositor, _mintAmount);
-        // usdxToken.mint(address(this), _mintAmount);
-        // usdxToken.transfer(_depositor, _mintAmount);
-        // dfStore.addTotalMinted(_mintAmount);
-        // dfStore.addSectionMinted(_mintAmount);
         return _mintAmount;
     }
 
@@ -261,8 +241,6 @@ contract DFEngine is DSMath, DSAuth {
             }
 
             dfStore.setDepositorBalance(_depositor, _tokens[i], _depositorBalance[i] - _depositorMintAmount);
-            // dfPool.transferToCol(_tokens[i], _depositorMintAmount);
-            // dfPool.transferToCol(_tokens[i], _mintAmount);
             dfStore.setResUSDXBalance(_tokens[i], add(_resUSDXBalance[i], _mintAmount) - _depositorMintAmount);
             _depositorMintTotal = add(_depositorMintTotal, _depositorMintAmount);
         }
@@ -271,6 +249,5 @@ contract DFEngine is DSMath, DSAuth {
         dfStore.addSectionMinted(_mintTotal);
         usdxToken.mint(address(dfPool), _mintTotal);
         dfPool.transferOut(address(usdxToken), _depositor, _depositorMintTotal);
-        // usdxToken.transfer(_depositor, _depositorMintTotal);
     }
 }

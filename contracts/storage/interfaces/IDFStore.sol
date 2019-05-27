@@ -31,6 +31,7 @@ contract IDFStore {
     function setMintedToken(address _token, bool _flag) public;
     function getBackupToken(address _token) public view returns (address);
     function setBackupToken(address _token, address _backupToken) public;
+    function getMintedTokenList() public view returns (address[] memory);
 
     function getMintPosition() public view returns (uint);
     function getBurnPosition() public view returns (uint);
