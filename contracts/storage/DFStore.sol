@@ -35,8 +35,9 @@ contract DFStore is DSMath, DSAuth {
     /// @dev  The total amount of burned.
     uint private totalBurned;
 
+    mapping(uint => uint) public FeeRate;
     mapping(address => uint) public colsBalance;
-    mapping(address => uint) public lockedBalance;
+    mapping(address => uint) public resUSDXBalance;
     mapping(address => mapping (address => uint)) public depositorsBalance;
 
     event UpdateSection(address[] _colIDs, uint[] _number);
@@ -98,6 +99,7 @@ contract DFStore is DSMath, DSAuth {
     }
 
     function getSectionData(uint _position) public view returns (uint, uint, uint, address[] memory, uint[] memory) {
+
         return (
             secList[_position].minted,
             secList[_position].burned,
@@ -250,12 +252,12 @@ contract DFStore is DSMath, DSAuth {
         colsBalance[_tokenID] = _amount;
     }
 
-    function getLockedBalance(address _tokenID) public view returns (uint) {
-        return lockedBalance[_tokenID];
+    function getResUSDXBalance(address _tokenID) public view returns (uint) {
+        return resUSDXBalance[_tokenID];
     }
 
-    function setLockedBalance(address _tokenID, uint _amount) public auth {
-        lockedBalance[_tokenID] = _amount;
+    function setResUSDXBalance(address _tokenID, uint _amount) public auth {
+        resUSDXBalance[_tokenID] = _amount;
     }
 
     function getDepositorBalance(address _depositor, address _tokenID) public view returns (uint) {
@@ -264,5 +266,13 @@ contract DFStore is DSMath, DSAuth {
 
     function setDepositorBalance(address _depositor, address _tokenID, uint _amount) public auth {
         depositorsBalance[_depositor][_tokenID] = _amount;
+    }
+
+    function setFeeRate(uint ct, uint rate) public auth {
+        FeeRate[ct] = rate;
+    }
+
+    function getFeeRate(uint ct) public view returns (uint) {
+        return FeeRate[ct];
     }
 }
