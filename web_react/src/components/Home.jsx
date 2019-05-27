@@ -234,8 +234,8 @@ export default class Home extends React.Component {
                                             <Select className="mySelect" defaultValue="DAI" onChange={(val) => { this.setState({ ...this.state, toDeposit: val }) }}>
                                                 <Select.Option value="DAI">DAI</Select.Option>
                                                 <Select.Option value="PAX">PAX</Select.Option>
-                                                <Select.Option value="USDC">USDC</Select.Option>
                                                 <Select.Option value="TUSD">TUSD</Select.Option>
+                                                <Select.Option value="USDC">USDC</Select.Option>
                                             </Select>
                                         </div>
                                         <div className="myBalanceOnPool myBalanceOnPoolMax">
@@ -323,8 +323,8 @@ export default class Home extends React.Component {
                                             <Select className="mySelect" defaultValue="DAI" onChange={(val) => { this.setState({ ...this.state, toWithdraw: val }) }}>
                                                 <Select.Option value="DAI">DAI</Select.Option>
                                                 <Select.Option value="PAX">PAX</Select.Option>
-                                                <Select.Option value="USDC">USDC</Select.Option>
                                                 <Select.Option value="TUSD">TUSD</Select.Option>
+                                                <Select.Option value="USDC">USDC</Select.Option>
                                             </Select>
                                         </div>
                                         <div className="clear"></div>
