@@ -97,6 +97,7 @@ contract DFEngine is DSMath, DSAuth {
         if (_step > 0) {
             _convert(_depositor, _tokens, _mintCW, _tokenBalance, _resUSDXBalance, _depositorBalance, _step);
         } else {
+            /** Just retrieve minting tokens here. If minted balance has USDX, call claim.*/
             for (uint i = 0; i < _tokens.length; i++) {
                 _depositorMintAmount = min(_depositorBalance[i], _resUSDXBalance[i]);
 
