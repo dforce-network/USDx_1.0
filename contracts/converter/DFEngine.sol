@@ -60,8 +60,7 @@ contract DFEngine is DSMath, DSAuth {
         uint rate = dfStore.getFeeRate(uint(ct));
         if(rate > 0) {
             uint dfPrice = getThePrice(address(medianizer));
-            // uint dfFee = dfPrice * rate / 10000;
-            uint dfFee = div(mul(mul(_amount, rate), mul(WAD, WAD)), mul(10000, dfPrice));
+            uint dfFee = div(mul(mul(_amount, rate), WAD), mul(10000, dfPrice));
             dfToken.transferFrom(depositor, address(dfFunds), dfFee);
         }
     }
@@ -122,10 +121,6 @@ contract DFEngine is DSMath, DSAuth {
     }
 
     function withdraw(address _depositor, address _tokenID, uint _amount) public auth returns (uint) {
-        if (_tokenID == address(usdxToken)) {
-            return claim(_depositor); //claim as many as possible.
-        }
-
         require(_amount > 0, "Withdraw: not enough balance.");
 
         uint _depositorBalance = dfStore.getDepositorBalance(_depositor, _tokenID);
@@ -143,7 +138,7 @@ contract DFEngine is DSMath, DSAuth {
         return (_withdrawAmount);
     }
 
-    function claim(address _depositor, uint _amount) public auth returns (uint) {
+    function claimAmount(address _depositor, uint _amount) public auth returns (uint) {
         require(_amount > 0, "Claim: amount not correct.");
         address[] memory _tokens = dfStore.getMintedTokenList();
         uint _resUSDXBalance;
@@ -168,7 +163,7 @@ contract DFEngine is DSMath, DSAuth {
         return _amount;
     }
 
-    function claim(address _depositor) public returns (uint) {
+    function claim(address _depositor) public auth returns (uint) {
         address[] memory _tokens = dfStore.getMintedTokenList();
         uint _resUSDXBalance;
         uint _depositorBalance;
@@ -195,7 +190,7 @@ contract DFEngine is DSMath, DSAuth {
         return _mintAmount;
     }
 
-    function destroy(address _depositor, uint _amount) public auth returns (bool){
+    function destroy(address _depositor, uint _amount) public auth returns (bool) {
         require(_amount > 0, "Destroy: amount not correct.");
         require(_amount <= usdxToken.balanceOf(_depositor), "Destroy: exceed max USDX balance.");
         require(_amount <= sub(dfStore.getTotalMinted(), dfStore.getTotalBurned()), "Destroy: not enough to burn.");
@@ -239,6 +234,8 @@ contract DFEngine is DSMath, DSAuth {
         usdxToken.transferFrom(_depositor, address(this),_amount);
         usdxToken.burn(address(this), _amount);
         dfStore.addTotalBurned(_amount);
+
+        return true;
     }
 
     function _convert(
