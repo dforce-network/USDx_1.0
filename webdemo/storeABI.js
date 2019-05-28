@@ -20,8 +20,22 @@ var storeABI = [{
     ],
     "payable": false,
     "stateMutability": "view",
-    "type": "function",
-    "signature": "0x344fbe82"
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [{
+      "name": "",
+      "type": "uint256"
+    }],
+    "name": "mintedTokenList",
+    "outputs": [{
+      "name": "",
+      "type": "address"
+    }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "constant": true,
@@ -41,8 +55,22 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function",
-    "signature": "0x664b013c"
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [{
+      "name": "",
+      "type": "uint256"
+    }],
+    "name": "FeeToken",
+    "outputs": [{
+      "name": "",
+      "type": "address"
+    }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "constant": true,
@@ -57,8 +85,22 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function",
-    "signature": "0x7241dfa0"
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [{
+      "name": "",
+      "type": "uint256"
+    }],
+    "name": "FeeRate",
+    "outputs": [{
+      "name": "",
+      "type": "uint256"
+    }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "constant": false,
@@ -67,8 +109,7 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function",
-    "signature": "0x79ba5097"
+    "type": "function"
   },
   {
     "constant": false,
@@ -80,8 +121,22 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function",
-    "signature": "0x7a9e5e4b"
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [{
+      "name": "",
+      "type": "address"
+    }],
+    "name": "resUSDXBalance",
+    "outputs": [{
+      "name": "",
+      "type": "uint256"
+    }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "constant": true,
@@ -93,8 +148,7 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function",
-    "signature": "0x8da5cb5b"
+    "type": "function"
   },
   {
     "constant": true,
@@ -109,24 +163,7 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function",
-    "signature": "0x9a4dffd9"
-  },
-  {
-    "constant": true,
-    "inputs": [{
-      "name": "",
-      "type": "address"
-    }],
-    "name": "lockedBalance",
-    "outputs": [{
-      "name": "",
-      "type": "uint256"
-    }],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function",
-    "signature": "0x9ae697bf"
+    "type": "function"
   },
   {
     "constant": true,
@@ -150,8 +187,7 @@ var storeABI = [{
     ],
     "payable": false,
     "stateMutability": "view",
-    "type": "function",
-    "signature": "0xad7138d3"
+    "type": "function"
   },
   {
     "constant": true,
@@ -163,8 +199,7 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function",
-    "signature": "0xbf7e214f"
+    "type": "function"
   },
   {
     "constant": true,
@@ -179,8 +214,7 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function",
-    "signature": "0xc51aa09b"
+    "type": "function"
   },
   {
     "constant": true,
@@ -192,8 +226,7 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function",
-    "signature": "0xd4ee1d90"
+    "type": "function"
   },
   {
     "constant": true,
@@ -208,8 +241,7 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function",
-    "signature": "0xd6e14cd2"
+    "type": "function"
   },
   {
     "constant": false,
@@ -221,8 +253,7 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function",
-    "signature": "0xf2fde38b"
+    "type": "function"
   },
   {
     "inputs": [{
@@ -236,8 +267,7 @@ var storeABI = [{
     ],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "constructor",
-    "signature": "constructor"
+    "type": "constructor"
   },
   {
     "anonymous": false,
@@ -253,8 +283,7 @@ var storeABI = [{
       }
     ],
     "name": "UpdateSection",
-    "type": "event",
-    "signature": "0x69b498e975f93232bd0bd7fa4fde9063c08e4a452f87f8612fa6777c7951001d"
+    "type": "event"
   },
   {
     "anonymous": false,
@@ -264,8 +293,7 @@ var storeABI = [{
       "type": "address"
     }],
     "name": "LogSetAuthority",
-    "type": "event",
-    "signature": "0x1abebea81bfa2637f28358c371278fb15ede7ea8dd28d2e03b112ff6d936ada4"
+    "type": "event"
   },
   {
     "anonymous": false,
@@ -275,8 +303,7 @@ var storeABI = [{
       "type": "address"
     }],
     "name": "LogSetOwner",
-    "type": "event",
-    "signature": "0xce241d7ca1f669fee44b6fc00b8eba2df3bb514eed0f6f668f8f89096e81ed94"
+    "type": "event"
   },
   {
     "anonymous": false,
@@ -292,8 +319,7 @@ var storeABI = [{
       }
     ],
     "name": "OwnerUpdate",
-    "type": "event",
-    "signature": "0x343765429aea5a34b3ff6a3785a98a5abb2597aca87bfbb58632c173d585373a"
+    "type": "event"
   },
   {
     "constant": true,
@@ -308,8 +334,19 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function",
-    "signature": "0x8d7bde49"
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+      "name": "_amount",
+      "type": "uint256"
+    }],
+    "name": "addSectionMinted",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
     "constant": false,
@@ -326,21 +363,7 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function",
-    "signature": "0x40806844"
-  },
-  {
-    "constant": false,
-    "inputs": [{
-      "name": "_amount",
-      "type": "uint256"
-    }],
-    "name": "addSectionMinted",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function",
-    "signature": "0xc4c731df"
+    "type": "function"
   },
   {
     "constant": false,
@@ -357,8 +380,7 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function",
-    "signature": "0xee026808"
+    "type": "function"
   },
   {
     "constant": false,
@@ -370,8 +392,7 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function",
-    "signature": "0x6dbd4a77"
+    "type": "function"
   },
   {
     "constant": true,
@@ -386,8 +407,7 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function",
-    "signature": "0xe3cc8414"
+    "type": "function"
   },
   {
     "constant": false,
@@ -399,8 +419,7 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function",
-    "signature": "0xc58c74c2"
+    "type": "function"
   },
   {
     "constant": false,
@@ -417,8 +436,19 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function",
-    "signature": "0x3e989950"
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+      "name": "_amount",
+      "type": "uint256"
+    }],
+    "name": "setSectionBurned",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
     "constant": false,
@@ -435,21 +465,7 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function",
-    "signature": "0xad353a97"
-  },
-  {
-    "constant": false,
-    "inputs": [{
-      "name": "_amount",
-      "type": "uint256"
-    }],
-    "name": "setSectionBurned",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function",
-    "signature": "0x151b7b86"
+    "type": "function"
   },
   {
     "constant": true,
@@ -464,8 +480,7 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function",
-    "signature": "0xb811a25f"
+    "type": "function"
   },
   {
     "constant": true,
@@ -480,8 +495,7 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function",
-    "signature": "0x56cd885e"
+    "type": "function"
   },
   {
     "constant": true,
@@ -513,8 +527,7 @@ var storeABI = [{
     ],
     "payable": false,
     "stateMutability": "view",
-    "type": "function",
-    "signature": "0xd648703c"
+    "type": "function"
   },
   {
     "constant": true,
@@ -538,8 +551,7 @@ var storeABI = [{
     ],
     "payable": false,
     "stateMutability": "view",
-    "type": "function",
-    "signature": "0x9a10ddc5"
+    "type": "function"
   },
   {
     "constant": true,
@@ -554,8 +566,7 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function",
-    "signature": "0xffb629be"
+    "type": "function"
   },
   {
     "constant": false,
@@ -572,8 +583,7 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function",
-    "signature": "0xda1998cc"
+    "type": "function"
   },
   {
     "constant": false,
@@ -590,8 +600,7 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function",
-    "signature": "0x3bdfdb53"
+    "type": "function"
   },
   {
     "constant": false,
@@ -612,8 +621,7 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function",
-    "signature": "0x8305f078"
+    "type": "function"
   },
   {
     "constant": false,
@@ -622,8 +630,7 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function",
-    "signature": "0xe8974efc"
+    "type": "function"
   },
   {
     "constant": true,
@@ -638,8 +645,7 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function",
-    "signature": "0x23165430"
+    "type": "function"
   },
   {
     "constant": false,
@@ -656,8 +662,7 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function",
-    "signature": "0xddd18f2e"
+    "type": "function"
   },
   {
     "constant": true,
@@ -672,8 +677,7 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function",
-    "signature": "0xd699e472"
+    "type": "function"
   },
   {
     "constant": false,
@@ -690,8 +694,7 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function",
-    "signature": "0x2514867c"
+    "type": "function"
   },
   {
     "constant": true,
@@ -706,8 +709,7 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function",
-    "signature": "0x8a2966c0"
+    "type": "function"
   },
   {
     "constant": false,
@@ -724,8 +726,19 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function",
-    "signature": "0xf39b75da"
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getMintedTokenList",
+    "outputs": [{
+      "name": "",
+      "type": "address[]"
+    }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "constant": true,
@@ -737,8 +750,7 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function",
-    "signature": "0x69112246"
+    "type": "function"
   },
   {
     "constant": true,
@@ -750,8 +762,7 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function",
-    "signature": "0x590ee16d"
+    "type": "function"
   },
   {
     "constant": true,
@@ -763,8 +774,7 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function",
-    "signature": "0x0ca1c5c9"
+    "type": "function"
   },
   {
     "constant": false,
@@ -776,8 +786,7 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function",
-    "signature": "0x27ef91da"
+    "type": "function"
   },
   {
     "constant": false,
@@ -789,8 +798,7 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function",
-    "signature": "0x16dbf906"
+    "type": "function"
   },
   {
     "constant": true,
@@ -802,8 +810,7 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function",
-    "signature": "0xb55cd04b"
+    "type": "function"
   },
   {
     "constant": false,
@@ -815,8 +822,7 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function",
-    "signature": "0x93f0f55a"
+    "type": "function"
   },
   {
     "constant": false,
@@ -828,8 +834,7 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function",
-    "signature": "0x553b3d29"
+    "type": "function"
   },
   {
     "constant": true,
@@ -844,8 +849,7 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function",
-    "signature": "0x3aecd0e3"
+    "type": "function"
   },
   {
     "constant": false,
@@ -862,8 +866,7 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function",
-    "signature": "0x4ceb1f13"
+    "type": "function"
   },
   {
     "constant": true,
@@ -871,15 +874,14 @@ var storeABI = [{
       "name": "_tokenID",
       "type": "address"
     }],
-    "name": "getLockedBalance",
+    "name": "getResUSDXBalance",
     "outputs": [{
       "name": "",
       "type": "uint256"
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function",
-    "signature": "0xc4086893"
+    "type": "function"
   },
   {
     "constant": false,
@@ -892,12 +894,11 @@ var storeABI = [{
         "type": "uint256"
       }
     ],
-    "name": "setLockedBalance",
+    "name": "setResUSDXBalance",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function",
-    "signature": "0xa4203fe5"
+    "type": "function"
   },
   {
     "constant": true,
@@ -917,8 +918,7 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function",
-    "signature": "0xcec3449a"
+    "type": "function"
   },
   {
     "constant": false,
@@ -939,7 +939,70 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function",
-    "signature": "0x59168e78"
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+        "name": "ct",
+        "type": "uint256"
+      },
+      {
+        "name": "rate",
+        "type": "uint256"
+      }
+    ],
+    "name": "setFeeRate",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [{
+      "name": "ct",
+      "type": "uint256"
+    }],
+    "name": "getFeeRate",
+    "outputs": [{
+      "name": "",
+      "type": "uint256"
+    }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+        "name": "tt",
+        "type": "uint256"
+      },
+      {
+        "name": "_tokenID",
+        "type": "address"
+      }
+    ],
+    "name": "setFeeToken",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [{
+      "name": "tt",
+      "type": "uint256"
+    }],
+    "name": "getFeeToken",
+    "outputs": [{
+      "name": "",
+      "type": "address"
+    }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
   }
 ];

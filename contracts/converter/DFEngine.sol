@@ -17,11 +17,22 @@ contract DFEngine is DSMath, DSAuth {
     IDFFunds public dfFunds;
     IDSToken public usdxToken;
     IDSToken public dfToken;
-    IMedianizer public medianizer;
+    IMedianizer public dfMedianizer;
+
+    // todo
+    uint[] public prices;
+    mapping(uint => address) priceType;
 
     enum CommissionType {
         CT_DEPOSIT,
-        CT_DESTROY
+        CT_DESTROY,
+        CT_CLAIM,
+        CT_WITHDRAW
+    }
+
+    enum FeeTokenType {
+        TT_DF,
+        TT_USDX
     }
 
     constructor (
@@ -40,11 +51,17 @@ contract DFEngine is DSMath, DSAuth {
         dfPool = IDFPool(_dfPool);
         dfCol = IDFCollateral(_dfCol);
         dfFunds = IDFFunds(_dfFunds);
-        medianizer = IMedianizer(_oracle);
+        dfMedianizer = IMedianizer(_oracle);
+        priceType[prices.length] = _oracle;
+        prices.push(prices.length);
     }
 
     function setCommissionRate(CommissionType ct, uint rate) public auth {
         dfStore.setFeeRate(uint(ct), rate);
+    }
+
+    function setCommissionToken(FeeTokenType ft, address _tokenID) public auth {
+        dfStore.setFeeToken(uint(ft), _tokenID);
     }
 
     function getThePrice(address oracle) public view returns (uint) {
@@ -53,25 +70,21 @@ contract DFEngine is DSMath, DSAuth {
     }
 
     function updateMintSection(address[] memory _tokens, uint[] memory _weight) public auth {
-        // address[] memory _mintTokens = dfStore.getSectionToken(dfStore.getMintPosition());
-        // for (uint i = 0; i < _mintTokens.length; i++) {
-        //     dfStore.setTokenBalance(_mintTokens[i], add(dfStore.getTokenBalance(_mintTokens[i]), dfStore.getResUSDXBalance(_mintTokens[i])));
-        //     dfStore.setResUSDXBalance(_mintTokens[i], 0);
-        // }
         dfStore.setSection(_tokens, _weight);
     }
 
-    function _unifiedCommission(CommissionType ct, address depositor, uint _amount) internal {
+    function _unifiedCommission(CommissionType ct, uint _feeTokenIdx, address depositor, uint _amount) internal {
         uint rate = dfStore.getFeeRate(uint(ct));
         if(rate > 0) {
-            uint dfPrice = getThePrice(address(medianizer));
-            // uint dfFee = dfPrice * rate / 10000;
-            uint dfFee = div(mul(mul(_amount, rate), mul(WAD, WAD)), mul(10000, dfPrice));
-            dfToken.transferFrom(depositor, address(dfFunds), dfFee);
+            address _token = dfStore.getFeeToken(_feeTokenIdx);
+            require(_token != address(0), "_UnifiedCommission: fee token not correct.");
+            uint dfPrice = getThePrice(address(dfMedianizer));
+            uint dfFee = div(mul(mul(_amount, rate), WAD), mul(10000, dfPrice));
+            IDSToken(_token).transferFrom(depositor, address(dfFunds), dfFee);
         }
     }
 
-    function deposit(address _depositor, address _tokenID, uint _amount) public auth returns (uint) {
+    function deposit(address _depositor, address _tokenID, uint _feeTokenIdx, uint _amount) public auth returns (uint) {
         require(_amount > 0, "Deposit: amount not allow.");
         require(dfStore.getMintingToken(_tokenID), "Deposit: asset not allow.");
         address[] memory _tokens;
@@ -83,10 +96,10 @@ contract DFEngine is DSMath, DSAuth {
         uint[] memory _depositorBalance = new uint[](_tokens.length);
         uint _depositorMintAmount;
         uint _depositorMintTotal;
-        uint _index;
-        uint _step = uint(-1);
+        //For stack limit sake.
+        uint _misc = uint(-1);
 
-        _unifiedCommission(CommissionType.CT_DEPOSIT, _depositor, _amount);
+        _unifiedCommission(CommissionType.CT_DEPOSIT, _feeTokenIdx, _depositor, _amount);
 
         dfPool.transferFromSender(_tokenID, _depositor, _amount);
         for (uint i = 0; i < _tokens.length; i++) {
@@ -96,13 +109,14 @@ contract DFEngine is DSMath, DSAuth {
             if (_tokenID == _tokens[i]){
                 _tokenBalance[i] = add(_tokenBalance[i], _amount);
                 _depositorBalance[i] = add(_depositorBalance[i], _amount);
-                _index = i;
+                // _index = i;
             }
-            _step = min(div(_tokenBalance[i], _mintCW[i]), _step);
+            _misc = min(div(_tokenBalance[i], _mintCW[i]), _misc);
         }
-        if (_step > 0) {
-            _convert(_depositor, _tokens, _mintCW, _tokenBalance, _resUSDXBalance, _depositorBalance, _step);
+        if (_misc > 0) {
+            _convert(_depositor, _tokens, _mintCW, _tokenBalance, _resUSDXBalance, _depositorBalance, _misc);
         } else {
+            /** Just retrieve minting tokens here. If minted balance has USDX, call claim.*/
             for (uint i = 0; i < _tokens.length; i++) {
                 _depositorMintAmount = min(_depositorBalance[i], _resUSDXBalance[i]);
 
@@ -113,29 +127,21 @@ contract DFEngine is DSMath, DSAuth {
                     continue;
                 }
 
-                dfStore.setDepositorBalance(_depositor, _tokens[i], _depositorBalance[i] - _depositorMintAmount);
-                // dfPool.transferToCol(_tokens[i], _depositorMintAmount);
-                dfStore.setResUSDXBalance(_tokens[i], _resUSDXBalance[i] - _depositorMintAmount);
+                dfStore.setDepositorBalance(_depositor, _tokens[i], sub(_depositorBalance[i], _depositorMintAmount));
+                dfStore.setResUSDXBalance(_tokens[i], sub(_resUSDXBalance[i], _depositorMintAmount));
                 _depositorMintTotal = add(_depositorMintTotal, _depositorMintAmount);
             }
 
-            if (_depositorMintTotal > 0) {
-                // usdxToken.mint(address(dfPool), _depositorMintTotal);
+            if (_depositorMintTotal > 0)
                 dfPool.transferOut(address(usdxToken), _depositor, _depositorMintTotal);
-                // usdxToken.transfer(_depositor, _depositorMintTotal);
-                // dfStore.addTotalMinted(_depositorMintTotal);
-                // dfStore.addSectionMinted(_depositorMintTotal);
-            }
-            dfStore.setTokenBalance(_tokenID, _tokenBalance[_index]);
+
+            _misc = add(_amount, dfStore.getTokenBalance(_tokenID));
+            dfStore.setTokenBalance(_tokenID, _misc);
         }
         return (_depositorMintTotal);
     }
 
-    function withdraw(address _depositor, address _tokenID, uint _amount) public auth returns (uint) {
-        if (_tokenID == address(usdxToken)) {
-            return claim(_depositor); //claim as many as possible.
-        }
-
+    function withdraw(address _depositor, address _tokenID, uint _feeTokenIdx, uint _amount) public auth returns (uint) {
         require(_amount > 0, "Withdraw: not enough balance.");
 
         uint _depositorBalance = dfStore.getDepositorBalance(_depositor, _tokenID);
@@ -148,14 +154,15 @@ contract DFEngine is DSMath, DSAuth {
         _depositorBalance = sub(_depositorBalance, _withdrawAmount);
         dfStore.setDepositorBalance(_depositor, _tokenID, _depositorBalance);
         dfStore.setTokenBalance(_tokenID, sub(_tokenBalance, _withdrawAmount));
+        _unifiedCommission(CommissionType.CT_WITHDRAW, _feeTokenIdx, _depositor, _amount);
         dfPool.transferOut(_tokenID, _depositor, _withdrawAmount);
 
         return (_withdrawAmount);
     }
 
-    function claim(address _depositor, uint _amount) public auth returns (uint) {
+    function claimAmount(address _depositor, uint _feeTokenIdx, uint _amount) public auth returns (uint) {
         require(_amount > 0, "Claim: amount not correct.");
-        address[] memory _tokens = dfStore.getSectionToken(dfStore.getMintPosition());
+        address[] memory _tokens = dfStore.getMintedTokenList();
         uint _resUSDXBalance;
         uint _depositorBalance;
         uint _depositorMintAmount;
@@ -170,21 +177,17 @@ contract DFEngine is DSMath, DSAuth {
             if (_depositorMintAmount > 0){
                 dfStore.setResUSDXBalance(_tokens[i], _resUSDXBalance - _depositorMintAmount);
                 dfStore.setDepositorBalance(_depositor, _tokens[i], _depositorBalance - _depositorMintAmount);
-                // dfPool.transferToCol(_tokens[i], _depositorMintAmount);
             }
         }
 
         require(_remain > 0, "Claim: balance not enough.");
+        _unifiedCommission(CommissionType.CT_CLAIM, _feeTokenIdx, _depositor, _amount);
         dfPool.transferOut(address(usdxToken), _depositor, _amount);
-        // usdxToken.mint(address(this), _amount);
-        // usdxToken.transfer(_depositor, _amount);
-        // dfStore.addTotalMinted(_amount);
-        // dfStore.addSectionMinted(_amount);
         return _amount;
     }
 
-    function claim(address _depositor) public auth returns (uint) {
-        address[] memory _tokens = dfStore.getSectionToken(dfStore.getMintPosition());
+    function claim(address _depositor, uint _feeTokenIdx) public auth returns (uint) {
+        address[] memory _tokens = dfStore.getMintedTokenList();
         uint _resUSDXBalance;
         uint _depositorBalance;
         uint _depositorMintAmount;
@@ -200,22 +203,18 @@ contract DFEngine is DSMath, DSAuth {
             if (_depositorMintAmount > 0){
                 dfStore.setResUSDXBalance(_tokens[i], _resUSDXBalance - _depositorMintAmount);
                 dfStore.setDepositorBalance(_depositor, _tokens[i], _depositorBalance - _depositorMintAmount);
-                // dfPool.transferToCol(_tokens[i], _depositorMintAmount);
             }
         }
 
         if (_mintAmount <= 0)
             return 0;
 
+        _unifiedCommission(CommissionType.CT_CLAIM, _feeTokenIdx, _depositor, _mintAmount);
         dfPool.transferOut(address(usdxToken), _depositor, _mintAmount);
-        // usdxToken.mint(address(this), _mintAmount);
-        // usdxToken.transfer(_depositor, _mintAmount);
-        // dfStore.addTotalMinted(_mintAmount);
-        // dfStore.addSectionMinted(_mintAmount);
         return _mintAmount;
     }
 
-    function destroy(address _depositor, uint _amount) public auth returns (bool){
+    function destroy(address _depositor, uint _feeTokenIdx, uint _amount) public auth returns (bool) {
         require(_amount > 0, "Destroy: amount not correct.");
         require(_amount <= usdxToken.balanceOf(_depositor), "Destroy: exceed max USDX balance.");
         require(_amount <= sub(dfStore.getTotalMinted(), dfStore.getTotalBurned()), "Destroy: not enough to burn.");
@@ -228,7 +227,7 @@ contract DFEngine is DSMath, DSAuth {
         uint _burnedAmount;
         uint _amountTemp = _amount;
 
-        _unifiedCommission(CommissionType.CT_DESTROY, _depositor, _amount);
+        _unifiedCommission(CommissionType.CT_DESTROY, _feeTokenIdx, _depositor, _amount);
 
         while(_amountTemp > 0) {
 
@@ -259,6 +258,8 @@ contract DFEngine is DSMath, DSAuth {
         usdxToken.transferFrom(_depositor, address(this),_amount);
         usdxToken.burn(address(this), _amount);
         dfStore.addTotalBurned(_amount);
+
+        return true;
     }
 
     function _convert(
@@ -273,13 +274,11 @@ contract DFEngine is DSMath, DSAuth {
     {
         uint _mintAmount;
         uint _mintTotal;
-        uint _lockAmount;
         uint _depositorMintAmount;
         uint _depositorMintTotal;
 
         for (uint i = 0; i < _tokens.length; i++) {
             _mintAmount = mul(_step, _mintCW[i]);
-            _lockAmount = add(_resUSDXBalance[i], _mintAmount);
             _depositorMintAmount = min(_depositorBalance[i], add(_resUSDXBalance[i], _mintAmount));
             dfStore.setTokenBalance(_tokens[i], _tokenBalance[i] - _mintAmount);
             dfPool.transferToCol(_tokens[i], _mintAmount);
@@ -291,8 +290,6 @@ contract DFEngine is DSMath, DSAuth {
             }
 
             dfStore.setDepositorBalance(_depositor, _tokens[i], _depositorBalance[i] - _depositorMintAmount);
-            // dfPool.transferToCol(_tokens[i], _depositorMintAmount);
-            // dfPool.transferToCol(_tokens[i], _mintAmount);
             dfStore.setResUSDXBalance(_tokens[i], add(_resUSDXBalance[i], _mintAmount) - _depositorMintAmount);
             _depositorMintTotal = add(_depositorMintTotal, _depositorMintAmount);
         }
@@ -301,6 +298,126 @@ contract DFEngine is DSMath, DSAuth {
         dfStore.addSectionMinted(_mintTotal);
         usdxToken.mint(address(dfPool), _mintTotal);
         dfPool.transferOut(address(usdxToken), _depositor, _depositorMintTotal);
-        // usdxToken.transfer(_depositor, _depositorMintTotal);
+    }
+
+    function calcDepositorMintTotal(address _depositor, address _tokenID, uint _amount) public pure auth returns (uint) {
+        require(dfStore.getMintingToken(_tokenID), "Deposit: asset not allow.");
+        
+        uint _mintAmount;
+        uint _depositorMintAmount;
+        uint _depositorMintTotal;
+        uint _step = uint(-1);
+
+        uint[] memory _tokenBalance = new uint[](_tokens.length);
+        uint[] memory _depositorBalance = new uint[](_tokens.length);
+        uint[] memory _resUSDXBalance = new uint[](_tokens.length);
+        uint[] memory _mintCW;
+        address[] memory _tokens;
+
+        (, , , _tokens, _mintCW) = dfStore.getSectionData(dfStore.getMintPosition());
+
+        for (uint i = 0; i < _tokens.length; i++) {
+            _tokenBalance[i] = dfStore.getTokenBalance(_tokens[i]);
+            _resUSDXBalance[i] = dfStore.getResUSDXBalance(_tokens[i]);
+            _depositorBalance[i] = dfStore.getDepositorBalance(_depositor, _tokens[i]);
+            if (_tokenID == _tokens[i]){
+                _depositorBalance[i] = add(_depositorBalance[i], _amount);
+            }
+            _step = min(div(_tokenBalance[i], _mintCW[i]), _step);
+        }
+
+        for (uint i = 0; i < _tokens.length; i++) {
+            _mintAmount = mul(_step, _mintCW[i]);
+            _depositorMintAmount = min(_depositorBalance[i], add(_resUSDXBalance[i], _mintAmount));
+            _depositorMintTotal = add(_depositorMintTotal, _depositorMintAmount);
+        }
+
+        return _depositorMintTotal;
+    }
+
+    function calcMaxClaimAmount(address _depositor) public pure auth returns (uint) {
+        uint _resUSDXBalance;
+        uint _depositorBalance;
+        uint _depositorMintAmount;
+        uint _mintAmount;
+        uint position = dfStore.getMintPosition();
+        address[] memory _tokens = dfStore.getSectionToken(position);
+
+        for (uint i = 0; i < _tokens.length; i++) {
+            _resUSDXBalance = dfStore.getResUSDXBalance(_tokens[i]);
+            _depositorBalance = dfStore.getDepositorBalance(_depositor, _tokens[i]);
+
+            _depositorMintAmount = min(_resUSDXBalance, _depositorBalance);
+            _mintAmount = add(_mintAmount, _depositorMintAmount);
+        }
+
+        return _mintAmount;
+    }
+
+    function calClaimMenu(address _depositor) public pure auth returns (address[] memory, uint[] memory) {
+        uint _resUSDXBalance;
+        uint _depositorBalance;
+        uint _depositorMintAmount;
+        uint _mintAmount;
+        uint position = dfStore.getMintPosition();
+
+        address[] memory _tokens = dfStore.getSectionToken(position);
+        uint[] memory _weight = new uint[](_tokens.length);
+
+        for (uint i = 0; i < _tokens.length; i++) {
+            _resUSDXBalance = dfStore.getResUSDXBalance(_tokens[i]);
+            _depositorBalance = dfStore.getDepositorBalance(_depositor, _tokens[i]);
+
+            _depositorMintAmount = min(_resUSDXBalance, _depositorBalance);
+            _weight[i] = _depositorMintAmount;
+        }
+
+        return (_tokens, _weight);
+    }
+
+    function getMintingMenu() public pure auth returns(address[] memory, uint[] memory) {
+        uint position = dfStore.getMintPosition();
+        uint[] memory weight = dfStore.getSectionWeight(position);
+        address[] memory tokens = dfStore.getSectionToken(position);
+
+        return (tokens, weight);
+    }
+
+    function getBurningMenu() public pure auth returns(address[] memory, uint[] memory) {
+        uint position = dfStore.getBurnPosition();
+        uint[] memory weight = dfStore.getSectionWeight(position);
+        address[] memory tokens = dfStore.getSectionToken(position);
+
+        return (tokens, weight);
+    }
+
+    function getWithdrawDetails() public pure auth returns(address[] memory, uint[] memory) {
+        uint position = dfStore.getMintPosition();
+        address[] memory tokens = dfStore.getSectionToken(position);
+        uint[] memory weight = new uint[](token.length);
+
+        for (uint i = 0; i < tokens.length; i++) {
+            weight[i] = calcWithdrawAmount(tokens[i]);
+        }
+
+        return (tokens, weight);
+    }
+
+    function getPriceType(uint typeID) public pure auth returns (address) {
+        require(type < priceType.length, "DFEngine: typeID is not correct");
+
+        return priceType[type];
+    }
+
+    function getFeeRateByID(uint typeID) public pure auth returns (uint) {
+        return dfStore.getFeeRate(typeID);
+    }
+
+    function calcWithdrawAmount(address _tokenID) internal returns (uint) {
+        uint _depositorBalance = dfStore.getDepositorBalance(_depositor, _tokenID);
+        uint _tokenBalance = dfStore.getTokenBalance(_tokenID);
+        uint _withdrawAmount = min(_amount, min(_tokenBalance, _depositorBalance));
+
+        return _withdrawAmount;
     }
 }

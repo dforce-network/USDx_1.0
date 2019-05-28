@@ -23,6 +23,8 @@ contract DFStore is DSMath, DSAuth {
     mapping(address => bool) public mintedTokens;
     mapping(address => address) public tokenBackup;
 
+    address[] public mintedTokenList;
+
     /// @dev The position of current secList
     uint private mintPosition;
 
@@ -36,6 +38,7 @@ contract DFStore is DSMath, DSAuth {
     uint private totalBurned;
 
     mapping(uint => uint) public FeeRate;
+    mapping(uint => address) public FeeToken;
     mapping(address => uint) public colsBalance;
     mapping(address => uint) public resUSDXBalance;
     mapping(address => mapping (address => uint)) public depositorsBalance;
@@ -138,9 +141,14 @@ contract DFStore is DSMath, DSAuth {
             require(_colIDs[i] != address(0), "_SetSection: 0 address not allow.");
             require(_weight[i] > 0, "_SetSection: cw not allow.");
 
-            secList[_mintPosition].cw[i] = mul(_weight[i], 10 ** 18);
+            secList[_mintPosition].cw[i] = _weight[i];
             secList[_mintPosition].colIDs[i] = _colIDs[i];
             mintingTokens[_colIDs[i]] = true;
+
+            if (mintedTokens[_colIDs[i]])
+                continue;
+
+            mintedTokenList.push(_colIDs[i]);
             mintedTokens[_colIDs[i]] = true;
         }
 
@@ -210,6 +218,10 @@ contract DFStore is DSMath, DSAuth {
         tokenBackup[_token] = _backupToken;
     }
 
+    function getMintedTokenList() public view returns (address[] memory) {
+        return mintedTokenList;
+    }
+
     function getMintPosition() public view returns (uint) {
         return mintPosition;
     }
@@ -274,5 +286,13 @@ contract DFStore is DSMath, DSAuth {
 
     function getFeeRate(uint ct) public view returns (uint) {
         return FeeRate[ct];
+    }
+
+    function setFeeToken(uint tt, address _tokenID) public auth {
+        FeeToken[tt] = _tokenID;
+    }
+
+    function getFeeToken(uint tt) public view returns (address) {
+        return FeeToken[tt];
     }
 }
