@@ -294,28 +294,28 @@ contract DFEngine is DSMath, DSAuth {
         usdxToken.mint(address(dfPool), _mintTotal);
         dfPool.transferOut(address(usdxToken), _depositor, _depositorMintTotal);
     }
-/*
-    function calcDepositorMintTotal(address _depositor, address _tokenID, uint _amount) public pure auth returns (uint) {
+
+    function calcDepositorMintTotal(address _depositor, address _tokenID, uint _amount) public view auth returns (uint) {
         require(dfStore.getMintingToken(_tokenID), "Deposit: asset not allow.");
         
         uint _mintAmount;
         uint _depositorMintAmount;
         uint _depositorMintTotal;
         uint _step = uint(-1);
+        address[] memory _tokens;
+        uint[] memory _mintCW;
+        (, , , _tokens, _mintCW) = dfStore.getSectionData(dfStore.getMintPosition());
 
         uint[] memory _tokenBalance = new uint[](_tokens.length);
         uint[] memory _depositorBalance = new uint[](_tokens.length);
         uint[] memory _resUSDXBalance = new uint[](_tokens.length);
-        uint[] memory _mintCW;
-        address[] memory _tokens;
-
-        (, , , _tokens, _mintCW) = dfStore.getSectionData(dfStore.getMintPosition());
-
+        
         for (uint i = 0; i < _tokens.length; i++) {
             _tokenBalance[i] = dfStore.getTokenBalance(_tokens[i]);
             _resUSDXBalance[i] = dfStore.getResUSDXBalance(_tokens[i]);
             _depositorBalance[i] = dfStore.getDepositorBalance(_depositor, _tokens[i]);
             if (_tokenID == _tokens[i]){
+                _tokenBalance[i] = add(_tokenBalance[i], _amount);
                 _depositorBalance[i] = add(_depositorBalance[i], _amount);
             }
             _step = min(div(_tokenBalance[i], _mintCW[i]), _step);
@@ -330,7 +330,7 @@ contract DFEngine is DSMath, DSAuth {
         return _depositorMintTotal;
     }
 
-    function calcMaxClaimAmount(address _depositor) public pure auth returns (uint) {
+    function calcMaxClaimAmount(address _depositor) public view auth returns (uint) {
         uint _resUSDXBalance;
         uint _depositorBalance;
         uint _depositorMintAmount;
@@ -349,11 +349,10 @@ contract DFEngine is DSMath, DSAuth {
         return _mintAmount;
     }
 
-    function calClaimMenu(address _depositor) public pure auth returns (address[] memory, uint[] memory) {
+    function calClaimMenu(address _depositor) public view auth returns (address[] memory, uint[] memory) {
         uint _resUSDXBalance;
         uint _depositorBalance;
         uint _depositorMintAmount;
-        uint _mintAmount;
         uint position = dfStore.getMintPosition();
 
         address[] memory _tokens = dfStore.getSectionToken(position);
@@ -370,7 +369,7 @@ contract DFEngine is DSMath, DSAuth {
         return (_tokens, _weight);
     }
 
-    function getMintingMenu() public pure auth returns(address[] memory, uint[] memory) {
+    function getMintingMenu() public view auth returns(address[] memory, uint[] memory) {
         uint position = dfStore.getMintPosition();
         uint[] memory weight = dfStore.getSectionWeight(position);
         address[] memory tokens = dfStore.getSectionToken(position);
@@ -378,7 +377,7 @@ contract DFEngine is DSMath, DSAuth {
         return (tokens, weight);
     }
 
-    function getBurningMenu() public pure auth returns(address[] memory, uint[] memory) {
+    function getBurningMenu() public view auth returns(address[] memory, uint[] memory) {
         uint position = dfStore.getBurnPosition();
         uint[] memory weight = dfStore.getSectionWeight(position);
         address[] memory tokens = dfStore.getSectionToken(position);
@@ -386,33 +385,35 @@ contract DFEngine is DSMath, DSAuth {
         return (tokens, weight);
     }
 
-    function getWithdrawDetails() public pure auth returns(address[] memory, uint[] memory) {
+    function getWithdrawDetails(address _depositor) public view auth returns(address[] memory, uint[] memory) {
         uint position = dfStore.getMintPosition();
         address[] memory tokens = dfStore.getSectionToken(position);
-        uint[] memory weight = new uint[](token.length);
+        uint[] memory weight = new uint[](tokens.length);
 
         for (uint i = 0; i < tokens.length; i++) {
-            weight[i] = calcWithdrawAmount(tokens[i]);
+            weight[i] = calcWithdrawAmount(_depositor, tokens[i]);
         }
 
         return (tokens, weight);
     }
 
-    function getPriceType(uint typeID) public pure auth returns (address) {
-        require(type < priceType.length, "DFEngine: typeID is not correct");
+    function getPrices(uint typeID) public view auth returns (uint) {
+        address _token = dfStore.getTypeToken(typeID);
+        require(_token != address(0), "_UnifiedCommission: fee token not correct.");
+        uint dfPrice = getPrice(dfStore.getTokenMedian(_token));
 
-        return priceType[type];
+        return dfPrice;
     }
 
-    function getFeeRateByID(uint typeID) public pure auth returns (uint) {
+    function getFeeRateByID(uint typeID) public view auth returns (uint) {
         return dfStore.getFeeRate(typeID);
     }
 
-    function calcWithdrawAmount(address _tokenID) internal returns (uint) {
+    function calcWithdrawAmount(address _depositor, address _tokenID) internal view returns (uint) {
         uint _depositorBalance = dfStore.getDepositorBalance(_depositor, _tokenID);
         uint _tokenBalance = dfStore.getTokenBalance(_tokenID);
-        uint _withdrawAmount = min(_amount, min(_tokenBalance, _depositorBalance));
+        uint _withdrawAmount = min(_tokenBalance, _depositorBalance);
 
         return _withdrawAmount;
-    } */
+    }
 }
