@@ -11,6 +11,7 @@ const PriceFeed = artifacts.require('PriceFeed.sol');
 const Medianizer = artifacts.require('Medianizer.sol');
 const USDx = artifacts.require('USDXToken.sol');
 // const DF = artifacts.require('DFToken.sol');
+const DF_Addr = "0x4AF82b7C2F049574C9fc742A896DAbEA379b7d51";
 
 module.exports = async function (deployer, network, accounts) {
 
@@ -175,6 +176,14 @@ module.exports = async function (deployer, network, accounts) {
         printTx(result.tx);
     }).catch(error => {
         perror("contarctEngine.setCommissionRate")
+    })
+
+    //Set commission token ==> DF
+    await contarctEngine.setCommissionToken.sendTransaction(0, DF_Addr).then(result => {
+        print("contarctEngine.setCommissionToken");
+        printTx(result.tx);
+    }).catch(error => {
+        perror("contarctEngine.setCommissionToken")
     })
 
     // Medianizer

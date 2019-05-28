@@ -52,4 +52,6 @@ contract IDFStore {
 
     function getFeeRate(uint ct) public view returns (uint);
     function setFeeRate(uint ct, uint rate) public;
+    function getFeeToken(uint tt) public view returns (address);
+    function setFeeToken(uint tt, address _tokenID) public;
 }
