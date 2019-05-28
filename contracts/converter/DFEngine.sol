@@ -335,8 +335,7 @@ contract DFEngine is DSMath, DSAuth {
         uint _depositorBalance;
         uint _depositorClaimAmount;
         uint _claimAmount;
-        uint position = dfStore.getMintPosition();
-        address[] memory _tokens = dfStore.getSectionToken(position);
+        address[] memory _tokens = dfStore.getMintedTokenList();
 
         for (uint i = 0; i < _tokens.length; i++) {
             _resUSDXBalance = dfStore.getResUSDXBalance(_tokens[i]);
