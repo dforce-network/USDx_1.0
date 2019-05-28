@@ -52,6 +52,7 @@ export default class Home extends React.Component {
     addressStore = '0x573A014ea4aBb79a17cb46AB3E5982fe65cCef43';
     units = 10 ** 18;
     tatolSection = 0;
+    tatolSectionBurning = 0;
 
     theme = createMuiTheme({
         palette: {
@@ -430,6 +431,64 @@ export default class Home extends React.Component {
 
     // get the Token section
     getTokenSection () {
+        this.contractStore.getMintPosition.call((err, ret) => {
+            if (ret) {
+                this.contractStore.getSectionToken.call(ret.toFixed(), (e, r) => {
+                    // console.log(e, r); // r: [addr, addr, addr, addr]
+                    if (r) {
+                        this.contractStore.getSectionWeight.call(ret.toFixed(), (error, result) => {
+                            // console.log(error, result);
+                            if (result) {
+                                for (let i = 0; i < r.length; i++) {
+                                    if (r[i] === this.addressDAI) {
+                                        this.sectionDAI = result[i].toFixed() / this.units;
+                                        this.tatolSection = this.tatolSection + this.sectionDAI;
+                                        this.setState({
+                                            ...this.state,
+                                            sectionDAI: this.sectionDAI,
+                                            tatolSection: this.tatolSection
+                                        })
+                                    }
+                                    if (r[i] === this.addressPAX) {
+                                        this.sectionPAX = result[i].toFixed() / this.units;
+                                        this.tatolSection = this.tatolSection + this.sectionPAX;
+                                        this.setState({
+                                            ...this.state,
+                                            sectionPAX: this.sectionPAX,
+                                            tatolSection: this.tatolSection
+                                        })
+                                    }
+                                    if (r[i] === this.addressUSDC) {
+                                        this.sectionUSDC = result[i].toFixed() / this.units;
+                                        this.tatolSection = this.tatolSection + this.sectionUSDC;
+                                        this.setState({
+                                            ...this.state,
+                                            sectionUSDC: this.sectionUSDC,
+                                            tatolSection: this.tatolSection
+                                        })
+                                    }
+                                    if (r[i] === this.addressTUSD) {
+                                        this.sectionTUSD = result[i].toFixed() / this.units;
+                                        this.tatolSection = this.tatolSection + this.sectionTUSD;
+                                        this.setState({
+                                            ...this.state,
+                                            sectionTUSD: this.sectionTUSD,
+                                            tatolSection: this.tatolSection
+                                        })
+                                    }
+                                }
+                            }
+                        })
+                    }
+                });
+            }
+        });
+    }
+    // get the Token Burning section
+    getTokenBurningSection () {
+        this.contractStore.getBurningSection.call((err, ret) => {
+            console.log(err, ret);
+        })
         this.contractStore.getMintPosition.call((err, ret) => {
             if (ret) {
                 this.contractStore.getSectionToken.call(ret.toFixed(), (e, r) => {
@@ -3620,6 +3679,7 @@ export default class Home extends React.Component {
 
 
 
+    // faucet Token
     allocateTo (token) {
         if (token === 'DAI') {
             this.allocateToDAI();
