@@ -184,6 +184,23 @@ var protocolABI = [{
     "anonymous": false,
     "inputs": [{
         "indexed": true,
+        "name": "_sender",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "_balance",
+        "type": "uint256"
+      }
+    ],
+    "name": "Claim",
+    "type": "event",
+    "signature": "0x47cee97cb7acd717b3c0aa1435d004cd5b3c8c57d70dbceb4e4458bbd60e39d4"
+  },
+  {
+    "anonymous": false,
+    "inputs": [{
+        "indexed": true,
         "name": "_msgSender",
         "type": "address"
       },
@@ -222,17 +239,6 @@ var protocolABI = [{
   {
     "anonymous": false,
     "inputs": [{
-      "indexed": true,
-      "name": "owner",
-      "type": "address"
-    }],
-    "name": "LogSetOwner",
-    "type": "event",
-    "signature": "0xce241d7ca1f669fee44b6fc00b8eba2df3bb514eed0f6f668f8f89096e81ed94"
-  },
-  {
-    "anonymous": false,
-    "inputs": [{
         "indexed": true,
         "name": "owner",
         "type": "address"
@@ -243,15 +249,40 @@ var protocolABI = [{
         "type": "address"
       }
     ],
-    "name": "OwnerUpdate",
+    "name": "LogSetOwner",
     "type": "event",
-    "signature": "0x343765429aea5a34b3ff6a3785a98a5abb2597aca87bfbb58632c173d585373a"
+    "signature": "0xc66d1d23a5b7baf1f496bb19f580d7b12070ad5a08a758c990db97d961fa33a6"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+        "name": "owner",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "name": "newOwner",
+        "type": "address",
+        "indexed": true
+      }
+    ],
+    "name": "OwnerUpdate",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "event",
+    "signature": "0x343765429aea5a34b3ff6a3785a98a5abb2597aca87bfbb58632c173d585373a",
+    "anonymous": false
   },
   {
     "constant": false,
     "inputs": [{
         "name": "_tokenID",
         "type": "address"
+      },
+      {
+        "name": "_feeTokenIdx",
+        "type": "uint256"
       },
       {
         "name": "_amount",
@@ -259,11 +290,14 @@ var protocolABI = [{
       }
     ],
     "name": "deposit",
-    "outputs": [],
+    "outputs": [{
+      "name": "",
+      "type": "uint256"
+    }],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function",
-    "signature": "0x47e7ef24"
+    "signature": "0x0efe6a8b"
   },
   {
     "constant": false,
@@ -272,28 +306,56 @@ var protocolABI = [{
         "type": "address"
       },
       {
+        "name": "_feeTokenIdx",
+        "type": "uint256"
+      },
+      {
         "name": "_amount",
         "type": "uint256"
       }
     ],
     "name": "withdraw",
-    "outputs": [],
+    "outputs": [{
+      "name": "",
+      "type": "uint256"
+    }],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function",
-    "signature": "0xf3fef3a3"
+    "signature": "0xb5c5f672"
   },
   {
     "constant": false,
     "inputs": [{
-      "name": "_amount",
-      "type": "uint256"
-    }],
+        "name": "_feeTokenIdx",
+        "type": "uint256"
+      },
+      {
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
     "name": "destroy",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function",
-    "signature": "0x9d118770"
+    "signature": "0xe3a94051"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+      "name": "_feeTokenIdx",
+      "type": "uint256"
+    }],
+    "name": "claim",
+    "outputs": [{
+      "name": "",
+      "type": "uint256"
+    }],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x379607f5"
   }
 ];
