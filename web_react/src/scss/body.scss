@@ -9,7 +9,7 @@ div.body {
     div.bodyleft {
         float: left;
         background: #fff;
-        width: 280px;
+        width: 320px;
         border: 1px solid rgba(230, 234, 238, 1);
         border-radius: 4px;
         box-shadow: 0px 0px 35px 0px rgba(0, 0, 0, 0.05);
@@ -24,27 +24,41 @@ div.body {
         }
 
         div.pool {
-            background: rgba(255, 245, 228, 1);
-            width: 260px;
+            background: rgba(255, 245, 228, 1) url(../assets/img/daiBackgd.png) no-repeat 0 0;
+            background-size: auto 100%;
+            width: 300px;
             margin: 0 auto;
             border-radius: 4px;
             margin-top: 15px;
+            height: 80px;
+
+            div.leftSection {
+                float: left;
+                width: 50px;
+                text-align: center;
+                // background: red;
+                height: 80px;
+                line-height: 80px;
+                font-size: 16px;
+                font-weight: 200;
+                color: #777;
+            }
 
             div.left {
                 // background: red;
                 float: left;
-                width: 100px;
+                width: 90px;
+                height: 80px;
                 text-align: center;
                 padding-top: 12px;
-                padding-bottom: 7px;
 
                 img {
-                    width: 36px;
+                    width: 34px;
                 }
 
                 p.token {
                     margin: 0;
-                    // margin-top: 5px;
+                    margin-top: 3px;
                     font-size: 16px;
                     font-weight: 300;
                     color: rgba(51, 51, 68, 0.7);
@@ -53,50 +67,75 @@ div.body {
 
             div.right {
                 // background: green;
+                width: 160px;
+                height: 80px;
                 float: left;
 
                 p {
                     margin: 0;
                 }
 
-                p.section {
-                    font-size: 18px;
-                    font-weight: 400;
-                    color: rgba(51, 51, 68, 0.7);
-                    padding-top: 13px;
+                div.section {
+                    padding-left: 10px;
+                    padding-right: 10px;
+                    padding-top: 10px;
+                    // background: red;
                 }
 
                 p.sectionNum {
+                    // background: green;
                     font-size: 20px;
                     font-weight: 500;
                     color: rgba(51, 51, 68, 1);
-                    margin-top: 3px;
+                    margin-top: 8px;
+                    text-align: right;
+                    padding-right: 10px;
+
+                    span.sectionDot {
+                        font-size: 80%;
+                        opacity: 0.7;
+                        font-weight: 200;
+                    }
                 }
             }
         }
 
         div.poolColor2 {
-            background: rgba(219, 255, 249, 1);
+            background: rgba(219, 255, 249, 1) url(../assets/img/paxBackgd.png) no-repeat 0 0;
+            background-size: auto 100%;
         }
 
         div.poolColor3 {
-            background: rgba(255, 236, 236, 1);
+            // background: rgba(255, 236, 236, 1);
+            background: rgba(226, 244, 255, 1) url(../assets/img/usdcBackgd.png) no-repeat 0 0;
+            background-size: auto 100%;
         }
 
         div.poolColor4 {
-            background: rgba(226, 244, 255, 1);
+            // background: rgba(226, 244, 255, 1);
+            background: rgba(255, 236, 236, 1) url(../assets/img/tusdBackgd.png) no-repeat 0 0;
+            background-size: auto 100%;
         }
 
         div.totalUSDx {
             padding-top: 30px;
 
             div.usdxNum {
+                // background: red;
+                padding-right: 20px;
+                text-align: right;
                 margin: 0;
                 margin-top: 5px;
                 font-size: 20px;
                 font-weight: 500;
                 color: rgba(51, 51, 68, 1);
                 padding-left: 20px;
+
+                span.sectionDot {
+                    font-size: 80%;
+                    opacity: 0.7;
+                    font-weight: 200;
+                }
             }
         }
 
@@ -105,6 +144,8 @@ div.body {
 
             div.sectionToken {
                 padding-left: 20px;
+                // background: green;
+                padding-right: 20px;
 
                 span.token {
                     display: inline-block;
@@ -117,9 +158,18 @@ div.body {
                 }
 
                 span.tokenNum {
+                    float: right;
+                    // background: red;
                     font-size: 20px;
                     font-weight: 500;
                     color: rgba(51, 51, 68, 1);
+
+                    i {
+                        font-style: normal;
+                        font-size: 80%;
+                        opacity: 0.7;
+                        font-weight: 200;
+                    }
                 }
             }
         }
@@ -128,7 +178,7 @@ div.body {
 
     div.bodyright {
         float: left;
-        width: calc(100% - 280px);
+        width: calc(100% - 320px);
         // background: goldenrod;
         padding-left: 30px;
 
@@ -281,6 +331,14 @@ div.body {
                     top: 92px;
                     // right: 0px;
                     width: 470px;
+                    color: #9696a2;
+
+                    span {
+                        display: inline-block;
+                        // background: green;
+                        width: 80px;
+                        color: #333;
+                    }
 
                     @media screen and (min-width: 1501px) {
                         margin-left: 30px;
@@ -292,10 +350,10 @@ div.body {
                         img {
                             width: 16px;
                             position: absolute;
-                            right: 104px;
+                            right: 180px;
                             margin-top: 3px;
                             margin-right: 7px;
-                            opacity: 0.7;
+                            opacity: 0.5;
                             cursor: pointer;
                         }
 
@@ -323,7 +381,7 @@ div.body {
                                 border: 5px solid transparent;
                                 border-top: 5px solid #fff;
                                 top: 52px;
-                                right: 113px;
+                                right: 189px;
                                 position: absolute;
                             }
 
@@ -335,7 +393,7 @@ div.body {
                                 border: 6px solid transparent;
                                 border-top: 6px solid rgba(221, 221, 230, 1);
                                 top: 52px;
-                                right: 112px;
+                                right: 188px;
                                 position: absolute;
                             }
                         }
@@ -344,6 +402,7 @@ div.body {
                             div.detials {
                                 display: block;
                             }
+
                             img {
                                 opacity: 1;
                             }
@@ -383,16 +442,38 @@ div.body {
                             font-weight: 200;
                             // background: green;
                         }
+
+                        span.right {
+                            display: inline-block;
+                            // background: red;
+                            width: 160px;
+                            float: right;
+                            text-align: right;
+                            padding-right: 80px;
+                            font-weight: 400;
+                            color: #333;
+
+                            i {
+                                font-style: normal;
+                                font-size: 80%;
+                                color: rgba(150, 150, 162, 1);
+                                font-weight: 200;
+                            }
+                        }
                     }
                 }
 
                 div.myBalanceOnPoolMax {
+
                     // background: red;
                     @media screen and (min-width: 1501px) {
-                        margin-left: 260px;
+                        width: 300px;
+                        text-align: left;
+                        margin-left: 200px;
                         // background: red;
                         float: left;
                     }
+
                     margin-top: 5px;
                     text-align: right;
                     font-weight: 300;
@@ -400,13 +481,19 @@ div.body {
                     color: rgba(150, 150, 162, 1);
 
                     span {
+                        display: inline-block;
+                        // background: green;
                         font-weight: 400;
                         color: #333;
                         margin-left: 7px;
+                        float: right;
                     }
                 }
 
                 div.claim {
+                    // background: red;
+                    // float: right;
+                    text-align: right;
                     font-size: 16px;
                     font-weight: 300;
                     margin-top: 40px;
@@ -414,6 +501,10 @@ div.body {
                     color: rgba(150, 150, 162, 1);
 
                     span {
+                        display: inline-block;
+                        // background: green;
+                        margin-right: 25px;
+                        width: 100px;
                         font-weight: 500;
                         color: #333;
                     }
@@ -451,24 +542,41 @@ div.body {
             div.pool {
                 width: 200px;
                 margin-top: 10px;
+                height: 60px;
+
+                div.leftSection {
+                    float: left;
+                    width: 40px;
+                    text-align: center;
+                    // background: red;
+                    height: 60px;
+                    line-height: 60px;
+                    font-size: 14px;
+                }
 
                 div.left {
-                    width: 80px;
+                    // background: red;
+                    width: 60px;
+                    height: 60px;
                     padding-top: 8px;
                     padding-bottom: 3px;
+                    padding-left: 8px;
 
                     img {
                         width: 28px;
                     }
 
                     p.token {
-                        font-size: 14px;
+                        font-size: 12px;
                     }
                 }
 
                 div.right {
+                    // background: red;
+                    width: 100px;
+                    height: 60px;
 
-                    p.section {
+                    div.section {
                         font-size: 14px;
                         font-weight: 300;
                         padding-top: 8px;
@@ -478,6 +586,12 @@ div.body {
                         font-size: 16px;
                         font-weight: 400;
                         margin-top: 3px;
+
+                        span.sectionDot {
+                            font-size: 80%;
+                            opacity: 0.7;
+                            font-weight: 200;
+                        }
                     }
                 }
 
@@ -491,6 +605,12 @@ div.body {
                     margin-top: 4px;
                     font-size: 16px;
                     font-weight: 400;
+
+                    span.sectionDot {
+                        font-size: 80%;
+                        opacity: 0.7;
+                        font-weight: 200;
+                    }
                 }
             }
 
@@ -607,6 +727,7 @@ div.body {
                         margin-top: 15px;
                         // margin-bottom: 15px;
                     }
+
                     div.ButtonWrapWithdraw {
                         margin-top: 48px;
                     }
@@ -633,13 +754,20 @@ div.body {
                         right: 20px;
                         width: 100%;
 
+                        span {
+                            display: inline-block;
+                            // background: green;
+                            width: 70px;
+                            color: #333;
+                        }
+
                         div.imgWrap {
                             // background: green;
 
                             img {
                                 width: 16px;
                                 position: absolute;
-                                right: 104px;
+                                right: 168px;
                                 opacity: 0.7;
                                 margin-top: 3px;
                                 margin-right: 7px;
@@ -661,7 +789,7 @@ div.body {
                                 border: 1px solid rgba(221, 221, 230, 1);
                                 box-shadow: 0px 0px 15px 0px rgba(116, 116, 116, 0.2);
                                 padding: 4px 7px;
-    
+
                                 &::after {
                                     content: '';
                                     display: block;
@@ -670,10 +798,10 @@ div.body {
                                     border: 5px solid transparent;
                                     border-top: 5px solid #fff;
                                     top: 43px;
-                                    right: 113px;
+                                    right: 177px;
                                     position: absolute;
                                 }
-    
+
                                 &::before {
                                     content: '';
                                     display: block;
@@ -682,7 +810,7 @@ div.body {
                                     border: 6px solid transparent;
                                     border-top: 6px solid rgba(221, 221, 230, 1);
                                     top: 44px;
-                                    right: 112px;
+                                    right: 176px;
                                     position: absolute;
                                 }
                             }
@@ -691,6 +819,7 @@ div.body {
                                 div.detials {
                                     display: block;
                                 }
+
                                 img {
                                     opacity: 1;
                                 }
@@ -708,6 +837,10 @@ div.body {
                         color: rgba(150, 150, 162, 1);
 
                         span {
+                            display: inline-block;
+                            // background: green;
+                            float: right;
+                            width: 70px;
                             font-weight: 400;
                             color: #333;
                             margin-left: 7px;
@@ -746,6 +879,12 @@ div.body {
                                 font-weight: 200;
                                 // background: green;
                             }
+
+                            span.right {
+                                // background: red;
+                                width: 140px;
+                                padding-right: 60px;
+                            }
                         }
                     }
 
@@ -759,6 +898,7 @@ div.body {
                         span {
                             font-weight: 400;
                             color: #333;
+                            width: 70px;
                         }
                     }
                 }
@@ -770,4 +910,3 @@ div.body {
         }
     }
 }
-

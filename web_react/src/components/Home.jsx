@@ -19,7 +19,7 @@ import abiTokens from '../abi/abiTokens';
 // import abiTUSD from '../abi/abiTUSD';
 // import abiUSDC from '../abi/abiUSDC';
 
-import abiDF from '../abi/abiDF';
+// import abiDF from '../abi/abiDF';
 import abiUSDx from '../abi/abiUSDx';
 import abiStore from '../abi/abiStore';
 import abiProtocol from '../abi/abiProtocol';
@@ -28,12 +28,10 @@ import abiProtocol from '../abi/abiProtocol';
 import Notify from './Notify';
 import Header from './Header';
 import Welcome from './Welcome';
+import BodyLeft from './BodyLeft';
+
 // images
 import doubt from '../assets/img/doubt.png';
-import dai from '../assets/img/dai.png';
-import pax from '../assets/img/pax.png';
-import tusd from '../assets/img/tusd.png';
-import usdc from '../assets/img/usdc.png';
 import exchangeTo from '../assets/img/exchangeTo.png';
 import exchangeBack from '../assets/img/exchangeBack.png';
 
@@ -143,79 +141,8 @@ export default class Home extends React.Component {
                     />
                     <MuiThemeProvider theme={this.theme}>
                     <div className="body">
-                            <div className="bodyleft">
-                                <div className="title">Constituent Pending Pool</div>
-                                <div className="pool">
-                                    <div className="left">
-                                        <img src={dai} alt=""/>
-                                        <p className="token">DAI</p>
-                                    </div>
-                                    <div className="right">
-                                        <p className="section">{this.state.sectionDAI? this.state.sectionDAI : '-'} ({this.state.sectionDAI? (this.state.sectionDAI * 100 /this.state.tatolSection).toFixed(2) : '-'}%)</p>
-                                        <p className="sectionNum">{this.state.DAIonPool? this.state.DAIonPool : '0.0'}</p>
-                                    </div>
-                                    <div className="clear"></div>
-                                </div>
-                                <div className="pool poolColor2">
-                                    <div className="left">
-                                        <img src={pax} alt=""/>
-                                        <p className="token">PAX</p>
-                                    </div>
-                                    <div className="right">
-                                        <p className="section">{this.state.sectionPAX? this.state.sectionPAX : '-'} ({this.state.sectionPAX? (this.state.sectionPAX * 100 /this.state.tatolSection).toFixed(2) : '-'}%)</p>
-                                        <p className="sectionNum">{this.state.PAXonPool? this.state.PAXonPool : '0.0'}</p>
-                                    </div>
-                                    <div className="clear"></div>
-                                </div>
-                                <div className="pool poolColor4">
-                                    <div className="left">
-                                        <img src={tusd} alt=""/>
-                                        <p className="token">TUSD</p>
-                                    </div>
-                                    <div className="right">
-                                        <p className="section">{this.state.sectionTUSD? this.state.sectionTUSD : '-'} ({this.state.sectionTUSD? (this.state.sectionTUSD * 100 /this.state.tatolSection).toFixed(2) : '-'}%)</p>
-                                        <p className="sectionNum">{this.state.TUSDonPool? this.state.TUSDonPool : '0.0'}</p>
-                                    </div>
-                                    <div className="clear"></div>
-                                </div>
-                                <div className="pool poolColor3">
-                                    <div className="left">
-                                        <img src={usdc} alt=""/>
-                                        <p className="token">USDC</p>
-                                    </div>
-                                    <div className="right">
-                                        <p className="section">{this.state.sectionUSDC? this.state.sectionUSDC : '-'} ({this.state.sectionUSDC? (this.state.sectionUSDC * 100 /this.state.tatolSection).toFixed(2) : '-'}%)</p>
-                                        <p className="sectionNum">{this.state.USDConPool? this.state.USDConPool : '0.0'}</p>
-                                    </div>
-                                    <div className="clear"></div>
-                                </div>
-
-                                <div className="totalUSDx">
-                                    <div className="title">Total USDX Outstanding</div>
-                                    <div className="usdxNum">{this.state.totalSupplyUSDx? this.state.totalSupplyUSDx : '0.0'}</div>
-                                </div>
-
-                                <div className="globalpool">
-                                    <div className="title">Global Collateral Pool</div>
-                                    <div className="sectionToken">
-                                        <span className="token">DAI</span>
-                                        <span className="tokenNum">{this.state.DAIonBank? this.state.DAIonBank : '0.0'}</span>
-                                    </div>
-                                    <div className="sectionToken">
-                                        <span className="token">PAX</span>
-                                        <span className="tokenNum">{this.state.PAXonBank? this.state.PAXonBank : '0.0'}</span>
-                                    </div>
-                                    <div className="sectionToken">
-                                        <span className="token">TUSD</span>
-                                        <span className="tokenNum">{this.state.TUSDonBank? this.state.TUSDonBank : '0.0'}</span>
-                                    </div>
-                                    <div className="sectionToken">
-                                        <span className="token">USDC</span>
-                                        <span className="tokenNum">{this.state.USDConBank? this.state.USDConBank : '0.0'}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="bodyright">
+                        <BodyLeft data={this.state}/>
+                        <div className="bodyright">
                                 <div className="tab1">
                                     <div className="titleInTab">
                                         <div className="leftTitle">EXCHANGE</div>
@@ -239,7 +166,7 @@ export default class Home extends React.Component {
                                             </Select>
                                         </div>
                                         <div className="myBalanceOnPool myBalanceOnPoolMax">
-                                            Max USDX available to generate: <span>{this.state.maxGenerateUSDx ? this.state.maxGenerateUSDx : '0.0'}</span>
+                                            Max USDX available to generate: <span>{this.state.maxGenerateUSDx ? this.state.maxGenerateUSDx : '0.00'}</span>
                                         </div>
                                         <div className="ButtonWrap">
                                             <Button
@@ -253,7 +180,7 @@ export default class Home extends React.Component {
                                             </Button>
                                         </div>
                                         <div className="diverLine"></div>
-                                        <div className="claim">Maximal USDX to claim <span>0.0</span></div>
+                                        <div className="claim">Maximal USDX to claim <span>0.00</span></div>
                                         <div className="ButtonWrap marginTop10 marginMax">
                                             <Button
                                                 onClick={() => { this.claim() }}
@@ -293,7 +220,10 @@ export default class Home extends React.Component {
                                                 <img src={doubt} alt="" />
                                                 <div className="detials">When you proceed destroying USDX, certain amount of DF coin is going to charge for brassage. The current fee is 5DF.</div>
                                             </div>
-                                            DF fee needed {this.state.couldDestroy ? '5' : '0'}
+                                            DF fee needed:
+                                            <span>
+                                                {this.state.couldDestroy ? '5' : '0.00'}
+                                            </span>
                                         </div>
                                         <div className="errtips" style={{ display: this.state.errTipsDestroy ? 'block' : 'none' }}>
                                             {/* <div className="errtips"> */}
@@ -302,10 +232,34 @@ export default class Home extends React.Component {
                                         </div>
                                         <div className="myBalanceOnPoolSection">
                                             <div className="title">How much constituents expect to generate ?</div>
-                                            <p className='partToken'><span>DAI</span> {this.state.USDxToDAI ? this.state.USDxToDAI : '0.0'}</p>
-                                            <p className='partToken marginR'><span>PAX</span> {this.state.USDxToPAX ? this.state.USDxToPAX : '0.0'}</p>
-                                            <p className='partToken'><span>TUSD</span> {this.state.USDxToTUSD ? this.state.USDxToTUSD : '0.0'}</p>
-                                            <p className='partToken'><span>USDC</span> {this.state.USDxToUSDC ? this.state.USDxToUSDC : '0.0'}</p>
+                                            <p className='partToken'>
+                                                <span>DAI</span>
+                                                <span className='right'>
+                                                    {this.state.USDxToDAI ? this.state.USDxToDAI.split('.')[0] : '0'}
+                                                    <i>{this.state.USDxToDAI ? '.' + this.state.USDxToDAI.split('.')[1] : '.00'}</i>
+                                                </span>
+                                            </p>
+                                            <p className='partToken marginR'>
+                                                <span>PAX</span>
+                                                <span className='right'>
+                                                    {this.state.USDxToPAX ? this.state.USDxToPAX.split('.')[0] : '0'}
+                                                    <i>{this.state.USDxToPAX ? '.' + this.state.USDxToPAX.split('.')[1] : '.00'}</i>
+                                                </span>
+                                            </p>
+                                            <p className='partToken'>
+                                                <span>TUSD</span>
+                                                <span className='right'>
+                                                    {this.state.USDxToTUSD ? this.state.USDxToTUSD.split('.')[0] : '0'}
+                                                    <i>{this.state.USDxToTUSD ? '.' + this.state.USDxToTUSD.split('.')[1] : '.00'}</i>
+                                                </span>
+                                            </p>
+                                            <p className='partToken'>
+                                                <span>USDC</span>
+                                                <span className='right'>
+                                                    {this.state.USDxToUSDC ? this.state.USDxToUSDC.split('.')[0] : '0'}
+                                                    <i>{this.state.USDxToUSDC ? '.' + this.state.USDxToUSDC.split('.')[1] : '.00'}</i>
+                                                </span>
+                                            </p>
                                             <div className="clear"></div>
                                         </div>
                                     </div>
@@ -344,18 +298,42 @@ export default class Home extends React.Component {
                                                 </div>
                                         <div className="myBalanceOnPoolSection">
                                             <div className="title">Withdraw Constituents</div>
-                                            <p className='partToken'><span>DAI</span> {this.state.myDAIonPool ? this.state.myDAIonPool : '0.0'}</p>
-                                            <p className='partToken'><span>PAX</span> {this.state.myPAXonPool ? this.state.myPAXonPool : '0.0'}</p>
-                                            <p className='partToken'><span>TUSD</span> {this.state.myTUSDonPool ? this.state.myTUSDonPool : '0.0'}</p>
-                                            <p className='partToken'><span>USDC</span> {this.state.myUSDConPool ? this.state.myUSDConPool : '0.0'}</p>
+                                            <p className='partToken'>
+                                                <span>DAI</span>
+                                                <span className='right'>
+                                                    {this.state.myDAIonPool ? this.state.myDAIonPool.split('.')[0] : '0'}
+                                                    <i>{this.state.myDAIonPool ? '.' + this.state.myDAIonPool.split('.')[1] : '.00'}</i>
+                                                </span>
+                                            </p>
+                                            <p className='partToken'>
+                                                <span>PAX</span>
+                                                <span className='right'>
+                                                    {this.state.myPAXonPool ? this.state.myPAXonPool.split('.')[0] : '0'}
+                                                    <i>{this.state.myPAXonPool ? '.' + this.state.myPAXonPool.split('.')[1] : '.00'}</i>
+                                                </span>
+                                            </p>
+                                            <p className='partToken'>
+                                                <span>TUSD</span>
+                                                <span className='right'>
+                                                    {this.state.myTUSDonPool ? this.state.myTUSDonPool.split('.')[0] : '0'}
+                                                    <i>{this.state.myTUSDonPool ? '.' + this.state.myTUSDonPool.split('.')[1] : '.00'}</i>
+                                                </span>
+                                            </p>
+                                            <p className='partToken'>
+                                                <span>USDC</span>
+                                                <span className='right'>
+                                                    {this.state.myUSDConPool ? this.state.myUSDConPool.split('.')[0] : '0'}
+                                                    <i>{this.state.myUSDConPool ? '.' + this.state.myUSDConPool.split('.')[1] : '.00'}</i>
+                                                </span>
+                                            </p>
                                             <div className="clear"></div>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="clear"></div>
                             </div>
-                            <div className="clear"></div>
-                        </div>
+                        <div className="clear"></div>
+                    </div>
                     </MuiThemeProvider>
                 </React.Fragment>
             </DocuentTitle>
@@ -507,6 +485,7 @@ export default class Home extends React.Component {
     }
 
 
+    // var num = new BN((amount * 10 ** 18).toLocaleString().replace(/,/g,''))
     // getMyBalance
     getMyBalance () {
         this.Web3.eth.getBalance(this.state.accountAddress, (err, ret) => {
@@ -516,9 +495,9 @@ export default class Home extends React.Component {
             });
         });
         this.contractDAI.balanceOf.call(this.state.accountAddress, (err, ret) => {
-            console.log('-----DAI-----', ret)
-            console.log('-----DAI--.toFixed()/ (10 ** 18)---', ret.toFixed() / (10 ** 18))
-            console.log('-----DAI--.toFixed()---', ret.toFixed())
+            // console.log('-----DAI-----', ret)
+            // console.log('-----DAI--.toFixed()/ (10 ** 18)---', ret.toFixed() / (10 ** 18))
+            // console.log('-----DAI--.toFixed()---', ret.toFixed())
             this.setState({
                 ...this.state,
                 myDAI: this.formatNumber(ret)
@@ -649,19 +628,20 @@ export default class Home extends React.Component {
 
     // format number
     formatNumber (BN) {
-        if (BN.toFixed() < (10 ** 15) && BN.toFixed() > 0) {
-            return '0.0001';
-        }
-        let originStr = (BN.toFixed() / (10 ** 18)).toString();
+        // if (BN.toFixed() < (10 ** 15) && BN.toFixed() > 0) {
+        //     return '0.0001';
+        // }
+        let originStr = (BN.toFixed() / (10 ** 10) / (10 ** 8)).toString();
+
         if ( originStr.indexOf('.') > 0 ) {
-            originStr = originStr.substr(0, originStr.indexOf('.') + 5);
+            originStr = originStr.substr(0, originStr.indexOf('.') + 3);
             if (originStr.length >= 12) {
                 return originStr = originStr.substr(0, 11);
             } else {
                 return originStr;
             }
         } else {
-            return originStr;
+            return originStr + '.00';
         }
     }
 
