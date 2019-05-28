@@ -25,7 +25,7 @@ var collateralNames = new Array('DAI', 'PAX', 'TUSD', 'USDC');
 
 // var weightTest = new Array(10, 20, 30, 40, 50, 60, 70, 80, 90, 100);
 // var weightTest = new Array(4, 3, 2, 1);
-var weightTest = new Array(1, 3, 3, 3);
+var weightTest = new Array(0.1, 0.3, 0.3, 0.3);
 
 var runTypeArr = new Array('deposit', 'destroy', 'withdraw', 'updateSection', 'claim');
 var dfEngineTimes = 1000;
@@ -38,287 +38,13 @@ contract('DFEngine', accounts => {
 // times 执行次数，如果无此参数则按照data配置种类各执行一次。
 // data 具体执行方式，如需插入随机模式可以，添加{}
 // 各项配置如不填写，测采用随机模式执行
-    var runConfig = [
-// deposit-pool-claim-withdraw
-            [
-            //deposit-pool
-                {
-                    'type':'deposit',
-                    // 'times':100,
-                    'data':[
-                        {
-                            'tokenAddress':1,
-                            'accountAddress':1,
-                            'amount':1,
-                        },
-                        {
-                            'tokenAddress':2,
-                            'accountAddress':2,
-                            'amount':3,
-                        },
-                        {
-                            'tokenAddress':3,
-                            'accountAddress':3,
-                            'amount':3,
-                        },
-                        {
-                            'tokenAddress':4,
-                            'accountAddress':4,
-                            'amount':2,
-                        },
-                    ]
-                },
-            //deposit-claim 
-                {
-                    'type':'claim',
-                    'data':[
-                        {
-                        'accountAddress':1
-                        },
-                        {
-                        'accountAddress':2
-                        },
-                        {
-                        'accountAddress':3
-                        },
-                        {
-                        'accountAddress':4
-                        },
-                    ]
-                },
-            //deposit-withdraw               
-                {
-                    'type':'withdraw',
-                    'data':[
-                        {
-                            'tokenAddress':1,
-                            'accountAddress':1,
-                            'amount':1,
-                        }
-                    ]
-                }
-            ],
-//deposit-convert-destroy2-withdraw4-deposit-withdraw8-claim  
-//user4 mint 24USDx
-//user5 mint 6USDx          
-            [
-                {
-                    'type':'deposit',
-                    // 'times':100,
-                    'data':[
-                        {
-                            'tokenAddress':1,
-                            'accountAddress':1,
-                            'amount':12,
-                        },
-                        {
-                            'tokenAddress':2,
-                            'accountAddress':2,
-                            'amount':24,
-                        },
-                        {
-                            'tokenAddress':3,
-                            'accountAddress':3,
-                            'amount':36,
-                        },
-                        {
-                            'tokenAddress':4,
-                            'accountAddress':4,
-                            'amount':48,
-                        },
-                    ]
-                }, 
-                {
-                    'type':'destroy',
-                    'data':[
-                        {
-                            'accountAddress':1,
-                            'amount':1,
-                        }
-                    ]
-                },
-                {
-                    'type':'destroy',
-                    'data':[
-                        {
-                            'accountAddress':2,
-                            'amount':1,
-                        }
-                    ]
-                },
-                {
-                    'type':'destroy',
-                    'data':[
-                        {
-                            'accountAddress':3,
-                            'amount':1,
-                        }
-                    ]
-                },
-                {
-                    'type':'destroy',
-                    'data':[
-                        {
-                            'accountAddress':4,
-                            'amount':1,
-                        }
-                    ]
-                },
-                {
-                    'type':'withdraw',
-                    'data':[
-                        {
-                            'tokenAddress':1,
-                            'accountAddress':2,
-                            'amount':1,
-                        }
-                    ]
-                },
-                {
-                    'type':'withdraw',
-                    'data':[
-                        {
-                            'tokenAddress':3,
-                            'accountAddress':3,
-                            'amount':13,
-                        }
-                    ]
-                }, 
-                {
-                    'type':'withdraw',
-                    'data':[
-                        {
-                            'tokenAddress':3,
-                            'accountAddress':3,
-                            'amount':1,
-                        }
-                    ]
-                }, 
-                {
-                    'type':'withdraw',
-                    'data':[
-                        {
-                            'tokenAddress':3,
-                            'accountAddress':3,
-                            'amount':11,
-                        }
-                    ]
-                },                    
-                {
-                    'type':'deposit',
-                    // 'times':100,
-                    'data':[
-                        {
-                            'tokenAddress':1,
-                            'accountAddress':5,
-                            'amount':6,
-                        },
-                    ]
-                },
-                {
-                    'type':'withdraw',
-                    'data':[
-                        {
-                            'tokenAddress':1,
-                            'accountAddress':5,
-                            'amount':11,
-                        }
-                    ]
-                }, 
-                {
-                    'type':'withdraw',
-                    'data':[
-                        {
-                            'tokenAddress':1,
-                            'accountAddress':5,
-                            'amount':10,
-                        }
-                    ]
-                }, 
-                {
-                    'type':'withdraw',
-                    'data':[
-                        {
-                            'tokenAddress':1,
-                            'accountAddress':5,
-                            'amount':6,
-                        }
-                    ]
-                }, 
-                {
-                    'type':'withdraw',
-                    'data':[
-                        {
-                            'tokenAddress':1,
-                            'accountAddress':5,
-                            'amount':1,
-                        }
-                    ]
-                },              
-                {
-                    'type':'withdraw',
-                    'data':[
-                        {
-                            'tokenAddress':1,
-                            'accountAddress':1,
-                            'amount':11,
-                        }
-                    ]
-                },
-                {
-                    'type':'withdraw',
-                    'data':[
-                        {
-                            'tokenAddress':1,
-                            'accountAddress':1,
-                            'amount':1,
-                        }
-                    ]
-                },
-                {
-                    'type':'withdraw',
-                    'data':[
-                        {
-                            'tokenAddress':1,
-                            'accountAddress':1,
-                            'amount':10,
-                        }
-                    ]
-                }, 
-                {
-                    'type':'withdraw',
-                    'data':[
-                        {
-                            'tokenAddress':1,
-                            'accountAddress':1,
-                            'amount':9,
-                        }
-                    ]
-                },                     
-                {
-                    'type':'claim',
-                    'data':[
-                        {
-                        'accountAddress':1
-                        },
-                        {
-                        'accountAddress':2
-                        },
-                        {
-                        'accountAddress':3
-                        },
-                        {
-                        'accountAddress':4
-                        },
-                        {
-                        'accountAddress':5
-                        },
-                    ]
-                },
-            ],  
+    var runConfig = [ 
 //deposit-convert-section[1]-deposit-withdraw3-destroy2-claim-deposit-claim-withdraw6-destroy3
-//section[0]:user4 calim 24USDx;user1 claim 2USDx;user2 claim 24USDx;user3 claim 24USDx
-//section[1]:user2 claim 18USDx;user1 claim 6USDx;              
+// X（USDx:0.8）
+// Y（USDx:4.2）
+// Z（USDx:2.4）
+// Q（USDx:2.4）
+// W（USDx:0.6）            
             [
                 {
                     'type':'deposit',
@@ -327,22 +53,22 @@ contract('DFEngine', accounts => {
                         {
                             'tokenAddress':1,
                             'accountAddress':1,
-                            'amount':12,
+                            'amount':1.2,
                         },
                         {
                             'tokenAddress':2,
                             'accountAddress':2,
-                            'amount':24,
+                            'amount':2.4,
                         },
                         {
                             'tokenAddress':3,
                             'accountAddress':3,
-                            'amount':36,
+                            'amount':3.6,
                         },
                         {
                             'tokenAddress':4,
                             'accountAddress':4,
-                            'amount':48,
+                            'amount':4.8,
                         },
                     ]
                 },
@@ -364,7 +90,7 @@ contract('DFEngine', accounts => {
                         {
                             'tokenAddress':1,
                             'accountAddress':5,
-                            'amount':6,
+                            'amount':0.6,
                         }
                     ]
                 },
@@ -374,7 +100,7 @@ contract('DFEngine', accounts => {
                         {
                             'tokenAddress':3,
                             'accountAddress':3,
-                            'amount':13,
+                            'amount':1.3,
                         }
                     ]
                 }, 
@@ -384,7 +110,7 @@ contract('DFEngine', accounts => {
                         {
                             'tokenAddress':3,
                             'accountAddress':3,
-                            'amount':1,
+                            'amount':0.01,
                         }
                     ]
                 }, 
@@ -394,7 +120,7 @@ contract('DFEngine', accounts => {
                         {
                             'tokenAddress':3,
                             'accountAddress':3,
-                            'amount':11,
+                            'amount':1.19,
                         }
                     ]
                 }, 
@@ -403,7 +129,7 @@ contract('DFEngine', accounts => {
                     'data':[
                         {
                             'accountAddress':1,
-                            'amount':1,
+                            'amount':0.1,
                         }
                     ]
                 },
@@ -412,7 +138,16 @@ contract('DFEngine', accounts => {
                     'data':[
                         {
                             'accountAddress':2,
-                            'amount':1,
+                            'amount':0.1,
+                        }
+                    ]
+                },
+                {
+                    'type':'destroy',
+                    'data':[
+                        {
+                            'accountAddress':3,
+                            'amount':0.1,
                         }
                     ]
                 },
@@ -420,13 +155,13 @@ contract('DFEngine', accounts => {
                     'type':'claim',
                     'data':[
                         {
-                        'accountAddress':1   //提取2 USDx
+                        'accountAddress':1   //提取0.2 USDx
                         },
                         {
-                        'accountAddress':2   //提取24 USDx
+                        'accountAddress':2   //提取2.4 USDx
                         },
                         {
-                        'accountAddress':3   //提取24 USDx
+                        'accountAddress':3   //提取2.4 USDx
                         },
                         {
                         'accountAddress':4   //return 空或0
@@ -443,7 +178,7 @@ contract('DFEngine', accounts => {
                         {
                             'tokenAddress':2,
                             'accountAddress':2,
-                            'amount':19,
+                            'amount':1.9,
                         }
                     ]
                 },               
@@ -451,7 +186,7 @@ contract('DFEngine', accounts => {
                     'type':'claim',
                     'data':[
                         {
-                        'accountAddress':1   //提取6 USDx
+                        'accountAddress':1   //提取0.6 USDx
                         },
                         {
                         'accountAddress':2   //return 空或0
@@ -464,7 +199,7 @@ contract('DFEngine', accounts => {
                         {
                             'tokenAddress':1,
                             'accountAddress':1,
-                            'amount':5,
+                            'amount':0.5,
                         }
                     ]
                 }, 
@@ -474,7 +209,7 @@ contract('DFEngine', accounts => {
                         {
                             'tokenAddress':1,
                             'accountAddress':1,
-                            'amount':1,
+                            'amount':0.1,
                         }
                     ]
                 }, 
@@ -484,7 +219,7 @@ contract('DFEngine', accounts => {
                         {
                             'tokenAddress':1,
                             'accountAddress':1,
-                            'amount':4,
+                            'amount':0.4,
                         }
                     ]
                 }, 
@@ -494,7 +229,7 @@ contract('DFEngine', accounts => {
                         {
                             'tokenAddress':2,
                             'accountAddress':2,
-                            'amount':2,
+                            'amount':0.11,
                         }
                     ]
                 }, 
@@ -504,7 +239,17 @@ contract('DFEngine', accounts => {
                         {
                             'tokenAddress':2,
                             'accountAddress':2,
-                            'amount':1,
+                            'amount':0.01,
+                        }
+                    ]
+                }, 
+                {
+                    'type':'withdraw',
+                    'data':[
+                        {
+                            'tokenAddress':2,
+                            'accountAddress':2,
+                            'amount':0.09,
                         }
                     ]
                 }, 
@@ -513,7 +258,7 @@ contract('DFEngine', accounts => {
                     'data':[
                         {
                             'accountAddress':1,
-                            'amount':7,
+                            'amount':0.81,
                         }
                     ]
                 },
@@ -522,7 +267,7 @@ contract('DFEngine', accounts => {
                     'data':[
                         {
                             'accountAddress':1,
-                            'amount':1,
+                            'amount':0.01,
                         }
                     ]
                 },
@@ -531,12 +276,496 @@ contract('DFEngine', accounts => {
                     'data':[
                         {
                             'accountAddress':1,
-                            'amount':6,
+                            'amount':0.79,
+                        }
+                    ]
+                },
+                {
+                    'type':'destroy',
+                    'data':[
+                        {
+                            'accountAddress':2,
+                            'amount':4.3,
+                        }
+                    ]
+                },
+                {
+                    'type':'destroy',
+                    'data':[
+                        {
+                            'accountAddress':2,
+                            'amount':0.01,
+                        }
+                    ]
+                },
+                {
+                    'type':'destroy',
+                    'data':[
+                        {
+                            'accountAddress':2,
+                            'amount':4.19,
+                        }
+                    ]
+                },
+                {
+                    'type':'destroy',
+                    'data':[
+                        {
+                            'accountAddress':3,
+                            'amount':2.41,
+                        }
+                    ]
+                },
+                {
+                    'type':'destroy',
+                    'data':[
+                        {
+                            'accountAddress':3,
+                            'amount':0.01,
+                        }
+                    ]
+                },
+                {
+                    'type':'destroy',
+                    'data':[
+                        {
+                            'accountAddress':3,
+                            'amount':2.39,
+                        }
+                    ]
+                },
+                {
+                    'type':'destroy',
+                    'data':[
+                        {
+                            'accountAddress':4,
+                            'amount':2.41,
+                        }
+                    ]
+                },
+                {
+                    'type':'destroy',
+                    'data':[
+                        {
+                            'accountAddress':4,
+                            'amount':0.01,
+                        }
+                    ]
+                },
+                {
+                    'type':'destroy',
+                    'data':[
+                        {
+                            'accountAddress':4,
+                            'amount':2.39,
+                        }
+                    ]
+                },
+                {
+                    'type':'destroy',
+                    'data':[
+                        {
+                            'accountAddress':5,
+                            'amount':0.61,
+                        }
+                    ]
+                },
+                {
+                    'type':'destroy',
+                    'data':[
+                        {
+                            'accountAddress':5,
+                            'amount':0.01,
+                        }
+                    ]
+                },
+                {
+                    'type':'destroy',
+                    'data':[
+                        {
+                            'accountAddress':5,
+                            'amount':0.59,
                         }
                     ]
                 },
             ],          
-        ];
+//dection[0]-deposit-convert-section[1]-deposit(no convert)-withdraw3-destroy2-claim-deposit(convert)-claim-section[2]-deposit-convert-withdraw6-claim-destroy3
+// X（USDx:1.8）
+// Y（USDx:6.7）
+// Z（USDx:4.8）
+// Q（USDx:2.4）
+// W（USDx:0.6）            
+            [
+                {
+                    'type':'deposit',
+                    // 'times':100,
+                    'data':[
+                        {
+                            'tokenAddress':1,
+                            'accountAddress':1,
+                            'amount':1.2,
+                        },
+                        {
+                            'tokenAddress':2,
+                            'accountAddress':2,
+                            'amount':2.4,
+                        },
+                        {
+                            'tokenAddress':3,
+                            'accountAddress':3,
+                            'amount':3.6,
+                        },
+                        {
+                            'tokenAddress':4,
+                            'accountAddress':4,
+                            'amount':4.8,
+                        },
+                    ]
+                },
+            //section[1]                
+                {
+                    'type':'updateSection',
+                    // 'times':100,
+                    'data':[
+                        {
+                            'tokens':[1, 2],
+                            'weight':[1, 3],
+                        },
+                    ]
+                },                
+                {
+                    'type':'deposit',
+                    // 'times':100,
+                    'data':[
+                        {
+                            'tokenAddress':1,
+                            'accountAddress':5,
+                            'amount':0.6,
+                        }
+                    ]
+                },
+                {
+                    'type':'withdraw',
+                    'data':[
+                        {
+                            'tokenAddress':3,
+                            'accountAddress':3,
+                            'amount':1.3,
+                        }
+                    ]
+                }, 
+                {
+                    'type':'withdraw',
+                    'data':[
+                        {
+                            'tokenAddress':3,
+                            'accountAddress':3,
+                            'amount':0.01,
+                        }
+                    ]
+                }, 
+                {
+                    'type':'withdraw',
+                    'data':[
+                        {
+                            'tokenAddress':3,
+                            'accountAddress':3,
+                            'amount':1.19,
+                        }
+                    ]
+                }, 
+                {
+                    'type':'destroy',
+                    'data':[
+                        {
+                            'accountAddress':1,
+                            'amount':0.1,
+                        }
+                    ]
+                },
+                {
+                    'type':'destroy',
+                    'data':[
+                        {
+                            'accountAddress':2,
+                            'amount':0.1,
+                        }
+                    ]
+                },
+                {
+                    'type':'destroy',
+                    'data':[
+                        {
+                            'accountAddress':3,
+                            'amount':0.1,
+                        }
+                    ]
+                },
+                {
+                    'type':'claim',
+                    'data':[
+                        {
+                        'accountAddress':1   //提取0.2 USDx
+                        },
+                        {
+                        'accountAddress':2   //提取2.4 USDx
+                        },
+                        {
+                        'accountAddress':3   //提取2.4 USDx
+                        },
+                        {
+                        'accountAddress':4   //return 空或0
+                        },
+                        {
+                        'accountAddress':5   //return 空或0
+                        },
+                    ]
+                },
+                {
+                    'type':'deposit',
+                    // 'times':100,
+                    'data':[
+                        {
+                            'tokenAddress':2,
+                            'accountAddress':2,
+                            'amount':1.9,
+                        }
+                    ]
+                },               
+                {
+                    'type':'claim',
+                    'data':[
+                        {
+                        'accountAddress':1   //提取0.6 USDx
+                        },
+                        {
+                        'accountAddress':2   //return 空或0
+                        },
+                    ]
+                },
+                //section[2]                
+                {
+                    'type':'updateSection',
+                    // 'times':100,
+                    'data':[
+                        {
+                            'tokens':[1, 2, 3],
+                            'weight':[0.1, 0.3, 0.3],
+                        },
+                    ]
+                }, 
+                {
+                    'type':'deposit',
+                    // 'times':100,
+                    'data':[
+                        {
+                            'tokenAddress':1,
+                            'accountAddress':1,
+                            'amount':1.2,
+                        },
+                        {
+                            'tokenAddress':2,
+                            'accountAddress':2,
+                            'amount':2.4,
+                        },
+                        {
+                            'tokenAddress':3,
+                            'accountAddress':3,
+                            'amount':3.6,
+                        },
+                    ]
+                },
+                {
+                    'type':'withdraw',
+                    'data':[
+                        {
+                            'tokenAddress':1,
+                            'accountAddress':1,
+                            'amount':0.1,
+                        }
+                    ]
+                }, 
+                {
+                    'type':'withdraw',
+                    'data':[
+                        {
+                            'tokenAddress':1,
+                            'accountAddress':1,
+                            'amount':0.7,
+                        }
+                    ]
+                }, 
+                {
+                    'type':'withdraw',
+                    'data':[
+                        {
+                            'tokenAddress':3,
+                            'accountAddress':3,
+                            'amount':0.01,
+                        }
+                    ]
+                }, 
+                {
+                    'type':'withdraw',
+                    'data':[
+                        {
+                            'tokenAddress':3,
+                            'accountAddress':3,
+                            'amount':0.19,
+                        }
+                    ]
+                }, 
+                {
+                    'type':'claim',
+                    'data':[
+                        {
+                        'accountAddress':1   //提取0.8 USDx
+                        },
+                        {
+                        'accountAddress':2   //提取2.5 USDx
+                        },
+                    ]
+                },               
+                {
+                    'type':'destroy',
+                    'data':[
+                        {
+                            'accountAddress':1,
+                            'amount':1.81,
+                        }
+                    ]
+                },
+                {
+                    'type':'destroy',
+                    'data':[
+                        {
+                            'accountAddress':1,
+                            'amount':0.01,
+                        }
+                    ]
+                },
+                {
+                    'type':'destroy',
+                    'data':[
+                        {
+                            'accountAddress':1,
+                            'amount':1.79,
+                        }
+                    ]
+                },
+                {
+                    'type':'destroy',
+                    'data':[
+                        {
+                            'accountAddress':2,
+                            'amount':6.8,
+                        }
+                    ]
+                },
+                {
+                    'type':'destroy',
+                    'data':[
+                        {
+                            'accountAddress':2,
+                            'amount':0.01,
+                        }
+                    ]
+                },
+                {
+                    'type':'destroy',
+                    'data':[
+                        {
+                            'accountAddress':2,
+                            'amount':6.69,
+                        }
+                    ]
+                },
+                {
+                    'type':'destroy',
+                    'data':[
+                        {
+                            'accountAddress':3,
+                            'amount':4.81,
+                        }
+                    ]
+                },
+                {
+                    'type':'destroy',
+                    'data':[
+                        {
+                            'accountAddress':3,
+                            'amount':0.01,
+                        }
+                    ]
+                },
+                {
+                    'type':'destroy',
+                    'data':[
+                        {
+                            'accountAddress':3,
+                            'amount':4.79,
+                        }
+                    ]
+                },
+                {
+                    'type':'destroy',
+                    'data':[
+                        {
+                            'accountAddress':4,
+                            'amount':2.41,
+                        }
+                    ]
+                },
+                {
+                    'type':'destroy',
+                    'data':[
+                        {
+                            'accountAddress':4,
+                            'amount':0.01,
+                        }
+                    ]
+                },
+                {
+                    'type':'destroy',
+                    'data':[
+                        {
+                            'accountAddress':4,
+                            'amount':2.39,
+                        }
+                    ]
+                },
+                {
+                    'type':'destroy',
+                    'data':[
+                        {
+                            'accountAddress':5,
+                            'amount':0.61,
+                        }
+                    ]
+                },
+                {
+                    'type':'destroy',
+                    'data':[
+                        {
+                            'accountAddress':5,
+                            'amount':0.01,
+                        }
+                    ]
+                },
+                {
+                    'type':'destroy',
+                    'data':[
+                        {
+                            'accountAddress':5,
+                            'amount':0.59,
+                        }
+                    ]
+                },
+            ],          
+];
+
+
+
 
         for (let configIndex = 0; configIndex < runConfig.length; configIndex++) {
         
