@@ -41,7 +41,7 @@ contract DFProtocol is DFUpgrader {
     }
 
     function getColMaxClaim() public returns (address[] memory, uint[] memory) {
-        return iDFEngine.calClaimMenu(msg.sender);
+        return iDFEngine.calClaimMenu();
     }
 
     function getMintingSection() public returns (address[] memory, uint[] memory) {

@@ -91,7 +91,7 @@ module.exports = {
     kovan: {
       provider: () => new HDWalletProvider("minimum increase pottery marble dizzy weasel busy erosion tackle million present slow", `https://kovan.infura.io/v3/${infuraKey}`),
       network_id: 42, // Kovan's id
-      gas: 8000000,
+      gas: 6600000,
       confirmations: 1,
       timeoutBlocks: 200,
       skipDryRun: true
@@ -100,7 +100,7 @@ module.exports = {
     ropsten: {
       provider: () => new HDWalletProvider("minimum increase pottery marble dizzy weasel busy erosion tackle million present slow", `https://ropsten.infura.io/v3/${infuraKey}`),
       network_id: 3, // ropsten's id
-      gas: 5500000,
+      gas: 6600000,
       confirmations: 2,
       timeoutBlocks: 200,
       skipDryRun: true
@@ -109,7 +109,7 @@ module.exports = {
     rinkeby: {
       provider: () => new HDWalletProvider("minimum increase pottery marble dizzy weasel busy erosion tackle million present slow", `https://rinkeby.infura.io/v3/${infuraKey}`),
       network_id: 4, // ropsten's id
-      gas: 5500000,
+      gas: 6600000,
       confirmations: 1,
       timeoutBlocks: 200,
       skipDryRun: true
