@@ -31,4 +31,65 @@ contract DFProtocol is DFUpgrader {
         emit Claim(msg.sender, _balance);
         return _balance;
     }
+
+    function getUSDXForDeposit(address tokenID, uint amount) public pure returns (uint) {
+        uint depositMintTotal = iDFEngine.calcDepositorMintTotal(msg.sender, tokenID, amount);
+
+        return depositMintTotal;
+    }
+
+    function getUserMaxToClaim() public pure returns (uint) {
+        uint maxClaiming = iDFEngine.calcMaxClaimAmount(msg.sender);
+
+        return maxClaiming;
+    }
+
+    function getColMaxClaim() public pure returns (address[] memory, uint[] memory) {
+        address[] memory tokens;
+        uint[] memory weight;
+
+        (tokens, weight) = iDFEngine.calClaimMenu(msg.sender);
+
+        return (tokens, weight);
+    }
+
+    function getMintingSection() public pure returns (address[] memory, uint[] memory) {
+        address[] memory tokens;
+        uint[] memory weight;
+
+        (tokens, weight) = iDFEngine.getMintingMenu();
+
+        return (tokens, weight);
+    }
+
+    function getBurningSection() public pure returns (address[] memory, uint[] memory) {
+        address[] memory tokens;
+        uint[] memory weight;
+
+        (tokens, weight) = iDFEngine.getBurningMenu();
+
+        return (tokens, weight);
+    }
+
+    function getUserWithdrawBalance() public pure returns (address[] memory, uint[] memory) {
+        address[] memory tokens;
+        uint[] memory weight;
+
+        (tokens, weight) = iDFEngine.getWithdrawDetails();
+        
+        return (tokens, weight);
+    }
+
+    function getPrice(uint typeID) public pure returns (uint) {
+        uint tokenID = iDFEngine.getPriceType();
+        uint price = iDFEngine.getThePrice(tokenID);
+
+        return price;
+    }
+
+    function getFeeRate(uint typeID) public pure returns (uint) {
+        uint feeRate = iDFEngine.getFeeRateByID(typeID);
+
+        return feeRate;
+    }
 }
