@@ -52,6 +52,8 @@ contract IDFStore {
 
     function getFeeRate(uint ct) public view returns (uint);
     function setFeeRate(uint ct, uint rate) public;
-    function getFeeToken(uint tt) public view returns (address);
-    function setFeeToken(uint tt, address _tokenID) public;
+    function getTypeToken(uint tt) public view returns (address);
+    function setTypeToken(uint tt, address _tokenID) public;
+    function getTokenMedian(address _tokenID) public view returns (address);
+    function setTokenMedian(address _tokenID, address _median) public;
 }

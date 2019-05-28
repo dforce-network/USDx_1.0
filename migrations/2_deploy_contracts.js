@@ -30,6 +30,5 @@ module.exports = async function (deployer, network, accounts) {
     await deployer.deploy(Pool, Collateral.address);
     await deployer.deploy(Medianizer);
     await deployer.deploy(PriceFeed);
-    await deployer.deploy(Engine, USDx.address, DF_Addr,
-        Store.address, Pool.address, Collateral.address, Funds.address, Medianizer.address);
+    await deployer.deploy(Engine, USDx.address, Store.address, Pool.address, Collateral.address, Funds.address);
 };

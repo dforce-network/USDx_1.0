@@ -31,7 +31,7 @@ contract DFProtocol is DFUpgrader {
         emit Claim(msg.sender, _balance);
         return _balance;
     }
-
+/*
     function getUSDXForDeposit(address tokenID, uint amount) public pure returns (uint) {
         uint depositMintTotal = iDFEngine.calcDepositorMintTotal(msg.sender, tokenID, amount);
 
@@ -92,4 +92,5 @@ contract DFProtocol is DFUpgrader {
 
         return feeRate;
     }
+    */
 }

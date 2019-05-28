@@ -186,6 +186,14 @@ module.exports = async function (deployer, network, accounts) {
         perror("contarctEngine.setCommissionToken")
     })
 
+    //Set DF medianizer
+    await contarctEngine.setCommissionMedian.sendTransaction(DF_Addr, contractMedianizer.address).then(result => {
+        print("contarctEngine.setCommissionMedian");
+        printTx(result.tx);
+    }).catch(error => {
+        perror("contarctEngine.setCommissionMedian")
+    })
+
     // Medianizer
     await contractMedianizer.set.sendTransaction(contractPriceFeed.address).then(result => {
         print("MedianizerSetFeed.post");
