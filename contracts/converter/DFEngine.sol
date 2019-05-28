@@ -296,7 +296,7 @@ contract DFEngine is DSMath, DSAuth {
     }
 
     function calcDepositorMintTotal(address _depositor, address _tokenID, uint _amount) public view auth returns (uint) {
-        require(dfStore.getMintingToken(_tokenID), "Deposit: asset not allow.");
+        require(dfStore.getMintingToken(_tokenID), "CalcDepositorMintTotal: asset not allow.");
         
         uint _mintAmount;
         uint _depositorMintAmount;
@@ -333,8 +333,8 @@ contract DFEngine is DSMath, DSAuth {
     function calcMaxClaimAmount(address _depositor) public view auth returns (uint) {
         uint _resUSDXBalance;
         uint _depositorBalance;
-        uint _depositorMintAmount;
-        uint _mintAmount;
+        uint _depositorClaimAmount;
+        uint _claimAmount;
         uint position = dfStore.getMintPosition();
         address[] memory _tokens = dfStore.getSectionToken(position);
 
@@ -342,31 +342,24 @@ contract DFEngine is DSMath, DSAuth {
             _resUSDXBalance = dfStore.getResUSDXBalance(_tokens[i]);
             _depositorBalance = dfStore.getDepositorBalance(_depositor, _tokens[i]);
 
-            _depositorMintAmount = min(_resUSDXBalance, _depositorBalance);
-            _mintAmount = add(_mintAmount, _depositorMintAmount);
+            _depositorClaimAmount = min(_resUSDXBalance, _depositorBalance);
+            _claimAmount = add(_claimAmount, _depositorClaimAmount);
         }
 
-        return _mintAmount;
+        return _claimAmount;
     }
 
-    function calClaimMenu(address _depositor) public view auth returns (address[] memory, uint[] memory) {
-        uint _resUSDXBalance;
-        uint _depositorBalance;
-        uint _depositorMintAmount;
+    function calClaimMenu() public view auth returns (address[] memory, uint[] memory) {
         uint position = dfStore.getMintPosition();
 
         address[] memory _tokens = dfStore.getSectionToken(position);
-        uint[] memory _weight = new uint[](_tokens.length);
+        uint[] memory _balance = new uint[](_tokens.length);
 
         for (uint i = 0; i < _tokens.length; i++) {
-            _resUSDXBalance = dfStore.getResUSDXBalance(_tokens[i]);
-            _depositorBalance = dfStore.getDepositorBalance(_depositor, _tokens[i]);
-
-            _depositorMintAmount = min(_resUSDXBalance, _depositorBalance);
-            _weight[i] = _depositorMintAmount;
+            _balance[i] = dfStore.getResUSDXBalance(_tokens[i]);
         }
 
-        return (_tokens, _weight);
+        return (_tokens, _balance);
     }
 
     function getMintingMenu() public view auth returns(address[] memory, uint[] memory) {
