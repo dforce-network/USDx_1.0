@@ -53,7 +53,7 @@ contract DFProtocol is DFUpgrader {
     }
 
     function getUserWithdrawBalance() public returns (address[] memory, uint[] memory) {
-        return iDFEngine.getWithdrawDetails(msg.sender);
+        return iDFEngine.getWithdrawDetails();
     }
 
     function getPrice(uint typeID) public returns (uint) {

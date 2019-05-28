@@ -10,7 +10,7 @@ contract IDFEngine {
     function calClaimMenu(address _depositor) public returns (address[] memory, uint[] memory);
     function getMintingMenu() public returns(address[] memory, uint[] memory);
     function getBurningMenu() public returns(address[] memory, uint[] memory);
-    function getWithdrawDetails(address _depositor) public returns(address[] memory, uint[] memory);
+    function getWithdrawDetails() public returns(address[] memory, uint[] memory);
     function getPrices(uint typeID) public returns (uint);
     function getFeeRateByID(uint typeID) public returns (uint);
 }
