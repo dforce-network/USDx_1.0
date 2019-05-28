@@ -6,5 +6,5 @@ node_modules
 test/test.js
 test/ERC20Token.js
 *.log
-*_t.sol
+*DFStore_t.sol
 
