@@ -1085,6 +1085,10 @@ var runConfig = [
 
                             accountTokenBalanceOrigin = await collateralObject[tokenAddress].balanceOf.call(accountAddress);
                             await collateralObject[tokenAddress].approve(dfPool.address, amountNB, {from: accountAddress});
+                            console.log(await collateralObject[tokenAddress].name.call() + ' belance:');
+                            console.log(accountTokenBalanceOrigin);
+                            console.log(accountTokenBalanceOrigin.toString());
+                            console.log('\n');
 
                             // transactionData = await dfEngine.deposit(accountAddress, tokenAddress, amountNB, {from: accountAddress});
                             // depositGasUsed = depositGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : depositGasUsed;
@@ -1444,7 +1448,7 @@ var runConfig = [
                             console.log(usdxBalanceOrigin.toString());
                             console.log('\n');
                             
-                            amount = MathTool.randomNum(0, Number(usdxBalanceOrigin.div(new BN(Number(10 ** 10).toLocaleString().replace(/,/g,'')))));
+                            amount = MathTool.randomNum(0, Number(usdxBalanceOrigin.mul(new BN(11)).div(new BN(10)).div(new BN(Number(10 ** 10).toLocaleString().replace(/,/g,'')))));
                             if(runConfig[configIndex]['data'][dfEngineIndex].hasOwnProperty('data')){
                         
                                 if (runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex].hasOwnProperty('amount')) {
@@ -1785,7 +1789,7 @@ var runConfig = [
                                 }
                             }
 
-                            amount = MathTool.randomNum(0, Number(dfStoreAccountTokenOrigin));
+                            amount = MathTool.randomNum(0, Number(dfStoreAccountTokenOrigin.mul(new BN(11)).div(new BN(10))));
                             if(runConfig[configIndex]['data'][dfEngineIndex].hasOwnProperty('data')){
                         
                                 if (runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex].hasOwnProperty('amount')) {

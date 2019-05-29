@@ -383,6 +383,10 @@ var runConfig = [
 
                             accountTokenBalanceOrigin = await collateralObject[tokenAddress].balanceOf.call(accountAddress);
                             await collateralObject[tokenAddress].approve(dfPool.address, amountNB, {from: accountAddress});
+                            console.log(await collateralObject[tokenAddress].name.call() + ' belance:');
+                            console.log(accountTokenBalanceOrigin);
+                            console.log(accountTokenBalanceOrigin.toString());
+                            console.log('\n');
 
                             // transactionData = await dfEngine.deposit(accountAddress, tokenAddress, amountNB, {from: accountAddress});
                             // depositGasUsed = depositGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : depositGasUsed;
