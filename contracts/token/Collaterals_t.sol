@@ -13,7 +13,7 @@ library SafeMath {
         }
 
         uint256 c = a * b;
-        require(c / a == b);
+        require(c / a == b, "mul : error!");
 
         return c;
     }
@@ -23,7 +23,7 @@ library SafeMath {
      */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
         // Solidity only automatically asserts when dividing by 0
-        require(b > 0);
+        require(b > 0, "div : error!");
         uint256 c = a / b;
         // assert(a == b * c + a % b); // There is no case in which this doesn't hold
 
@@ -34,7 +34,7 @@ library SafeMath {
      * @dev Subtracts two unsigned integers, reverts on overflow (i.e. if subtrahend is greater than minuend).
      */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b <= a);
+        require(b <= a, "sub : error!");
         uint256 c = a - b;
 
         return c;
@@ -45,7 +45,7 @@ library SafeMath {
      */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        require(c >= a);
+        require(c >= a, "add : error!");
 
         return c;
     }
@@ -55,7 +55,7 @@ library SafeMath {
      * reverts when dividing by zero.
      */
     function mod(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b != 0);
+        require(b != 0, "mod : error!");
         return a % b;
     }
 }
@@ -64,19 +64,19 @@ contract Collaterals_t {
     uint8  public decimals = 18;
     string public name;
     string public symbol;
-    
+
     using SafeMath for uint256;
     mapping (address => uint256) private _balances;
     mapping (address => mapping (address => uint256)) private _allowed;
-    uint256 private _totalSupply = 10**24; //1 million
+    uint256 private _totalSupply = 10**28; //10 billion
 
     constructor(string memory _name, string memory _symbol, address guy) public {
         name = _name;
         symbol = _symbol;
         _balances[msg.sender] = _totalSupply;
-        uint _value = 10**22;
+        uint _value = 10**24;
         _transfer(msg.sender, guy, _value);
-    } 
+    }
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
@@ -152,7 +152,7 @@ contract Collaterals_t {
      * @param value The amount to be transferred.
      */
     function _transfer(address from, address to, uint256 value) internal {
-        require(to != address(0));
+        require(to != address(0), "_transfer : to address cannot be 0x0");
 
         _balances[from] = _balances[from].sub(value);
         _balances[to] = _balances[to].add(value);
@@ -166,8 +166,8 @@ contract Collaterals_t {
      * @param value The number of tokens that can be spent.
      */
     function _approve(address owner, address spender, uint256 value) internal {
-        require(spender != address(0));
-        require(owner != address(0));
+        require(spender != address(0), "_approve : spender address cannot be 0x0");
+        require(owner != address(0), "_approve : owner address cannot be 0x0");
 
         _allowed[owner][spender] = value;
         emit Approval(owner, spender, value);

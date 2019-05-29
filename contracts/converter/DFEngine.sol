@@ -297,7 +297,7 @@ contract DFEngine is DSMath, DSAuth {
 
     function calcDepositorMintTotal(address _depositor, address _tokenID, uint _amount) public view returns (uint) {
         require(dfStore.getMintingToken(_tokenID), "CalcDepositorMintTotal: asset not allow.");
-        
+
         uint _mintAmount;
         uint _depositorMintAmount;
         uint _depositorMintTotal;
@@ -309,7 +309,7 @@ contract DFEngine is DSMath, DSAuth {
         uint[] memory _tokenBalance = new uint[](_tokens.length);
         uint[] memory _depositorBalance = new uint[](_tokens.length);
         uint[] memory _resUSDXBalance = new uint[](_tokens.length);
-        
+
         for (uint i = 0; i < _tokens.length; i++) {
             _tokenBalance[i] = dfStore.getTokenBalance(_tokens[i]);
             _resUSDXBalance[i] = dfStore.getResUSDXBalance(_tokens[i]);

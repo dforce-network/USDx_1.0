@@ -50,7 +50,7 @@ contract('DFEngine', accounts => {
 // truffle test .\test\DFEngine_deposit_claim.js > testDF_deposit_claim.log
 var runConfig = [ 
     {
-        'times':100000,     
+        'times':1000,     
         'data':[
             {
                 'type':'deposit',
