@@ -32,64 +32,35 @@ contract DFProtocol is DFUpgrader {
         return _balance;
     }
 
-    function getUSDXForDeposit(address tokenID, uint amount) public pure returns (uint) {
-        uint depositMintTotal = iDFEngine.calcDepositorMintTotal(msg.sender, tokenID, amount);
-
-        return depositMintTotal;
+    function getUSDXForDeposit(address tokenID, uint amount) public returns (uint) {
+        return iDFEngine.calcDepositorMintTotal(msg.sender, tokenID, amount);
     }
 
-    function getUserMaxToClaim() public pure returns (uint) {
-        uint maxClaiming = iDFEngine.calcMaxClaimAmount(msg.sender);
-
-        return maxClaiming;
+    function getUserMaxToClaim() public returns (uint) {
+        return iDFEngine.calcMaxClaimAmount(msg.sender);
     }
 
-    function getColMaxClaim() public pure returns (address[] memory, uint[] memory) {
-        address[] memory tokens;
-        uint[] memory weight;
-
-        (tokens, weight) = iDFEngine.calClaimMenu(msg.sender);
-
-        return (tokens, weight);
+    function getColMaxClaim() public returns (address[] memory, uint[] memory) {
+        return iDFEngine.calClaimMenu();
     }
 
-    function getMintingSection() public pure returns (address[] memory, uint[] memory) {
-        address[] memory tokens;
-        uint[] memory weight;
-
-        (tokens, weight) = iDFEngine.getMintingMenu();
-
-        return (tokens, weight);
+    function getMintingSection() public returns (address[] memory, uint[] memory) {
+        return iDFEngine.getMintingMenu();
     }
 
-    function getBurningSection() public pure returns (address[] memory, uint[] memory) {
-        address[] memory tokens;
-        uint[] memory weight;
-
-        (tokens, weight) = iDFEngine.getBurningMenu();
-
-        return (tokens, weight);
+    function getBurningSection() public returns (address[] memory, uint[] memory) {
+        return iDFEngine.getBurningMenu();
     }
 
-    function getUserWithdrawBalance() public pure returns (address[] memory, uint[] memory) {
-        address[] memory tokens;
-        uint[] memory weight;
-
-        (tokens, weight) = iDFEngine.getWithdrawDetails();
-        
-        return (tokens, weight);
+    function getUserWithdrawBalance() public returns (address[] memory, uint[] memory) {
+        return iDFEngine.getWithdrawDetails();
     }
 
-    function getPrice(uint typeID) public pure returns (uint) {
-        uint tokenID = iDFEngine.getPriceType();
-        uint price = iDFEngine.getThePrice(tokenID);
-
-        return price;
+    function getPrice(uint typeID) public returns (uint) {
+        return iDFEngine.getPrices(typeID);
     }
 
-    function getFeeRate(uint typeID) public pure returns (uint) {
-        uint feeRate = iDFEngine.getFeeRateByID(typeID);
-
-        return feeRate;
+    function getFeeRate(uint typeID) public returns (uint) {
+        return iDFEngine.getFeeRateByID(typeID);
     }
 }

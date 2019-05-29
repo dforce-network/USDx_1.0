@@ -186,6 +186,14 @@ module.exports = async function (deployer, network, accounts) {
         perror("contarctEngine.setCommissionToken")
     })
 
+    //Set DF medianizer
+    await contarctEngine.setCommissionMedian.sendTransaction(DF_Addr, contractMedianizer.address).then(result => {
+        print("contarctEngine.setCommissionMedian");
+        printTx(result.tx);
+    }).catch(error => {
+        perror("contarctEngine.setCommissionMedian")
+    })
+
     // Medianizer
     await contractMedianizer.set.sendTransaction(contractPriceFeed.address).then(result => {
         print("MedianizerSetFeed.post");
@@ -195,7 +203,7 @@ module.exports = async function (deployer, network, accounts) {
     })
 
     // PriceFeed
-    let price = new BN(Number(5.88 * 10 ** 18).toLocaleString().replace(/,/g, ''));
+    let price = new BN(Number(2 * 10 ** 18).toLocaleString().replace(/,/g, ''));
     await contractPriceFeed.post.sendTransaction(price, 2058870102, contractMedianizer.address).then(result => {
         print("contractPriceFeed.post");
         printTx(result.tx);
