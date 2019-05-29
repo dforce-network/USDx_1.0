@@ -328,17 +328,23 @@ div.body {
                     text-align: right;
                     // background: red;
                     padding-left: 20px;
-                    top: 92px;
+                    top: 94px;
                     // right: 0px;
                     width: 470px;
                     color: #9696a2;
-                    font-size: 12px;
+                    font-size: 14px;
+                    font-weight: 200;
 
                     span {
                         display: inline-block;
                         // background: green;
-                        width: 80px;
-                        color: #333;
+                        width: 90px;
+
+                        i {
+                            color: #333;
+                            font-size: 120%;
+                            font-style: normal;
+                        }
                     }
 
                     @media screen and (min-width: 1501px) {
@@ -351,8 +357,8 @@ div.body {
                         img {
                             width: 16px;
                             position: absolute;
-                            right: 180px;
-                            // margin-top: 3px;
+                            right: 190px;
+                            margin-top: 4px;
                             margin-right: 7px;
                             opacity: 0.5;
                             cursor: pointer;
@@ -382,7 +388,7 @@ div.body {
                                 border: 5px solid transparent;
                                 border-top: 5px solid #fff;
                                 top: 52px;
-                                right: 189px;
+                                right: 199px;
                                 position: absolute;
                             }
 
@@ -394,7 +400,7 @@ div.body {
                                 border: 6px solid transparent;
                                 border-top: 6px solid rgba(221, 221, 230, 1);
                                 top: 52px;
-                                right: 188px;
+                                right: 198px;
                                 position: absolute;
                             }
                         }
@@ -477,17 +483,22 @@ div.body {
 
                     margin-top: 5px;
                     text-align: right;
-                    font-weight: 300;
+                    font-weight: 200;
                     font-size: 14px;
                     color: rgba(150, 150, 162, 1);
 
                     span {
                         display: inline-block;
                         // background: green;
-                        font-weight: 400;
-                        color: #333;
+                        font-weight: 200;
                         margin-left: 7px;
                         float: right;
+
+                        i {
+                            font-style: normal;
+                            font-size: 120%;
+                            color: #333;
+                        }
                     }
                 }
 
@@ -507,7 +518,14 @@ div.body {
                         margin-right: 25px;
                         width: 100px;
                         font-weight: 500;
-                        color: #333;
+                        font-size: 14px;
+                        font-weight: 200;
+
+                        i {
+                            color: #333;
+                            font-style: normal;
+                            font-size: 120%;
+                        }
                     }
                 }
 
@@ -730,7 +748,7 @@ div.body {
                     }
 
                     div.ButtonWrapWithdraw {
-                        margin-top: 48px;
+                        margin-top: 51px;
                     }
 
                     div.diverLine {
@@ -755,13 +773,14 @@ div.body {
                         right: 20px;
                         width: 100%;
                         font-weight: 200;
+                        font-size: 12px;
 
                         span {
                             display: inline-block;
                             // background: green;
                             margin-left: 7px;
                             width: 70px;
-                            color: #333;
+                            // color: #333;
                         }
 
                         div.imgWrap {
@@ -772,7 +791,7 @@ div.body {
                                 position: absolute;
                                 right: 168px;
                                 opacity: 0.4;
-                                // margin-top: 3px;
+                                // margin-top: 2px;
                                 margin-right: 7px;
                                 cursor: pointer;
                             }
@@ -832,7 +851,7 @@ div.body {
 
                     div.myBalanceOnPool {
                         // background: red;
-                        margin-top: 5px;
+                        margin-top: 8px;
                         padding-right: 20px;
                         text-align: right;
                         font-weight: 200;
@@ -844,9 +863,10 @@ div.body {
                             // background: green;
                             float: right;
                             width: 70px;
-                            font-weight: 400;
-                            color: #333;
+                            font-weight: 200;
+                            // color: #333;
                             margin-left: 7px;
+                            margin-top: -3px;
                         }
                     }
 
@@ -866,17 +886,21 @@ div.body {
 
                         p.partToken {
                             float: left;
-                            // background: red;
+                            // background: pink;
                             font-size: 16px;
                             font-weight: 400;
-                            width: 50%;
+                            width: 40%;
                             margin: 0;
                             line-height: 28px;
-                            padding-left: 10px;
+                            padding-left: 0px;
+
+                            &.marginl {
+                                margin-left: 10%;
+                            }
 
                             span {
                                 display: inline-block;
-                                width: 50px;
+                                width: 40px;
                                 font-size: 14px;
                                 color: rgba(150, 150, 162, 1);
                                 font-weight: 200;
@@ -885,23 +909,30 @@ div.body {
 
                             span.right {
                                 // background: red;
-                                width: 140px;
-                                padding-right: 60px;
+                                width: 120px;
+                                padding-right: 20px;
+                                margin-right: 8px;
                             }
                         }
                     }
 
                     div.claim {
-                        font-size: 14px;
+                        font-size: 12px;
                         font-weight: 200;
                         margin-top: 20px;
                         padding-left: 20px;
                         color: rgba(150, 150, 162, 1);
 
                         span {
-                            font-weight: 400;
-                            color: #333;
+                            margin-right: 20px;
+                            font-weight: 200;
+                            // color: #333;
+                            font-size: 10px;
                             width: 70px;
+
+                            i {
+                                font-size: 140%;
+                            }
                         }
                     }
                 }

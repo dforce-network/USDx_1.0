@@ -43,13 +43,13 @@ export default class Home extends React.Component {
     addressTUSD = '0x25470030aa105bca679752e5c5e482c295de2b68';
     addressUSDC = '0xbc34e50f589e389c507e0213501114bd2e70b1d7';
     addressDF = '0x4AF82b7C2F049574C9fc742A896DAbEA379b7d51';
-    addressUSDx = '0x4A99afF6A91d3181fAc09D5382CF6B6668f555c1';
+    addressUSDx = '0x29d1980bDe9A71eBd47FE7cdef14640DC731BAA5';
 
-    addressProtocol = '0x98d30bCF390c508d25a2932f05BCbdEd9198fD57';
-    addressCollateral = '0xfBE90A4939063ed2502A672148B30eDb0cF78788';
-    addressEngine = '0xdDc4a39724Ea57d5B93f75E7bA9A652d174D8A1e';
-    addressPool = '0x2d57e8B64908359e2A3fd894B39dA21ae64A266F';
-    addressStore = '0x573A014ea4aBb79a17cb46AB3E5982fe65cCef43';
+    addressProtocol = '0x555bd8A39524635C725b62b28602cF52184C8CAE';
+    addressCollateral = '0x049b6B20826366897965592cabc24C35cDB69fe5';
+    addressEngine = '0xC7135d5F772FD9fD1e1780A401552fA15ee52E60';
+    addressPool = '0xA90B0e780f9eCb78D9bc4fE951E4A7A698b90b24';
+    addressStore = '0x1E3b33c17C93a7B541186413239Fac77A475b91C';
     units = 10 ** 18;
     tatolSection = 0;
     tatolSectionBurning = 0;
@@ -115,8 +115,12 @@ export default class Home extends React.Component {
                 console.log('get new status...');
                 this.getMyBalance();
                 this.getPoolBankTotalStatus();
-                this.getMyBalanceOnPool();
+                this.getUserWithdrawBalance();
                 this.checkApprove();
+                this.getUserMaxToClaim();
+                this.getPrice();
+                this.getColMaxClaim();
+                this.getUserWithdrawBalance();
             }else {
                 console.log('not connected...');
                 return;
@@ -154,7 +158,7 @@ export default class Home extends React.Component {
                                             </IconButton>
                                         </div>
                                         <div className="clear"></div>
-                                    </div>                                   
+                                    </div>
                                     <div style={{ display: this.state.tab1? 'block' : 'none' }} className="generate">
                                         <p className="details">Select which constituent would you like to deposit ?</p>
                                         <div className="input">
@@ -167,7 +171,11 @@ export default class Home extends React.Component {
                                             </Select>
                                         </div>
                                         <div className="myBalanceOnPool myBalanceOnPoolMax">
-                                            Max USDX available to generate: <span>{this.state.maxGenerateUSDx ? this.state.maxGenerateUSDx : '0.00'}</span>
+                                            Max USDX available to generate: 
+                                            <span>
+                                                <i>{this.state.maxGenerateUSDx ? this.state.maxGenerateUSDx.split('.')[0] : '0'}</i>
+                                                {this.state.maxGenerateUSDx ? '.' + this.state.maxGenerateUSDx.split('.')[1] : '.00'}
+                                            </span>
                                         </div>
                                         <div className="ButtonWrap">
                                             <Button
@@ -181,7 +189,13 @@ export default class Home extends React.Component {
                                             </Button>
                                         </div>
                                         <div className="diverLine"></div>
-                                        <div className="claim">Maximal USDX to claim <span>0.00</span></div>
+                                        <div className="claim">
+                                            Maximal USDX to claim:
+                                            <span>
+                                                <i>{this.state.userMaxToClaim? this.state.userMaxToClaim.split('.')[0] : '0'}</i>
+                                                {this.state.userMaxToClaim? '.' + this.state.userMaxToClaim.split('.')[1] : '.00'}
+                                            </span>
+                                        </div>
                                         <div className="ButtonWrap marginTop10 marginMax">
                                             <Button
                                                 onClick={() => { this.claim() }}
@@ -223,7 +237,8 @@ export default class Home extends React.Component {
                                             </div>
                                             DF fee needed:
                                             <span>
-                                                {this.state.couldDestroy ? '5' : '0.00'}
+                                                <i>{this.state.couldDestroy ? (this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice).toFixed(2).toString().split('.')[0] : '0'}</i>
+                                                {this.state.couldDestroy ? (this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice).toFixed(2).toString().split('.')[1] : '.00'}
                                             </span>
                                         </div>
                                         <div className="errtips" style={{ display: this.state.errTipsDestroy ? 'block' : 'none' }}>
@@ -240,7 +255,7 @@ export default class Home extends React.Component {
                                                     <i>{this.state.USDxToDAI ? '.' + this.state.USDxToDAI.split('.')[1] : '.00'}</i>
                                                 </span>
                                             </p>
-                                            <p className='partToken marginR'>
+                                            <p className='partToken marginR marginl'>
                                                 <span>PAX</span>
                                                 <span className='right'>
                                                     {this.state.USDxToPAX ? this.state.USDxToPAX.split('.')[0] : '0'}
@@ -254,7 +269,7 @@ export default class Home extends React.Component {
                                                     <i>{this.state.USDxToTUSD ? '.' + this.state.USDxToTUSD.split('.')[1] : '.00'}</i>
                                                 </span>
                                             </p>
-                                            <p className='partToken'>
+                                            <p className='partToken marginl'>
                                                 <span>USDC</span>
                                                 <span className='right'>
                                                     {this.state.USDxToUSDC ? this.state.USDxToUSDC.split('.')[0] : '0'}
@@ -298,7 +313,7 @@ export default class Home extends React.Component {
                                             The amount of {this.state.toWithdraw} to be deposit exceeds your current balance.
                                                 </div>
                                         <div className="myBalanceOnPoolSection">
-                                            <div className="title">Withdraw Constituents</div>
+                                            <div className="title">Withdraw Constituents:</div>
                                             <p className='partToken'>
                                                 <span>DAI</span>
                                                 <span className='right'>
@@ -306,7 +321,7 @@ export default class Home extends React.Component {
                                                     <i>{this.state.myDAIonPool ? '.' + this.state.myDAIonPool.split('.')[1] : '.00'}</i>
                                                 </span>
                                             </p>
-                                            <p className='partToken'>
+                                            <p className='partToken marginl'>
                                                 <span>PAX</span>
                                                 <span className='right'>
                                                     {this.state.myPAXonPool ? this.state.myPAXonPool.split('.')[0] : '0'}
@@ -320,7 +335,7 @@ export default class Home extends React.Component {
                                                     <i>{this.state.myTUSDonPool ? '.' + this.state.myTUSDonPool.split('.')[1] : '.00'}</i>
                                                 </span>
                                             </p>
-                                            <p className='partToken'>
+                                            <p className='partToken marginl'>
                                                 <span>USDC</span>
                                                 <span className='right'>
                                                     {this.state.myUSDConPool ? this.state.myUSDConPool.split('.')[0] : '0'}
@@ -372,9 +387,15 @@ export default class Home extends React.Component {
                 this.getNetType();
                 this.getMyBalance();
                 this.getPoolBankTotalStatus();
-                this.getMyBalanceOnPool();
+                this.getUserWithdrawBalance();
                 this.checkApprove();
                 this.getTokenSection();
+                this.getTokenBurningSection();
+                this.getUserMaxToClaim();
+                this.getPrice();
+                this.getFeeRate();
+                this.getColMaxClaim();
+                this.getUserWithdrawBalance();
                 Cookie.save('isLogin', 'true', { path: '/' });
             },
             err => {
@@ -431,117 +452,214 @@ export default class Home extends React.Component {
 
     // get the Token section
     getTokenSection () {
-        this.contractStore.getMintPosition.call((err, ret) => {
+        this.contractProtocol.getMintingSection.call((err, ret) => {
+            // console.log(ret[0])
+            // console.log(ret[1])
             if (ret) {
-                this.contractStore.getSectionToken.call(ret.toFixed(), (e, r) => {
-                    // console.log(e, r); // r: [addr, addr, addr, addr]
-                    if (r) {
-                        this.contractStore.getSectionWeight.call(ret.toFixed(), (error, result) => {
-                            // console.log(error, result);
-                            if (result) {
-                                for (let i = 0; i < r.length; i++) {
-                                    if (r[i] === this.addressDAI) {
-                                        this.sectionDAI = result[i].toFixed() / this.units;
-                                        this.tatolSection = this.tatolSection + this.sectionDAI;
-                                        this.setState({
-                                            ...this.state,
-                                            sectionDAI: this.sectionDAI,
-                                            tatolSection: this.tatolSection
-                                        })
-                                    }
-                                    if (r[i] === this.addressPAX) {
-                                        this.sectionPAX = result[i].toFixed() / this.units;
-                                        this.tatolSection = this.tatolSection + this.sectionPAX;
-                                        this.setState({
-                                            ...this.state,
-                                            sectionPAX: this.sectionPAX,
-                                            tatolSection: this.tatolSection
-                                        })
-                                    }
-                                    if (r[i] === this.addressUSDC) {
-                                        this.sectionUSDC = result[i].toFixed() / this.units;
-                                        this.tatolSection = this.tatolSection + this.sectionUSDC;
-                                        this.setState({
-                                            ...this.state,
-                                            sectionUSDC: this.sectionUSDC,
-                                            tatolSection: this.tatolSection
-                                        })
-                                    }
-                                    if (r[i] === this.addressTUSD) {
-                                        this.sectionTUSD = result[i].toFixed() / this.units;
-                                        this.tatolSection = this.tatolSection + this.sectionTUSD;
-                                        this.setState({
-                                            ...this.state,
-                                            sectionTUSD: this.sectionTUSD,
-                                            tatolSection: this.tatolSection
-                                        })
-                                    }
-                                }
-                            }
+                var addressArry = ret[0];
+                var secArry = ret[1];
+
+                for (let i = 0; i < addressArry.length; i++) {
+                    if (addressArry[i] === this.addressDAI) {
+                        this.sectionDAI = secArry[i].toFixed() / (10 ** 7);
+                        this.tatolSection = this.tatolSection + this.sectionDAI;
+                        this.setState({
+                            ...this.state,
+                            sectionDAI: this.sectionDAI,
+                            tatolSection: this.tatolSection
                         })
                     }
-                });
+                    if (addressArry[i] === this.addressPAX) {
+                        this.sectionPAX = secArry[i].toFixed() / (10 ** 7);
+                        this.tatolSection = this.tatolSection + this.sectionPAX;
+                        this.setState({
+                            ...this.state,
+                            sectionPAX: this.sectionPAX,
+                            tatolSection: this.tatolSection
+                        })
+                    }
+                    if (addressArry[i] === this.addressUSDC) {
+                        this.sectionUSDC = secArry[i].toFixed() / (10 ** 7);
+                        this.tatolSection = this.tatolSection + this.sectionUSDC;
+                        this.setState({
+                            ...this.state,
+                            sectionUSDC: this.sectionUSDC,
+                            tatolSection: this.tatolSection
+                        })
+                    }
+                    if (addressArry[i] === this.addressTUSD) {
+                        this.sectionTUSD = secArry[i].toFixed() / (10 ** 7);
+                        this.tatolSection = this.tatolSection + this.sectionTUSD;
+                        this.setState({
+                            ...this.state,
+                            sectionTUSD: this.sectionTUSD,
+                            tatolSection: this.tatolSection
+                        })
+                    }
+                }
             }
-        });
+        })
     }
     // get the Token Burning section
     getTokenBurningSection () {
-        this.contractStore.getBurningSection.call((err, ret) => {
-            console.log(err, ret);
-        })
-        this.contractStore.getMintPosition.call((err, ret) => {
+        this.contractProtocol.getBurningSection.call((err, ret) => {
+            // console.log(err, ret);
             if (ret) {
-                this.contractStore.getSectionToken.call(ret.toFixed(), (e, r) => {
-                    // console.log(e, r); // r: [addr, addr, addr, addr]
-                    if (r) {
-                        this.contractStore.getSectionWeight.call(ret.toFixed(), (error, result) => {
-                            // console.log(error, result);
-                            if (result) {
-                                for (let i = 0; i < r.length; i++) {
-                                    if (r[i] === this.addressDAI) {
-                                        this.sectionDAI = result[i].toFixed() / this.units;
-                                        this.tatolSection = this.tatolSection + this.sectionDAI;
-                                        this.setState({
-                                            ...this.state,
-                                            sectionDAI: this.sectionDAI,
-                                            tatolSection: this.tatolSection
-                                        })
-                                    }
-                                    if (r[i] === this.addressPAX) {
-                                        this.sectionPAX = result[i].toFixed() / this.units;
-                                        this.tatolSection = this.tatolSection + this.sectionPAX;
-                                        this.setState({
-                                            ...this.state,
-                                            sectionPAX: this.sectionPAX,
-                                            tatolSection: this.tatolSection
-                                        })
-                                    }
-                                    if (r[i] === this.addressUSDC) {
-                                        this.sectionUSDC = result[i].toFixed() / this.units;
-                                        this.tatolSection = this.tatolSection + this.sectionUSDC;
-                                        this.setState({
-                                            ...this.state,
-                                            sectionUSDC: this.sectionUSDC,
-                                            tatolSection: this.tatolSection
-                                        })
-                                    }
-                                    if (r[i] === this.addressTUSD) {
-                                        this.sectionTUSD = result[i].toFixed() / this.units;
-                                        this.tatolSection = this.tatolSection + this.sectionTUSD;
-                                        this.setState({
-                                            ...this.state,
-                                            sectionTUSD: this.sectionTUSD,
-                                            tatolSection: this.tatolSection
-                                        })
-                                    }
-                                }
-                            }
+                var addrArry = ret[0];
+                var sectionArry = ret[1];
+
+                for (let i = 0; i < addrArry.length; i++) {
+                    if (addrArry[i] === this.addressDAI) {
+                        this.sectionDAIBurning = sectionArry[i].toFixed() / (10 ** 7);
+                        this.tatolSectionBurning = this.tatolSectionBurning + this.sectionDAIBurning;
+                        this.setState({
+                            ...this.state,
+                            sectionDAIBurning: this.sectionDAIBurning,
+                            tatolSectionBurning: this.tatolSectionBurning
                         })
                     }
-                });
+                    if (addrArry[i] === this.addressPAX) {
+                        this.sectionPAXBurning = sectionArry[i].toFixed() / (10 ** 7);
+                        this.tatolSectionBurning = this.tatolSectionBurning + this.sectionPAXBurning;
+                        this.setState({
+                            ...this.state,
+                            sectionPAXBurning: this.sectionPAXBurning,
+                            tatolSectionBurning: this.tatolSectionBurning
+                        })
+                    }
+                    if (addrArry[i] === this.addressTUSD) {
+                        this.sectionTUSDBurning = sectionArry[i].toFixed() / (10 ** 7);
+                        this.tatolSectionBurning = this.tatolSectionBurning + this.sectionTUSDBurning;
+                        this.setState({
+                            ...this.state,
+                            sectionTUSDBurning: this.sectionTUSDBurning,
+                            tatolSectionBurning: this.tatolSectionBurning
+                        })
+                    }
+                    if (addrArry[i] === this.addressUSDC) {
+                        this.sectionUSDCBurning = sectionArry[i].toFixed() / (10 ** 7);
+                        this.tatolSectionBurning = this.tatolSectionBurning + this.sectionUSDCBurning;
+                        this.setState({
+                            ...this.state,
+                            sectionUSDCBurning: this.sectionUSDCBurning,
+                            tatolSectionBurning: this.tatolSectionBurning
+                        })
+                    }
+                }
             }
-        });
+        })
     }
+    // getUserMaxToClaim
+    getUserMaxToClaim () {
+        this.contractProtocol.getUserMaxToClaim.call((err, ret)=>{
+            // console.log(err, ret);
+            if (ret) {
+                this.setState({
+                    ...this.state,
+                    userMaxToClaim: this.formatNumber(ret)
+                })
+            }
+        })
+    }
+    // getPrice
+    getPrice () {
+        this.contractProtocol.getPrice.call(0, (err, ret)=>{
+            // console.log(err, ret);
+            if (ret) {
+                this.setState({
+                    ...this.state,
+                    dfPrice: this.formatNumber(ret)
+                })
+            }
+        })
+    }
+    // getFeeRate
+    getFeeRate () {
+        this.contractProtocol.getFeeRate.call(1, (err, ret)=>{
+            // console.log(err, ret);
+            if (ret) {
+                this.setState({
+                    ...this.state,
+                    feeRate: ret/10000
+                })
+            }
+        })
+    }
+    // getColMaxClaim
+    getColMaxClaim () {
+        this.contractProtocol.getColMaxClaim.call((err, ret)=>{
+            // console.log(err, ret);
+            if (ret) {
+                var claimAddress = ret[0];
+                var claimNumber = ret[1];
+
+                for (let i = 0; i < claimAddress.length; i++) {
+                    if (claimAddress[i] === this.addressDAI) {
+                        this.setState({
+                            ...this.state,
+                            claimDAI: this.formatNumber(claimNumber[i])
+                        })
+                    }
+                    if (claimAddress[i] === this.addressPAX) {
+                        this.setState({
+                            ...this.state,
+                            claimPAX: this.formatNumber(claimNumber[i])
+                        })
+                    }
+                    if (claimAddress[i] === this.addressTUSD) {
+                        this.setState({
+                            ...this.state,
+                            claimTUSD: this.formatNumber(claimNumber[i])
+                        })
+                    }
+                    if (claimAddress[i] === this.addressUSDC) {
+                        this.setState({
+                            ...this.state,
+                            claimUSDC: this.formatNumber(claimNumber[i])
+                        })
+                    }
+                }
+            }
+        })
+    }
+    // getUserWithdrawBalance
+    getUserWithdrawBalance () {
+        this.contractProtocol.getUserWithdrawBalance.call((err, ret)=>{
+            // console.log(err, ret);
+            if (ret) {
+                var addressIDs = ret[0];
+                var myBalance = ret[1];
+
+                for (let i = 0; i < addressIDs.length; i++) {
+                    if (addressIDs[i] === this.addressDAI) {
+                        this.setState({
+                            ...this.state,
+                            myDAIonPool: this.formatNumber(myBalance[i])
+                        })
+                    }
+                    if (addressIDs[i] === this.addressPAX) {
+                        this.setState({
+                            ...this.state,
+                            myPAXonPool: this.formatNumber(myBalance[i])
+                        })
+                    }
+                    if (addressIDs[i] === this.addressTUSD) {
+                        this.setState({
+                            ...this.state,
+                            myTUSDonPool: this.formatNumber(myBalance[i])
+                        })
+                    }
+                    if (addressIDs[i] === this.addressUSDC) {
+                        this.setState({
+                            ...this.state,
+                            myUSDConPool: this.formatNumber(myBalance[i])
+                        })
+                    }
+                }
+            }
+        })
+    }
+
 
 
     // var num = new BN((amount * 10 ** 18).toLocaleString().replace(/,/g,''))
@@ -591,6 +709,7 @@ export default class Home extends React.Component {
             });
         });
         this.contractUSDx.balanceOf.call(this.state.accountAddress, (err, ret) => {
+            // console.log(ret)
             this.setState({
                 ...this.state,
                 myUSDx: this.formatNumber(ret)
@@ -657,40 +776,41 @@ export default class Home extends React.Component {
         });
     }
     // getMyBalanceOnPool
-    getMyBalanceOnPool () {
-        this.contractStore.getDepositorBalance.call(this.state.accountAddress, this.addressDAI, (err, ret) => {
-            this.setState({
-                ...this.state,
-                myDAIonPool: this.formatNumber(ret)
-            });
-        });
-        this.contractStore.getDepositorBalance.call(this.state.accountAddress, this.addressPAX, (err, ret) => {
-            this.setState({
-                ...this.state,
-                myPAXonPool: this.formatNumber(ret)
-            });
-        });
-        this.contractStore.getDepositorBalance.call(this.state.accountAddress, this.addressTUSD, (err, ret) => {
-            this.setState({
-                ...this.state,
-                myTUSDonPool: this.formatNumber(ret)
-            });
-        });
-        this.contractStore.getDepositorBalance.call(this.state.accountAddress, this.addressUSDC, (err, ret) => {
-            this.setState({
-                ...this.state,
-                myUSDConPool: this.formatNumber(ret)
-            });
-        });
-    }
+    // getMyBalanceOnPool () {
+    //     this.contractStore.getDepositorBalance.call(this.state.accountAddress, this.addressDAI, (err, ret) => {
+    //         this.setState({
+    //             ...this.state,
+    //             myDAIonPool: this.formatNumber(ret)
+    //         });
+    //     });
+    //     this.contractStore.getDepositorBalance.call(this.state.accountAddress, this.addressPAX, (err, ret) => {
+    //         this.setState({
+    //             ...this.state,
+    //             myPAXonPool: this.formatNumber(ret)
+    //         });
+    //     });
+    //     this.contractStore.getDepositorBalance.call(this.state.accountAddress, this.addressTUSD, (err, ret) => {
+    //         this.setState({
+    //             ...this.state,
+    //             myTUSDonPool: this.formatNumber(ret)
+    //         });
+    //     });
+    //     this.contractStore.getDepositorBalance.call(this.state.accountAddress, this.addressUSDC, (err, ret) => {
+    //         this.setState({
+    //             ...this.state,
+    //             myUSDConPool: this.formatNumber(ret)
+    //         });
+    //     });
+    // }
 
 
     // format number
-    formatNumber (BN) {
-        // if (BN.toFixed() < (10 ** 15) && BN.toFixed() > 0) {
-        //     return '0.0001';
-        // }
-        let originStr = (BN.toFixed() / (10 ** 10) / (10 ** 8)).toString();
+    formatNumber (BNr) {
+        if (BNr.toFixed() < (10 ** 15) && BNr.toFixed() > 0) {
+            return '0.00';
+        }
+
+        let originStr = (BNr.toFixed() / (10 ** 10) / (10 ** 8)).toString();
 
         if ( originStr.indexOf('.') > 0 ) {
             originStr = originStr.substr(0, originStr.indexOf('.') + 3);
@@ -2231,6 +2351,7 @@ export default class Home extends React.Component {
         this.setState({tmepState});
         this.contractProtocol.withdraw.sendTransaction(
             addr,
+            0,
             num,
             {
                 from: this.state.accountAddress,
@@ -2300,7 +2421,7 @@ export default class Home extends React.Component {
                                 setTimeout(() => {
                                     this.getMyBalance();
                                     this.getPoolBankTotalStatus();
-                                    this.getMyBalanceOnPool();
+                                    this.getUserWithdrawBalance();
                                 }, 3000)
                             } 
                             if (data && data.status === '0x0') {
@@ -2350,6 +2471,7 @@ export default class Home extends React.Component {
         this.setState({tmepState});
         this.contractProtocol.withdraw.sendTransaction(
             addr,
+            0,
             num,
             {
                 from: this.state.accountAddress,
@@ -2419,7 +2541,7 @@ export default class Home extends React.Component {
                                 setTimeout(() => {
                                     this.getMyBalance();
                                     this.getPoolBankTotalStatus();
-                                    this.getMyBalanceOnPool();
+                                    this.getUserWithdrawBalance();
                                 }, 3000)
                             } 
                             if (data && data.status === '0x0') {
@@ -2469,6 +2591,7 @@ export default class Home extends React.Component {
         this.setState({tmepState});
         this.contractProtocol.withdraw.sendTransaction(
             addr,
+            0,
             num,
             {
                 from: this.state.accountAddress,
@@ -2538,7 +2661,7 @@ export default class Home extends React.Component {
                                 setTimeout(() => {
                                     this.getMyBalance();
                                     this.getPoolBankTotalStatus();
-                                    this.getMyBalanceOnPool();
+                                    this.getUserWithdrawBalance();
                                 }, 3000)
                             } 
                             if (data && data.status === '0x0') {
@@ -2588,6 +2711,7 @@ export default class Home extends React.Component {
         this.setState({tmepState});
         this.contractProtocol.withdraw.sendTransaction(
             addr,
+            0,
             num,
             {
                 from: this.state.accountAddress,
@@ -2657,7 +2781,7 @@ export default class Home extends React.Component {
                                 setTimeout(() => {
                                     this.getMyBalance();
                                     this.getPoolBankTotalStatus();
-                                    this.getMyBalanceOnPool();
+                                    this.getUserWithdrawBalance();
                                 }, 3000)
                             } 
                             if (data && data.status === '0x0') {
@@ -2688,148 +2812,228 @@ export default class Home extends React.Component {
         )
     }
 
-
+    // getUSDXForDeposit
+    getUSDXForDeposit (tokenID, amount) {
+        this.contractProtocol.getUSDXForDeposit.call(tokenID, amount, (err, ret)=>{
+            console.log(err, ret);
+            if (ret) {
+                this.setState({
+                    ...this.state,
+                    maxGenerateUSDx: this.formatNumber(ret)
+                })
+            }
+        })
+    }
     // deposit number check
     depositNumChange (val) {
         if (val.length > 16) {
             return;
         }
+        var address = this.addressDAI;
+
         if (this.state.toDeposit === 'DAI') {
+            address = this.addressDAI;
             if (Number(val) > 0 && Number(val) <= Number(this.state.myDAI)) {
-                var num0 = (Number(this.state.DAIonPool) + Number(val)) / this.sectionDAI;
-                var num1 = this.state.PAXonPool / this.sectionPAX;
-                var num2 = this.state.TUSDonPool / this.sectionTUSD;
-                var num3 = this.state.USDConPool / this.sectionUSDC;
-                var numMin0 = Math.min(num0, num1, num2, num3);
-                var maxGenerateDUSx0 = numMin0 >= 1 ? numMin0 * this.sectionDAI - this.state.DAIonPool : 0;
                 this.setState({
                     ...this.state,
-                    errTips: false,
                     couldDeposit: true,
-                    toDepositNum: val,
-                    maxGenerateUSDx: maxGenerateDUSx0
+                    toDepositNum: val
                 })
             } else {
                 this.setState({
                     ...this.state,
-                    errTips: true,
                     couldDeposit: false,
-                    toDepositNum: val,
-                    maxGenerateUSDx: ''
+                    toDepositNum: val
                 })
-                if (val === '') {
-                    this.setState({
-                        ...this.state,
-                        errTips: false,
-                        couldDeposit: false,
-                        toDepositNum: val,
-                        maxGenerateUSDx: ''
-                    })
-                }
             }
         }
         if (this.state.toDeposit === 'PAX') {
+            address = this.addressPAX;
             if (Number(val) > 0 && Number(val) <= Number(this.state.myPAX)) {
-                var num01 = this.state.DAIonPool / this.sectionDAI;
-                var num11 = (Number(this.state.PAXonPool) + Number(val)) / this.sectionPAX ;
-                var num21 = this.state.TUSDonPool / this.sectionTUSD;
-                var num31 = this.state.USDConPool / this.sectionUSDC;
-                var numMin1 = Math.min(num01, num11, num21, num31);
-                var maxGenerateDUSx1 = numMin1 >= 1 ? numMin1 * this.sectionPAX - this.state.PAXonPool : 0;
                 this.setState({
                     ...this.state,
-                    errTips: false,
                     couldDeposit: true,
-                    toDepositNum: val,
-                    maxGenerateUSDx: maxGenerateDUSx1
+                    toDepositNum: val
                 })
             } else {
                 this.setState({
                     ...this.state,
-                    errTips: true,
                     couldDeposit: false,
-                    toDepositNum: val,
-                    maxGenerateUSDx: ''
+                    toDepositNum: val
                 })
-                if (val === '') {
-                    this.setState({
-                        ...this.state,
-                        errTips: false,
-                        couldDeposit: false,
-                        toDepositNum: val,
-                        maxGenerateUSDx: ''
-                    })
-                }
             }
         }
         if (this.state.toDeposit === 'TUSD') {
+            address = this.addressTUSD;
             if (Number(val) > 0 && Number(val) <= Number(this.state.myTUSD)) {
-                var num02 = this.state.DAIonPool / this.sectionDAI;
-                var num12 = this.state.PAXonPool / this.sectionPAX;
-                var num22 = (Number(this.state.TUSDonPool) + Number(val)) / this.sectionTUSD;
-                var num32 = this.state.USDConPool / this.sectionUSDC;
-                var numMin2 = Math.min(num02, num12, num22, num32);
-                var maxGenerateDUSx2 = numMin2 >= 1 ? numMin2 * this.sectionTUSD - this.state.TUSDonPool : 0;
                 this.setState({
                     ...this.state,
-                    errTips: false,
                     couldDeposit: true,
-                    toDepositNum: val,
-                    maxGenerateUSDx: maxGenerateDUSx2
+                    toDepositNum: val
                 })
             } else {
                 this.setState({
                     ...this.state,
-                    errTips: true,
                     couldDeposit: false,
-                    toDepositNum: val,
-                    maxGenerateUSDx: ''
+                    toDepositNum: val
                 })
-                if (val === '') {
-                    this.setState({
-                        ...this.state,
-                        errTips: false,
-                        couldDeposit: false,
-                        toDepositNum: val,
-                        maxGenerateUSDx: ''
-                    })
-                }
             }
         }
         if (this.state.toDeposit === 'USDC') {
+            address = this.addressUSDC;
             if (Number(val) > 0 && Number(val) <= Number(this.state.myUSDC)) {
-                var num03 = this.state.DAIonPool / this.sectionDAI;
-                var num13 = this.state.PAXonPool / this.sectionPAX;
-                var num23 = this.state.TUSDonPool / this.sectionTUSD;
-                var num33 = (Number(this.state.USDConPool) + Number(val)) / this.sectionUSDC;
-                var numMin3 = Math.min(num03, num13, num23, num33);
-                var maxGenerateDUSx3 = numMin3 >= 1 ? numMin3 * this.sectionUSDC - this.state.USDConPool : 0;
                 this.setState({
                     ...this.state,
-                    errTips: false,
                     couldDeposit: true,
-                    toDepositNum: val,
-                    maxGenerateUSDx: maxGenerateDUSx3
+                    toDepositNum: val
                 })
             } else {
                 this.setState({
                     ...this.state,
-                    errTips: true,
                     couldDeposit: false,
-                    toDepositNum: val,
-                    maxGenerateUSDx: ''
+                    toDepositNum: val
                 })
-                if (val === '') {
-                    this.setState({
-                        ...this.state,
-                        errTips: false,
-                        couldDeposit: false,
-                        toDepositNum: val,
-                        maxGenerateUSDx: ''
-                    })
-                }
             }
         }
+
+        this.getUSDXForDeposit(address, val * this.units);
+
+        // if (this.state.toDeposit === 'DAI') {
+        //     if (Number(val) > 0 && Number(val) <= Number(this.state.myDAI)) {
+        //         var num0 = (Number(this.state.DAIonPool) + Number(val)) / this.sectionDAI;
+        //         var num1 = this.state.PAXonPool / this.sectionPAX;
+        //         var num2 = this.state.TUSDonPool / this.sectionTUSD;
+        //         var num3 = this.state.USDConPool / this.sectionUSDC;
+        //         var numMin0 = Math.min(num0, num1, num2, num3);
+        //         var maxGenerateDUSx0 = numMin0 >= 1 ? numMin0 * this.sectionDAI - this.state.DAIonPool : 0;
+        //         this.setState({
+        //             ...this.state,
+        //             errTips: false,
+        //             couldDeposit: true,
+        //             toDepositNum: val,
+        //             maxGenerateUSDx: maxGenerateDUSx0
+        //         })
+        //     } else {
+        //         this.setState({
+        //             ...this.state,
+        //             errTips: true,
+        //             couldDeposit: false,
+        //             toDepositNum: val,
+        //             maxGenerateUSDx: ''
+        //         })
+        //         if (val === '') {
+        //             this.setState({
+        //                 ...this.state,
+        //                 errTips: false,
+        //                 couldDeposit: false,
+        //                 toDepositNum: val,
+        //                 maxGenerateUSDx: ''
+        //             })
+        //         }
+        //     }
+        // }
+        // if (this.state.toDeposit === 'PAX') {
+        //     if (Number(val) > 0 && Number(val) <= Number(this.state.myPAX)) {
+        //         var num01 = this.state.DAIonPool / this.sectionDAI;
+        //         var num11 = (Number(this.state.PAXonPool) + Number(val)) / this.sectionPAX ;
+        //         var num21 = this.state.TUSDonPool / this.sectionTUSD;
+        //         var num31 = this.state.USDConPool / this.sectionUSDC;
+        //         var numMin1 = Math.min(num01, num11, num21, num31);
+        //         var maxGenerateDUSx1 = numMin1 >= 1 ? numMin1 * this.sectionPAX - this.state.PAXonPool : 0;
+        //         this.setState({
+        //             ...this.state,
+        //             errTips: false,
+        //             couldDeposit: true,
+        //             toDepositNum: val,
+        //             maxGenerateUSDx: maxGenerateDUSx1
+        //         })
+        //     } else {
+        //         this.setState({
+        //             ...this.state,
+        //             errTips: true,
+        //             couldDeposit: false,
+        //             toDepositNum: val,
+        //             maxGenerateUSDx: ''
+        //         })
+        //         if (val === '') {
+        //             this.setState({
+        //                 ...this.state,
+        //                 errTips: false,
+        //                 couldDeposit: false,
+        //                 toDepositNum: val,
+        //                 maxGenerateUSDx: ''
+        //             })
+        //         }
+        //     }
+        // }
+        // if (this.state.toDeposit === 'TUSD') {
+        //     if (Number(val) > 0 && Number(val) <= Number(this.state.myTUSD)) {
+        //         var num02 = this.state.DAIonPool / this.sectionDAI;
+        //         var num12 = this.state.PAXonPool / this.sectionPAX;
+        //         var num22 = (Number(this.state.TUSDonPool) + Number(val)) / this.sectionTUSD;
+        //         var num32 = this.state.USDConPool / this.sectionUSDC;
+        //         var numMin2 = Math.min(num02, num12, num22, num32);
+        //         var maxGenerateDUSx2 = numMin2 >= 1 ? numMin2 * this.sectionTUSD - this.state.TUSDonPool : 0;
+        //         this.setState({
+        //             ...this.state,
+        //             errTips: false,
+        //             couldDeposit: true,
+        //             toDepositNum: val,
+        //             maxGenerateUSDx: maxGenerateDUSx2
+        //         })
+        //     } else {
+        //         this.setState({
+        //             ...this.state,
+        //             errTips: true,
+        //             couldDeposit: false,
+        //             toDepositNum: val,
+        //             maxGenerateUSDx: ''
+        //         })
+        //         if (val === '') {
+        //             this.setState({
+        //                 ...this.state,
+        //                 errTips: false,
+        //                 couldDeposit: false,
+        //                 toDepositNum: val,
+        //                 maxGenerateUSDx: ''
+        //             })
+        //         }
+        //     }
+        // }
+        // if (this.state.toDeposit === 'USDC') {
+        //     if (Number(val) > 0 && Number(val) <= Number(this.state.myUSDC)) {
+        //         var num03 = this.state.DAIonPool / this.sectionDAI;
+        //         var num13 = this.state.PAXonPool / this.sectionPAX;
+        //         var num23 = this.state.TUSDonPool / this.sectionTUSD;
+        //         var num33 = (Number(this.state.USDConPool) + Number(val)) / this.sectionUSDC;
+        //         var numMin3 = Math.min(num03, num13, num23, num33);
+        //         var maxGenerateDUSx3 = numMin3 >= 1 ? numMin3 * this.sectionUSDC - this.state.USDConPool : 0;
+        //         this.setState({
+        //             ...this.state,
+        //             errTips: false,
+        //             couldDeposit: true,
+        //             toDepositNum: val,
+        //             maxGenerateUSDx: maxGenerateDUSx3
+        //         })
+        //     } else {
+        //         this.setState({
+        //             ...this.state,
+        //             errTips: true,
+        //             couldDeposit: false,
+        //             toDepositNum: val,
+        //             maxGenerateUSDx: ''
+        //         })
+        //         if (val === '') {
+        //             this.setState({
+        //                 ...this.state,
+        //                 errTips: false,
+        //                 couldDeposit: false,
+        //                 toDepositNum: val,
+        //                 maxGenerateUSDx: ''
+        //             })
+        //         }
+        //     }
+        // }
     }
     // deposit
     deposit () {
@@ -2882,6 +3086,7 @@ export default class Home extends React.Component {
         this.setState({tmepState});
         this.contractProtocol.deposit.sendTransaction(
             addr,
+            0,
             num,
             {
                 from: this.state.accountAddress,
@@ -2952,7 +3157,7 @@ export default class Home extends React.Component {
                                 setTimeout(() => {
                                     this.getMyBalance();
                                     this.getPoolBankTotalStatus();
-                                    this.getMyBalanceOnPool();
+                                    this.getUserWithdrawBalance();
                                 }, 3000)
                             } 
                             if (data && data.status === '0x0') {
@@ -3011,6 +3216,7 @@ export default class Home extends React.Component {
         this.setState({tmepState});
         this.contractProtocol.deposit.sendTransaction(
             addr,
+            0,
             num,
             {
                 from: this.state.accountAddress,
@@ -3081,7 +3287,7 @@ export default class Home extends React.Component {
                                 setTimeout(() => {
                                     this.getMyBalance();
                                     this.getPoolBankTotalStatus();
-                                    this.getMyBalanceOnPool();
+                                    this.getUserWithdrawBalance();
                                 }, 3000)
                             } 
                             if (data && data.status === '0x0') {
@@ -3140,6 +3346,7 @@ export default class Home extends React.Component {
         this.setState({tmepState});
         this.contractProtocol.deposit.sendTransaction(
             addr,
+            0,
             num,
             {
                 from: this.state.accountAddress,
@@ -3210,7 +3417,7 @@ export default class Home extends React.Component {
                                 setTimeout(() => {
                                     this.getMyBalance();
                                     this.getPoolBankTotalStatus();
-                                    this.getMyBalanceOnPool();
+                                    this.getUserWithdrawBalance();
                                 }, 3000)
                             } 
                             if (data && data.status === '0x0') {
@@ -3269,6 +3476,7 @@ export default class Home extends React.Component {
         this.setState({tmepState});
         this.contractProtocol.deposit.sendTransaction(
             addr,
+            0,
             num,
             {
                 from: this.state.accountAddress,
@@ -3339,7 +3547,7 @@ export default class Home extends React.Component {
                                 setTimeout(() => {
                                     this.getMyBalance();
                                     this.getPoolBankTotalStatus();
-                                    this.getMyBalanceOnPool();
+                                    this.getUserWithdrawBalance();
                                 }, 3000)
                             } 
                             if (data && data.status === '0x0') {
@@ -3377,10 +3585,10 @@ export default class Home extends React.Component {
             return;
         }
         if (Number(val) > 0 && Number(val) <= Number(this.state.myUSDx)) {
-            var USDxToDAI = this.formatNumber(val * (this.state.sectionDAI / this.state.tatolSection) * this.units);
-            var USDxToPAX = this.formatNumber(val * (this.state.sectionPAX / this.state.tatolSection) * this.units);
-            var USDxToTUSD = this.formatNumber(val * (this.state.sectionTUSD / this.state.tatolSection) * this.units);
-            var USDxToUSDC = this.formatNumber(val * (this.state.sectionUSDC / this.state.tatolSection) * this.units);
+            var USDxToDAI = this.formatNumber(val * (this.state.sectionDAIBurning / this.state.tatolSectionBurning) * this.units);
+            var USDxToPAX = this.formatNumber(val * (this.state.sectionPAXBurning / this.state.tatolSectionBurning) * this.units);
+            var USDxToTUSD = this.formatNumber(val * (this.state.sectionTUSDBurning / this.state.tatolSectionBurning) * this.units);
+            var USDxToUSDC = this.formatNumber(val * (this.state.sectionUSDCBurning / this.state.tatolSectionBurning) * this.units);
 
             this.setState({
                 ...this.state,
@@ -3458,6 +3666,7 @@ export default class Home extends React.Component {
         }
         this.setState({tmepState});
         this.contractProtocol.destroy.sendTransaction(
+            0,
             this.state.toDestroyNum * this.units,
             {
                 from: this.state.accountAddress,
@@ -3528,7 +3737,7 @@ export default class Home extends React.Component {
                                 setTimeout(() => {
                                     this.getMyBalance();
                                     this.getPoolBankTotalStatus();
-                                    this.getMyBalanceOnPool();
+                                    this.getUserWithdrawBalance();
                                 }, 3000)
                             } 
                             if (data && data.status === '0x0') {
@@ -3577,9 +3786,8 @@ export default class Home extends React.Component {
             title: 'CLAIM USDX',
         }
         this.setState({tmepState});
-        this.contractProtocol.withdraw.sendTransaction(
-            this.addressUSDx,
-            1,
+        this.contractProtocol.claim.sendTransaction(
+            0,
             {
                 from: this.state.accountAddress,
                 gas: 3000000
@@ -3646,7 +3854,7 @@ export default class Home extends React.Component {
                                 setTimeout(() => {
                                     this.getMyBalance();
                                     this.getPoolBankTotalStatus();
-                                    this.getMyBalanceOnPool();
+                                    this.getUserWithdrawBalance();
                                 }, 3000)
                             }
                             if (data && data.status === '0x0') {
@@ -3785,7 +3993,7 @@ export default class Home extends React.Component {
                                 setTimeout(() => {
                                     this.getMyBalance();
                                     this.getPoolBankTotalStatus();
-                                    this.getMyBalanceOnPool();
+                                    this.getUserWithdrawBalance();
                                 }, 3000)
                             }
                             if (data && data.status === '0x0') {
@@ -3902,7 +4110,7 @@ export default class Home extends React.Component {
                                 setTimeout(() => {
                                     this.getMyBalance();
                                     this.getPoolBankTotalStatus();
-                                    this.getMyBalanceOnPool();
+                                    this.getUserWithdrawBalance();
                                 }, 3000)
                             }
                             if (data && data.status === '0x0') {
@@ -4019,7 +4227,7 @@ export default class Home extends React.Component {
                                 setTimeout(() => {
                                     this.getMyBalance();
                                     this.getPoolBankTotalStatus();
-                                    this.getMyBalanceOnPool();
+                                    this.getUserWithdrawBalance();
                                 }, 3000)
                             }
                             if (data && data.status === '0x0') {
@@ -4136,7 +4344,7 @@ export default class Home extends React.Component {
                                 setTimeout(() => {
                                     this.getMyBalance();
                                     this.getPoolBankTotalStatus();
-                                    this.getMyBalanceOnPool();
+                                    this.getUserWithdrawBalance();
                                 }, 3000)
                             }
                             if (data && data.status === '0x0') {
@@ -4253,7 +4461,7 @@ export default class Home extends React.Component {
                                 setTimeout(() => {
                                     this.getMyBalance();
                                     this.getPoolBankTotalStatus();
-                                    this.getMyBalanceOnPool();
+                                    this.getUserWithdrawBalance();
                                 }, 3000)
                             }
                             if (data && data.status === '0x0') {

@@ -184,6 +184,23 @@ const abiProtocol = [{
     "anonymous": false,
     "inputs": [{
         "indexed": true,
+        "name": "_sender",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "_balance",
+        "type": "uint256"
+      }
+    ],
+    "name": "Claim",
+    "type": "event",
+    "signature": "0x47cee97cb7acd717b3c0aa1435d004cd5b3c8c57d70dbceb4e4458bbd60e39d4"
+  },
+  {
+    "anonymous": false,
+    "inputs": [{
+        "indexed": true,
         "name": "_msgSender",
         "type": "address"
       },
@@ -254,16 +271,23 @@ const abiProtocol = [{
         "type": "address"
       },
       {
+        "name": "_feeTokenIdx",
+        "type": "uint256"
+      },
+      {
         "name": "_amount",
         "type": "uint256"
       }
     ],
     "name": "deposit",
-    "outputs": [],
+    "outputs": [{
+      "name": "",
+      "type": "uint256"
+    }],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function",
-    "signature": "0x47e7ef24"
+    "signature": "0x0efe6a8b"
   },
   {
     "constant": false,
@@ -272,29 +296,195 @@ const abiProtocol = [{
         "type": "address"
       },
       {
+        "name": "_feeTokenIdx",
+        "type": "uint256"
+      },
+      {
         "name": "_amount",
         "type": "uint256"
       }
     ],
     "name": "withdraw",
-    "outputs": [],
+    "outputs": [{
+      "name": "",
+      "type": "uint256"
+    }],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function",
-    "signature": "0xf3fef3a3"
+    "signature": "0xb5c5f672"
   },
   {
     "constant": false,
     "inputs": [{
-      "name": "_amount",
-      "type": "uint256"
-    }],
+        "name": "_feeTokenIdx",
+        "type": "uint256"
+      },
+      {
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
     "name": "destroy",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function",
-    "signature": "0x9d118770"
+    "signature": "0xe3a94051"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+      "name": "_feeTokenIdx",
+      "type": "uint256"
+    }],
+    "name": "claim",
+    "outputs": [{
+      "name": "",
+      "type": "uint256"
+    }],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x379607f5"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+        "name": "tokenID",
+        "type": "address"
+      },
+      {
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "getUSDXForDeposit",
+    "outputs": [{
+      "name": "",
+      "type": "uint256"
+    }],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x0078b158"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "getUserMaxToClaim",
+    "outputs": [{
+      "name": "",
+      "type": "uint256"
+    }],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x2d0854d7"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "getColMaxClaim",
+    "outputs": [{
+        "name": "",
+        "type": "address[]"
+      },
+      {
+        "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x70032c54"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "getMintingSection",
+    "outputs": [{
+        "name": "",
+        "type": "address[]"
+      },
+      {
+        "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x3b955ea9"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "getBurningSection",
+    "outputs": [{
+        "name": "",
+        "type": "address[]"
+      },
+      {
+        "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x8c4d3e1a"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "getUserWithdrawBalance",
+    "outputs": [{
+        "name": "",
+        "type": "address[]"
+      },
+      {
+        "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0xce98b347"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+      "name": "typeID",
+      "type": "uint256"
+    }],
+    "name": "getPrice",
+    "outputs": [{
+      "name": "",
+      "type": "uint256"
+    }],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0xe7572230"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+      "name": "typeID",
+      "type": "uint256"
+    }],
+    "name": "getFeeRate",
+    "outputs": [{
+      "name": "",
+      "type": "uint256"
+    }],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0xd2aaef4e"
   }
 ];
 

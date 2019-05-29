@@ -14,7 +14,7 @@ export default class Header extends React.Component {
     render() {
         return (
             <div className="bodyleft">
-                <div className="title">Constituent Pending Pool</div>
+                <div className="title">Constituent Pending Pool:</div>
                 <div className="pool">
                     <div className="leftSection">
                         {this.props.data.sectionDAI ? (this.props.data.sectionDAI * 100 / this.props.data.tatolSection).toFixed() : '-'}%
@@ -25,8 +25,20 @@ export default class Header extends React.Component {
                     </div>
                     <div className="right">
                         <div className="section">
-                            <Tooltip title={'zifuchuan'}>
-                                <Progress percent={100} successPercent={90} showInfo={false} />
+                            <Tooltip title={'toClaim: ' + this.props.data.claimDAI + ' / onPool: ' + this.props.data.DAIonPool}>
+                                <Progress
+                                    percent={100}
+                                    successPercent={
+                                        (this.props.data.claimDAI && this.props.data.claimDAI > 0) ?
+                                            ((this.props.data.claimDAI / (Number(this.props.data.DAIonPool) + Number(this.props.data.claimDAI))).toFixed(2) * 100) < 5 ?
+                                                '5'
+                                                :
+                                                (this.props.data.claimDAI / (Number(this.props.data.DAIonPool) + Number(this.props.data.claimDAI))).toFixed(2) * 100
+                                            :
+                                            '0'
+                                    }
+                                    showInfo={false}
+                                />
                             </Tooltip>
                         </div>
                         <p className="sectionNum">
@@ -46,8 +58,20 @@ export default class Header extends React.Component {
                     </div>
                     <div className="right">
                         <div className="section">
-                            <Tooltip title={'zifuchuan'}>
-                                <Progress percent={100} successPercent={90} showInfo={false} />
+                            <Tooltip title={'toClaim: ' + this.props.data.claimPAX + ' / onPool: ' + this.props.data.PAXonPool}>
+                                <Progress
+                                    successPercent={
+                                        (this.props.data.claimPAX && this.props.data.claimPAX > 0) ?
+                                            ((this.props.data.claimPAX / (Number(this.props.data.PAXonPool) + Number(this.props.data.claimPAX))).toFixed(2) * 100) < 5 ?
+                                                '5'
+                                                :
+                                                (this.props.data.claimPAX / (Number(this.props.data.PAXonPool) + Number(this.props.data.claimPAX))).toFixed(2) * 100
+                                            :
+                                            '0'
+                                    }
+                                    percent={100}
+                                    showInfo={false}
+                                />
                             </Tooltip>
                         </div>
                         <p className="sectionNum">
@@ -59,7 +83,7 @@ export default class Header extends React.Component {
                 </div>
                 <div className="pool poolColor4">
                     <div className="leftSection">
-                       {this.props.data.sectionTUSD ? (this.props.data.sectionTUSD * 100 / this.props.data.tatolSection).toFixed() : '-'}%
+                        {this.props.data.sectionTUSD ? (this.props.data.sectionTUSD * 100 / this.props.data.tatolSection).toFixed() : '-'}%
                     </div>
                     <div className="left">
                         <img src={tusd} alt="" />
@@ -67,8 +91,20 @@ export default class Header extends React.Component {
                     </div>
                     <div className="right">
                         <div className="section">
-                            <Tooltip title={'zifuchuan'}>
-                                <Progress percent={100} successPercent={90} showInfo={false} />
+                            <Tooltip title={'toClaim: ' + this.props.data.claimTUSD + ' / onPool: ' + this.props.data.TUSDonPool}>
+                                <Progress
+                                    successPercent={
+                                        (this.props.data.claimTUSD && this.props.data.claimTUSD > 0) ?
+                                            ((this.props.data.claimTUSD / (Number(this.props.data.TUSDonPool) + Number(this.props.data.claimTUSD))).toFixed(2) * 100) < 5 ?
+                                                '5'
+                                                :
+                                                (this.props.data.claimTUSD / (Number(this.props.data.TUSDonPool) + Number(this.props.data.claimTUSD))).toFixed(2) * 100
+                                            :
+                                            '0'
+                                    }
+                                    percent={100}
+                                    showInfo={false}
+                                />
                             </Tooltip>
                         </div>
                         <p className="sectionNum">
@@ -80,7 +116,7 @@ export default class Header extends React.Component {
                 </div>
                 <div className="pool poolColor3">
                     <div className="leftSection">
-                       {this.props.data.sectionUSDC ? (this.props.data.sectionUSDC * 100 / this.props.data.tatolSection).toFixed() : '-'}%
+                        {this.props.data.sectionUSDC ? (this.props.data.sectionUSDC * 100 / this.props.data.tatolSection).toFixed() : '-'}%
                     </div>
                     <div className="left">
                         <img src={usdc} alt="" />
@@ -88,8 +124,20 @@ export default class Header extends React.Component {
                     </div>
                     <div className="right">
                         <div className="section">
-                            <Tooltip title={'zifuchuan'}>
-                                <Progress percent={100} successPercent={90} showInfo={false} />
+                            <Tooltip title={'toClaim: ' + this.props.data.claimUSDC + ' / onPool: ' + this.props.data.USDConPool}>
+                                <Progress
+                                    percent={100}
+                                    showInfo={false}
+                                    successPercent={
+                                        (this.props.data.claimUSDC && this.props.data.claimUSDC > 0) ?
+                                            ((this.props.data.claimUSDC / (Number(this.props.data.USDConPool) + Number(this.props.data.claimUSDC))).toFixed(2) * 100) < 5 ?
+                                                '5'
+                                                :
+                                                (this.props.data.claimUSDC / (Number(this.props.data.USDConPool) + Number(this.props.data.claimUSDC))).toFixed(2) * 100
+                                            :
+                                            '0'
+                                    }
+                                />
                             </Tooltip>
                         </div>
                         <p className="sectionNum">
@@ -101,7 +149,7 @@ export default class Header extends React.Component {
                 </div>
 
                 <div className="totalUSDx">
-                    <div className="title">Total USDX Outstanding</div>
+                    <div className="title">Total USDX Outstanding:</div>
                     <div className="usdxNum">
                         <span>{this.props.data.totalSupplyUSDx ? this.props.data.totalSupplyUSDx.split('.')[0] : '0'}</span>
                         <span className="sectionDot">{this.props.data.totalSupplyUSDx ? '.' + this.props.data.totalSupplyUSDx.split('.')[1] : '.00'}</span>
@@ -109,7 +157,7 @@ export default class Header extends React.Component {
                 </div>
 
                 <div className="globalpool">
-                    <div className="title">Global Collateral Pool</div>
+                    <div className="title">Global Collateral Pool:</div>
                     <div className="sectionToken">
                         <span className="token">DAI</span>
                         <span className="tokenNum">

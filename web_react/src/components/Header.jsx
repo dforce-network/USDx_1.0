@@ -122,7 +122,9 @@ export default class Header extends React.Component {
                     <div className="dfPrice">
                         <p>
                             <span className='dftoken'>DF/USD</span>
-                            <span className='dftokenPrice'>250.11</span>
+                            <span className='dftokenPrice'>
+                                {this.props.status.dfPrice ? this.props.status.dfPrice : '0.00'}
+                            </span>
                         </p>
                     </div>
                 </div>
