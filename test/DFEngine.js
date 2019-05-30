@@ -1098,10 +1098,14 @@ var runConfig = [
                             usdxBalanceOrigin = await usdxToken.balanceOf.call(accountAddress);
                             calcDepositorMintTotal = await dfEngine.calcDepositorMintTotal.call(accountAddress, tokenAddress, amountNB, {from: accountAddress});
                             runData = {};
+                            runData['dfEngine'] = dfEngineTimes + 1;
+                            runData['runTimes'] = condition + 1;
                             runData['type'] = runType;
                             runData['tokenAddress'] = collateralAddress.indexOf(tokenAddress) + 1;
                             runData['accountAddress'] = accounts.indexOf(accountAddress) + 1;
-                            runData['amount'] = amountNB.div(new BN(Number(10 ** 18).toLocaleString().replace(/,/g,''))).toString();
+                            runData['amount'] = amount;
+                            runData['amountNB'] = amountNB.toString();
+                            runData[await collateralObject[tokenAddress].name.call() + ' balance'] = accountTokenBalanceOrigin.toString();
                             try {
                                 transactionData = await dfEngine.deposit(accountAddress, tokenAddress, new BN(0), amountNB, {from: accountAddress});
                                 depositGasUsed = depositGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : depositGasUsed;
@@ -1520,9 +1524,13 @@ var runConfig = [
                             console.log('\n');
 
                             runData = {};
+                            runData['dfEngine'] = dfEngineTimes + 1;
+                            runData['runTimes'] = condition + 1;
                             runData['type'] = runType;
                             runData['accountAddress'] = accounts.indexOf(accountAddress) + 1;
                             runData['amount'] = amountNB.div(new BN(Number(10 ** 18).toLocaleString().replace(/,/g,''))).toString();
+                            runData['amountNB'] = amountNB.toString();
+                            runData['usdx balance'] = usdxBalanceOrigin.toString();
                             try {
                                 transactionData = await dfEngine.destroy(accountAddress, new BN(0), amountNB, {from: accountAddress});
                                 destroyGasUsed = destroyGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : destroyGasUsed;
@@ -1855,10 +1863,14 @@ var runConfig = [
                             // }
 
                             runData = {};
+                            runData['dfEngine'] = dfEngineTimes + 1;
+                            runData['runTimes'] = condition + 1;
                             runData['type'] = runType;
                             runData['tokenAddress'] = collateralAddress.indexOf(tokenAddress) + 1;
                             runData['accountAddress'] = accounts.indexOf(accountAddress) + 1;
                             runData['amount'] = amountNB.div(new BN(Number(10 ** 18).toLocaleString().replace(/,/g,''))).toString();
+                            runData['amountNB'] = amountNB.toString();
+                            runData['depositor balance'] = dfStoreAccountTokenOrigin.toString();
                             try {
                                 transactionData = await dfEngine.withdraw(accountAddress, tokenAddress, new BN(0), amountNB, {from: accountAddress});
                                 withdrawGasUsed = withdrawGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : withdrawGasUsed;
@@ -2092,6 +2104,8 @@ var runConfig = [
                             console.log('\n');
                             
                             runData = {};
+                            runData['dfEngine'] = dfEngineTimes + 1;
+                            runData['runTimes'] = condition + 1;
                             runData['type'] = runType;
                             runData['accountAddress'] = accounts.indexOf(accountAddress) + 1;
                             try {
@@ -2357,6 +2371,11 @@ var runConfig = [
                                 collateralObject[collaterals.address] = collaterals;
                                 tokenAddressList.push(collaterals.address);
 
+                                for (let index = 0; index < tokenAddressList.length; index++) {
+                                    
+                                    tokenAddressIndex.push(collateralAddress.indexOf(tokenAddressList[index]));
+                                }
+
                                 // tokenWeightListNew = DataMethod.createData(weightTest, tokenAddressList.length, tokenAddressList.length);
                                 tokenWeightListNew = weightTest;
 
@@ -2381,7 +2400,11 @@ var runConfig = [
                             console.log('\n');
 
                             runData = {};
+                            runData['dfEngine'] = dfEngineTimes + 1;
+                            runData['runTimes'] = condition + 1;
                             runData['type'] = runType;
+                            runData['tokens'] = tokenAddressIndex;
+                            runData['weight'] = tokenWeightListNew;
                             try {
                                 transactionData = await dfEngine.updateMintSection(tokenAddressList, tokenWeightList);
                                 updateGasUsed = updateGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : updateGasUsed;
