@@ -238,7 +238,7 @@ export default class Home extends React.Component {
                                             DF fee needed:
                                             <span>
                                                 <i>{this.state.couldDestroy ? (this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice).toFixed(2).toString().split('.')[0] : '0'}</i>
-                                                {this.state.couldDestroy ? (this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice).toFixed(2).toString().split('.')[1] : '.00'}
+                                                {this.state.couldDestroy ? '.' + (this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice).toFixed(2).toString().split('.')[1] : '.00'}
                                             </span>
                                         </div>
                                         <div className="errtips" style={{ display: this.state.errTipsDestroy ? 'block' : 'none' }}>
