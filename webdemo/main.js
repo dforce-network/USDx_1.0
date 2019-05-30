@@ -1,16 +1,15 @@
-var usdxAddr = "0xC33f18c7D4927ba071C091E98542a3213fce3550";
+var usdxAddr = "0x29d1980bDe9A71eBd47FE7cdef14640DC731BAA5";
 var dfAddr = "0x4AF82b7C2F049574C9fc742A896DAbEA379b7d51";
 
-var protocolAddr = "0x6600CAa3e062Da0c993c1D67C9E60C8e32083d4b";
-var storeAddr = "0xF8856446bc3B999C7052b40dA8D58265FAF4fBB7";
-var poolAddr = "0xBD3F56Fb7a623faD897C6D2Ab0D33F594BEe8213";
-var collateralAddr = "0x9550F31084dC014Ce53df04b9C7d3d352f31bAbC";
-var fundsAddr = "0xc311a3b251c451f89C9229db1efe36d45D702AF4";
-var engineAddr = "0x0b758c45b90FAf28d0038dEC18667f5A0459eE63";
-var guardAddr = "0xeaB8c9aC28716D2C6385666BA570253b88E55e62";
-var medianizer = "0x5E88150F433f9fF1844A9bFf2AB486D475e1519a";
-var pricefeed = "0x45Db4fDb72C103e5ACE8E01Bd74580c7209b739F";
-var sender = "0x18c30D9569fEb3ea3644573b013D329dD9fd01Af";
+var protocolAddr = "0x555bd8A39524635C725b62b28602cF52184C8CAE";
+var storeAddr = "0x1E3b33c17C93a7B541186413239Fac77A475b91C";
+var poolAddr = "0xA90B0e780f9eCb78D9bc4fE951E4A7A698b90b24";
+var collateralAddr = "0x049b6B20826366897965592cabc24C35cDB69fe5";
+var fundsAddr = "0xB251Cd6DA1C6EE08Eca7ea3A691C52A979B7971C";
+var engineAddr = "0xC7135d5F772FD9fD1e1780A401552fA15ee52E60";
+var guardAddr = "0x3BaA62c9030538A90532866b66A25f5850af626e";
+var medianAddr = "0xE3B9682Ec26b233A1b88Eb2B69C735b551188020";
+var feedAddr = "0x91eeD11839BaED085DB95cA66aC1e6b492d5055D";
 
 var contractUsdx = web3.eth.contract(usdxABI).at(usdxAddr);
 var contractDF = web3.eth.contract(erc20ABI).at(dfAddr);
@@ -22,6 +21,8 @@ var contractCollateral = web3.eth.contract(collateralABI).at(collateralAddr);
 var contractFunds = web3.eth.contract(fundsABI).at(fundsAddr);
 var contractEngine = web3.eth.contract(engineABI).at(engineAddr);
 var contractGuard = web3.eth.contract(guardABI).at(guardAddr);
+var contractMedian = web3.eth.contract(medianABI).at(medianAddr);
+var contractFeed = web3.eth.contract(feedABI).at(feedAddr);
 
 var daiAddr = "0xf494e07dfdbce883bf699cedf818fde2fa432db4";
 var paxAddr = "0x561b11000e95ac053eccec5bcefdc37e16c2491b";
@@ -77,6 +78,17 @@ function setFundsAuth2Guard() {
   );
 }
 
+function setEngineAuth2Guard() {
+  contractEngine.setAuthority.sendTransaction(
+    guardAddr, {
+      gas: 1000000
+    },
+    function (err, ret) {
+      console.log(ret, err);
+    }
+  );
+}
+
 function permitStorebyGuard() {
   contractGuard.permitx.sendTransaction(
     engineAddr, storeAddr, {
@@ -113,6 +125,17 @@ function permitCollateralbyGuard() {
 function permitFundsbyGuard() {
   contractGuard.permitx.sendTransaction(
     engineAddr, fundsAddr, {
+      gas: 1000000
+    },
+    function (err, ret) {
+      console.log(ret, err);
+    }
+  );
+}
+
+function permitEnginebyGuard() {
+  contractGuard.permitx.sendTransaction(
+    protocolAddr, engineAddr, {
       gas: 1000000
     },
     function (err, ret) {
@@ -162,6 +185,11 @@ function usdxSetAuth() {
 /*
   set Auth carefully, only Owner can do this job.
 */
+let daiW = new BN(Number(1 * 10 ** 18).toLocaleString().replace(/,/g, ''));
+let paxW = new BN(Number(3 * 10 ** 18).toLocaleString().replace(/,/g, ''));
+let tusdW = new BN(Number(3 * 10 ** 18).toLocaleString().replace(/,/g, ''));
+let usdcW = new BN(Number(3 * 10 ** 18).toLocaleString().replace(/,/g, ''));
+
 function updateMintSection() {
   contractEngine.updateMintSection.sendTransaction(
     [
@@ -170,7 +198,64 @@ function updateMintSection() {
       "0x25470030aa105bca679752e5c5e482c295de2b68",
       "0xbc34e50f589e389c507e0213501114bd2e70b1d7"
     ],
-    [60, 70, 80, 90], {
+    [daiW, paxW, tusdW, usdcW], {
+      gas: 1000000
+    },
+    function (err, ret) {
+      console.log(ret, err);
+    }
+  );
+}
+
+function setDestroyFeeRate() {
+  contractEngine.setCommissionRate.sendTransaction(
+    1, 20, {
+      gas: 1000000
+    },
+    function (err, ret) {
+      console.log(ret, err);
+    }
+  );
+}
+
+function setDestroyFeeToken() {
+  contractEngine.setCommissionToken.sendTransaction(
+    0, dfAddr, {
+      gas: 1000000
+    },
+    function (err, ret) {
+      console.log(ret, err);
+    }
+  );
+}
+
+function setDFTokenMedianizer() {
+  contractEngine.setCommissionMedian.sendTransaction(
+    dfAddr, medianAddr, {
+      gas: 1000000
+    },
+    function (err, ret) {
+      console.log(ret, err);
+    }
+  );
+}
+
+function setMedianizerPriceFeed() {
+  contractMedian.set.sendTransaction(
+    feedAddr, {
+      gas: 1000000
+    },
+    function (err, ret) {
+      console.log(ret, err);
+    }
+  );
+}
+
+let p = new BN(Number(5 * 10 ** 18).toLocaleString().replace(/,/g, ''));
+
+function setPricebyFeed() {
+  contractFeed.post.sendTransaction(
+    p, 2058870102, medianAddr, {
       gas: 1000000
     },
     function (err, ret) {
@@ -205,6 +290,22 @@ function dfApprove() {
     ) {
       console.log(ret, err);
     });
+}
+
+function tryMintingSection() {
+  contractProtocol.getMintingSection.call(
+    function (err, ret) {
+      console.log(ret.toFixed(), err);
+    }
+  );
+}
+
+function tryBurningSection() {
+  contractProtocol.getBurningSection.call(
+    function (err, ret) {
+      console.log(ret.toFixed(), err);
+    }
+  );
 }
 
 function unlockDAI() {
@@ -318,11 +419,53 @@ function claimUSDX() {
   );
 }
 
+function tryUserClaimMaxUSDX() {
+  contractProtocol.getUserMaxToClaim.call(
+    function (err, ret) {
+      console.log(ret, err);
+    }
+  );
+}
+
+function tryColMaxClaimUSDX() {
+  contractProtocol.getColMaxClaim.call(
+    function (err, ret) {
+      console.log(ret, err);
+    }
+  );
+}
+
+function tryUserWithdrawBalance() {
+  contractProtocol.getUserWithdrawBalance.call(
+    function (err, ret) {
+      console.log(ret, err);
+    }
+  );
+}
+
+function tryDFPrice() {
+  contractProtocol.getPrice.call(
+    0,
+    function (err, ret) {
+      console.log(ret, err);
+    }
+  );
+}
+
+function tryDFFeeRate() {
+  contractProtocol.getFeeRateByID.call(
+    1,
+    function (err, ret) {
+      console.log(ret, err);
+    }
+  );
+}
+
 function withdrawDAI() {
   contractProtocol.withdraw.sendTransaction(
     daiAddr,
     0,
-    20 * 1000000000000000000, {
+    10 * 1000000000000000000, {
       gas: 2000000
     },
     function (err, ret) {
@@ -335,7 +478,7 @@ function withdrawPAX() {
   contractProtocol.withdraw.sendTransaction(
     paxAddr,
     0,
-    20 * 1000000000000000000, {
+    30 * 1000000000000000000, {
       gas: 2000000
     },
     function (err, ret) {
@@ -348,7 +491,7 @@ function withdrawTUSD() {
   contractProtocol.withdraw.sendTransaction(
     tusdAddr,
     0,
-    20 * 1000000000000000000, {
+    30 * 1000000000000000000, {
       gas: 2000000
     },
     function (err, ret) {
@@ -361,7 +504,7 @@ function withdrawUSDC() {
   contractProtocol.withdraw.sendTransaction(
     usdcAddr,
     0,
-    20 * 1000000000000000000, {
+    30 * 1000000000000000000, {
       gas: 2000000
     },
     function (err, ret) {
@@ -382,9 +525,19 @@ function destroy() {
   );
 }
 
-function DAIbalanceofCol() {
+function balanceInCollateral() {
   contractPAX.balanceOf.call(
     collateralAddr,
+    function (err, ret) {
+      console.log(ret.toFixed(), err);
+    }
+  );
+}
+
+function tryUSDXForDeposit() {
+  contractProtocol.getUSDXForDeposit.call(
+    usdcAddr,
+    50 * 1000000000000000000,
     function (err, ret) {
       console.log(ret.toFixed(), err);
     }

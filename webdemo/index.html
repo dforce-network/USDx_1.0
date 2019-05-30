@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>USDx TEST Page</title>
+    <title>USDX TEST Page</title>
 </head>
 
 <body>
@@ -16,36 +16,52 @@
     <button onclick="setPoolAuth2Guard()">Owner_setPoolAuth2Guard</button>
     <button onclick="setCollateralAuth2Guard()">Owner_setCollateralAuth2Guard</button>
     <button onclick="setFundsAuth2Guard()">Owner_setFundsAuth2Guard</button>
+    <button onclick="setEngineAuth2Guard()">Owner_setEngineAuth2Guard</button>
     <br />
     <hr />
     <button onclick="permitStorebyGuard()">Owner_permitStorebyGuard</button>
     <button onclick="permitPoolbyGuard()">Owner_permitPoolbyGuard</button>
     <button onclick="permitCollateralbyGuard()">Owner_permitCollateralbyGuard</button>
     <button onclick="permitFundsbyGuard()">Owner_permitFundsbyGuard</button>
+    <button onclick="permitEnginebyGuard()">Owner_permitEnginebyGuard</button>
     <br />
     <hr />
-    <button onclick="engineProtocolReq()">Owner_requestEngineImpl</button>
-    <button onclick="engineProtocolConfirm()">Owner_confirmEngineImpl</button>
-    <br />
-    <hr />
-    <button onclick="usdxSetAuth()">Owner_usdxSetAuth</button>
+    <button onclick="engineProtocolReq()">Owner_requestEngineInstance</button>
+    <button onclick="engineProtocolConfirm()">Owner_confirmEngineInstance</button>
+    <button onclick="usdxSetAuth()">Owner_USDXSetAuth</button>
     <button onclick="updateMintSection()">Owner_updateMintSection</button>
     <br />
     <hr />
-    <button onclick="usdxBurnApprove()">user_usdxBurn_Approve2Engine</button>
-    <button onclick="dfApprove()">user_dfTransfrom_Approve2Engine</button>
+    <button onclick="setDestroyFeeRate()">Owner_setDestroyFeeRate02</button>
+    <button onclick="setDestroyFeeToken()">Owner_setDestroyFeeToken2DF</button>
+    <button onclick="setDFTokenMedianizer()">Owner_setDFTokenMedianizer</button>
+    <button onclick="setPricebyFeed()">Owner_setDFTo5$</button>
     <br />
     <hr />
-    <button onclick="unlockDAI()">user_unlockDAI_2Pool </button>
-    <button onclick="unlockPAX()">user_unlockPAX_2Pool </button>
-    <button onclick="unlockTUSD()">user_unlockTUSD_2Pool </button>
-    <button onclick="unlockUSDC()">user_unlockUSDC_2Pool </button>
+    <button onclick="usdxBurnApprove()">user_USDXApprove2Engine</button>
+    <button onclick="dfApprove()">user_DFApprove2Engine</button>
+    <button onclick="tryMintingSection()">user_getMintingSection</button>
+    <button onclick="tryBurningSection()">user_getBurningSection</button>
+    <button onclick="tryDFPrice()">user_tryDFPrice</button>
+    <button onclick="tryDFFeeRate()">user_tryDFFeeRate</button>
+    <br />
+    <hr />
+    <button onclick="unlockDAI()">user_approveDAI2Pool </button>
+    <button onclick="unlockPAX()">user_approvePAX2Pool </button>
+    <button onclick="unlockTUSD()">user_approveTUSD2Pool </button>
+    <button onclick="unlockUSDC()">user_approveUSDC2Pool </button>
     <br />
     <hr />
     <button onclick="depositDAI()">depositDAI </button>
     <button onclick="depositPAX()">depositPAX </button>
     <button onclick="depositTUSD()">depositTUSD </button>
     <button onclick="depositUSDC()">depositUSDC </button>
+    <button onclick="tryUSDXForDeposit()">tryUSDXForDeposit50USDC </button>
+    <br />
+    <hr />
+    <button onclick="claimUSDX()">doClaimALLUSDX </button>
+    <button onclick="tryUserClaimMaxUSDX()">tryClaimMaxUSDX </button>
+    <button onclick="tryColMaxClaimUSDX()">tryEachColMaxClaimUSDX </button>
     <br />
     <hr />
     <button onclick="getLockedUSDX2DAI()">getLockedUSDX2DAI </button>
@@ -54,9 +70,7 @@
     <button onclick="getLockedUSDX2USDC()">getLockedUSDX2USDC </button>
     <br />
     <hr />
-    <button onclick="claimUSDX()">claimUSDXbyAll </button>
-    <br />
-    <hr />
+    <button onclick="tryUserWithdrawBalance()">tryUserWithdrawALLBalance</button>
     <button onclick="withdrawDAI()">withdrawDAI20</button>
     <button onclick="withdrawPAX()">withdrawPAX20</button>
     <button onclick="withdrawTUSD()">withdrawTUSD20</button>
@@ -64,11 +78,13 @@
     <br />
     <hr />
     <button onclick="destroy()">destroy100</button>
-    <button onclick="DAIbalanceofCol()">DAIbalanceofCol</button>
+    <button onclick="balanceInCollateral()">PAXinCollateral</button>
     <br />
     <hr />
 
 </body>
+<script src="feedABI.js"></script>
+<script src="medianABI.js"></script>
 <script src="collateralABI.js"></script>
 <script src="engineABI.js"></script>
 <script src="dfABI.js"></script>
@@ -79,6 +95,7 @@
 <script src="protocolABI.js"></script>
 <script src="storeABI.js"></script>
 <script src="usdxABI.js"></script>
+<script src="bn.js"></script>
 <script src="main.js"></script>
 
 </html>
