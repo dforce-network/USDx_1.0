@@ -21,7 +21,6 @@ import abiTokens from '../abi/abiTokens';
 
 // import abiDF from '../abi/abiDF';
 import abiUSDx from '../abi/abiUSDx';
-import abiStore from '../abi/abiStore';
 import abiProtocol from '../abi/abiProtocol';
 
 // components
@@ -49,7 +48,6 @@ export default class Home extends React.Component {
     addressCollateral = '0x049b6B20826366897965592cabc24C35cDB69fe5';
     addressEngine = '0xC7135d5F772FD9fD1e1780A401552fA15ee52E60';
     addressPool = '0xA90B0e780f9eCb78D9bc4fE951E4A7A698b90b24';
-    addressStore = '0x1E3b33c17C93a7B541186413239Fac77A475b91C';
     units = 10 ** 18;
     tatolSection = 0;
     tatolSectionBurning = 0;
@@ -89,7 +87,6 @@ export default class Home extends React.Component {
 
             this.contractUSDx = this.Web3.eth.contract(abiUSDx).at(this.addressUSDx);
             this.contractProtocol = this.Web3.eth.contract(abiProtocol).at(this.addressProtocol);
-            this.contractStore = this.Web3.eth.contract(abiStore).at(this.addressStore);
         } else {
             alert ('pls install metamask first.');
         }
@@ -163,7 +160,7 @@ export default class Home extends React.Component {
                                         <p className="details">Select which constituent would you like to deposit ?</p>
                                         <div className="input">
                                             <input type="number" onChange={(val) => { this.depositNumChange(val.target.value) }} value={this.state.toDepositNum} />
-                                            <Select className="mySelect" defaultValue="DAI" onChange={(val) => { this.setState({ ...this.state, toDeposit: val }) }}>
+                                            <Select className="mySelect" defaultValue="DAI" onChange={(val) => { this.setState({ ...this.state, toDeposit: val }), this.depositNumChange(this.state.toDepositNum)}}>
                                                 <Select.Option value="DAI">DAI</Select.Option>
                                                 <Select.Option value="PAX">PAX</Select.Option>
                                                 <Select.Option value="TUSD">TUSD</Select.Option>
@@ -290,7 +287,7 @@ export default class Home extends React.Component {
                                         <p className="details">Select which constituent would you like to withdraw ?</p>
                                         <div className="input">
                                             <input type="number" onChange={(val) => { this.withdrawNumChange(val.target.value) }} value={this.state.toWithdrawNum} />
-                                            <Select className="mySelect" defaultValue="DAI" onChange={(val) => { this.setState({ ...this.state, toWithdraw: val }) }}>
+                                            <Select className="mySelect" defaultValue="DAI" onChange={(val) => { this.setState({ ...this.state, toWithdraw: val }), this.withdrawNumChange(this.state.toWithdrawNum)}}>
                                                 <Select.Option value="DAI">DAI</Select.Option>
                                                 <Select.Option value="PAX">PAX</Select.Option>
                                                 <Select.Option value="TUSD">TUSD</Select.Option>
@@ -775,33 +772,6 @@ export default class Home extends React.Component {
             });
         });
     }
-    // getMyBalanceOnPool
-    // getMyBalanceOnPool () {
-    //     this.contractStore.getDepositorBalance.call(this.state.accountAddress, this.addressDAI, (err, ret) => {
-    //         this.setState({
-    //             ...this.state,
-    //             myDAIonPool: this.formatNumber(ret)
-    //         });
-    //     });
-    //     this.contractStore.getDepositorBalance.call(this.state.accountAddress, this.addressPAX, (err, ret) => {
-    //         this.setState({
-    //             ...this.state,
-    //             myPAXonPool: this.formatNumber(ret)
-    //         });
-    //     });
-    //     this.contractStore.getDepositorBalance.call(this.state.accountAddress, this.addressTUSD, (err, ret) => {
-    //         this.setState({
-    //             ...this.state,
-    //             myTUSDonPool: this.formatNumber(ret)
-    //         });
-    //     });
-    //     this.contractStore.getDepositorBalance.call(this.state.accountAddress, this.addressUSDC, (err, ret) => {
-    //         this.setState({
-    //             ...this.state,
-    //             myUSDConPool: this.formatNumber(ret)
-    //         });
-    //     });
-    // }
 
 
     // format number
