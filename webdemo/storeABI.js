@@ -244,6 +244,21 @@ var storeABI = [{
     "type": "function"
   },
   {
+    "constant": true,
+    "inputs": [{
+      "name": "",
+      "type": "address"
+    }],
+    "name": "TokenMedian",
+    "outputs": [{
+      "name": "",
+      "type": "address"
+    }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "constant": false,
     "inputs": [{
       "name": "newOwner_",
@@ -368,14 +383,9 @@ var storeABI = [{
   {
     "constant": false,
     "inputs": [{
-        "name": "_position",
-        "type": "uint256"
-      },
-      {
-        "name": "_amount",
-        "type": "uint256"
-      }
-    ],
+      "name": "_amount",
+      "type": "uint256"
+    }],
     "name": "setSectionMinted",
     "outputs": [],
     "payable": false,
@@ -385,9 +395,14 @@ var storeABI = [{
   {
     "constant": false,
     "inputs": [{
-      "name": "_amount",
-      "type": "uint256"
-    }],
+        "name": "_position",
+        "type": "uint256"
+      },
+      {
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
     "name": "setSectionMinted",
     "outputs": [],
     "payable": false,
@@ -412,18 +427,6 @@ var storeABI = [{
   {
     "constant": false,
     "inputs": [{
-      "name": "_amount",
-      "type": "uint256"
-    }],
-    "name": "addSectionBurned",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [{
         "name": "_position",
         "type": "uint256"
       },
@@ -444,6 +447,23 @@ var storeABI = [{
       "name": "_amount",
       "type": "uint256"
     }],
+    "name": "addSectionBurned",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+        "name": "_position",
+        "type": "uint256"
+      },
+      {
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
     "name": "setSectionBurned",
     "outputs": [],
     "payable": false,
@@ -453,14 +473,9 @@ var storeABI = [{
   {
     "constant": false,
     "inputs": [{
-        "name": "_position",
-        "type": "uint256"
-      },
-      {
-        "name": "_amount",
-        "type": "uint256"
-      }
-    ],
+      "name": "_amount",
+      "type": "uint256"
+    }],
     "name": "setSectionBurned",
     "outputs": [],
     "payable": false,
@@ -984,7 +999,7 @@ var storeABI = [{
         "type": "address"
       }
     ],
-    "name": "setFeeToken",
+    "name": "setTypeToken",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
@@ -996,7 +1011,39 @@ var storeABI = [{
       "name": "tt",
       "type": "uint256"
     }],
-    "name": "getFeeToken",
+    "name": "getTypeToken",
+    "outputs": [{
+      "name": "",
+      "type": "address"
+    }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+        "name": "_tokenID",
+        "type": "address"
+      },
+      {
+        "name": "_median",
+        "type": "address"
+      }
+    ],
+    "name": "setTokenMedian",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [{
+      "name": "_tokenID",
+      "type": "address"
+    }],
+    "name": "getTokenMedian",
     "outputs": [{
       "name": "",
       "type": "address"
