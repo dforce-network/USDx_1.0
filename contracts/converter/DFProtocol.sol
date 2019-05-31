@@ -33,27 +33,27 @@ contract DFProtocol is DFUpgrader {
     }
 
     function getUSDXForDeposit(address tokenID, uint amount) public returns (uint) {
-        return iDFEngine.calcDepositorMintTotal(msg.sender, tokenID, amount);
+        return iDFEngine.getDepositMaxMint(msg.sender, tokenID, amount);
     }
 
     function getUserMaxToClaim() public returns (uint) {
-        return iDFEngine.calcMaxClaimAmount(msg.sender);
+        return iDFEngine.getMaxToClaim(msg.sender);
     }
 
     function getColMaxClaim() public returns (address[] memory, uint[] memory) {
-        return iDFEngine.calClaimMenu();
+        return iDFEngine.getCollateralMaxClaim();
     }
 
     function getMintingSection() public returns (address[] memory, uint[] memory) {
-        return iDFEngine.getMintingMenu();
+        return iDFEngine.getMintingSection();
     }
 
     function getBurningSection() public returns (address[] memory, uint[] memory) {
-        return iDFEngine.getBurningMenu();
+        return iDFEngine.getBurningSection();
     }
 
     function getUserWithdrawBalance() public returns (address[] memory, uint[] memory) {
-        return iDFEngine.getWithdrawDetails();
+        return iDFEngine.getWithdrawBalances();
     }
 
     function getPrice(uint typeID) public returns (uint) {
