@@ -1,15 +1,15 @@
-var usdxAddr = "0x29d1980bDe9A71eBd47FE7cdef14640DC731BAA5";
+var usdxAddr = "0x72B43E28F09FBaB29139A47F976b6aca9Da3e57A";
 var dfAddr = "0x4AF82b7C2F049574C9fc742A896DAbEA379b7d51";
 
-var protocolAddr = "0x555bd8A39524635C725b62b28602cF52184C8CAE";
-var storeAddr = "0x1E3b33c17C93a7B541186413239Fac77A475b91C";
-var poolAddr = "0xA90B0e780f9eCb78D9bc4fE951E4A7A698b90b24";
-var collateralAddr = "0x049b6B20826366897965592cabc24C35cDB69fe5";
-var fundsAddr = "0xB251Cd6DA1C6EE08Eca7ea3A691C52A979B7971C";
-var engineAddr = "0xC7135d5F772FD9fD1e1780A401552fA15ee52E60";
-var guardAddr = "0x3BaA62c9030538A90532866b66A25f5850af626e";
-var medianAddr = "0xE3B9682Ec26b233A1b88Eb2B69C735b551188020";
-var feedAddr = "0x91eeD11839BaED085DB95cA66aC1e6b492d5055D";
+var protocolAddr = "0x53C8db4C9A4f5D5958226D552bb63915065B0B4F";
+var storeAddr = "0x040726D032009258dA9E34bB8cc5bB80958F3c74";
+var poolAddr = "0x89C26659BcDbFBa6F4ef4281E4bC984Ac2E73209";
+var collateralAddr = "0x6f30A3771E93f63a3D6D9461793FFC28F9E6D318";
+var fundsAddr = "0x533554d4b94fae0639AbE2b84c54Ce802040854F";
+var engineAddr = "0x6E4F3707C9802F0F54345Cc53e99267408d39452";
+var guardAddr = "0xD8c4bbe9e3396209EaB26e8e347dECc6F2d666e4";
+var medianAddr = "0x8a3ae949655BA69458bc25AEb86b9CFCCA85b175";
+var feedAddr = "0x918B054f12a87CedF2c9D8FBdC5c27e2DB17fD6d";
 
 var contractUsdx = web3.eth.contract(usdxABI).at(usdxAddr);
 var contractDF = web3.eth.contract(erc20ABI).at(dfAddr);
@@ -185,10 +185,10 @@ function usdxSetAuth() {
 /*
   set Auth carefully, only Owner can do this job.
 */
-let daiW = new BN(Number(1 * 10 ** 18).toLocaleString().replace(/,/g, ''));
-let paxW = new BN(Number(3 * 10 ** 18).toLocaleString().replace(/,/g, ''));
-let tusdW = new BN(Number(3 * 10 ** 18).toLocaleString().replace(/,/g, ''));
-let usdcW = new BN(Number(3 * 10 ** 18).toLocaleString().replace(/,/g, ''));
+let daiW = new BN(Number(0.1 * 10 ** 18).toLocaleString().replace(/,/g, ''));
+let paxW = new BN(Number(0.3 * 10 ** 18).toLocaleString().replace(/,/g, ''));
+let tusdW = new BN(Number(0.3 * 10 ** 18).toLocaleString().replace(/,/g, ''));
+let usdcW = new BN(Number(0.3 * 10 ** 18).toLocaleString().replace(/,/g, ''));
 
 function updateMintSection() {
   contractEngine.updateMintSection.sendTransaction(
@@ -295,7 +295,7 @@ function dfApprove() {
 function tryMintingSection() {
   contractProtocol.getMintingSection.call(
     function (err, ret) {
-      console.log(ret.toFixed(), err);
+      console.log(ret[1][1].toFixed(), err);
     }
   );
 }
@@ -303,7 +303,7 @@ function tryMintingSection() {
 function tryBurningSection() {
   contractProtocol.getBurningSection.call(
     function (err, ret) {
-      console.log(ret.toFixed(), err);
+      console.log(ret, err);
     }
   );
 }
@@ -422,7 +422,7 @@ function claimUSDX() {
 function tryUserClaimMaxUSDX() {
   contractProtocol.getUserMaxToClaim.call(
     function (err, ret) {
-      console.log(ret, err);
+      console.log(ret.toFixed(), err);
     }
   );
 }
@@ -447,16 +447,16 @@ function tryDFPrice() {
   contractProtocol.getPrice.call(
     0,
     function (err, ret) {
-      console.log(ret, err);
+      console.log(ret.toFixed(), err);
     }
   );
 }
 
 function tryDFFeeRate() {
-  contractProtocol.getFeeRateByID.call(
+  contractProtocol.getFeeRate.call(
     1,
     function (err, ret) {
-      console.log(ret, err);
+      console.log(ret.toFixed(), err);
     }
   );
 }
