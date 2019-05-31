@@ -28,6 +28,7 @@ import Notify from './Notify';
 import Header from './Header';
 import Welcome from './Welcome';
 import BodyLeft from './BodyLeft';
+import History from './History';
 
 // images
 import doubt from '../assets/img/doubt.png';
@@ -74,7 +75,9 @@ export default class Home extends React.Component {
             toWithdraw: 'DAI',
             toWithdrawNum: '',
             toDestroyNum: '',
-            tab1: true
+            tab1: true,
+            netType: 'Main',
+            myHistory: []
         }
         if (window.web3) {
             this.Web3 = window.web3;
@@ -90,6 +93,30 @@ export default class Home extends React.Component {
         } else {
             alert ('pls install metamask first.');
         }
+
+        this.contractProtocol.allEvents({ toBlock: 'latest' }).watch((error, result) => {
+            console.log(error, result);
+            if (result && result.args._sender === this.state.accountAddress) {
+                var itemHistory = result;
+                itemHistory.timeStamp = new Date().getTime();
+
+                var tmphistory = this.state.myHistory;
+                tmphistory.unshift(itemHistory);
+
+                this.setState({
+                    ...this.state,
+                    myHistory: tmphistory
+                })
+
+                var localHistory = JSON.parse(localStorage.getItem(this.state.accountAddress));
+                console.log(localHistory);
+                console.log(this.state.netType);
+                console.log(localHistory[this.state.netType]);
+
+                localHistory[this.state.netType].history.unshift(itemHistory);
+                localStorage.setItem(this.state.accountAddress, JSON.stringify(localHistory));
+            }
+        });
 
         setInterval(() => {
             if (!this.Web3.eth.coinbase) {
@@ -145,205 +172,242 @@ export default class Home extends React.Component {
                     <div className="body">
                         <BodyLeft data={this.state}/>
                         <div className="bodyright">
-                                <div className="tab1">
-                                    <div className="titleInTab">
-                                        <div className="leftTitle">EXCHANGE</div>
-                                        <div className="rightIcon">
-                                            <IconButton color="inherit" onClick={()=>{this.handleChange1()}}>
-                                                <img src={exchangeTo} alt="" style={{display: this.state.tab1? 'block' : 'none'}}/>
-                                                <img src={exchangeBack} alt="" style={{display: !this.state.tab1? 'block' : 'none'}}/>
-                                            </IconButton>
-                                        </div>
-                                        <div className="clear"></div>
+                            <div className="tab1">
+                                <div className="titleInTab">
+                                    <div className="leftTitle">EXCHANGE</div>
+                                    <div className="rightIcon">
+                                        <IconButton color="inherit" onClick={()=>{this.handleChange1()}}>
+                                            <img src={exchangeTo} alt="" style={{display: this.state.tab1? 'block' : 'none'}}/>
+                                            <img src={exchangeBack} alt="" style={{display: !this.state.tab1? 'block' : 'none'}}/>
+                                        </IconButton>
                                     </div>
-                                    <div style={{ display: this.state.tab1? 'block' : 'none' }} className="generate">
-                                        <p className="details">Select which constituent would you like to deposit ?</p>
-                                        <div className="input">
-                                            <input type="number" onChange={(val) => { this.depositNumChange(val.target.value) }} value={this.state.toDepositNum} />
-                                            <Select className="mySelect" defaultValue="DAI" onChange={(val) => { this.setState({ ...this.state, toDeposit: val }), this.depositNumChange(this.state.toDepositNum)}}>
-                                                <Select.Option value="DAI">DAI</Select.Option>
-                                                <Select.Option value="PAX">PAX</Select.Option>
-                                                <Select.Option value="TUSD">TUSD</Select.Option>
-                                                <Select.Option value="USDC">USDC</Select.Option>
-                                            </Select>
-                                        </div>
-                                        <div className="myBalanceOnPool myBalanceOnPoolMax">
-                                            Max USDX available to generate: 
-                                            <span>
-                                                <i>{this.state.maxGenerateUSDx ? this.state.maxGenerateUSDx.split('.')[0] : '0'}</i>
-                                                {this.state.maxGenerateUSDx ? '.' + this.state.maxGenerateUSDx.split('.')[1] : '.00'}
-                                            </span>
-                                        </div>
-                                        <div className="ButtonWrap">
-                                            <Button
-                                                onClick={() => { this.deposit() }}
-                                                variant="contained"
-                                                color="secondary"
-                                                disabled={this.state.couldDeposit ? false : true}
-                                                fullWidth={true}
-                                            >
-                                                CONVERT
-                                            </Button>
-                                        </div>
-                                        <div className="diverLine"></div>
-                                        <div className="claim">
-                                            Maximal USDX to claim:
-                                            <span>
-                                                <i>{this.state.userMaxToClaim? this.state.userMaxToClaim.split('.')[0] : '0'}</i>
-                                                {this.state.userMaxToClaim? '.' + this.state.userMaxToClaim.split('.')[1] : '.00'}
-                                            </span>
-                                        </div>
-                                        <div className="ButtonWrap marginTop10 marginMax">
-                                            <Button
-                                                onClick={() => { this.claim() }}
-                                                variant="contained"
-                                                color="secondary"
-                                                // disabled={this.state.couldDeposit ? false : true}
-                                                fullWidth={true}
-                                            >
-                                                CLAIM
-                                            </Button>
-                                        </div>
-                                        <div className="errtips" style={{ display: this.state.errTips ? 'block' : 'none' }}>
-                                            <h4>Reminder</h4>
-                                            The amount of {this.state.toDeposit} to be deposit exceeds your current balance.
-                                        </div>
+                                    <div className="clear"></div>
+                                </div>
+                                <div style={{ display: this.state.tab1? 'block' : 'none' }} className="generate">
+                                    <p className="details">Select which constituent would you like to deposit ?</p>
+                                    <div className="input">
+                                        <input type="number" onChange={(val) => { this.depositNumChange(val.target.value) }} value={this.state.toDepositNum} />
+                                        <Select className="mySelect" defaultValue="DAI" onChange={(val) => { this.setState({ ...this.state, toDeposit: val })}}>
+                                            <Select.Option value="DAI">DAI</Select.Option>
+                                            <Select.Option value="PAX">PAX</Select.Option>
+                                            <Select.Option value="TUSD">TUSD</Select.Option>
+                                            <Select.Option value="USDC">USDC</Select.Option>
+                                        </Select>
                                     </div>
-                                    
-                                    <div style={{ display: !this.state.tab1 ? 'block' : 'none' }} className="generate">
-                                        <p className="details">How much USDX would you like to disaggregate?</p>
-                                        <div className="input">
-                                            <input type="number" onChange={(val) => { this.destroyNumChange(val.target.value) }} value={this.state.toDestroyNum} />
-                                            <Select className="mySelect" defaultValue="USDX" disabled></Select>
-                                        </div>
-                                        <div className="clear"></div>
-                                        <div className="ButtonWrap ButtonWrapWithdraw">
-                                            <Button
-                                                onClick={() => { this.destroy() }}
-                                                variant="contained"
-                                                color="secondary"
-                                                disabled={this.state.couldDestroy ? false : true}
-                                                fullWidth={true}
-                                            >DESTROY
-                                            </Button>
-                                        </div>
-                                        <div className="tips tipsMax">
-                                            <div className="imgWrap">
-                                                <img src={doubt} alt="" />
-                                                <div className="detials">When you proceed destroying USDX, certain amount of DF coin is going to charge for brassage. The current fee is 5DF.</div>
-                                            </div>
-                                            DF fee needed:
-                                            <span>
-                                                <i>{this.state.couldDestroy ? (this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice).toFixed(2).toString().split('.')[0] : '0'}</i>
-                                                {this.state.couldDestroy ? '.' + (this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice).toFixed(2).toString().split('.')[1] : '.00'}
-                                            </span>
-                                        </div>
-                                        <div className="errtips" style={{ display: this.state.errTipsDestroy ? 'block' : 'none' }}>
-                                            {/* <div className="errtips"> */}
-                                            <h4>Reminder</h4>
-                                            The amount of destroy to be deposit exceeds your current balance.
-                                        </div>
-                                        <div className="myBalanceOnPoolSection">
-                                            <div className="title">How much constituents expect to generate ?</div>
-                                            <p className='partToken'>
-                                                <span>DAI</span>
-                                                <span className='right'>
-                                                    {this.state.USDxToDAI ? this.state.USDxToDAI.split('.')[0] : '0'}
-                                                    <i>{this.state.USDxToDAI ? '.' + this.state.USDxToDAI.split('.')[1] : '.00'}</i>
-                                                </span>
-                                            </p>
-                                            <p className='partToken marginR marginl'>
-                                                <span>PAX</span>
-                                                <span className='right'>
-                                                    {this.state.USDxToPAX ? this.state.USDxToPAX.split('.')[0] : '0'}
-                                                    <i>{this.state.USDxToPAX ? '.' + this.state.USDxToPAX.split('.')[1] : '.00'}</i>
-                                                </span>
-                                            </p>
-                                            <p className='partToken'>
-                                                <span>TUSD</span>
-                                                <span className='right'>
-                                                    {this.state.USDxToTUSD ? this.state.USDxToTUSD.split('.')[0] : '0'}
-                                                    <i>{this.state.USDxToTUSD ? '.' + this.state.USDxToTUSD.split('.')[1] : '.00'}</i>
-                                                </span>
-                                            </p>
-                                            <p className='partToken marginl'>
-                                                <span>USDC</span>
-                                                <span className='right'>
-                                                    {this.state.USDxToUSDC ? this.state.USDxToUSDC.split('.')[0] : '0'}
-                                                    <i>{this.state.USDxToUSDC ? '.' + this.state.USDxToUSDC.split('.')[1] : '.00'}</i>
-                                                </span>
-                                            </p>
-                                            <div className="clear"></div>
-                                        </div>
+                                    <div className="myBalanceOnPool myBalanceOnPoolMax">
+                                        Max USDX available to generate: 
+                                        <span>
+                                            <i>{this.state.maxGenerateUSDx ? this.state.maxGenerateUSDx.split('.')[0] : '0'}</i>
+                                            {this.state.maxGenerateUSDx ? '.' + this.state.maxGenerateUSDx.split('.')[1] : '.00'}
+                                        </span>
+                                    </div>
+                                    <div className="ButtonWrap">
+                                        <Button
+                                            onClick={() => { this.deposit() }}
+                                            variant="contained"
+                                            color="secondary"
+                                            disabled={this.state.couldDeposit ? false : true}
+                                            fullWidth={true}
+                                        >
+                                            CONVERT
+                                        </Button>
+                                    </div>
+                                    <div className="diverLine"></div>
+                                    <div className="claim">
+                                        Maximal USDX to claim:
+                                        <span>
+                                            <i>{this.state.userMaxToClaim? this.state.userMaxToClaim.split('.')[0] : '0'}</i>
+                                            {this.state.userMaxToClaim? '.' + this.state.userMaxToClaim.split('.')[1] : '.00'}
+                                        </span>
+                                    </div>
+                                    <div className="ButtonWrap marginTop10 marginMax">
+                                        <Button
+                                            onClick={() => { this.claim() }}
+                                            variant="contained"
+                                            color="secondary"
+                                            // disabled={this.state.couldDeposit ? false : true}
+                                            fullWidth={true}
+                                        >
+                                            CLAIM
+                                        </Button>
+                                    </div>
+                                    <div className="errtips" style={{ display: this.state.errTips ? 'block' : 'none' }}>
+                                        <h4>Reminder</h4>
+                                        The amount of {this.state.toDeposit} to be deposit exceeds your current balance.
                                     </div>
                                 </div>
                                 
-                                <div className="tab1 noRightMargin">
-                                    <div className="titleInTab">
-                                        <div className="leftTitle">WITHDRAW</div>
-                                        <div className="clear"></div>
+                                <div style={{ display: !this.state.tab1 ? 'block' : 'none' }} className="generate">
+                                    <p className="details">How much USDX would you like to disaggregate?</p>
+                                    <div className="input">
+                                        <input type="number" onChange={(val) => { this.destroyNumChange(val.target.value) }} value={this.state.toDestroyNum} />
+                                        <Select className="mySelect" defaultValue="USDX" disabled></Select>
                                     </div>
-                                    <div className="generate nomargin">
-                                        <p className="details">Select which constituent would you like to withdraw ?</p>
-                                        <div className="input">
-                                            <input type="number" onChange={(val) => { this.withdrawNumChange(val.target.value) }} value={this.state.toWithdrawNum} />
-                                            <Select className="mySelect" defaultValue="DAI" onChange={(val) => { this.setState({ ...this.state, toWithdraw: val }), this.withdrawNumChange(this.state.toWithdrawNum)}}>
-                                                <Select.Option value="DAI">DAI</Select.Option>
-                                                <Select.Option value="PAX">PAX</Select.Option>
-                                                <Select.Option value="TUSD">TUSD</Select.Option>
-                                                <Select.Option value="USDC">USDC</Select.Option>
-                                            </Select>
+                                    <div className="clear"></div>
+                                    <div className="ButtonWrap ButtonWrapWithdraw">
+                                        <Button
+                                            onClick={() => { this.destroy() }}
+                                            variant="contained"
+                                            color="secondary"
+                                            disabled={this.state.couldDestroy ? false : true}
+                                            fullWidth={true}
+                                        >DESTROY
+                                        </Button>
+                                    </div>
+                                    <div className="tips tipsMax">
+                                        <div className="imgWrap">
+                                            <img src={doubt} alt="" />
+                                            <div className="detials">When you proceed destroying USDX, certain amount of DF coin is going to charge for brassage. The current fee is 5DF.</div>
                                         </div>
+                                        DF fee needed:
+                                        <span>
+                                            <i>{this.state.couldDestroy ? (this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice).toFixed(2).toString().split('.')[0] : '0'}</i>
+                                            {this.state.couldDestroy ? '.' + (this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice).toFixed(2).toString().split('.')[1] : '.00'}
+                                        </span>
+                                    </div>
+                                    <div className="errtips" style={{ display: this.state.errTipsDestroy ? 'block' : 'none' }}>
+                                        {/* <div className="errtips"> */}
+                                        <h4>Reminder</h4>
+                                        The amount of destroy to be deposit exceeds your current balance.
+                                    </div>
+                                    <div className="myBalanceOnPoolSection">
+                                        <div className="title">How much constituents expect to generate ?</div>
+                                        <p className='partToken'>
+                                            <span>DAI</span>
+                                            <span className='right'>
+                                                {this.state.USDxToDAI ? this.state.USDxToDAI.split('.')[0] : '0'}
+                                                <i>{this.state.USDxToDAI ? '.' + this.state.USDxToDAI.split('.')[1] : '.00'}</i>
+                                            </span>
+                                        </p>
+                                        <p className='partToken marginR marginl'>
+                                            <span>PAX</span>
+                                            <span className='right'>
+                                                {this.state.USDxToPAX ? this.state.USDxToPAX.split('.')[0] : '0'}
+                                                <i>{this.state.USDxToPAX ? '.' + this.state.USDxToPAX.split('.')[1] : '.00'}</i>
+                                            </span>
+                                        </p>
+                                        <p className='partToken'>
+                                            <span>TUSD</span>
+                                            <span className='right'>
+                                                {this.state.USDxToTUSD ? this.state.USDxToTUSD.split('.')[0] : '0'}
+                                                <i>{this.state.USDxToTUSD ? '.' + this.state.USDxToTUSD.split('.')[1] : '.00'}</i>
+                                            </span>
+                                        </p>
+                                        <p className='partToken marginl'>
+                                            <span>USDC</span>
+                                            <span className='right'>
+                                                {this.state.USDxToUSDC ? this.state.USDxToUSDC.split('.')[0] : '0'}
+                                                <i>{this.state.USDxToUSDC ? '.' + this.state.USDxToUSDC.split('.')[1] : '.00'}</i>
+                                            </span>
+                                        </p>
                                         <div className="clear"></div>
-                                        <div className="ButtonWrap ButtonWrapWithdraw">
-                                            <Button
-                                                onClick={() => { this.withdraw() }}
-                                                variant="contained"
-                                                color="secondary"
-                                                disabled={this.state.couldWithdraw ? false : true}
-                                                fullWidth={true}
-                                            >WITHDRAW
-                                            </Button>
-                                        </div>
-                                        <div className="errtips" style={{ display: this.state.errTipsWithdraw ? 'block' : 'none' }}>
-                                            <h4>Reminder</h4>
-                                            The amount of {this.state.toWithdraw} to be deposit exceeds your current balance.
-                                                </div>
-                                        <div className="myBalanceOnPoolSection">
-                                            <div className="title">Withdraw Constituents:</div>
-                                            <p className='partToken'>
-                                                <span>DAI</span>
-                                                <span className='right'>
-                                                    {this.state.myDAIonPool ? this.state.myDAIonPool.split('.')[0] : '0'}
-                                                    <i>{this.state.myDAIonPool ? '.' + this.state.myDAIonPool.split('.')[1] : '.00'}</i>
-                                                </span>
-                                            </p>
-                                            <p className='partToken marginl'>
-                                                <span>PAX</span>
-                                                <span className='right'>
-                                                    {this.state.myPAXonPool ? this.state.myPAXonPool.split('.')[0] : '0'}
-                                                    <i>{this.state.myPAXonPool ? '.' + this.state.myPAXonPool.split('.')[1] : '.00'}</i>
-                                                </span>
-                                            </p>
-                                            <p className='partToken'>
-                                                <span>TUSD</span>
-                                                <span className='right'>
-                                                    {this.state.myTUSDonPool ? this.state.myTUSDonPool.split('.')[0] : '0'}
-                                                    <i>{this.state.myTUSDonPool ? '.' + this.state.myTUSDonPool.split('.')[1] : '.00'}</i>
-                                                </span>
-                                            </p>
-                                            <p className='partToken marginl'>
-                                                <span>USDC</span>
-                                                <span className='right'>
-                                                    {this.state.myUSDConPool ? this.state.myUSDConPool.split('.')[0] : '0'}
-                                                    <i>{this.state.myUSDConPool ? '.' + this.state.myUSDConPool.split('.')[1] : '.00'}</i>
-                                                </span>
-                                            </p>
-                                            <div className="clear"></div>
-                                        </div>
                                     </div>
                                 </div>
-                                <div className="clear"></div>
+                            </div>
+                            
+                            <div className="tab1 noRightMargin">
+                                <div className="titleInTab">
+                                    <div className="leftTitle">WITHDRAW</div>
+                                    <div className="clear"></div>
+                                </div>
+                                <div className="generate nomargin">
+                                    <p className="details">Select which constituent would you like to withdraw ?</p>
+                                    <div className="input">
+                                        <input type="number" onChange={(val) => { this.withdrawNumChange(val.target.value) }} value={this.state.toWithdrawNum} />
+                                        <Select className="mySelect" defaultValue="DAI" onChange={(val) => { this.setState({ ...this.state, toWithdraw: val })}}>
+                                            <Select.Option value="DAI">DAI</Select.Option>
+                                            <Select.Option value="PAX">PAX</Select.Option>
+                                            <Select.Option value="TUSD">TUSD</Select.Option>
+                                            <Select.Option value="USDC">USDC</Select.Option>
+                                        </Select>
+                                    </div>
+                                    <div className="clear"></div>
+                                    <div className="ButtonWrap ButtonWrapWithdraw">
+                                        <Button
+                                            onClick={() => { this.withdraw() }}
+                                            variant="contained"
+                                            color="secondary"
+                                            disabled={this.state.couldWithdraw ? false : true}
+                                            fullWidth={true}
+                                        >WITHDRAW
+                                        </Button>
+                                    </div>
+                                    <div className="errtips" style={{ display: this.state.errTipsWithdraw ? 'block' : 'none' }}>
+                                        <h4>Reminder</h4>
+                                        The amount of {this.state.toWithdraw} to be deposit exceeds your current balance.
+                                            </div>
+                                    <div className="myBalanceOnPoolSection">
+                                        <div className="title">Withdraw Constituents:</div>
+                                        <p className='partToken'>
+                                            <span>DAI</span>
+                                            <span className='right'>
+                                                {this.state.myDAIonPool ? this.state.myDAIonPool.split('.')[0] : '0'}
+                                                <i>{this.state.myDAIonPool ? '.' + this.state.myDAIonPool.split('.')[1] : '.00'}</i>
+                                            </span>
+                                        </p>
+                                        <p className='partToken marginl'>
+                                            <span>PAX</span>
+                                            <span className='right'>
+                                                {this.state.myPAXonPool ? this.state.myPAXonPool.split('.')[0] : '0'}
+                                                <i>{this.state.myPAXonPool ? '.' + this.state.myPAXonPool.split('.')[1] : '.00'}</i>
+                                            </span>
+                                        </p>
+                                        <p className='partToken'>
+                                            <span>TUSD</span>
+                                            <span className='right'>
+                                                {this.state.myTUSDonPool ? this.state.myTUSDonPool.split('.')[0] : '0'}
+                                                <i>{this.state.myTUSDonPool ? '.' + this.state.myTUSDonPool.split('.')[1] : '.00'}</i>
+                                            </span>
+                                        </p>
+                                        <p className='partToken marginl'>
+                                            <span>USDC</span>
+                                            <span className='right'>
+                                                {this.state.myUSDConPool ? this.state.myUSDConPool.split('.')[0] : '0'}
+                                                <i>{this.state.myUSDConPool ? '.' + this.state.myUSDConPool.split('.')[1] : '.00'}</i>
+                                            </span>
+                                        </p>
+                                        <div className="clear"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="clear"></div>
+                            <History 
+                                data={this.state}
+                                addressDAI={this.addressDAI}
+                                addressPAX={this.addressPAX}
+                                addressTUSD={this.addressTUSD}
+                                addressUSDC={this.addressUSDC}
+                            />
+                            {/* <div className="history">
+                                <ul>
+                                    {
+                                        this.state.myHistory.map(
+                                            (item, index) => {
+                                                if (item.event === 'Deposit') {
+                                                    return <li key={index}>
+                                                        {item.timeStamp}***{item.event}
+                                                    </li>
+                                                }
+                                                if (item.event === 'Destroy') {
+                                                    return <li key={index}>
+                                                        {item.timeStamp}***{item.event}
+                                                    </li>
+                                                }
+                                                if (item.event === 'Claim') {
+                                                    return <li key={index}>
+                                                        {item.timeStamp}***{item.event}
+                                                    </li>
+                                                }
+                                                if (item.event === 'Withdraw') {
+                                                    return <li key={index}>
+                                                        {item.timeStamp}***{item.event}
+                                                    </li>
+                                                }
+                                            }
+                                        )
+                                    }
+                                </ul>
+                            </div> */}
                             </div>
                         <div className="clear"></div>
                     </div>
@@ -393,6 +457,7 @@ export default class Home extends React.Component {
                 this.getFeeRate();
                 this.getColMaxClaim();
                 this.getUserWithdrawBalance();
+                this.getMyHistory();
                 Cookie.save('isLogin', 'true', { path: '/' });
             },
             err => {
@@ -412,7 +477,7 @@ export default class Home extends React.Component {
                     this.setState({
                         ...this.state,
                         netTypeColor: '#1abc9c',
-                        netType: 'MainNet'
+                        netType: 'Main'
                     });
                 break;
                 case '3':
@@ -444,6 +509,38 @@ export default class Home extends React.Component {
                     });
             }
         });
+    }
+
+    // getMyHistory
+    getMyHistory() {
+        setTimeout(() => {
+            if (!localStorage.getItem(this.state.accountAddress)) {
+                console.log('no history yet...');
+                var obj = {
+                    Main: {
+                        history: []
+                    },
+                    Ropsten: {
+                        history: []
+                    },
+                    Rinkeby: {
+                        history: []
+                    },
+                    Kovan: {
+                        history: []
+                    }
+                };
+                localStorage.setItem(this.state.accountAddress, JSON.stringify(obj));
+                return;
+            } else {
+                var historyArr = (JSON.parse(localStorage.getItem(this.state.accountAddress)))[this.state.netType].history;
+                console.log(historyArr);
+                this.setState({
+                    ...this.state,
+                    myHistory: historyArr
+                })
+            }
+        }, 3000)
     }
 
 
