@@ -109,30 +109,30 @@ contract DFEngine is DSMath, DSAuth {
             _misc = min(div(_tokenBalance[i], _mintCW[i]), _misc);
         }
         if (_misc > 0) {
-            _convert(_depositor, _tokens, _mintCW, _tokenBalance, _resUSDXBalance, _depositorBalance, _misc);
-        } else {
+            return _convert(_depositor, _tokens, _mintCW, _tokenBalance, _resUSDXBalance, _depositorBalance, _misc);
+        }
             /** Just retrieve minting tokens here. If minted balance has USDX, call claim.*/
-            for (uint i = 0; i < _tokens.length; i++) {
-                _depositorMintAmount = min(_depositorBalance[i], _resUSDXBalance[i]);
+        for (uint i = 0; i < _tokens.length; i++) {
+            _depositorMintAmount = min(_depositorBalance[i], _resUSDXBalance[i]);
 
-                if (_depositorMintAmount == 0) {
-                    if (_tokenID == _tokens[i]) {
-                        dfStore.setDepositorBalance(_depositor, _tokens[i], _depositorBalance[i]);
-                    }
-                    continue;
+            if (_depositorMintAmount == 0) {
+                if (_tokenID == _tokens[i]) {
+                    dfStore.setDepositorBalance(_depositor, _tokens[i], _depositorBalance[i]);
                 }
-
-                dfStore.setDepositorBalance(_depositor, _tokens[i], sub(_depositorBalance[i], _depositorMintAmount));
-                dfStore.setResUSDXBalance(_tokens[i], sub(_resUSDXBalance[i], _depositorMintAmount));
-                _depositorMintTotal = add(_depositorMintTotal, _depositorMintAmount);
+                continue;
             }
 
-            if (_depositorMintTotal > 0)
-                dfPool.transferOut(address(usdxToken), _depositor, _depositorMintTotal);
-
-            _misc = add(_amount, dfStore.getTokenBalance(_tokenID));
-            dfStore.setTokenBalance(_tokenID, _misc);
+            dfStore.setDepositorBalance(_depositor, _tokens[i], sub(_depositorBalance[i], _depositorMintAmount));
+            dfStore.setResUSDXBalance(_tokens[i], sub(_resUSDXBalance[i], _depositorMintAmount));
+            _depositorMintTotal = add(_depositorMintTotal, _depositorMintAmount);
         }
+
+        if (_depositorMintTotal > 0)
+            dfPool.transferOut(address(usdxToken), _depositor, _depositorMintTotal);
+
+        _misc = add(_amount, dfStore.getTokenBalance(_tokenID));
+        dfStore.setTokenBalance(_tokenID, _misc);
+
         return (_depositorMintTotal);
     }
 
@@ -266,6 +266,7 @@ contract DFEngine is DSMath, DSAuth {
         uint[] memory _depositorBalance,
         uint _step)
         internal
+        returns(uint)
     {
         uint _mintAmount;
         uint _mintTotal;
@@ -293,6 +294,7 @@ contract DFEngine is DSMath, DSAuth {
         dfStore.addSectionMinted(_mintTotal);
         usdxToken.mint(address(dfPool), _mintTotal);
         dfPool.transferOut(address(usdxToken), _depositor, _depositorMintTotal);
+        return _depositorMintTotal;
     }
 
     function calcDepositorMintTotal(address _depositor, address _tokenID, uint _amount) public view returns (uint) {

@@ -25,7 +25,7 @@ var collateralNames = new Array('DAI', 'PAX', 'TUSD', 'USDC');
 
 // var weightTest = new Array(10, 20, 30, 40, 50, 60, 70, 80, 90, 100);
 // var weightTest = new Array(4, 3, 2, 1);
-var weightTest = new Array(0.1, 0.3, 0.3, 0.3);
+var weightTest = new Array(10, 30, 30, 30);
 
 var runTypeArr = new Array('deposit', 'destroy', 'withdraw', 'claim', 'updateSection');
 var runUpdateSection = 20;
@@ -42,13 +42,81 @@ contract('DFEngine', accounts => {
 // 各项配置如不填写，测采用随机模式执行
 var runConfig = [ 
     {
-        'times':150, 
+        // 'times':150, 
         'data':[
             {
+                'type':'deposit',
+                // 'times':100,
                 'data':[
-                    {}
+                    {
+                        'tokenAddress':1,
+                        'accountAddress':1,
+                        'amount':11,
+                    },
+                    {
+                        'tokenAddress':2,
+                        'accountAddress':1,
+                        'amount':31,
+                    },
+                    {
+                        'tokenAddress':3,
+                        'accountAddress':1,
+                        'amount':31,
+                    },
+                    {
+                        'tokenAddress':4,
+                        'accountAddress':2,
+                        'amount':31,
+                    },
+                    {
+                        'tokenAddress':2,
+                        'accountAddress':2,
+                        'amount':10,
+                    },
+                    {
+                        'tokenAddress':3,
+                        'accountAddress':2,
+                        'amount':10,
+                    },
+                    {
+                        'tokenAddress':4,
+                        'accountAddress':2,
+                        'amount':3,
+                    },
+                    {
+                        'tokenAddress':4,
+                        'accountAddress':4,
+                        'amount':28,
+                    },
                 ]
-            }
+            },
+            // {
+            //     'type':'claim',
+            //     'data':[
+            //         // {
+            //         // 'accountAddress':1
+            //         // },
+            //         {
+            //             'accountAddress':2
+            //             },
+            //             {
+            //                 'accountAddress':3
+            //                 },
+            //                 {
+            //                     'accountAddress':4
+            //                     },
+            //     ]
+            // },
+            // {
+            //     'type':'withdraw',
+            //     'data':[
+            //         {
+            //             'tokenAddress':3,
+            //             'accountAddress':1,
+            //             'amount':13,
+            //         }
+            //     ]
+            // }
         ],      
     },
       
