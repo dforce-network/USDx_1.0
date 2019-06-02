@@ -63,4 +63,8 @@ contract DFProtocol is DFUpgrader {
     function getFeeRate(uint typeID) public returns (uint) {
         return iDFEngine.getFeeRateByID(typeID);
     }
+
+    function getDestroyThreshold() public view returns (uint) {
+        return iDFEngine.getDestroyThreshold();
+    }
 }
