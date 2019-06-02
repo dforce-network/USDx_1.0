@@ -1,15 +1,16 @@
-var usdxAddr = "0x8f3BFc1c0b1B4078f53a3cfbE1d445020d2A5509";
+var usdxAddr = "0x3f999E82746Dfe08429fe338E758846faEd3e8e5";
 var dfAddr = "0x4AF82b7C2F049574C9fc742A896DAbEA379b7d51";
 
-var protocolAddr = "0x9A35766a47B71114AaCa15852B72768d2Ec55Cd0";
-var storeAddr = "0x009b885C087788D6e706689e4802D977fB544621";
-var poolAddr = "0x226E8EfdF955f33fA4C530A6cD2334A637052973";
-var collateralAddr = "0x35D46686Da8Aa7f334079559A4e03be34AcfF5Da";
-var fundsAddr = "0xe4aB960e101De5aFB5C3038fF636afdf81fE80f8";
-var engineAddr = "0xD8f5ED3FD6606192d0316E23ba75AD193343841a";
-var guardAddr = "0x74d6A3845cC287D93eA419dA3D80B3f68C508d1A";
-var medianAddr = "0x9CDC48eFd0Ff0e5CB0E049D4Db3ba3a9F16636Af";
-var feedAddr = "0x5baEe4954760B703691B3484AA37590f2C589BCF";
+var protocolAddr = "0x61F217204e51c9cb0A3B53f91c613d861e6f7c73";
+var storeAddr = "0xB2d0bB042E4F84DE393D34C00Aea7D146D6CBe4C";
+var poolAddr = "0x23083Ed7a998dEAD08e26fdF6da369d27B121528";
+var collateralAddr = "0x4fBddab2840FdBC516fED97c116323B2c41999D4";
+var fundsAddr = "0x892072cAD90E0451BC4f459F6b26FBd3E7701d59";
+var engineAddr = "0xf46c19780e49678224ff15C574eF563fEeAA3498";
+var guardAddr = "0x9e20202B010b0960D45b693Cf6265C47a148c0F2";
+var medianAddr = "0xdADbD64f7df40989D7d3CBeE0bCE264EbCD7699f";
+var feedAddr = "0x1606b4Ab7235480B41623dA10B6E78cf70d0E99E";
+var msgSender = "0x9df7C98C933A0cB409606A3A24B1660a70283542";
 
 var contractUsdx = web3.eth.contract(usdxABI).at(usdxAddr);
 var contractDF = web3.eth.contract(erc20ABI).at(dfAddr);
@@ -557,11 +558,26 @@ function destroy() {
   );
 }
 
-function balanceInCollateral() {
-  contractPAX.balanceOf.call(
-    collateralAddr,
+function miscFunction() {
+  contractStore.getDepositorBalance.call(
+    msgSender, usdcAddr,
     function (err, ret) {
       console.log(ret.toFixed(), err);
+    }
+  );
+
+  contractStore.getTokenBalance.call(
+    usdcAddr,
+    function (err, ret) {
+      console.log(ret.toFixed(), err);
+    }
+  );
+
+  contractEngine.getWithdrawBalances.call(
+    msgSender,
+    function (err, ret) {
+      console.log(ret[1][0].toFixed(), err);
+      console.log(ret[1][3].toFixed(), err);
     }
   );
 }
