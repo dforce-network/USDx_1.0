@@ -422,6 +422,16 @@ function depositUSDC() {
   );
 }
 
+function tryUSDXForDeposit() {
+  contractProtocol.getUSDXForDeposit.call(
+    usdcAddr,
+    500 * 1000000000000000000,
+    function (err, ret) {
+      console.log(ret.toFixed(), err);
+    }
+  );
+}
+
 function claimUSDX() {
   contractProtocol.claim.sendTransaction(
     0, {
@@ -550,16 +560,6 @@ function destroy() {
 function balanceInCollateral() {
   contractPAX.balanceOf.call(
     collateralAddr,
-    function (err, ret) {
-      console.log(ret.toFixed(), err);
-    }
-  );
-}
-
-function tryUSDXForDeposit() {
-  contractProtocol.getUSDXForDeposit.call(
-    usdcAddr,
-    50 * 1000000000000000000,
     function (err, ret) {
       console.log(ret.toFixed(), err);
     }
