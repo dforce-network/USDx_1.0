@@ -1,15 +1,15 @@
-var usdxAddr = "0x72B43E28F09FBaB29139A47F976b6aca9Da3e57A";
+var usdxAddr = "0x8f3BFc1c0b1B4078f53a3cfbE1d445020d2A5509";
 var dfAddr = "0x4AF82b7C2F049574C9fc742A896DAbEA379b7d51";
 
-var protocolAddr = "0x53C8db4C9A4f5D5958226D552bb63915065B0B4F";
-var storeAddr = "0x040726D032009258dA9E34bB8cc5bB80958F3c74";
-var poolAddr = "0x89C26659BcDbFBa6F4ef4281E4bC984Ac2E73209";
-var collateralAddr = "0x6f30A3771E93f63a3D6D9461793FFC28F9E6D318";
-var fundsAddr = "0x533554d4b94fae0639AbE2b84c54Ce802040854F";
-var engineAddr = "0x6E4F3707C9802F0F54345Cc53e99267408d39452";
-var guardAddr = "0xD8c4bbe9e3396209EaB26e8e347dECc6F2d666e4";
-var medianAddr = "0x8a3ae949655BA69458bc25AEb86b9CFCCA85b175";
-var feedAddr = "0x918B054f12a87CedF2c9D8FBdC5c27e2DB17fD6d";
+var protocolAddr = "0x9A35766a47B71114AaCa15852B72768d2Ec55Cd0";
+var storeAddr = "0x009b885C087788D6e706689e4802D977fB544621";
+var poolAddr = "0x226E8EfdF955f33fA4C530A6cD2334A637052973";
+var collateralAddr = "0x35D46686Da8Aa7f334079559A4e03be34AcfF5Da";
+var fundsAddr = "0xe4aB960e101De5aFB5C3038fF636afdf81fE80f8";
+var engineAddr = "0xD8f5ED3FD6606192d0316E23ba75AD193343841a";
+var guardAddr = "0x74d6A3845cC287D93eA419dA3D80B3f68C508d1A";
+var medianAddr = "0x9CDC48eFd0Ff0e5CB0E049D4Db3ba3a9F16636Af";
+var feedAddr = "0x5baEe4954760B703691B3484AA37590f2C589BCF";
 
 var contractUsdx = web3.eth.contract(usdxABI).at(usdxAddr);
 var contractDF = web3.eth.contract(erc20ABI).at(dfAddr);
@@ -229,6 +229,19 @@ function setDestroyFeeToken() {
   );
 }
 
+let th = new BN(Number(0.1 * 10 ** 18).toLocaleString().replace(/,/g, ''));
+
+function setDestroyThreshold() {
+  contractEngine.setDestroyThreshold.sendTransaction(
+    th, {
+      gas: 1000000
+    },
+    function (err, ret) {
+      console.log(ret, err);
+    }
+  );
+}
+
 function setDFTokenMedianizer() {
   contractEngine.setCommissionMedian.sendTransaction(
     dfAddr, medianAddr, {
@@ -295,6 +308,7 @@ function dfApprove() {
 function tryMintingSection() {
   contractProtocol.getMintingSection.call(
     function (err, ret) {
+      console.log(ret[1][0].toFixed(), err);
       console.log(ret[1][1].toFixed(), err);
     }
   );
@@ -461,6 +475,14 @@ function tryDFFeeRate() {
   );
 }
 
+function tryDestroyThresHold() {
+  contractProtocol.getDestroyThreshold.call(
+    function (err, ret) {
+      console.log(ret.toFixed(), err);
+    }
+  );
+}
+
 function withdrawDAI() {
   contractProtocol.withdraw.sendTransaction(
     daiAddr,
@@ -538,42 +560,6 @@ function tryUSDXForDeposit() {
   contractProtocol.getUSDXForDeposit.call(
     usdcAddr,
     50 * 1000000000000000000,
-    function (err, ret) {
-      console.log(ret.toFixed(), err);
-    }
-  );
-}
-
-function getLockedUSDX2DAI() {
-  contractStore.getResUSDXBalance.call(
-    daiAddr,
-    function (err, ret) {
-      console.log(ret.toFixed(), err);
-    }
-  );
-}
-
-function getLockedUSDX2PAX() {
-  contractStore.getResUSDXBalance.call(
-    paxAddr,
-    function (err, ret) {
-      console.log(ret.toFixed(), err);
-    }
-  );
-}
-
-function getLockedUSDX2TUSD() {
-  contractStore.getResUSDXBalance.call(
-    tusdAddr,
-    function (err, ret) {
-      console.log(ret.toFixed(), err);
-    }
-  );
-}
-
-function getLockedUSDX2USDC() {
-  contractStore.getResUSDXBalance.call(
-    usdcAddr,
     function (err, ret) {
       console.log(ret.toFixed(), err);
     }
