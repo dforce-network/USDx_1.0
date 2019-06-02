@@ -18,7 +18,6 @@ import abiTokens from '../abi/abiTokens';
 // import abiPAX from '../abi/abiPAX';
 // import abiTUSD from '../abi/abiTUSD';
 // import abiUSDC from '../abi/abiUSDC';
-
 // import abiDF from '../abi/abiDF';
 import abiUSDx from '../abi/abiUSDx';
 import abiProtocol from '../abi/abiProtocol';
@@ -43,12 +42,12 @@ export default class Home extends React.Component {
     addressTUSD = '0x25470030aa105bca679752e5c5e482c295de2b68';
     addressUSDC = '0xbc34e50f589e389c507e0213501114bd2e70b1d7';
     addressDF = '0x4AF82b7C2F049574C9fc742A896DAbEA379b7d51';
-    addressUSDx = '0x29d1980bDe9A71eBd47FE7cdef14640DC731BAA5';
+    addressUSDx = '0x8f3BFc1c0b1B4078f53a3cfbE1d445020d2A5509';
 
-    addressProtocol = '0x555bd8A39524635C725b62b28602cF52184C8CAE';
-    addressCollateral = '0x049b6B20826366897965592cabc24C35cDB69fe5';
-    addressEngine = '0xC7135d5F772FD9fD1e1780A401552fA15ee52E60';
-    addressPool = '0xA90B0e780f9eCb78D9bc4fE951E4A7A698b90b24';
+    addressProtocol = '0x9A35766a47B71114AaCa15852B72768d2Ec55Cd0';
+    addressCollateral = '0x35D46686Da8Aa7f334079559A4e03be34AcfF5Da';
+    addressEngine = '0xD8f5ED3FD6606192d0316E23ba75AD193343841a';
+    addressPool = '0x226E8EfdF955f33fA4C530A6cD2334A637052973';
     units = 10 ** 18;
     tatolSection = 0;
     tatolSectionBurning = 0;
@@ -739,44 +738,36 @@ export default class Home extends React.Component {
             });
         });
         this.contractDAI.balanceOf.call(this.state.accountAddress, (err, ret) => {
-            // console.log('-----DAI-----', ret)
-            // console.log('-----DAI--.toFixed()/ (10 ** 18)---', ret.toFixed() / (10 ** 18))
-            // console.log('-----DAI--.toFixed()---', ret.toFixed())
             this.setState({
                 ...this.state,
                 myDAI: this.formatNumber(ret)
             });
         });
         this.contractPAX.balanceOf.call(this.state.accountAddress, (err, ret) => {
-            // console.log('-------PAX---', ret)
             this.setState({
                 ...this.state,
                 myPAX: this.formatNumber(ret)
             });
         });
         this.contractTUSD.balanceOf.call(this.state.accountAddress, (err, ret) => {
-            // console.log('-----TUSD-----', ret)
             this.setState({
                 ...this.state,
                 myTUSD: this.formatNumber(ret)
             });
         });
         this.contractUSDC.balanceOf.call(this.state.accountAddress, (err, ret) => {
-            // console.log('----USDC-----', ret)
             this.setState({
                 ...this.state,
                 myUSDC: this.formatNumber(ret)
             });
         });
         this.contractDF.balanceOf.call(this.state.accountAddress, (err, ret) => {
-            // console.log('-----DF-----', ret)
             this.setState({
                 ...this.state,
                 myDF: this.formatNumber(ret)
             });
         });
         this.contractUSDx.balanceOf.call(this.state.accountAddress, (err, ret) => {
-            // console.log(ret)
             this.setState({
                 ...this.state,
                 myUSDx: this.formatNumber(ret)

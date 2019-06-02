@@ -485,6 +485,19 @@ const abiProtocol = [{
     "stateMutability": "nonpayable",
     "type": "function",
     "signature": "0xd2aaef4e"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getDestroyThreshold",
+    "outputs": [{
+      "name": "",
+      "type": "uint256"
+    }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "signature": "0x028e1161"
   }
 ];
 
