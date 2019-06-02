@@ -546,6 +546,7 @@ export default class Home extends React.Component {
 
     // get the Token section
     getTokenSection () {
+        this.tatolSection = 0;
         this.contractProtocol.getMintingSection.call((err, ret) => {
             // console.log(ret[0])
             // console.log(ret[1])
@@ -596,6 +597,7 @@ export default class Home extends React.Component {
     }
     // get the Token Burning section
     getTokenBurningSection () {
+        this.tatolSectionBurning = 0;
         this.contractProtocol.getBurningSection.call((err, ret) => {
             // console.log(err, ret);
             if (ret) {
