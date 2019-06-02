@@ -379,8 +379,8 @@ var runConfig = [
                 runData['other']['error'] = error.message;
                 // runDataList[runDataList.length] = runData;
                 console.log(error.message + '\n');
-                condition++;
-                continue;
+                // condition++;
+                // continue;
             }
 
             try {
@@ -397,8 +397,8 @@ var runConfig = [
                 runData['owner']['error'] = error.message;
                 // runDataList[runDataList.length] = runData;
                 console.log(error.message + '\n');
-                condition++;
-                continue;
+                // condition++;
+                // continue;
             }
             try {
                 transactionData = await dfEngine.acceptOwnership({from: accounts[1]});
@@ -414,8 +414,8 @@ var runConfig = [
                 runData['accept']['error'] = error.message;
                 // runDataList[runDataList.length] = runData;
                 console.log(error.message + '\n');
-                condition++;
-                continue;
+                // condition++;
+                // continue;
             }
 
             try {
@@ -432,8 +432,8 @@ var runConfig = [
                 runData['old']['error'] = error.message;
                 runDataList[runDataList.length] = runData;
                 console.log(error.message + '\n');
-                condition++;
-                continue;
+                // condition++;
+                // continue;
             }
             
             console.log(JSON.stringify(runDataList));

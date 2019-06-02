@@ -12,6 +12,7 @@ const PriceFeed = artifacts.require('PriceFeed.sol');
 const Medianizer = artifacts.require('Medianizer.sol');
 
 const DFEngine = artifacts.require('DFEngine.sol');
+const DFProtocol = artifacts.require('DFProtocol.sol');
 
 const Collaterals = artifacts.require('Collaterals_t.sol');
 
@@ -27,7 +28,7 @@ const DataMethod = require('./helpers/DataMethod');
 // var weightTest = new Array(4, 3, 2, 1);
 // var weightTest = new Array(10, 30, 30, 30);
 
-var runTypeArr = new Array('deposit', 'destroy', 'withdraw', 'claim', 'updateSection', 'changeEngine');
+var runTypeArr = new Array('deposit', 'destroy', 'withdraw', 'claim', 'updateSection', 'changeEngine', 'setMinBurnAmount');
 var runUpdateSection = 20;
 var runDataList = [];
 var runData = {};
@@ -47,6 +48,8 @@ contract('DFEngine', accounts => {
             var priceFeed;
             var medianizer;
             var dfEngine;
+            var dfProtocol;
+            var owner;
 
             var collateralAddress = [];
             var collateralObject = {};
@@ -211,6 +214,7 @@ contract('DFEngine', accounts => {
                 dfFunds.address,
                 // medianizer.address
                 );
+            dfProtocol = await DFProtocol.new();
 
             await usdxToken.setAuthority(dfEngine.address);
             await dfToken.setAuthority(dfEngine.address);
@@ -224,6 +228,7 @@ contract('DFEngine', accounts => {
             await dSGuard.permitx(dfEngine.address, dfCollateral.address);
             await dSGuard.permitx(dfEngine.address, dfPool.address);
             await dSGuard.permitx(dfEngine.address, dfFunds.address);
+            await dSGuard.permitx(dfProtocol.address, dfEngine.address);
 
             await dfEngine.setCommissionToken(0, dfToken.address);
             await dfEngine.setCommissionMedian(dfToken.address, medianizer.address);
@@ -232,6 +237,9 @@ contract('DFEngine', accounts => {
             await medianizer.set(priceFeed.address);
             await priceFeed.post(new BN(Number(2 * 10 ** 18).toLocaleString().replace(/,/g, '')), 2058870102, medianizer.address);
 
+            await dfProtocol.requestImplChange(dfEngine.address);
+            await dfProtocol.confirmImplChange();
+
             amount = Number(1000000 * 10 ** 18).toLocaleString().replace(/,/g,'');
             await dfToken.mint(accounts[0], amount);
 
@@ -239,8 +247,10 @@ contract('DFEngine', accounts => {
             for (let index = 1; index < accounts.length; index++) {
                 await dfToken.transfer(accounts[index], amount);
                 balance = await collaterals.balanceOf.call(accounts[index]);
-                await dSGuard.permitx(accounts[index], dfEngine.address);
+                // await dSGuard.permitx(accounts[index], dfEngine.address);
             }
+
+            owner = accounts[0];
 
             recordToken = {};
             recordLockToken = {};
@@ -356,7 +366,7 @@ contract('DFEngine', accounts => {
                             // console.log('dfEngine ' + (dfEngineTimes + 1) + ' ' + runType + ' runTimes ' + (condition + 1) + ' gasUsed:' + transactionData.receipt.gasUsed + '\n');
 
                             usdxBalanceOrigin = await usdxToken.balanceOf.call(accountAddress);
-                            calcDepositorMintTotal = await dfEngine.getDepositMaxMint.call(accountAddress, tokenAddress, amountNB, {from: accountAddress});
+                            calcDepositorMintTotal = await dfProtocol.getUSDXForDeposit.call(tokenAddress, amountNB, {from: accountAddress});
                             runData = {};
                             runData['dfEngine'] = dfEngineTimes + 1;
                             runData['runTimes'] = condition + 1;
@@ -367,7 +377,7 @@ contract('DFEngine', accounts => {
                             runData['amountNB'] = amountNB.toString();
                             runData[await collateralObject[tokenAddress].name.call() + ' balance'] = accountTokenBalanceOrigin.toString();
                             try {
-                                transactionData = await dfEngine.deposit(accountAddress, tokenAddress, new BN(0), amountNB, {from: accountAddress});
+                                transactionData = await dfProtocol.deposit(tokenAddress, new BN(0), amountNB, {from: accountAddress});
                                 depositGasUsed = depositGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : depositGasUsed;
                                 depositGasData[depositGasData.length] = transactionData.receipt.gasUsed;
 
@@ -792,7 +802,7 @@ contract('DFEngine', accounts => {
                             runData['amountNB'] = amountNB.toString();
                             runData['usdx balance'] = usdxBalanceOrigin.toString();
                             try {
-                                transactionData = await dfEngine.destroy(accountAddress, new BN(0), amountNB, {from: accountAddress});
+                                transactionData = await dfProtocol.destroy(new BN(0), amountNB, {from: accountAddress});
                                 destroyGasUsed = destroyGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : destroyGasUsed;
                                 destroyGasData[destroyGasData.length] = transactionData.receipt.gasUsed;
 
@@ -1132,7 +1142,7 @@ contract('DFEngine', accounts => {
                             runData['amountNB'] = amountNB.toString();
                             runData['depositor balance'] = dfStoreAccountTokenOrigin.toString();
                             try {
-                                transactionData = await dfEngine.withdraw(accountAddress, tokenAddress, new BN(0), amountNB, {from: accountAddress});
+                                transactionData = await dfProtocol.withdraw(tokenAddress, new BN(0), amountNB, {from: accountAddress});
                                 withdrawGasUsed = withdrawGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : withdrawGasUsed;
                                 withdrawGasData[withdrawGasData.length] = transactionData.receipt.gasUsed;
                                 runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['gasUsed'] = transactionData.receipt.gasUsed;
@@ -1335,7 +1345,7 @@ contract('DFEngine', accounts => {
                             usdxTotalSupplyOrigin = await usdxToken.totalSupply.call();
                             usdxBalanceOrigin = await usdxToken.balanceOf.call(accountAddress);
                             usdxBalanceOfDfPool = await usdxToken.balanceOf.call(dfPool.address);
-                            calcMaxClaimAmount = await dfEngine.getMaxToClaim.call(accountAddress);
+                            calcMaxClaimAmount = await dfProtocol.getUserMaxToClaim.call({from: accountAddress});
                             
                             console.log('dfStore origin lock token total:');
                             console.log(dfStoreLockTokenBalance);
@@ -1371,13 +1381,17 @@ contract('DFEngine', accounts => {
                             runData['runTimes'] = condition + 1;
                             runData['type'] = runType;
                             runData['accountAddress'] = accounts.indexOf(accountAddress) + 1;
+                            runData['getMaxToClaim'] = calcMaxClaimAmount.toString();
+                            runData['usdx_balance origin'] = usdxBalanceOrigin.toString();
                             try {
                                 // transactionData = await dfEngine.withdraw(accountAddress, usdxToken.address, amountNB, {from: accountAddress});
-                                transactionData = await dfEngine.claim(accountAddress, new BN(0), {from: accountAddress});
+                                transactionData = await dfProtocol.claim(new BN(0), {from: accountAddress});
                                 claimGasUsed = claimGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : claimGasUsed;
                                 claimGasData[claimGasData.length] = transactionData.receipt.gasUsed;
                                 runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['gasUsed'] = transactionData.receipt.gasUsed;
                                 runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['result'] = 'success';
+                                runData['usdx_balance current'] = (await usdxToken.balanceOf.call(accountAddress)).toString();
+                                runData['claim amount'] = runData['usdx_balance current'] - runData['usdx_balance origin'];
                                 runData['gasUsed'] = transactionData.receipt.gasUsed;
                                 runData['result'] = 'success';
                                 runDataList[runDataList.length] = runData;
@@ -1386,6 +1400,8 @@ contract('DFEngine', accounts => {
                             catch (error) {
                                 runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['result'] = 'fail';
                                 runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['error'] = error.message;
+                                runData['usdx_balance current'] = (await usdxToken.balanceOf.call(accountAddress)).toString();
+                                runData['claim amount'] = runData['usdx_balance current'] - runData['usdx_balance origin'];
                                 runData['result'] = 'fail';
                                 runData['error'] = error.message;
                                 runDataList[runDataList.length] = runData;
@@ -1673,7 +1689,7 @@ contract('DFEngine', accounts => {
                             runData['tokens'] = tokenAddressIndex;
                             runData['weight'] = tokenWeightListNew;
                             try {
-                                transactionData = await dfEngine.updateMintSection(tokenAddressList, tokenWeightList);
+                                transactionData = await dfEngine.updateMintSection(tokenAddressList, tokenWeightList, {from: owner});
                                 updateGasUsed = updateGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : updateGasUsed;
                                 
                                 runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['gasUsed'] = transactionData.receipt.gasUsed;
@@ -1782,7 +1798,7 @@ contract('DFEngine', accounts => {
                             await dSGuard.forbidx(dfEngine.address, dfCollateral.address);
                             await dSGuard.forbidx(dfEngine.address, dfPool.address);
                             await dSGuard.forbidx(dfEngine.address, dfFunds.address);
-
+                            await dSGuard.forbidx(dfProtocol.address, dfEngine.address);
 
                             tokenAddress = tokenAddressList[MathTool.randomNum(0, tokenAddressList.length - 1)];
                             accountAddress = accounts[MathTool.randomNum(0, accounts.length - 1)];
@@ -1799,7 +1815,7 @@ contract('DFEngine', accounts => {
                             runData['amountNB'] = amountNB.toString();
                             runData[await collateralObject[tokenAddress].name.call() + ' balance'] = accountTokenBalanceOrigin.toString();
                             try {
-                                transactionData = await dfEngine.deposit(accountAddress, tokenAddress, new BN(0), amountNB, {from: accountAddress});
+                                transactionData = await dfProtocol.deposit(tokenAddress, new BN(0), amountNB, {from: accountAddress});
                                 depositGasUsed = depositGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : depositGasUsed;
                                 depositGasData[depositGasData.length] = transactionData.receipt.gasUsed;
 
@@ -1817,13 +1833,64 @@ contract('DFEngine', accounts => {
                                 runData['error'] = error.message;
                                 runDataList[runDataList.length] = runData;
                                 console.log(error.message + '\n');
-                                condition++;
-                                continue;
                             }
 
                             dfEngine = dfEngineNew;
+                            await dSGuard.permitx(dfProtocol.address, dfEngine.address);
+                            await dfProtocol.requestImplChange(dfEngine.address);
+                            await dfProtocol.confirmImplChange();
                             console.log('dfEngine new address : ' + dfEngine.address);
                             console.log('\n');
+                            condition++;
+                        }
+                        break;
+                    case runType == 'setMinBurnAmount':
+                        while (condition < runTimes){
+                            console.log('config : ' + (configIndex + 1) + ' dfEngine : ' + (dfEngineTimes + 1) + ' runType : ' + runType + ' runTimes ' + (condition + 1) + '\n');
+                            
+                            amount = MathTool.randomNum(1, 10) / 10;
+                            conditionIndex = condition % runConfig[configIndex]['data'][dfEngineIndex]['data'].length;
+                            if(runConfig[configIndex]['data'][dfEngineIndex].hasOwnProperty('data')){
+                    
+                                if (runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex].hasOwnProperty('amount')) {
+                                    
+                                    amount = runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['amount'];
+                                }
+                            }
+                            var amountNB = new BN(Number(amount * 10 ** 18).toLocaleString().replace(/,/g,''));
+                            console.log('min burn amount');
+                            console.log(amount);
+                            console.log(amount.toLocaleString().replace(/,/g,''));
+                            console.log(amountNB);
+                            console.log(amountNB.toString());
+                            console.log('\n');
+                            runData = {};
+                            runData['dfEngine'] = dfEngineTimes + 1;
+                            runData['runTimes'] = condition + 1;
+                            runData['type'] = runType;
+                            runData['amount'] = amount;
+                            runData['amountNB'] = amountNB.toString();
+                            try {
+                                transactionData = await dfEngine.setDestroyThreshold(amountNB, {from: owner});
+                                
+                                runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['gasUsed'] = transactionData.receipt.gasUsed;
+                                runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['result'] = 'success';
+                                runData['gasUsed'] = transactionData.receipt.gasUsed;
+                                runData['result'] = 'success';
+                                runDataList[runDataList.length] = runData;
+                                console.log('dfEngine ' + (dfEngineTimes + 1) + ' ' + runType + ' runTimes ' + (condition + 1) + ' gasUsed:' + transactionData.receipt.gasUsed + '\n');
+                            }
+                            catch (error) {
+                                runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['result'] = 'fail';
+                                runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['error'] = error.message;
+                                runData['result'] = 'fail';
+                                runData['error'] = error.message;
+                                runDataList[runDataList.length] = runData;
+                                console.log(error.message + '\n');
+                                condition++;
+                                continue;
+                            }
+                            condition++;
                         }
                         break;
                 }
