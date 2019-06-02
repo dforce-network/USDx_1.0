@@ -15,10 +15,10 @@ const USDx = artifacts.require('USDXToken.sol');
 // const USDx_Addr = "0x17996ea27d03d68ddc618f9b8f0faf43838acaf6";
 const DF_Addr = "0x4AF82b7C2F049574C9fc742A896DAbEA379b7d51";
 
-let daiW = new BN(Number(1 * 10 ** 18).toLocaleString().replace(/,/g, ''));
-let paxW = new BN(Number(3 * 10 ** 18).toLocaleString().replace(/,/g, ''));
-let tusdW = new BN(Number(3 * 10 ** 18).toLocaleString().replace(/,/g, ''));
-let usdcW = new BN(Number(3 * 10 ** 18).toLocaleString().replace(/,/g, ''));
+let daiW = new BN(Number(0.01 * 10 ** 18).toLocaleString().replace(/,/g, ''));
+let paxW = new BN(Number(0.03 * 10 ** 18).toLocaleString().replace(/,/g, ''));
+let tusdW = new BN(Number(0.03 * 10 ** 18).toLocaleString().replace(/,/g, ''));
+let usdcW = new BN(Number(0.03 * 10 ** 18).toLocaleString().replace(/,/g, ''));
 
 module.exports = async function (deployer, network, accounts) {
     await deployer.deploy(USDx, "0x6b6b00000000000000000000000000");
