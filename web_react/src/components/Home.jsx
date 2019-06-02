@@ -42,12 +42,12 @@ export default class Home extends React.Component {
     addressTUSD = '0x25470030aa105bca679752e5c5e482c295de2b68';
     addressUSDC = '0xbc34e50f589e389c507e0213501114bd2e70b1d7';
     addressDF = '0x4AF82b7C2F049574C9fc742A896DAbEA379b7d51';
-    addressUSDx = '0x8f3BFc1c0b1B4078f53a3cfbE1d445020d2A5509';
+    addressUSDx = '0x3f999E82746Dfe08429fe338E758846faEd3e8e5';
 
-    addressProtocol = '0x9A35766a47B71114AaCa15852B72768d2Ec55Cd0';
-    addressCollateral = '0x35D46686Da8Aa7f334079559A4e03be34AcfF5Da';
-    addressEngine = '0xD8f5ED3FD6606192d0316E23ba75AD193343841a';
-    addressPool = '0x226E8EfdF955f33fA4C530A6cD2334A637052973';
+    addressProtocol = '0x61F217204e51c9cb0A3B53f91c613d861e6f7c73';
+    addressCollateral = '0x4fBddab2840FdBC516fED97c116323B2c41999D4';
+    addressEngine = '0xf46c19780e49678224ff15C574eF563fEeAA3498';
+    addressPool = '0x23083Ed7a998dEAD08e26fdF6da369d27B121528';
     units = 10 ** 18;
     tatolSection = 0;
     tatolSectionBurning = 0;
