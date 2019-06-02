@@ -187,7 +187,7 @@ export default class Home extends React.Component {
                                     <p className="details">Select which constituent would you like to deposit ?</p>
                                     <div className="input">
                                         <input type="number" onChange={(val) => { this.depositNumChange(val.target.value) }} value={this.state.toDepositNum} />
-                                        <Select className="mySelect" defaultValue="DAI" onChange={(val) => { this.setState({ ...this.state, toDeposit: val })}}>
+                                        <Select className="mySelect" defaultValue="DAI" onChange={(val)=>{this.depositOptChange(val)}}>
                                             <Select.Option value="DAI">DAI</Select.Option>
                                             <Select.Option value="PAX">PAX</Select.Option>
                                             <Select.Option value="TUSD">TUSD</Select.Option>
@@ -314,7 +314,7 @@ export default class Home extends React.Component {
                                     <p className="details">Select which constituent would you like to withdraw ?</p>
                                     <div className="input">
                                         <input type="number" onChange={(val) => { this.withdrawNumChange(val.target.value) }} value={this.state.toWithdrawNum} />
-                                        <Select className="mySelect" defaultValue="DAI" onChange={(val) => { this.setState({ ...this.state, toWithdraw: val })}}>
+                                        <Select className="mySelect" defaultValue="DAI" onChange={(val)=>{this.withdrawOptChange(val)}}>
                                             <Select.Option value="DAI">DAI</Select.Option>
                                             <Select.Option value="PAX">PAX</Select.Option>
                                             <Select.Option value="TUSD">TUSD</Select.Option>
@@ -378,36 +378,7 @@ export default class Home extends React.Component {
                                 addressTUSD={this.addressTUSD}
                                 addressUSDC={this.addressUSDC}
                             />
-                            {/* <div className="history">
-                                <ul>
-                                    {
-                                        this.state.myHistory.map(
-                                            (item, index) => {
-                                                if (item.event === 'Deposit') {
-                                                    return <li key={index}>
-                                                        {item.timeStamp}***{item.event}
-                                                    </li>
-                                                }
-                                                if (item.event === 'Destroy') {
-                                                    return <li key={index}>
-                                                        {item.timeStamp}***{item.event}
-                                                    </li>
-                                                }
-                                                if (item.event === 'Claim') {
-                                                    return <li key={index}>
-                                                        {item.timeStamp}***{item.event}
-                                                    </li>
-                                                }
-                                                if (item.event === 'Withdraw') {
-                                                    return <li key={index}>
-                                                        {item.timeStamp}***{item.event}
-                                                    </li>
-                                                }
-                                            }
-                                        )
-                                    }
-                                </ul>
-                            </div> */}
+                            {/* <div className="history"></div> */}
                             </div>
                         <div className="clear"></div>
                     </div>
@@ -2378,6 +2349,20 @@ export default class Home extends React.Component {
             }
         }
     }
+    // depositOptChange
+    withdrawOptChange(token) {
+        this.setState({
+            ...this.state,
+            toWithdraw: token
+        })
+        
+        setTimeout(() => {
+            if (!this.state.toWithdrawNum) {
+                return;
+            }
+            this.withdrawNumChange(this.state.toWithdrawNum);
+        }, 500);
+    }
     // withdraw
     withdraw () {
         if (!this.state.couldWithdraw) {
@@ -2906,12 +2891,14 @@ export default class Home extends React.Component {
                 this.setState({
                     ...this.state,
                     couldDeposit: true,
+                    errTips: false,
                     toDepositNum: val
                 })
             } else {
                 this.setState({
                     ...this.state,
                     couldDeposit: false,
+                    errTips: true,
                     toDepositNum: val
                 })
             }
@@ -2922,12 +2909,14 @@ export default class Home extends React.Component {
                 this.setState({
                     ...this.state,
                     couldDeposit: true,
+                    errTips: false,
                     toDepositNum: val
                 })
             } else {
                 this.setState({
                     ...this.state,
                     couldDeposit: false,
+                    errTips: true,
                     toDepositNum: val
                 })
             }
@@ -2938,12 +2927,14 @@ export default class Home extends React.Component {
                 this.setState({
                     ...this.state,
                     couldDeposit: true,
+                    errTips: false,
                     toDepositNum: val
                 })
             } else {
                 this.setState({
                     ...this.state,
                     couldDeposit: false,
+                    errTips: true,
                     toDepositNum: val
                 })
             }
@@ -2954,12 +2945,14 @@ export default class Home extends React.Component {
                 this.setState({
                     ...this.state,
                     couldDeposit: true,
+                    errTips: false,
                     toDepositNum: val
                 })
             } else {
                 this.setState({
                     ...this.state,
                     couldDeposit: false,
+                    errTips: true,
                     toDepositNum: val
                 })
             }
@@ -3103,6 +3096,20 @@ export default class Home extends React.Component {
         //         }
         //     }
         // }
+    }
+    // depositOptChange
+    depositOptChange(token) {
+        this.setState({
+            ...this.state,
+            toDeposit: token
+        })
+        
+        setTimeout(() => {
+            if (!this.state.toDepositNum) {
+                return;
+            }
+            this.depositNumChange(this.state.toDepositNum);
+        }, 500);
     }
     // deposit
     deposit () {
