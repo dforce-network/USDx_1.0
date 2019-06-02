@@ -51,7 +51,7 @@ contract DFStore is DSMath, DSAuth {
 
     constructor(address[] memory _colIDs, uint[] memory _weights) public {
         _setSection(_colIDs, _weights);
-        setMinBurnAmout(10 ** 9);
+        setMinBurnAmount(10 ** 9);
     }
 
     function getSectionMinted(uint _position) public view returns (uint) {
@@ -261,11 +261,11 @@ contract DFStore is DSMath, DSAuth {
         totalBurned = _amount;
     }
 
-    function getMinBurnAmout() public view returns (uint) {
+    function getMinBurnAmount() public view returns (uint) {
         return minimalBurnAmount;
     }
 
-    function setMinBurnAmout(uint _amount) public auth {
+    function setMinBurnAmount(uint _amount) public auth {
         minimalBurnAmount = _amount;
     }
 
