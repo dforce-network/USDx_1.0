@@ -186,6 +186,15 @@ module.exports = async function (deployer, network, accounts) {
         perror("contarctEngine.setCommissionToken")
     })
 
+    //Set destroy usdx threshold ==> 0.01
+    let th = new BN(Number(0.01 * 10 ** 18).toLocaleString().replace(/,/g, ''));
+    await contarctEngine.setDestroyThreshold.sendTransaction(th).then(result => {
+        print("contarctEngine.setDestroyThreshold");
+        printTx(result.tx);
+    }).catch(error => {
+        perror("contarctEngine.setDestroyThreshold")
+    })
+
     //Set DF medianizer
     await contarctEngine.setCommissionMedian.sendTransaction(DF_Addr, contractMedianizer.address).then(result => {
         print("contarctEngine.setCommissionMedian");
