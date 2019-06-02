@@ -27,7 +27,7 @@ const DataMethod = require('./helpers/DataMethod');
 // var weightTest = new Array(4, 3, 2, 1);
 // var weightTest = new Array(10, 30, 30, 30);
 
-var runTypeArr = new Array('deposit', 'destroy', 'withdraw', 'claim', 'updateSection');
+var runTypeArr = new Array('deposit', 'destroy', 'withdraw', 'claim', 'updateSection', 'changeEngine');
 var runUpdateSection = 20;
 var runDataList = [];
 var runData = {};
@@ -289,7 +289,7 @@ contract('DFEngine', accounts => {
                 dfEngineIndex = dfEngineTimes % runConfig[configIndex]['data'].length;
                 runType = runConfig[configIndex]['data'][dfEngineIndex].hasOwnProperty('type') ? 
                     runConfig[configIndex]['data'][dfEngineIndex]['type'] : 
-                    (dfEngineTimes > 0 && (dfEngineTimes % runUpdateSection) == 0  ? runTypeArr[runTypeArr.length - 1] : runTypeArr[MathTool.randomNum(0, runTypeArr.length - 2)]);
+                    (dfEngineTimes > 0 && (dfEngineTimes % runUpdateSection) == 0  ? runTypeArr[4] : runTypeArr[MathTool.randomNum(0, 3)]);
 
                 var runTimes = 1;
                 if(runConfig[configIndex]['data'][dfEngineIndex].hasOwnProperty('data')){
@@ -788,7 +788,7 @@ contract('DFEngine', accounts => {
                             runData['runTimes'] = condition + 1;
                             runData['type'] = runType;
                             runData['accountAddress'] = accounts.indexOf(accountAddress) + 1;
-                            runData['amount'] = amountNB.div(new BN(Number(10 ** 18).toLocaleString().replace(/,/g,''))).toString();
+                            runData['amount'] = amount / 10 ** 8;
                             runData['amountNB'] = amountNB.toString();
                             runData['usdx balance'] = usdxBalanceOrigin.toString();
                             try {
@@ -1128,7 +1128,7 @@ contract('DFEngine', accounts => {
                             runData['type'] = runType;
                             runData['tokenAddress'] = collateralAddress.indexOf(tokenAddress) + 1;
                             runData['accountAddress'] = accounts.indexOf(accountAddress) + 1;
-                            runData['amount'] = amountNB.div(new BN(Number(10 ** 18).toLocaleString().replace(/,/g,''))).toString();
+                            runData['amount'] = amount / 10 ** 18;
                             runData['amountNB'] = amountNB.toString();
                             runData['depositor balance'] = dfStoreAccountTokenOrigin.toString();
                             try {
@@ -1741,6 +1741,89 @@ contract('DFEngine', accounts => {
                                     assert.equal(await dfStore.getMintingToken.call(collateralAddress[index]), false);
                             }
                             condition++;
+                        }
+                        break;
+                    case runType == 'changeEngine':
+                        while (condition < runTimes){
+                            console.log('config : ' + (configIndex + 1) + ' dfEngine : ' + (dfEngineTimes + 1) + ' runType : ' + runType + ' runTimes ' + (condition + 1) + '\n');
+                            
+                            console.log('dfEngine address : ' + dfEngine.address);
+                            console.log('\n');
+
+                            dfEngineNew = await DFEngine.new(
+                                usdxToken.address,
+                                // dfToken.address,
+                                dfStore.address,
+                                dfPool.address,
+                                dfCollateral.address,
+                                dfFunds.address,
+                                // medianizer.address
+                                );
+
+                            await usdxToken.setAuthority(dfEngineNew.address);
+                            await dfToken.setAuthority(dfEngineNew.address);
+                            await dfStore.setAuthority(dSGuard.address);
+                            await dfCollateral.setAuthority(dSGuard.address);
+                            await dfPool.setAuthority(dSGuard.address);
+                            await dfFunds.setAuthority(dSGuard.address);
+                            await dfEngineNew.setAuthority(dSGuard.address);
+                            
+                            await dSGuard.permitx(dfEngineNew.address, dfStore.address);
+                            await dSGuard.permitx(dfEngineNew.address, dfCollateral.address);
+                            await dSGuard.permitx(dfEngineNew.address, dfPool.address);
+                            await dSGuard.permitx(dfEngineNew.address, dfFunds.address);
+                
+                            await dfEngineNew.setCommissionToken(0, dfToken.address);
+                            await dfEngineNew.setCommissionMedian(dfToken.address, medianizer.address);
+                            await dfEngineNew.setCommissionRate(0, 0);
+                            await dfEngineNew.setCommissionRate(1, 50);
+
+                            await dSGuard.forbidx(dfEngine.address, dfStore.address);
+                            await dSGuard.forbidx(dfEngine.address, dfCollateral.address);
+                            await dSGuard.forbidx(dfEngine.address, dfPool.address);
+                            await dSGuard.forbidx(dfEngine.address, dfFunds.address);
+
+
+                            tokenAddress = tokenAddressList[MathTool.randomNum(0, tokenAddressList.length - 1)];
+                            accountAddress = accounts[MathTool.randomNum(0, accounts.length - 1)];
+                            amount = MathTool.randomNum(1, 5);
+                            var amountNB = new BN(Number(amount * 10 ** 18).toLocaleString().replace(/,/g,''));
+                            runData = {};
+                            runData['dfEngine'] = dfEngineTimes + 1;
+                            runData['runTimes'] = condition + 1;
+                            runData['type'] = runType;
+                            runData['testType'] = 'deposit';
+                            runData['tokenAddress'] = collateralAddress.indexOf(tokenAddress) + 1;
+                            runData['accountAddress'] = accounts.indexOf(accountAddress) + 1;
+                            runData['amount'] = amount;
+                            runData['amountNB'] = amountNB.toString();
+                            runData[await collateralObject[tokenAddress].name.call() + ' balance'] = accountTokenBalanceOrigin.toString();
+                            try {
+                                transactionData = await dfEngine.deposit(accountAddress, tokenAddress, new BN(0), amountNB, {from: accountAddress});
+                                depositGasUsed = depositGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : depositGasUsed;
+                                depositGasData[depositGasData.length] = transactionData.receipt.gasUsed;
+
+                                runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['gasUsed'] = transactionData.receipt.gasUsed;
+                                runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['result'] = 'success';
+                                runData['gasUsed'] = transactionData.receipt.gasUsed;
+                                runData['result'] = 'success';
+                                runDataList[runDataList.length] = runData;
+                                console.log('dfEngine ' + (dfEngineTimes + 1) + ' ' + runType + ' runTimes ' + (condition + 1) + ' gasUsed:' + transactionData.receipt.gasUsed + '\n');
+                            }
+                            catch (error) {
+                                runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['result'] = 'fail';
+                                runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['error'] = error.message;
+                                runData['result'] = 'fail';
+                                runData['error'] = error.message;
+                                runDataList[runDataList.length] = runData;
+                                console.log(error.message + '\n');
+                                condition++;
+                                continue;
+                            }
+
+                            dfEngine = dfEngineNew;
+                            console.log('dfEngine new address : ' + dfEngine.address);
+                            console.log('\n');
                         }
                         break;
                 }
