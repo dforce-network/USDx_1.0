@@ -95,6 +95,7 @@ export default class Home extends React.Component {
 
         this.contractProtocol.allEvents({ toBlock: 'latest' }).watch((error, result) => {
             console.log(error, result);
+
             if (result && result.args._sender === this.state.accountAddress) {
                 var itemHistory = result;
                 itemHistory.timeStamp = new Date().getTime();
@@ -858,6 +859,14 @@ export default class Home extends React.Component {
 
     // check approve
     checkApprove () {
+        this.setState({
+            ...this.state,
+            approvedDAI: false,
+            approvedPAX: false,
+            approvedTUSD: false,
+            approvedUSDC: false
+        });
+
         this.contractDAI.allowance.call(this.state.accountAddress, this.addressPool, (err, ret) => {
             if (err) {
                 this.setState({
