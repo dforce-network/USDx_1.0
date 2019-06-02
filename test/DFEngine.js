@@ -21,11 +21,11 @@ const MathTool = require('./helpers/MathTool');
 const DataMethod = require('./helpers/DataMethod');
 
 // var collateralNames = new Array('DAI', 'PAX', 'TUSD', 'USDC', 'DAITEST', 'PAXTEST', 'TUSDTEST', 'USDCTEST');
-var collateralNames = new Array('DAI', 'PAX', 'TUSD', 'USDC');
+// var collateralNames = new Array('DAI', 'PAX', 'TUSD', 'USDC');
 
 // var weightTest = new Array(10, 20, 30, 40, 50, 60, 70, 80, 90, 100);
 // var weightTest = new Array(4, 3, 2, 1);
-var weightTest = new Array(10, 30, 30, 30);
+// var weightTest = new Array(10, 30, 30, 30);
 
 var runTypeArr = new Array('deposit', 'destroy', 'withdraw', 'claim', 'updateSection');
 var runUpdateSection = 20;
@@ -33,94 +33,6 @@ var runDataList = [];
 var runData = {};
 
 contract('DFEngine', accounts => {
-// type:'deposit', 'destroy', 'withdraw', 'updateSection', 'claim'
-// tokenAddress 1~4
-// accountAddress 1~20
-// total true: 全部 false:参数无效
-// times 执行次数，如果无此参数则按照data配置种类各执行一次。
-// data 具体执行方式，如需插入随机模式可以，添加{}
-// 各项配置如不填写，测采用随机模式执行
-var runConfig = [ 
-    {
-        // 'times':150, 
-        'data':[
-            {
-                'type':'deposit',
-                // 'times':100,
-                'data':[
-                    {
-                        'tokenAddress':1,
-                        'accountAddress':1,
-                        'amount':11,
-                    },
-                    {
-                        'tokenAddress':2,
-                        'accountAddress':1,
-                        'amount':31,
-                    },
-                    {
-                        'tokenAddress':3,
-                        'accountAddress':1,
-                        'amount':31,
-                    },
-                    {
-                        'tokenAddress':4,
-                        'accountAddress':2,
-                        'amount':31,
-                    },
-                    {
-                        'tokenAddress':2,
-                        'accountAddress':2,
-                        'amount':10,
-                    },
-                    {
-                        'tokenAddress':3,
-                        'accountAddress':2,
-                        'amount':10,
-                    },
-                    {
-                        'tokenAddress':4,
-                        'accountAddress':2,
-                        'amount':3,
-                    },
-                    {
-                        'tokenAddress':4,
-                        'accountAddress':4,
-                        'amount':28,
-                    },
-                ]
-            },
-            // {
-            //     'type':'claim',
-            //     'data':[
-            //         // {
-            //         // 'accountAddress':1
-            //         // },
-            //         {
-            //             'accountAddress':2
-            //             },
-            //             {
-            //                 'accountAddress':3
-            //                 },
-            //                 {
-            //                     'accountAddress':4
-            //                     },
-            //     ]
-            // },
-            // {
-            //     'type':'withdraw',
-            //     'data':[
-            //         {
-            //             'tokenAddress':3,
-            //             'accountAddress':1,
-            //             'amount':13,
-            //         }
-            //     ]
-            // }
-        ],      
-    },
-      
-];
     
     for (let configIndex = 0; configIndex < runConfig.length; configIndex++) {
         
@@ -444,7 +356,7 @@ var runConfig = [
                             // console.log('dfEngine ' + (dfEngineTimes + 1) + ' ' + runType + ' runTimes ' + (condition + 1) + ' gasUsed:' + transactionData.receipt.gasUsed + '\n');
 
                             usdxBalanceOrigin = await usdxToken.balanceOf.call(accountAddress);
-                            calcDepositorMintTotal = await dfEngine.calcDepositorMintTotal.call(accountAddress, tokenAddress, amountNB, {from: accountAddress});
+                            calcDepositorMintTotal = await dfEngine.getDepositMaxMint.call(accountAddress, tokenAddress, amountNB, {from: accountAddress});
                             runData = {};
                             runData['dfEngine'] = dfEngineTimes + 1;
                             runData['runTimes'] = condition + 1;
@@ -1423,7 +1335,7 @@ var runConfig = [
                             usdxTotalSupplyOrigin = await usdxToken.totalSupply.call();
                             usdxBalanceOrigin = await usdxToken.balanceOf.call(accountAddress);
                             usdxBalanceOfDfPool = await usdxToken.balanceOf.call(dfPool.address);
-                            calcMaxClaimAmount = await dfEngine.calcMaxClaimAmount.call(accountAddress);
+                            calcMaxClaimAmount = await dfEngine.getMaxToClaim.call(accountAddress);
                             
                             console.log('dfStore origin lock token total:');
                             console.log(dfStoreLockTokenBalance);

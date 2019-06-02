@@ -42,6 +42,8 @@ contract IDFStore {
     function getTotalBurned() public view returns (uint);
     function addTotalBurned(uint _amount) public;
     function setTotalBurned(uint _amount) public;
+    function getMinBurnAmout() public view returns (uint);
+    function setMinBurnAmout(uint _amount) public;
 
     function getTokenBalance(address _tokenID) public view returns (uint);
     function setTokenBalance(address _tokenID, uint _amount) public;

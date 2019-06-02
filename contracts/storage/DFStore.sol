@@ -37,6 +37,9 @@ contract DFStore is DSMath, DSAuth {
     /// @dev  The total amount of burned.
     uint private totalBurned;
 
+    /// @dev  The minimal amount of burned.
+    uint private minimalBurnAmount;
+
     mapping(uint => uint) public FeeRate;
     mapping(uint => address) public FeeToken;
     mapping(address => address) public TokenMedian;
@@ -48,6 +51,7 @@ contract DFStore is DSMath, DSAuth {
 
     constructor(address[] memory _colIDs, uint[] memory _weights) public {
         _setSection(_colIDs, _weights);
+        setMinBurnAmout(10 ** 9);
     }
 
     function getSectionMinted(uint _position) public view returns (uint) {
@@ -255,6 +259,14 @@ contract DFStore is DSMath, DSAuth {
 
     function setTotalBurned(uint _amount) public auth {
         totalBurned = _amount;
+    }
+
+    function getMinBurnAmout() public view returns (uint) {
+        return minimalBurnAmount;
+    }
+
+    function setMinBurnAmout(uint _amount) public auth {
+        minimalBurnAmount = _amount;
     }
 
     function getTokenBalance(address _tokenID) public view returns (uint) {
