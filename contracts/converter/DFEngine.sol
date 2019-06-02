@@ -76,8 +76,8 @@ contract DFEngine is DSMath, DSAuth {
     }
 
     //set minimal amount of burned.
-    function setMinBurnAmout(uint _amount) public auth {
-        dfStore.setMinBurnAmout(_amount);
+    function setMinBurnAmount(uint _amount) public auth {
+        dfStore.setMinBurnAmount(_amount);
     }
 
     function updateMintSection(address[] memory _tokens, uint[] memory _weight) public auth {
@@ -215,7 +215,7 @@ contract DFEngine is DSMath, DSAuth {
     }
 
     function destroy(address _depositor, uint _feeTokenIdx, uint _amount) public auth returns (bool) {
-        require(_amount > dfStore.getMinBurnAmout(), "Destroy: amount not correct.");
+        require(_amount > dfStore.getMinBurnAmount(), "Destroy: amount not correct.");
         require(_amount <= usdxToken.balanceOf(_depositor), "Destroy: exceed max USDX balance.");
         require(_amount <= sub(dfStore.getTotalMinted(), dfStore.getTotalBurned()), "Destroy: not enough to burn.");
         address[] memory _tokens;
