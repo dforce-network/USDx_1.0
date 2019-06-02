@@ -20,7 +20,8 @@ var storeABI = [{
     ],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x344fbe82"
   },
   {
     "constant": true,
@@ -35,7 +36,8 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x647aa298"
   },
   {
     "constant": true,
@@ -55,7 +57,8 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x664b013c"
   },
   {
     "constant": true,
@@ -70,7 +73,8 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x699a6ec4"
   },
   {
     "constant": true,
@@ -85,7 +89,8 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x7241dfa0"
   },
   {
     "constant": true,
@@ -100,7 +105,8 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x74e4a578"
   },
   {
     "constant": false,
@@ -109,7 +115,8 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0x79ba5097"
   },
   {
     "constant": false,
@@ -121,7 +128,8 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0x7a9e5e4b"
   },
   {
     "constant": true,
@@ -136,7 +144,8 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x89751fd9"
   },
   {
     "constant": true,
@@ -148,7 +157,8 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x8da5cb5b"
   },
   {
     "constant": true,
@@ -163,7 +173,8 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x9a4dffd9"
   },
   {
     "constant": true,
@@ -187,7 +198,8 @@ var storeABI = [{
     ],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0xad7138d3"
   },
   {
     "constant": true,
@@ -199,7 +211,8 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0xbf7e214f"
   },
   {
     "constant": true,
@@ -214,7 +227,8 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0xc51aa09b"
   },
   {
     "constant": true,
@@ -226,7 +240,8 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0xd4ee1d90"
   },
   {
     "constant": true,
@@ -241,7 +256,8 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0xd6e14cd2"
   },
   {
     "constant": true,
@@ -256,7 +272,8 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0xdaeb285b"
   },
   {
     "constant": false,
@@ -268,7 +285,8 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0xf2fde38b"
   },
   {
     "inputs": [{
@@ -282,7 +300,8 @@ var storeABI = [{
     ],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "constructor"
+    "type": "constructor",
+    "signature": "constructor"
   },
   {
     "anonymous": false,
@@ -298,7 +317,8 @@ var storeABI = [{
       }
     ],
     "name": "UpdateSection",
-    "type": "event"
+    "type": "event",
+    "signature": "0x69b498e975f93232bd0bd7fa4fde9063c08e4a452f87f8612fa6777c7951001d"
   },
   {
     "anonymous": false,
@@ -308,7 +328,8 @@ var storeABI = [{
       "type": "address"
     }],
     "name": "LogSetAuthority",
-    "type": "event"
+    "type": "event",
+    "signature": "0x1abebea81bfa2637f28358c371278fb15ede7ea8dd28d2e03b112ff6d936ada4"
   },
   {
     "anonymous": false,
@@ -318,7 +339,8 @@ var storeABI = [{
       "type": "address"
     }],
     "name": "LogSetOwner",
-    "type": "event"
+    "type": "event",
+    "signature": "0xce241d7ca1f669fee44b6fc00b8eba2df3bb514eed0f6f668f8f89096e81ed94"
   },
   {
     "anonymous": false,
@@ -334,7 +356,8 @@ var storeABI = [{
       }
     ],
     "name": "OwnerUpdate",
-    "type": "event"
+    "type": "event",
+    "signature": "0x343765429aea5a34b3ff6a3785a98a5abb2597aca87bfbb58632c173d585373a"
   },
   {
     "constant": true,
@@ -349,7 +372,8 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x8d7bde49"
   },
   {
     "constant": false,
@@ -361,7 +385,8 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0xc4c731df"
   },
   {
     "constant": false,
@@ -378,7 +403,8 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0x40806844"
   },
   {
     "constant": false,
@@ -390,7 +416,8 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0x6dbd4a77"
   },
   {
     "constant": false,
@@ -407,7 +434,8 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0xee026808"
   },
   {
     "constant": true,
@@ -422,7 +450,21 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0xe3cc8414"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+      "name": "_amount",
+      "type": "uint256"
+    }],
+    "name": "addSectionBurned",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0xc58c74c2"
   },
   {
     "constant": false,
@@ -439,19 +481,8 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [{
-      "name": "_amount",
-      "type": "uint256"
-    }],
-    "name": "addSectionBurned",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0x3e989950"
   },
   {
     "constant": false,
@@ -468,7 +499,8 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0xad353a97"
   },
   {
     "constant": false,
@@ -480,7 +512,8 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0x151b7b86"
   },
   {
     "constant": true,
@@ -495,7 +528,8 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0xb811a25f"
   },
   {
     "constant": true,
@@ -510,7 +544,8 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x56cd885e"
   },
   {
     "constant": true,
@@ -542,7 +577,8 @@ var storeABI = [{
     ],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0xd648703c"
   },
   {
     "constant": true,
@@ -566,7 +602,8 @@ var storeABI = [{
     ],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x9a10ddc5"
   },
   {
     "constant": true,
@@ -581,7 +618,8 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0xffb629be"
   },
   {
     "constant": false,
@@ -598,7 +636,8 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0xda1998cc"
   },
   {
     "constant": false,
@@ -615,7 +654,8 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0x3bdfdb53"
   },
   {
     "constant": false,
@@ -636,7 +676,8 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0x8305f078"
   },
   {
     "constant": false,
@@ -645,7 +686,8 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0xe8974efc"
   },
   {
     "constant": true,
@@ -660,7 +702,8 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x23165430"
   },
   {
     "constant": false,
@@ -677,7 +720,8 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0xddd18f2e"
   },
   {
     "constant": true,
@@ -692,7 +736,8 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0xd699e472"
   },
   {
     "constant": false,
@@ -709,7 +754,8 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0x2514867c"
   },
   {
     "constant": true,
@@ -724,7 +770,8 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x8a2966c0"
   },
   {
     "constant": false,
@@ -741,7 +788,8 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0xf39b75da"
   },
   {
     "constant": true,
@@ -753,7 +801,8 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x19a0b41b"
   },
   {
     "constant": true,
@@ -765,7 +814,8 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x69112246"
   },
   {
     "constant": true,
@@ -777,7 +827,8 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x590ee16d"
   },
   {
     "constant": true,
@@ -789,7 +840,8 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x0ca1c5c9"
   },
   {
     "constant": false,
@@ -801,7 +853,8 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0x27ef91da"
   },
   {
     "constant": false,
@@ -813,7 +866,8 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0x16dbf906"
   },
   {
     "constant": true,
@@ -825,7 +879,8 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0xb55cd04b"
   },
   {
     "constant": false,
@@ -837,7 +892,8 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0x93f0f55a"
   },
   {
     "constant": false,
@@ -849,7 +905,34 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0x553b3d29"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getMinBurnAmount",
+    "outputs": [{
+      "name": "",
+      "type": "uint256"
+    }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "signature": "0xcce9362e"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+      "name": "_amount",
+      "type": "uint256"
+    }],
+    "name": "setMinBurnAmount",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x9ab8e6d2"
   },
   {
     "constant": true,
@@ -864,7 +947,8 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x3aecd0e3"
   },
   {
     "constant": false,
@@ -881,7 +965,8 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0x4ceb1f13"
   },
   {
     "constant": true,
@@ -896,7 +981,8 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x4677a7ba"
   },
   {
     "constant": false,
@@ -913,7 +999,8 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0xfb2169c5"
   },
   {
     "constant": true,
@@ -933,7 +1020,8 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0xcec3449a"
   },
   {
     "constant": false,
@@ -954,7 +1042,8 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0x59168e78"
   },
   {
     "constant": false,
@@ -971,7 +1060,8 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0xf2d2a751"
   },
   {
     "constant": true,
@@ -986,7 +1076,8 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0xd2aaef4e"
   },
   {
     "constant": false,
@@ -1003,7 +1094,8 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0x547bebb9"
   },
   {
     "constant": true,
@@ -1018,7 +1110,8 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0xdd8dee97"
   },
   {
     "constant": false,
@@ -1035,7 +1128,8 @@ var storeABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0xbfa4169b"
   },
   {
     "constant": true,
@@ -1050,6 +1144,7 @@ var storeABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0xdcc3a9d4"
   }
 ];

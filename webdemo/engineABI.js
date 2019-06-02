@@ -8,7 +8,8 @@ var engineABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x06c215ac"
   },
   {
     "constant": true,
@@ -20,7 +21,8 @@ var engineABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x3a25a1a6"
   },
   {
     "constant": true,
@@ -32,7 +34,8 @@ var engineABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x3cefae82"
   },
   {
     "constant": true,
@@ -44,7 +47,8 @@ var engineABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x473d18a7"
   },
   {
     "constant": false,
@@ -53,7 +57,8 @@ var engineABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0x79ba5097"
   },
   {
     "constant": false,
@@ -65,7 +70,8 @@ var engineABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0x7a9e5e4b"
   },
   {
     "constant": true,
@@ -77,7 +83,8 @@ var engineABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x8da5cb5b"
   },
   {
     "constant": true,
@@ -89,7 +96,8 @@ var engineABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x9798e39e"
   },
   {
     "constant": true,
@@ -101,7 +109,8 @@ var engineABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0xbf7e214f"
   },
   {
     "constant": true,
@@ -113,7 +122,8 @@ var engineABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0xc4d6a2f2"
   },
   {
     "constant": true,
@@ -125,7 +135,8 @@ var engineABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0xd4ee1d90"
   },
   {
     "constant": false,
@@ -137,7 +148,8 @@ var engineABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0xf2fde38b"
   },
   {
     "inputs": [{
@@ -163,7 +175,8 @@ var engineABI = [{
     ],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "constructor"
+    "type": "constructor",
+    "signature": "constructor"
   },
   {
     "anonymous": false,
@@ -173,7 +186,8 @@ var engineABI = [{
       "type": "address"
     }],
     "name": "LogSetAuthority",
-    "type": "event"
+    "type": "event",
+    "signature": "0x1abebea81bfa2637f28358c371278fb15ede7ea8dd28d2e03b112ff6d936ada4"
   },
   {
     "anonymous": false,
@@ -183,7 +197,8 @@ var engineABI = [{
       "type": "address"
     }],
     "name": "LogSetOwner",
-    "type": "event"
+    "type": "event",
+    "signature": "0xce241d7ca1f669fee44b6fc00b8eba2df3bb514eed0f6f668f8f89096e81ed94"
   },
   {
     "anonymous": false,
@@ -199,7 +214,8 @@ var engineABI = [{
       }
     ],
     "name": "OwnerUpdate",
-    "type": "event"
+    "type": "event",
+    "signature": "0x343765429aea5a34b3ff6a3785a98a5abb2597aca87bfbb58632c173d585373a"
   },
   {
     "constant": false,
@@ -216,7 +232,8 @@ var engineABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0xcf7aae5d"
   },
   {
     "constant": false,
@@ -233,7 +250,8 @@ var engineABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0x18cb7580"
   },
   {
     "constant": false,
@@ -250,7 +268,21 @@ var engineABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0x9057d0ba"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+      "name": "_amount",
+      "type": "uint256"
+    }],
+    "name": "setDestroyThreshold",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0xedd27b8f"
   },
   {
     "constant": true,
@@ -265,7 +297,8 @@ var engineABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x41976e09"
   },
   {
     "constant": false,
@@ -282,7 +315,8 @@ var engineABI = [{
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0xbb051654"
   },
   {
     "constant": false,
@@ -310,7 +344,8 @@ var engineABI = [{
     }],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0x20e8c565"
   },
   {
     "constant": false,
@@ -338,7 +373,8 @@ var engineABI = [{
     }],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0x7bfe950c"
   },
   {
     "constant": false,
@@ -362,7 +398,8 @@ var engineABI = [{
     }],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0xb2705d83"
   },
   {
     "constant": false,
@@ -382,7 +419,8 @@ var engineABI = [{
     }],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0xaad3ec96"
   },
   {
     "constant": false,
@@ -406,7 +444,8 @@ var engineABI = [{
     }],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0xfa0284ce"
   },
   {
     "constant": true,
@@ -423,14 +462,15 @@ var engineABI = [{
         "type": "uint256"
       }
     ],
-    "name": "calcDepositorMintTotal",
+    "name": "getDepositMaxMint",
     "outputs": [{
       "name": "",
       "type": "uint256"
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x0e4a0153"
   },
   {
     "constant": true,
@@ -438,19 +478,20 @@ var engineABI = [{
       "name": "_depositor",
       "type": "address"
     }],
-    "name": "calcMaxClaimAmount",
+    "name": "getMaxToClaim",
     "outputs": [{
       "name": "",
       "type": "uint256"
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0xa89edf28"
   },
   {
     "constant": true,
     "inputs": [],
-    "name": "calClaimMenu",
+    "name": "getCollateralMaxClaim",
     "outputs": [{
         "name": "",
         "type": "address[]"
@@ -462,12 +503,13 @@ var engineABI = [{
     ],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x2adee101"
   },
   {
     "constant": true,
     "inputs": [],
-    "name": "getMintingMenu",
+    "name": "getMintingSection",
     "outputs": [{
         "name": "",
         "type": "address[]"
@@ -479,12 +521,13 @@ var engineABI = [{
     ],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x3b955ea9"
   },
   {
     "constant": true,
     "inputs": [],
-    "name": "getBurningMenu",
+    "name": "getBurningSection",
     "outputs": [{
         "name": "",
         "type": "address[]"
@@ -496,7 +539,8 @@ var engineABI = [{
     ],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x8c4d3e1a"
   },
   {
     "constant": true,
@@ -504,7 +548,7 @@ var engineABI = [{
       "name": "_depositor",
       "type": "address"
     }],
-    "name": "getWithdrawDetails",
+    "name": "getWithdrawBalances",
     "outputs": [{
         "name": "",
         "type": "address[]"
@@ -516,7 +560,8 @@ var engineABI = [{
     ],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0xe6ebb087"
   },
   {
     "constant": true,
@@ -531,7 +576,8 @@ var engineABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x91492956"
   },
   {
     "constant": true,
@@ -546,6 +592,20 @@ var engineABI = [{
     }],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0xe29f1758"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getDestroyThreshold",
+    "outputs": [{
+      "name": "",
+      "type": "uint256"
+    }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "signature": "0x028e1161"
   }
 ];
