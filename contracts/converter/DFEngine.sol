@@ -59,6 +59,11 @@ contract DFEngine is DSMath, DSAuth {
         dfStore.setTokenMedian(_tokenID, _median);
     }
 
+    //set destroy threshold of minimal usdx.
+    function setDestroyThreshold(uint _amount) public auth {
+        dfStore.setMinBurnAmount(_amount);
+    }
+
     function getPrice(address oracle) public view returns (uint) {
         bytes32 price = IMedianizer(oracle).read();
         return uint(price);
@@ -73,11 +78,6 @@ contract DFEngine is DSMath, DSAuth {
             uint dfFee = div(mul(mul(_amount, rate), WAD), mul(10000, dfPrice));
             IDSToken(_token).transferFrom(depositor, address(dfFunds), dfFee);
         }
-    }
-
-    //set minimal amount of burned.
-    function setMinBurnAmount(uint _amount) public auth {
-        dfStore.setMinBurnAmount(_amount);
     }
 
     function updateMintSection(address[] memory _tokens, uint[] memory _weight) public auth {
@@ -418,6 +418,10 @@ contract DFEngine is DSMath, DSAuth {
 
     function getFeeRateByID(uint typeID) public view returns (uint) {
         return dfStore.getFeeRate(typeID);
+    }
+
+    function getDestroyThreshold() public view returns (uint) {
+        return dfStore.getMinBurnAmount();
     }
 
     function calcWithdrawAmount(address _depositor, address _tokenID) internal view returns (uint) {

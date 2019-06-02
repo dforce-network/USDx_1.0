@@ -13,4 +13,5 @@ contract IDFEngine {
     function getWithdrawBalances() public returns(address[] memory, uint[] memory);
     function getPrices(uint typeID) public returns (uint);
     function getFeeRateByID(uint typeID) public returns (uint);
+    function getDestroyThreshold() public view returns (uint);
 }
