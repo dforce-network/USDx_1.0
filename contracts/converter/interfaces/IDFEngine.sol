@@ -10,7 +10,7 @@ contract IDFEngine {
     function getCollateralMaxClaim() public returns (address[] memory, uint[] memory);
     function getMintingSection() public returns(address[] memory, uint[] memory);
     function getBurningSection() public returns(address[] memory, uint[] memory);
-    function getWithdrawBalances() public returns(address[] memory, uint[] memory);
+    function getWithdrawBalances(address _depositor) public returns(address[] memory, uint[] memory);
     function getPrices(uint typeID) public returns (uint);
     function getFeeRateByID(uint typeID) public returns (uint);
     function getDestroyThreshold() public view returns (uint);
