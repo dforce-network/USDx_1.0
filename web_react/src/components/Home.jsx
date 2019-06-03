@@ -2419,12 +2419,12 @@ export default class Home extends React.Component {
     }
     // withdrawDAI
     withdrawDAI (addr, num) {
-        const keys = Object.keys(this.state.transcations);
-        for (var i = 0; i < keys.length; i++) {
-            if (this.state.transcations[keys[i]].title === 'Withdraw DAI') {
-                return;
-            }
-        }
+        // const keys = Object.keys(this.state.transcations);
+        // for (var i = 0; i < keys.length; i++) {
+        //     if (this.state.transcations[keys[i]].title === 'Withdraw DAI') {
+        //         return;
+        //     }
+        // }
         const id = Math.random();
         const msg = 'Waiting for transaction signature...';
         const tmepState = this.state;
@@ -2432,7 +2432,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Withdraw DAI',
+            title: 'Withdraw ' + num / (10 ** 10) / (10 ** 8) + ' DAI',
         }
         this.setState({tmepState});
         this.contractProtocol.withdraw.sendTransaction(
@@ -2448,10 +2448,11 @@ export default class Home extends React.Component {
                     const keys = Object.keys(this.state.transcations);
                     const tmepState = this.state;
                     keys.map((key) => {
-                        if (tmepState.transcations[key].title === 'Withdraw DAI') {
+                        if (tmepState.transcations[key].id === id) {
                             tmepState.transcations[key] = {
                                 ...tmepState.transcations[key],
-                                class: 'error'
+                                class: 'error',
+                                msg: 'User reject'
                             }
                             this.setState({tmepState});
 
@@ -2468,7 +2469,7 @@ export default class Home extends React.Component {
                     const tmepState = this.state;
 
                     keys.map((key) => {
-                        if (tmepState.transcations[key].title === 'Withdraw DAI') {
+                        if (tmepState.transcations[key].id === id) {
                             tmepState.transcations[key].txhash = ret;
                             tmepState.transcations[key] = {
                                 ...tmepState.transcations[key],
@@ -2479,11 +2480,13 @@ export default class Home extends React.Component {
                         return false;
                     });
 
-                    var withdrawDAItimer = setInterval(() => {
-                        console.log('i am checking withdraw DAI...');
+                    var timerOBJ = {};
+                    var tempRnum = Math.random();
+                    timerOBJ[tempRnum] = setInterval(() => {
+                        console.log('i am checking withdraw DAI... =>' + tempRnum);
                         this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
                             if (data && data.status === '0x1') {
-                                clearInterval(withdrawDAItimer);
+                                clearInterval(timerOBJ[tempRnum]);
                                 const keys = Object.keys(this.state.transcations);
                                 const tmepState = this.state;
                                 keys.map((key) => {
@@ -2511,7 +2514,7 @@ export default class Home extends React.Component {
                                 }, 3000)
                             } 
                             if (data && data.status === '0x0') {
-                                clearInterval(withdrawDAItimer);
+                                clearInterval(timerOBJ[tempRnum]);
                                 const keys = Object.keys(this.state.transcations);
                                 const tmepState = this.state;
                                 keys.map((key) => {
@@ -2539,12 +2542,12 @@ export default class Home extends React.Component {
     }
     // withdrawPAX
     withdrawPAX (addr, num) {
-        const keys = Object.keys(this.state.transcations);
-        for (var i = 0; i < keys.length; i++) {
-            if (this.state.transcations[keys[i]].title === 'Withdraw PAX') {
-                return;
-            }
-        }
+        // const keys = Object.keys(this.state.transcations);
+        // for (var i = 0; i < keys.length; i++) {
+        //     if (this.state.transcations[keys[i]].title === 'Withdraw PAX') {
+        //         return;
+        //     }
+        // }
         const id = Math.random();
         const msg = 'Waiting for transaction signature...';
         const tmepState = this.state;
@@ -2552,7 +2555,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Withdraw PAX',
+            title: 'Withdraw ' + num / (10 ** 10) / (10 ** 8) + ' PAX',
         }
         this.setState({tmepState});
         this.contractProtocol.withdraw.sendTransaction(
@@ -2568,10 +2571,11 @@ export default class Home extends React.Component {
                     const keys = Object.keys(this.state.transcations);
                     const tmepState = this.state;
                     keys.map((key) => {
-                        if (tmepState.transcations[key].title === 'Withdraw PAX') {
+                        if (tmepState.transcations[key].id === id) {
                             tmepState.transcations[key] = {
                                 ...tmepState.transcations[key],
-                                class: 'error'
+                                class: 'error',
+                                msg: 'User reject'
                             }
                             this.setState({tmepState});
 
@@ -2588,7 +2592,7 @@ export default class Home extends React.Component {
                     const tmepState = this.state;
 
                     keys.map((key) => {
-                        if (tmepState.transcations[key].title === 'Withdraw PAX') {
+                        if (tmepState.transcations[key].id === id) {
                             tmepState.transcations[key].txhash = ret;
                             tmepState.transcations[key] = {
                                 ...tmepState.transcations[key],
@@ -2599,11 +2603,13 @@ export default class Home extends React.Component {
                         return false;
                     });
 
-                    var withdrawPAXtimer = setInterval(() => {
-                        console.log('i am checking withdraw PAX...');
+                    var timerOBJ = {};
+                    var tempRnum = Math.random();
+                    timerOBJ[tempRnum] = setInterval(() => {
+                        console.log('i am checking withdraw PAX... =>' + tempRnum);
                         this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
                             if (data && data.status === '0x1') {
-                                clearInterval(withdrawPAXtimer);
+                                clearInterval(timerOBJ[tempRnum]);
                                 const keys = Object.keys(this.state.transcations);
                                 const tmepState = this.state;
                                 keys.map((key) => {
@@ -2631,7 +2637,7 @@ export default class Home extends React.Component {
                                 }, 3000)
                             } 
                             if (data && data.status === '0x0') {
-                                clearInterval(withdrawPAXtimer);
+                                clearInterval(timerOBJ[tempRnum]);
                                 const keys = Object.keys(this.state.transcations);
                                 const tmepState = this.state;
                                 keys.map((key) => {
@@ -2659,12 +2665,12 @@ export default class Home extends React.Component {
     }
     // withdrawTUSD
     withdrawTUSD (addr, num) {
-        const keys = Object.keys(this.state.transcations);
-        for (var i = 0; i < keys.length; i++) {
-            if (this.state.transcations[keys[i]].title === 'Withdraw TUSD') {
-                return;
-            }
-        }
+        // const keys = Object.keys(this.state.transcations);
+        // for (var i = 0; i < keys.length; i++) {
+        //     if (this.state.transcations[keys[i]].title === 'Withdraw TUSD') {
+        //         return;
+        //     }
+        // }
         const id = Math.random();
         const msg = 'Waiting for transaction signature...';
         const tmepState = this.state;
@@ -2672,7 +2678,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Withdraw TUSD',
+            title: 'Withdraw ' + num / (10 ** 10) / (10 ** 8) + ' TUSD',
         }
         this.setState({tmepState});
         this.contractProtocol.withdraw.sendTransaction(
@@ -2688,10 +2694,11 @@ export default class Home extends React.Component {
                     const keys = Object.keys(this.state.transcations);
                     const tmepState = this.state;
                     keys.map((key) => {
-                        if (tmepState.transcations[key].title === 'Withdraw TUSD') {
+                        if (tmepState.transcations[key].id === id) {
                             tmepState.transcations[key] = {
                                 ...tmepState.transcations[key],
-                                class: 'error'
+                                class: 'error',
+                                msg: 'User reject'
                             }
                             this.setState({tmepState});
 
@@ -2708,7 +2715,7 @@ export default class Home extends React.Component {
                     const tmepState = this.state;
 
                     keys.map((key) => {
-                        if (tmepState.transcations[key].title === 'Withdraw TUSD') {
+                        if (tmepState.transcations[key].id === id) {
                             tmepState.transcations[key].txhash = ret;
                             tmepState.transcations[key] = {
                                 ...tmepState.transcations[key],
@@ -2719,11 +2726,13 @@ export default class Home extends React.Component {
                         return false;
                     });
 
-                    var withdrawTUSDtimer = setInterval(() => {
-                        console.log('i am checking withdraw TUSD...');
+                    var timerOBJ = {};
+                    var tempRnum = Math.random();
+                    timerOBJ[tempRnum] = setInterval(() => {
+                        console.log('i am checking withdraw TUSD... =>' + tempRnum);
                         this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
                             if (data && data.status === '0x1') {
-                                clearInterval(withdrawTUSDtimer);
+                                clearInterval(timerOBJ[tempRnum]);
                                 const keys = Object.keys(this.state.transcations);
                                 const tmepState = this.state;
                                 keys.map((key) => {
@@ -2751,7 +2760,7 @@ export default class Home extends React.Component {
                                 }, 3000)
                             } 
                             if (data && data.status === '0x0') {
-                                clearInterval(withdrawTUSDtimer);
+                                clearInterval(timerOBJ[tempRnum]);
                                 const keys = Object.keys(this.state.transcations);
                                 const tmepState = this.state;
                                 keys.map((key) => {
@@ -2779,12 +2788,12 @@ export default class Home extends React.Component {
     }
     // withdrawUSDC
     withdrawUSDC (addr, num) {
-        const keys = Object.keys(this.state.transcations);
-        for (var i = 0; i < keys.length; i++) {
-            if (this.state.transcations[keys[i]].title === 'Withdraw USDC') {
-                return;
-            }
-        }
+        // const keys = Object.keys(this.state.transcations);
+        // for (var i = 0; i < keys.length; i++) {
+        //     if (this.state.transcations[keys[i]].title === 'Withdraw USDC') {
+        //         return;
+        //     }
+        // }
         const id = Math.random();
         const msg = 'Waiting for transaction signature...';
         const tmepState = this.state;
@@ -2792,7 +2801,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Withdraw USDC',
+            title: 'Withdraw ' + num / (10 ** 10) / (10 ** 8) + ' USDC',
         }
         this.setState({tmepState});
         this.contractProtocol.withdraw.sendTransaction(
@@ -2808,10 +2817,11 @@ export default class Home extends React.Component {
                     const keys = Object.keys(this.state.transcations);
                     const tmepState = this.state;
                     keys.map((key) => {
-                        if (tmepState.transcations[key].title === 'Withdraw USDC') {
+                        if (tmepState.transcations[key].id === id) {
                             tmepState.transcations[key] = {
                                 ...tmepState.transcations[key],
-                                class: 'error'
+                                class: 'error',
+                                msg: 'User reject'
                             }
                             this.setState({tmepState});
 
@@ -2828,7 +2838,7 @@ export default class Home extends React.Component {
                     const tmepState = this.state;
 
                     keys.map((key) => {
-                        if (tmepState.transcations[key].title === 'Withdraw USDC') {
+                        if (tmepState.transcations[key].id === id) {
                             tmepState.transcations[key].txhash = ret;
                             tmepState.transcations[key] = {
                                 ...tmepState.transcations[key],
@@ -2839,11 +2849,13 @@ export default class Home extends React.Component {
                         return false;
                     });
 
-                    var withdrawUSDCtimer = setInterval(() => {
-                        console.log('i am checking withdraw USDC...');
+                    var timerOBJ = {};
+                    var tempRnum = Math.random();
+                    timerOBJ[tempRnum] = setInterval(() => {
+                        console.log('i am checking withdraw USDC... =>' + tempRnum);
                         this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
                             if (data && data.status === '0x1') {
-                                clearInterval(withdrawUSDCtimer);
+                                clearInterval(timerOBJ[tempRnum]);
                                 const keys = Object.keys(this.state.transcations);
                                 const tmepState = this.state;
                                 keys.map((key) => {
@@ -2871,7 +2883,7 @@ export default class Home extends React.Component {
                                 }, 3000)
                             } 
                             if (data && data.status === '0x0') {
-                                clearInterval(withdrawUSDCtimer);
+                                clearInterval(timerOBJ[tempRnum]);
                                 const keys = Object.keys(this.state.transcations);
                                 const tmepState = this.state;
                                 keys.map((key) => {
