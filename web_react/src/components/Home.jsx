@@ -159,7 +159,7 @@ export default class Home extends React.Component {
             <DocuentTitle title='USDX portal'>
                 <React.Fragment>
                     {/* <Welcome ifShow={this.state.isConnected} connectMetamask={()=>{this.connectMetamask()}}/> */}
-                    <Notify transcations={this.state.transcations}/>
+                    <Notify transcations={this.state.transcations} netType={this.state.netType}/>
                     <Header
                         status={this.state}
                         DisconnectMetamask={()=>{this.DisconnectMetamask()}}
@@ -3188,7 +3188,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Deposit' + num / (10 ** 10) / (10 ** 8) + 'DAI',
+            title: 'Deposit ' + num / (10 ** 10) / (10 ** 8) + ' DAI',
         }
         this.setState({tmepState});
         this.contractProtocol.deposit.sendTransaction(
@@ -3320,7 +3320,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Deposit' + num / (10 ** 10) / (10 ** 8) + 'PAX',
+            title: 'Deposit ' + num / (10 ** 10) / (10 ** 8) + ' PAX',
         }
         this.setState({tmepState});
         this.contractProtocol.deposit.sendTransaction(
@@ -3452,7 +3452,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Deposit' + num / (10 ** 10) / (10 ** 8) + 'TUSD',
+            title: 'Deposit ' + num / (10 ** 10) / (10 ** 8) + ' TUSD',
         }
         this.setState({tmepState});
         this.contractProtocol.deposit.sendTransaction(
@@ -3584,7 +3584,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Deposit' + num / (10 ** 10) / (10 ** 8) + 'USDC',
+            title: 'Deposit ' + num / (10 ** 10) / (10 ** 8) + ' USDC',
         }
         this.setState({tmepState});
         this.contractProtocol.deposit.sendTransaction(
