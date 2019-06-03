@@ -1290,7 +1290,7 @@ contract('DFEngine', accounts => {
                             assert.equal(dfPoolTokenBalanceCurrent.toString(), dfPoolTokenBalanceOrigin.sub(amountMin).toString());
 
                             assert.equal(dfStoreAccountTokenOrigin.toString(), dfStoreAccountTokenCurrent.add(amountMin).toString());
-                            assert.equal((await dfProtocol.getUserWithdrawBalance.call({from: accountAddress})).toString(), amountMin.toString());
+                            // assert.equal((await dfProtocol.getUserWithdrawBalance.call({from: accountAddress})).toString(), amountMin.toString());
 
                             condition++;
                         }
