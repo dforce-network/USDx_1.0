@@ -859,13 +859,15 @@ export default class Home extends React.Component {
 
     // check approve
     checkApprove () {
-        this.setState({
-            ...this.state,
-            approvedDAI: false,
-            approvedPAX: false,
-            approvedTUSD: false,
-            approvedUSDC: false
-        });
+        // this.setState({
+        //     ...this.state,
+        //     approvedDAI: false,
+        //     approvedPAX: false,
+        //     approvedTUSD: false,
+        //     approvedUSDC: false,
+        //     approvedDF: false,
+        //     approvedUSDx: false
+        // });
 
         this.contractDAI.allowance.call(this.state.accountAddress, this.addressPool, (err, ret) => {
             if (err) {
@@ -878,6 +880,11 @@ export default class Home extends React.Component {
                 this.setState({
                     ...this.state,
                     approvedDAI: true
+                });
+            }else {
+                this.setState({
+                    ...this.state,
+                    approvedDAI: false
                 });
             }
         });
@@ -893,6 +900,11 @@ export default class Home extends React.Component {
                     ...this.state,
                     approvedPAX: true
                 });
+            }else {
+                this.setState({
+                    ...this.state,
+                    approvedPAX: false
+                });
             }
         });
         this.contractTUSD.allowance.call(this.state.accountAddress, this.addressPool, (err, ret) => {
@@ -906,6 +918,11 @@ export default class Home extends React.Component {
                 this.setState({
                     ...this.state,
                     approvedTUSD: true
+                });
+            }else {
+                this.setState({
+                    ...this.state,
+                    approvedTUSD: false
                 });
             }
         });
@@ -921,6 +938,11 @@ export default class Home extends React.Component {
                     ...this.state,
                     approvedUSDC: true
                 });
+            }else {
+                this.setState({
+                    ...this.state,
+                    approvedUSDC: false
+                });
             }
         });
         this.contractDF.allowance.call(this.state.accountAddress, this.addressEngine, (err, ret) => {
@@ -935,6 +957,11 @@ export default class Home extends React.Component {
                     ...this.state,
                     approvedDF: true
                 });
+            }else {
+                this.setState({
+                    ...this.state,
+                    approvedDF: false
+                });
             }
         });
         this.contractUSDx.allowance.call(this.state.accountAddress, this.addressEngine, (err, ret) => {
@@ -948,6 +975,11 @@ export default class Home extends React.Component {
                 this.setState({
                     ...this.state,
                     approvedUSDx: true
+                });
+            }else {
+                this.setState({
+                    ...this.state,
+                    approvedUSDx: false
                 });
             }
         });
@@ -3143,13 +3175,12 @@ export default class Home extends React.Component {
             this.approve('DAI');
             return;
         }
-
-        const keys = Object.keys(this.state.transcations);
-        for (var i = 0; i < keys.length; i++) {
-            if (this.state.transcations[keys[i]].title === 'Deposit DAI') {
-                return;
-            }
-        }
+        // const keys = Object.keys(this.state.transcations);
+        // for (var i = 0; i < keys.length; i++) {
+        //     if (this.state.transcations[keys[i]].title === 'Deposit DAI') {
+        //         return;
+        //     }
+        // }
         const id = Math.random();
         const msg = 'Waiting for transaction signature...';
         const tmepState = this.state;
@@ -3157,7 +3188,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Deposit DAI',
+            title: 'Deposit' + num / (10 ** 10) / (10 ** 8) + 'DAI',
         }
         this.setState({tmepState});
         this.contractProtocol.deposit.sendTransaction(
@@ -3173,10 +3204,11 @@ export default class Home extends React.Component {
                     const keys = Object.keys(this.state.transcations);
                     const tmepState = this.state;
                     keys.map((key) => {
-                        if (tmepState.transcations[key].title === 'Deposit DAI') {
+                        if (tmepState.transcations[key].id === id) {
                             tmepState.transcations[key] = {
                                 ...tmepState.transcations[key],
-                                class: 'error'
+                                class: 'error',
+                                msg: 'User reject'
                             }
                             this.setState({tmepState});
 
@@ -3193,7 +3225,7 @@ export default class Home extends React.Component {
                     const tmepState = this.state;
 
                     keys.map((key) => {
-                        if (tmepState.transcations[key].title === 'Deposit DAI') {
+                        if (tmepState.transcations[key].id === id) {
                             tmepState.transcations[key].txhash = ret;
                             tmepState.transcations[key] = {
                                 ...tmepState.transcations[key],
@@ -3204,11 +3236,13 @@ export default class Home extends React.Component {
                         return false;
                     });
 
-                    var depositDAItimer = setInterval(() => {
-                        console.log('i am checking deposit DAI...');
+                    var timerOBJ = {};
+                    var tempRnum = Math.random();
+                    timerOBJ[tempRnum] = setInterval(() => {
+                        console.log('i am checking deposit DAI... =>' + tempRnum);
                         this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
                             if (data && data.status === '0x1') {
-                                clearInterval(depositDAItimer);
+                                clearInterval(timerOBJ[tempRnum]);
                                 const keys = Object.keys(this.state.transcations);
                                 const tmepState = this.state;
                                 keys.map((key) => {
@@ -3237,7 +3271,7 @@ export default class Home extends React.Component {
                                 }, 3000)
                             } 
                             if (data && data.status === '0x0') {
-                                clearInterval(depositDAItimer);
+                                clearInterval(timerOBJ[tempRnum]);
                                 const keys = Object.keys(this.state.transcations);
                                 const tmepState = this.state;
                                 keys.map((key) => {
@@ -3273,13 +3307,12 @@ export default class Home extends React.Component {
             this.approve('PAX');
             return;
         }
-
-        const keys = Object.keys(this.state.transcations);
-        for (var i = 0; i < keys.length; i++) {
-            if (this.state.transcations[keys[i]].title === 'Deposit PAX') {
-                return;
-            }
-        }
+        // const keys = Object.keys(this.state.transcations);
+        // for (var i = 0; i < keys.length; i++) {
+        //     if (this.state.transcations[keys[i]].title === 'Deposit PAX') {
+        //         return;
+        //     }
+        // }
         const id = Math.random();
         const msg = 'Waiting for transaction signature...';
         const tmepState = this.state;
@@ -3287,7 +3320,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Deposit PAX',
+            title: 'Deposit' + num / (10 ** 10) / (10 ** 8) + 'PAX',
         }
         this.setState({tmepState});
         this.contractProtocol.deposit.sendTransaction(
@@ -3303,10 +3336,11 @@ export default class Home extends React.Component {
                     const keys = Object.keys(this.state.transcations);
                     const tmepState = this.state;
                     keys.map((key) => {
-                        if (tmepState.transcations[key].title === 'Deposit PAX') {
+                        if (tmepState.transcations[key].id === id) {
                             tmepState.transcations[key] = {
                                 ...tmepState.transcations[key],
-                                class: 'error'
+                                class: 'error',
+                                msg: 'User reject'
                             }
                             this.setState({tmepState});
 
@@ -3323,7 +3357,7 @@ export default class Home extends React.Component {
                     const tmepState = this.state;
 
                     keys.map((key) => {
-                        if (tmepState.transcations[key].title === 'Deposit PAX') {
+                        if (tmepState.transcations[key].id === id) {
                             tmepState.transcations[key].txhash = ret;
                             tmepState.transcations[key] = {
                                 ...tmepState.transcations[key],
@@ -3334,11 +3368,13 @@ export default class Home extends React.Component {
                         return false;
                     });
 
-                    var depositPAXtimer = setInterval(() => {
-                        console.log('i am checking deposit PAX...');
+                    var timerOBJ = {};
+                    var tempRnum = Math.random();
+                    timerOBJ[tempRnum] = setInterval(() => {
+                        console.log('i am checking deposit PAX... =>' + tempRnum);
                         this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
                             if (data && data.status === '0x1') {
-                                clearInterval(depositPAXtimer);
+                                clearInterval(timerOBJ[tempRnum]);
                                 const keys = Object.keys(this.state.transcations);
                                 const tmepState = this.state;
                                 keys.map((key) => {
@@ -3367,7 +3403,7 @@ export default class Home extends React.Component {
                                 }, 3000)
                             } 
                             if (data && data.status === '0x0') {
-                                clearInterval(depositPAXtimer);
+                                clearInterval(timerOBJ[tempRnum]);
                                 const keys = Object.keys(this.state.transcations);
                                 const tmepState = this.state;
                                 keys.map((key) => {
@@ -3403,13 +3439,12 @@ export default class Home extends React.Component {
             this.approve('TUSD');
             return;
         }
-
-        const keys = Object.keys(this.state.transcations);
-        for (var i = 0; i < keys.length; i++) {
-            if (this.state.transcations[keys[i]].title === 'Deposit TUSD') {
-                return;
-            }
-        }
+        // const keys = Object.keys(this.state.transcations);
+        // for (var i = 0; i < keys.length; i++) {
+        //     if (this.state.transcations[keys[i]].title === 'Deposit TUSD') {
+        //         return;
+        //     }
+        // }
         const id = Math.random();
         const msg = 'Waiting for transaction signature...';
         const tmepState = this.state;
@@ -3417,7 +3452,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Deposit TUSD',
+            title: 'Deposit' + num / (10 ** 10) / (10 ** 8) + 'TUSD',
         }
         this.setState({tmepState});
         this.contractProtocol.deposit.sendTransaction(
@@ -3433,10 +3468,11 @@ export default class Home extends React.Component {
                     const keys = Object.keys(this.state.transcations);
                     const tmepState = this.state;
                     keys.map((key) => {
-                        if (tmepState.transcations[key].title === 'Deposit TUSD') {
+                        if (tmepState.transcations[key].id === id) {
                             tmepState.transcations[key] = {
                                 ...tmepState.transcations[key],
-                                class: 'error'
+                                class: 'error',
+                                msg: 'User reject'
                             }
                             this.setState({tmepState});
 
@@ -3453,7 +3489,7 @@ export default class Home extends React.Component {
                     const tmepState = this.state;
 
                     keys.map((key) => {
-                        if (tmepState.transcations[key].title === 'Deposit TUSD') {
+                        if (tmepState.transcations[key].id === id) {
                             tmepState.transcations[key].txhash = ret;
                             tmepState.transcations[key] = {
                                 ...tmepState.transcations[key],
@@ -3464,11 +3500,13 @@ export default class Home extends React.Component {
                         return false;
                     });
 
-                    var depositTUSDtimer = setInterval(() => {
-                        console.log('i am checking deposit TUSD...');
+                    var timerOBJ = {};
+                    var tempRnum = Math.random();
+                    timerOBJ[tempRnum] = setInterval(() => {
+                        console.log('i am checking deposit TUSD... =>' + tempRnum);
                         this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
                             if (data && data.status === '0x1') {
-                                clearInterval(depositTUSDtimer);
+                                clearInterval(timerOBJ[tempRnum]);
                                 const keys = Object.keys(this.state.transcations);
                                 const tmepState = this.state;
                                 keys.map((key) => {
@@ -3497,7 +3535,7 @@ export default class Home extends React.Component {
                                 }, 3000)
                             } 
                             if (data && data.status === '0x0') {
-                                clearInterval(depositTUSDtimer);
+                                clearInterval(timerOBJ[tempRnum]);
                                 const keys = Object.keys(this.state.transcations);
                                 const tmepState = this.state;
                                 keys.map((key) => {
@@ -3533,13 +3571,12 @@ export default class Home extends React.Component {
             this.approve('USDC');
             return;
         }
-
-        const keys = Object.keys(this.state.transcations);
-        for (var i = 0; i < keys.length; i++) {
-            if (this.state.transcations[keys[i]].title === 'Deposit USDC') {
-                return;
-            }
-        }
+        // const keys = Object.keys(this.state.transcations);
+        // for (var i = 0; i < keys.length; i++) {
+        //     if (this.state.transcations[keys[i]].title === 'Deposit USDC') {
+        //         return;
+        //     }
+        // }
         const id = Math.random();
         const msg = 'Waiting for transaction signature...';
         const tmepState = this.state;
@@ -3547,7 +3584,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Deposit USDC',
+            title: 'Deposit' + num / (10 ** 10) / (10 ** 8) + 'USDC',
         }
         this.setState({tmepState});
         this.contractProtocol.deposit.sendTransaction(
@@ -3563,10 +3600,11 @@ export default class Home extends React.Component {
                     const keys = Object.keys(this.state.transcations);
                     const tmepState = this.state;
                     keys.map((key) => {
-                        if (tmepState.transcations[key].title === 'Deposit USDC') {
+                        if (tmepState.transcations[key].id === id) {
                             tmepState.transcations[key] = {
                                 ...tmepState.transcations[key],
-                                class: 'error'
+                                class: 'error',
+                                msg: 'User reject'
                             }
                             this.setState({tmepState});
 
@@ -3583,7 +3621,7 @@ export default class Home extends React.Component {
                     const tmepState = this.state;
 
                     keys.map((key) => {
-                        if (tmepState.transcations[key].title === 'Deposit USDC') {
+                        if (tmepState.transcations[key].id === id) {
                             tmepState.transcations[key].txhash = ret;
                             tmepState.transcations[key] = {
                                 ...tmepState.transcations[key],
@@ -3594,11 +3632,13 @@ export default class Home extends React.Component {
                         return false;
                     });
 
-                    var depositUSDCtimer = setInterval(() => {
-                        console.log('i am checking deposit USDC...');
+                    var timerOBJ = {};
+                    var tempRnum = Math.random();
+                    timerOBJ[tempRnum] = setInterval(() => {
+                        console.log('i am checking deposit USDC... =>' + tempRnum);
                         this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
                             if (data && data.status === '0x1') {
-                                clearInterval(depositUSDCtimer);
+                                clearInterval(timerOBJ[tempRnum]);
                                 const keys = Object.keys(this.state.transcations);
                                 const tmepState = this.state;
                                 keys.map((key) => {
@@ -3627,7 +3667,7 @@ export default class Home extends React.Component {
                                 }, 3000)
                             } 
                             if (data && data.status === '0x0') {
-                                clearInterval(depositUSDCtimer);
+                                clearInterval(timerOBJ[tempRnum]);
                                 const keys = Object.keys(this.state.transcations);
                                 const tmepState = this.state;
                                 keys.map((key) => {
