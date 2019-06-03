@@ -2938,6 +2938,13 @@ export default class Home extends React.Component {
                     errTips: false,
                     toDepositNum: val
                 })
+            } else if (val === '') {
+                this.setState({
+                    ...this.state,
+                    couldDeposit: false,
+                    errTips: false,
+                    toDepositNum: val
+                })
             } else {
                 this.setState({
                     ...this.state,
@@ -2953,6 +2960,13 @@ export default class Home extends React.Component {
                 this.setState({
                     ...this.state,
                     couldDeposit: true,
+                    errTips: false,
+                    toDepositNum: val
+                })
+            } else if (val === '') {
+                this.setState({
+                    ...this.state,
+                    couldDeposit: false,
                     errTips: false,
                     toDepositNum: val
                 })
@@ -2974,6 +2988,13 @@ export default class Home extends React.Component {
                     errTips: false,
                     toDepositNum: val
                 })
+            } else if (val === '') {
+                this.setState({
+                    ...this.state,
+                    couldDeposit: false,
+                    errTips: false,
+                    toDepositNum: val
+                })
             } else {
                 this.setState({
                     ...this.state,
@@ -2989,6 +3010,13 @@ export default class Home extends React.Component {
                 this.setState({
                     ...this.state,
                     couldDeposit: true,
+                    errTips: false,
+                    toDepositNum: val
+                })
+            } else if (val === '') {
+                this.setState({
+                    ...this.state,
+                    couldDeposit: false,
                     errTips: false,
                     toDepositNum: val
                 })
