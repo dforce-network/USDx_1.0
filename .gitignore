@@ -9,3 +9,4 @@ test/ERC20Token.js
 *DFStore_t.sol
 DFEngine_test.js
 
+.env
