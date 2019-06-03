@@ -1,16 +1,16 @@
 // type:'deposit', 'destroy', 'withdraw', 'updateSection', 'claim'
 // tokenAddress 1~4
 // accountAddress 1~20
-// total true: 全部 false:参数无效
-// times 执行次数，如果无此参数则按照data配置种类各执行一次。
-// data 具体执行方式，如需插入随机模式可以，添加{}
-// 各项配置如不填写，测采用随机模式执行
-// ------------------------运行test case
-// 终端启动节点
+// total true: all false: invalid parameter
+// times The number of executions. If there is no such parameter, it will be executed once according to the data configuration type.
+// data Specific implementation, if you need to insert random mode, add {}
+// If the configuration is not filled in, the measurement is performed in random mode.
+// ------------------------run test case
+// The terminal starts the ETH node.
 // ganache-cli --port=7545 --gasLimit=8000000 --accounts=10 --defaultBalanceEther=10000
-// 编译合约
+// Compile contract
 // npm run build
-// 运行命令
+// Run command
 // truffle test .\test\DFEngine_deposit_claim_destroy.js > testDF_deposit_claim_destroy.log
 
 collateralNames = new Array('DAI', 'PAX', 'TUSD', 'USDC');

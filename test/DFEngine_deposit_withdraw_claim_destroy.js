@@ -12,7 +12,7 @@
 // 编译合约
 // npm run build
 // 运行命令
-// truffle test .\test\DFEngine_deposit_withdraw_claim_destroy.js > testDF_deposit_withdraw_claim_destroyy.log
+// truffle test .\test\DFEngine_deposit_withdraw_claim_destroy.js > testDF_deposit_withdraw_claim_destroy.log
 collateralNames = new Array('DAI', 'PAX', 'TUSD', 'USDC');
 weightTest = new Array(0.1, 0.3, 0.3, 0.3);
 runConfig = [ 
