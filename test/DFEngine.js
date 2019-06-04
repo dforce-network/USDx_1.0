@@ -154,6 +154,8 @@ contract('DFEngine', accounts => {
             var burnedTotalCurrent = new BN(0);
             var burnedCurrent = new BN(0);
 
+            var minBurnAmount = new BN(0);
+
             var balanceOfTokens = new BN(0);
         }
 
@@ -745,6 +747,11 @@ contract('DFEngine', accounts => {
                             console.log(amountNB);
                             console.log(amountNB.toString());
                             console.log('\n');
+                            minBurnAmount = await dfProtocol.getDestroyThreshold.call();
+                            console.log('min burn amount');
+                            console.log(minBurnAmount);
+                            console.log(minBurnAmount.toString());
+                            console.log('\n');
                             
                             burnedTotalOrigin = await dfStore.getTotalBurned.call();
                             burnedOrigin = await dfStore.getSectionBurned.call(await dfStore.getBurnPosition.call());
@@ -800,7 +807,10 @@ contract('DFEngine', accounts => {
                             runData['accountAddress'] = accounts.indexOf(accountAddress) + 1;
                             runData['amount'] = amount / 10 ** 8;
                             runData['amountNB'] = amountNB.toString();
-                            runData['usdx balance'] = usdxBalanceOrigin.toString();
+                            runData['min amount'] = minBurnAmount.toString() / 10 ** 18;
+                            runData['min amount BN'] = minBurnAmount.toString();
+                            runData['usdx balance'] = usdxBalanceOrigin.toString() / 10 ** 18;
+                            runData['usdx balance BN'] = usdxBalanceOrigin.toString();
                             try {
                                 transactionData = await dfProtocol.destroy(new BN(0), amountNB, {from: accountAddress});
                                 destroyGasUsed = destroyGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : destroyGasUsed;
@@ -1890,6 +1900,7 @@ contract('DFEngine', accounts => {
                                 condition++;
                                 continue;
                             }
+                            assert.equal((await dfProtocol.getDestroyThreshold.call()).toString(), amountNB.toString());
                             condition++;
                         }
                         break;
