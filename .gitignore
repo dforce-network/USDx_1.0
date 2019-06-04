@@ -10,3 +10,4 @@ test/ERC20Token.js
 DFEngine_test.js
 
 .env
+package-lock.json
