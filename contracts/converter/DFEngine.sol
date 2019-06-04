@@ -175,8 +175,8 @@ contract DFEngine is DSMath, DSAuth {
             _remain = sub(_remain, _depositorMintAmount);
 
             if (_depositorMintAmount > 0){
-                dfStore.setResUSDXBalance(_tokens[i], _resUSDXBalance - _depositorMintAmount);
-                dfStore.setDepositorBalance(_depositor, _tokens[i], _depositorBalance - _depositorMintAmount);
+                dfStore.setResUSDXBalance(_tokens[i], sub(_resUSDXBalance, _depositorMintAmount));
+                dfStore.setDepositorBalance(_depositor, _tokens[i], sub(_depositorBalance, _depositorMintAmount));
             }
         }
 
@@ -201,8 +201,8 @@ contract DFEngine is DSMath, DSAuth {
             _mintAmount = add(_mintAmount, _depositorMintAmount);
 
             if (_depositorMintAmount > 0){
-                dfStore.setResUSDXBalance(_tokens[i], _resUSDXBalance - _depositorMintAmount);
-                dfStore.setDepositorBalance(_depositor, _tokens[i], _depositorBalance - _depositorMintAmount);
+                dfStore.setResUSDXBalance(_tokens[i], sub(_resUSDXBalance, _depositorMintAmount));
+                dfStore.setDepositorBalance(_depositor, _tokens[i], sub(_depositorBalance, _depositorMintAmount));
             }
         }
 
@@ -239,7 +239,7 @@ contract DFEngine is DSMath, DSAuth {
                 _sumBurnCW = add(_sumBurnCW, _burnCW[i]);
             }
 
-            if (_burned + _amountTemp <= _minted){
+            if (add(_burned, _amountTemp) <= _minted){
                 dfStore.setSectionBurned(add(_burned, _amountTemp));
                 _burnedAmount = _amountTemp;
                 _amountTemp = 0;
@@ -282,7 +282,7 @@ contract DFEngine is DSMath, DSAuth {
         for (uint i = 0; i < _tokens.length; i++) {
             _mintAmount = mul(_step, _mintCW[i]);
             _depositorMintAmount = min(_depositorBalance[i], add(_resUSDXBalance[i], _mintAmount));
-            dfStore.setTokenBalance(_tokens[i], _tokenBalance[i] - _mintAmount);
+            dfStore.setTokenBalance(_tokens[i], sub(_tokenBalance[i], _mintAmount));
             dfPool.transferToCol(_tokens[i], _mintAmount);
             _mintTotal = add(_mintTotal, _mintAmount);
 
@@ -291,8 +291,8 @@ contract DFEngine is DSMath, DSAuth {
                 continue;
             }
 
-            dfStore.setDepositorBalance(_depositor, _tokens[i], _depositorBalance[i] - _depositorMintAmount);
-            dfStore.setResUSDXBalance(_tokens[i], add(_resUSDXBalance[i], _mintAmount) - _depositorMintAmount);
+            dfStore.setDepositorBalance(_depositor, _tokens[i], sub(_depositorBalance[i], _depositorMintAmount));
+            dfStore.setResUSDXBalance(_tokens[i], sub(add(_resUSDXBalance[i], _mintAmount), _depositorMintAmount));
             _depositorMintTotal = add(_depositorMintTotal, _depositorMintAmount);
         }
 
