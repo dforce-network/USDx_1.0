@@ -170,8 +170,8 @@ module.exports = async function (deployer, network, accounts) {
         perror("contarctEngine.setCommissionRate")
     })
 
-    //Set commission rate destroy ==> 0.005
-    await contarctEngine.setCommissionRate.sendTransaction(1, 50).then(result => {
+    //Set commission rate destroy ==> 0.001
+    await contarctEngine.setCommissionRate.sendTransaction(1, 10).then(result => {
         print("contarctEngine.setCommissionRate");
         printTx(result.tx);
     }).catch(error => {
