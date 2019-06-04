@@ -14,7 +14,7 @@ export default class Header extends React.Component {
     render() {
         return (
             <div className="bodyleft">
-                <div className="title">Constituent Pending Pool:</div>
+                <div className="title">Constituents Pending Pool:</div>
                 <div className="pool">
                     <div className="leftSection">
                         {this.props.data.sectionDAI ? (this.props.data.sectionDAI * 100 / this.props.data.tatolSection).toFixed() : '-'}%
@@ -25,7 +25,7 @@ export default class Header extends React.Component {
                     </div>
                     <div className="right">
                         <div className="section">
-                            <Tooltip title={'toClaim: ' + this.props.data.claimDAI + ' / onPool: ' + this.props.data.DAIonPool}>
+                            <Tooltip title={'Claimable USDx: ' + this.props.data.claimDAI + ' / Pending DAI: ' + this.props.data.DAIonPool}>
                                 <Progress
                                     percent={100}
                                     successPercent={
@@ -33,7 +33,10 @@ export default class Header extends React.Component {
                                             ((this.props.data.claimDAI / (Number(this.props.data.DAIonPool) + Number(this.props.data.claimDAI))).toFixed(2) * 100) < 5 ?
                                                 '5'
                                                 :
-                                                (this.props.data.claimDAI / (Number(this.props.data.DAIonPool) + Number(this.props.data.claimDAI))).toFixed(2) * 100
+                                                (this.props.data.claimDAI / (Number(this.props.data.DAIonPool) + Number(this.props.data.claimDAI))).toFixed(2) * 100 >= 95 && (this.props.data.claimDAI / (Number(this.props.data.DAIonPool) + Number(this.props.data.claimDAI))).toFixed(2) * 100 < 100 ?
+                                                    '95'
+                                                    :
+                                                    (this.props.data.claimDAI / (Number(this.props.data.DAIonPool) + Number(this.props.data.claimDAI))).toFixed(2) * 100
                                             :
                                             '0'
                                     }
@@ -58,14 +61,17 @@ export default class Header extends React.Component {
                     </div>
                     <div className="right">
                         <div className="section">
-                            <Tooltip title={'toClaim: ' + this.props.data.claimPAX + ' / onPool: ' + this.props.data.PAXonPool}>
+                            <Tooltip title={'Claimable USDx: ' + this.props.data.claimPAX + ' / Pending PAX: ' + this.props.data.PAXonPool}>
                                 <Progress
                                     successPercent={
                                         (this.props.data.claimPAX && this.props.data.claimPAX > 0) ?
                                             ((this.props.data.claimPAX / (Number(this.props.data.PAXonPool) + Number(this.props.data.claimPAX))).toFixed(2) * 100) < 5 ?
                                                 '5'
                                                 :
-                                                (this.props.data.claimPAX / (Number(this.props.data.PAXonPool) + Number(this.props.data.claimPAX))).toFixed(2) * 100
+                                                (this.props.data.claimPAX / (Number(this.props.data.PAXonPool) + Number(this.props.data.claimPAX))).toFixed(2) * 100 >= 95 && (this.props.data.claimPAX / (Number(this.props.data.PAXonPool) + Number(this.props.data.claimPAX))).toFixed(2) * 100 < 100 ?
+                                                    '95'
+                                                    :
+                                                    (this.props.data.claimPAX / (Number(this.props.data.PAXonPool) + Number(this.props.data.claimPAX))).toFixed(2) * 100
                                             :
                                             '0'
                                     }
@@ -91,14 +97,17 @@ export default class Header extends React.Component {
                     </div>
                     <div className="right">
                         <div className="section">
-                            <Tooltip title={'toClaim: ' + this.props.data.claimTUSD + ' / onPool: ' + this.props.data.TUSDonPool}>
+                            <Tooltip title={'Claimable USDx: ' + this.props.data.claimTUSD + ' / Pending TUSD: ' + this.props.data.TUSDonPool}>
                                 <Progress
                                     successPercent={
                                         (this.props.data.claimTUSD && this.props.data.claimTUSD > 0) ?
                                             ((this.props.data.claimTUSD / (Number(this.props.data.TUSDonPool) + Number(this.props.data.claimTUSD))).toFixed(2) * 100) < 5 ?
                                                 '5'
                                                 :
-                                                (this.props.data.claimTUSD / (Number(this.props.data.TUSDonPool) + Number(this.props.data.claimTUSD))).toFixed(2) * 100
+                                                (this.props.data.claimTUSD / (Number(this.props.data.TUSDonPool) + Number(this.props.data.claimTUSD))).toFixed(2) * 100 >= 95 && (this.props.data.claimTUSD / (Number(this.props.data.TUSDonPool) + Number(this.props.data.claimTUSD))).toFixed(2) * 100 < 100 ?
+                                                    '95'
+                                                    :
+                                                    (this.props.data.claimTUSD / (Number(this.props.data.TUSDonPool) + Number(this.props.data.claimTUSD))).toFixed(2) * 100
                                             :
                                             '0'
                                     }
@@ -124,7 +133,7 @@ export default class Header extends React.Component {
                     </div>
                     <div className="right">
                         <div className="section">
-                            <Tooltip title={'toClaim: ' + this.props.data.claimUSDC + ' / onPool: ' + this.props.data.USDConPool}>
+                            <Tooltip title={'Claimable USDx: ' + this.props.data.claimUSDC + ' / Pending USDC: ' + this.props.data.USDConPool}>
                                 <Progress
                                     percent={100}
                                     showInfo={false}
@@ -133,7 +142,10 @@ export default class Header extends React.Component {
                                             ((this.props.data.claimUSDC / (Number(this.props.data.USDConPool) + Number(this.props.data.claimUSDC))).toFixed(2) * 100) < 5 ?
                                                 '5'
                                                 :
-                                                (this.props.data.claimUSDC / (Number(this.props.data.USDConPool) + Number(this.props.data.claimUSDC))).toFixed(2) * 100
+                                                (this.props.data.claimUSDC / (Number(this.props.data.USDConPool) + Number(this.props.data.claimUSDC))).toFixed(2) * 100 >= 95 && (this.props.data.claimUSDC / (Number(this.props.data.USDConPool) + Number(this.props.data.claimUSDC))).toFixed(2) * 100 < 100 ?
+                                                    '95'
+                                                    :
+                                                    (this.props.data.claimUSDC / (Number(this.props.data.USDConPool) + Number(this.props.data.claimUSDC))).toFixed(2) * 100
                                             :
                                             '0'
                                     }
@@ -149,7 +161,7 @@ export default class Header extends React.Component {
                 </div>
 
                 <div className="totalUSDx">
-                    <div className="title">Total USDX Outstanding:</div>
+                    <div className="title">Total USDx Outstanding:</div>
                     <div className="usdxNum">
                         <span>{this.props.data.totalSupplyUSDx ? this.props.data.totalSupplyUSDx.split('.')[0] : '0'}</span>
                         <span className="sectionDot">{this.props.data.totalSupplyUSDx ? '.' + this.props.data.totalSupplyUSDx.split('.')[1] : '.00'}</span>
