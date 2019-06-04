@@ -152,9 +152,4 @@ runConfig = [
             },
       ];
       
-    require('./DFEngine.js');
-
-
-
-
-
+require('./DFEngine.js');
