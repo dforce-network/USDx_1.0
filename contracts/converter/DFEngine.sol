@@ -154,7 +154,7 @@ contract DFEngine is DSMath, DSAuth {
         _depositorBalance = sub(_depositorBalance, _withdrawAmount);
         dfStore.setDepositorBalance(_depositor, _tokenID, _depositorBalance);
         dfStore.setTokenBalance(_tokenID, sub(_tokenBalance, _withdrawAmount));
-        _unifiedCommission(ProcessType.CT_WITHDRAW, _feeTokenIdx, _depositor, _amount);
+        _unifiedCommission(ProcessType.CT_WITHDRAW, _feeTokenIdx, _depositor, _withdrawAmount);
         dfPool.transferOut(_tokenID, _depositor, _withdrawAmount);
 
         return (_withdrawAmount);
