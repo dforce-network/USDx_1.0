@@ -238,7 +238,7 @@ export default class Home extends React.Component {
                                 </div>
                                 
                                 <div style={{ display: !this.state.tab1 ? 'block' : 'none' }} className="generate">
-                                    <p className="details">How much USDx you would like to reconvert into constituents</p>
+                                    <p className="details">How much USDx you would like to reconvert into constituents:</p>
                                     <div className="input">
                                         <input type="number" onChange={(val) => { this.destroyNumChange(val.target.value) }} value={this.state.toDestroyNum} />
                                         <Select className="mySelect" defaultValue="USDx" disabled></Select>
@@ -271,7 +271,7 @@ export default class Home extends React.Component {
                                         Insufficient USDx.
                                     </div>
                                     <div className="myBalanceOnPoolSection">
-                                        <div className="title">Constituents to be returned</div>
+                                        <div className="title">Constituents to be returned:</div>
                                         <p className='partToken'>
                                             <span>DAI</span>
                                             <span className='right'>
@@ -313,6 +313,7 @@ export default class Home extends React.Component {
                                 <div className="generate nomargin">
                                     <p className="details">Select which constituent you would like to withdraw:</p>
                                     <div className="input">
+                                        <div className="maxNum" onClick={() => {this.adjustMaxToWithdraw()}}>MAX</div>
                                         <input type="number" onChange={(val) => { this.withdrawNumChange(val.target.value) }} value={this.state.toWithdrawNum} />
                                         <Select className="mySelect" defaultValue="DAI" onChange={(val)=>{this.withdrawOptChange(val)}}>
                                             <Select.Option value="DAI">DAI</Select.Option>
@@ -337,7 +338,7 @@ export default class Home extends React.Component {
                                         Insufficient {this.state.toWithdraw}.
                                             </div>
                                     <div className="myBalanceOnPoolSection">
-                                        <div className="title">Constituent balance</div>
+                                        <div className="title">Constituent balance:</div>
                                         <p className='partToken'>
                                             <span>DAI</span>
                                             <span className='right'>
@@ -699,43 +700,6 @@ export default class Home extends React.Component {
             }
         })
     }
-    // getUserWithdrawBalance
-    getUserWithdrawBalance () {
-        this.contractProtocol.getUserWithdrawBalance.call((err, ret)=>{
-            // console.log(err, ret);
-            if (ret) {
-                var addressIDs = ret[0];
-                var myBalance = ret[1];
-
-                for (let i = 0; i < addressIDs.length; i++) {
-                    if (addressIDs[i] === this.addressDAI) {
-                        this.setState({
-                            ...this.state,
-                            myDAIonPool: this.formatNumber(myBalance[i])
-                        })
-                    }
-                    if (addressIDs[i] === this.addressPAX) {
-                        this.setState({
-                            ...this.state,
-                            myPAXonPool: this.formatNumber(myBalance[i])
-                        })
-                    }
-                    if (addressIDs[i] === this.addressTUSD) {
-                        this.setState({
-                            ...this.state,
-                            myTUSDonPool: this.formatNumber(myBalance[i])
-                        })
-                    }
-                    if (addressIDs[i] === this.addressUSDC) {
-                        this.setState({
-                            ...this.state,
-                            myUSDConPool: this.formatNumber(myBalance[i])
-                        })
-                    }
-                }
-            }
-        })
-    }
 
 
 
@@ -844,6 +808,47 @@ export default class Home extends React.Component {
             });
         });
     }
+    // getUserWithdrawBalance
+    getUserWithdrawBalance () {
+        this.contractProtocol.getUserWithdrawBalance.call((err, ret)=>{
+            // console.log(err, ret);
+            if (ret) {
+                var addressIDs = ret[0];
+                var myBalance = ret[1];
+
+                for (let i = 0; i < addressIDs.length; i++) {
+                    if (addressIDs[i] === this.addressDAI) {
+                        this.setState({
+                            ...this.state,
+                            myDAIonPool: this.formatNumber(myBalance[i]),
+                            myDAIonPoolOrigin: myBalance[i].toFixed()
+                        })
+                    }
+                    if (addressIDs[i] === this.addressPAX) {
+                        this.setState({
+                            ...this.state,
+                            myPAXonPool: this.formatNumber(myBalance[i]),
+                            myPAXonPoolOrigin: myBalance[i].toFixed()
+                        })
+                    }
+                    if (addressIDs[i] === this.addressTUSD) {
+                        this.setState({
+                            ...this.state,
+                            myTUSDonPool: this.formatNumber(myBalance[i]),
+                            myTUSDonPoolOrigin: myBalance[i].toFixed()
+                        })
+                    }
+                    if (addressIDs[i] === this.addressUSDC) {
+                        this.setState({
+                            ...this.state,
+                            myUSDConPool: this.formatNumber(myBalance[i]),
+                            myUSDConPoolOrigin: myBalance[i].toFixed()
+                        })
+                    }
+                }
+            }
+        })
+    }
 
 
     // format number
@@ -869,16 +874,6 @@ export default class Home extends React.Component {
 
     // check approve
     checkApprove () {
-        // this.setState({
-        //     ...this.state,
-        //     approvedDAI: false,
-        //     approvedPAX: false,
-        //     approvedTUSD: false,
-        //     approvedUSDC: false,
-        //     approvedDF: false,
-        //     approvedUSDx: false
-        // });
-
         this.contractDAI.allowance.call(this.state.accountAddress, this.addressPool, (err, ret) => {
             if (err) {
                 this.setState({
@@ -2285,13 +2280,47 @@ export default class Home extends React.Component {
     }
 
 
+
+
+
+    // adjustMaxToWithdraw
+    adjustMaxToWithdraw () {
+        if (this.state.toWithdraw === 'DAI') {
+            this.setState({
+                ...this.state,
+                toWithdrawNum: this.state.myDAIonPoolOrigin / (10 ** 10) / (10 ** 8)
+            })
+        }
+        if (this.state.toWithdraw === 'PAX') {
+            this.setState({
+                ...this.state,
+                toWithdrawNum: this.state.myPAXonPoolOrigin / (10 ** 10) / (10 ** 8)
+            })
+        }
+        if (this.state.toWithdraw === 'TUSD') {
+            this.setState({
+                ...this.state,
+                toWithdrawNum: this.state.myTUSDonPoolOrigin / (10 ** 10) / (10 ** 8)
+            })
+        }
+        if (this.state.toWithdraw === 'USDC') {
+            this.setState({
+                ...this.state,
+                toWithdrawNum: this.state.myUSDConPoolOrigin / (10 ** 10) / (10 ** 8)
+            })
+        }
+
+        setTimeout(() => {
+            this.withdrawNumChange(this.state.toWithdrawNum);
+        }, 500)
+    }
     // withdraw number check
     withdrawNumChange (val) {
         if (val.length > 16) {
             return;
         }
         if (this.state.toWithdraw === 'DAI') {
-            if (Number(val) > 0 && Number(val) <= Number(this.state.myDAIonPool)) {
+            if (Number(val) > 0 && Number(val) <= Number(this.state.myDAIonPoolOrigin)) {
                 this.setState({
                     ...this.state,
                     errTipsWithdraw: false,
@@ -2305,7 +2334,7 @@ export default class Home extends React.Component {
                     couldWithdraw: false,
                     toWithdrawNum: val
                 })
-                if (val === '') {
+                if (val === '' || Number(val) === 0) {
                     this.setState({
                         ...this.state,
                         errTipsWithdraw: false,
@@ -2316,7 +2345,7 @@ export default class Home extends React.Component {
             }
         }
         if (this.state.toWithdraw === 'PAX') {
-            if (Number(val) > 0 && Number(val) <= Number(this.state.myPAXonPool)) {
+            if (Number(val) > 0 && Number(val) <= Number(this.state.myPAXonPoolOrigin)) {
                 this.setState({
                     ...this.state,
                     errTipsWithdraw: false,
@@ -2330,7 +2359,7 @@ export default class Home extends React.Component {
                     couldWithdraw: false,
                     toWithdrawNum: val
                 })
-                if (val === '') {
+                if (val === '' || Number(val) === 0) {
                     this.setState({
                         ...this.state,
                         errTipsWithdraw: false,
@@ -2341,7 +2370,7 @@ export default class Home extends React.Component {
             }
         }
         if (this.state.toWithdraw === 'TUSD') {
-            if (Number(val) > 0 && Number(val) <= Number(this.state.myTUSDonPool)) {
+            if (Number(val) > 0 && Number(val) <= Number(this.state.myTUSDonPoolOrigin)) {
                 this.setState({
                     ...this.state,
                     errTipsWithdraw: false,
@@ -2355,7 +2384,7 @@ export default class Home extends React.Component {
                     couldWithdraw: false,
                     toWithdrawNum: val
                 })
-                if (val === '') {
+                if (val === '' || Number(val) === 0) {
                     this.setState({
                         ...this.state,
                         errTipsWithdraw: false,
@@ -2366,7 +2395,7 @@ export default class Home extends React.Component {
             }
         }
         if (this.state.toWithdraw === 'USDC') {
-            if (Number(val) > 0 && Number(val) <= Number(this.state.myUSDConPool)) {
+            if (Number(val) > 0 && Number(val) <= Number(this.state.myUSDConPoolOrigin)) {
                 this.setState({
                     ...this.state,
                     errTipsWithdraw: false,
@@ -2380,7 +2409,7 @@ export default class Home extends React.Component {
                     couldWithdraw: false,
                     toWithdrawNum: val
                 })
-                if (val === '') {
+                if (val === '' || Number(val) === 0) {
                     this.setState({
                         ...this.state,
                         errTipsWithdraw: false,

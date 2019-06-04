@@ -33,10 +33,13 @@ export default class Header extends React.Component {
                                             ((this.props.data.claimDAI / (Number(this.props.data.DAIonPool) + Number(this.props.data.claimDAI))).toFixed(2) * 100) < 5 ?
                                                 '5'
                                                 :
-                                                (this.props.data.claimDAI / (Number(this.props.data.DAIonPool) + Number(this.props.data.claimDAI))).toFixed(2) * 100 >= 95 && (this.props.data.claimDAI / (Number(this.props.data.DAIonPool) + Number(this.props.data.claimDAI))).toFixed(2) * 100 < 100 ?
-                                                    '95'
+                                                Number(this.props.data.DAIonPool) === 0 ?
+                                                    '100'
                                                     :
-                                                    (this.props.data.claimDAI / (Number(this.props.data.DAIonPool) + Number(this.props.data.claimDAI))).toFixed(2) * 100
+                                                    (this.props.data.claimDAI / (Number(this.props.data.DAIonPool) + Number(this.props.data.claimDAI))).toFixed(2) * 100 >= 95 ?
+                                                        '95'
+                                                        :
+                                                        (this.props.data.claimDAI / (Number(this.props.data.DAIonPool) + Number(this.props.data.claimDAI))).toFixed(2) * 100    
                                             :
                                             '0'
                                     }
@@ -68,10 +71,13 @@ export default class Header extends React.Component {
                                             ((this.props.data.claimPAX / (Number(this.props.data.PAXonPool) + Number(this.props.data.claimPAX))).toFixed(2) * 100) < 5 ?
                                                 '5'
                                                 :
-                                                (this.props.data.claimPAX / (Number(this.props.data.PAXonPool) + Number(this.props.data.claimPAX))).toFixed(2) * 100 >= 95 && (this.props.data.claimPAX / (Number(this.props.data.PAXonPool) + Number(this.props.data.claimPAX))).toFixed(2) * 100 < 100 ?
-                                                    '95'
+                                                Number(this.props.data.PAXonPool) === 0 ?
+                                                    '100'
                                                     :
-                                                    (this.props.data.claimPAX / (Number(this.props.data.PAXonPool) + Number(this.props.data.claimPAX))).toFixed(2) * 100
+                                                    (this.props.data.claimPAX / (Number(this.props.data.PAXonPool) + Number(this.props.data.claimPAX))).toFixed(2) * 100 >= 95 ?
+                                                        '95'
+                                                        :
+                                                        (this.props.data.claimPAX / (Number(this.props.data.PAXonPool) + Number(this.props.data.claimPAX))).toFixed(2) * 100
                                             :
                                             '0'
                                     }
@@ -104,10 +110,13 @@ export default class Header extends React.Component {
                                             ((this.props.data.claimTUSD / (Number(this.props.data.TUSDonPool) + Number(this.props.data.claimTUSD))).toFixed(2) * 100) < 5 ?
                                                 '5'
                                                 :
-                                                (this.props.data.claimTUSD / (Number(this.props.data.TUSDonPool) + Number(this.props.data.claimTUSD))).toFixed(2) * 100 >= 95 && (this.props.data.claimTUSD / (Number(this.props.data.TUSDonPool) + Number(this.props.data.claimTUSD))).toFixed(2) * 100 < 100 ?
-                                                    '95'
+                                                Number(this.props.data.TUSDonPool) === 0 ?
+                                                    '100'
                                                     :
-                                                    (this.props.data.claimTUSD / (Number(this.props.data.TUSDonPool) + Number(this.props.data.claimTUSD))).toFixed(2) * 100
+                                                    (this.props.data.claimTUSD / (Number(this.props.data.TUSDonPool) + Number(this.props.data.claimTUSD))).toFixed(2) * 100 >= 95 ?
+                                                        '95'
+                                                        :
+                                                        (this.props.data.claimTUSD / (Number(this.props.data.TUSDonPool) + Number(this.props.data.claimTUSD))).toFixed(2) * 100
                                             :
                                             '0'
                                     }
@@ -142,10 +151,13 @@ export default class Header extends React.Component {
                                             ((this.props.data.claimUSDC / (Number(this.props.data.USDConPool) + Number(this.props.data.claimUSDC))).toFixed(2) * 100) < 5 ?
                                                 '5'
                                                 :
-                                                (this.props.data.claimUSDC / (Number(this.props.data.USDConPool) + Number(this.props.data.claimUSDC))).toFixed(2) * 100 >= 95 && (this.props.data.claimUSDC / (Number(this.props.data.USDConPool) + Number(this.props.data.claimUSDC))).toFixed(2) * 100 < 100 ?
-                                                    '95'
+                                                Number(this.props.data.USDConPool) === 0 ?
+                                                    '100'
                                                     :
-                                                    (this.props.data.claimUSDC / (Number(this.props.data.USDConPool) + Number(this.props.data.claimUSDC))).toFixed(2) * 100
+                                                    (this.props.data.claimUSDC / (Number(this.props.data.USDConPool) + Number(this.props.data.claimUSDC))).toFixed(2) * 100 >= 95 ?
+                                                        '95'
+                                                        :
+                                                        (this.props.data.claimUSDC / (Number(this.props.data.USDConPool) + Number(this.props.data.claimUSDC))).toFixed(2) * 100
                                             :
                                             '0'
                                     }
