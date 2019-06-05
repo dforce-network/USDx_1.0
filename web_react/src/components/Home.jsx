@@ -225,7 +225,7 @@ export default class Home extends React.Component {
                                             onClick={() => { this.claim() }}
                                             variant="contained"
                                             color="secondary"
-                                            // disabled={this.state.couldDeposit ? false : true}
+                                            disabled={this.state.couldClaim ? false : true}
                                             fullWidth={true}
                                         >
                                             CLAIM
@@ -631,10 +631,17 @@ export default class Home extends React.Component {
     getUserMaxToClaim () {
         this.contractProtocol.getUserMaxToClaim.call((err, ret)=>{
             // console.log(err, ret);
-            if (ret) {
+            if (ret && ret.c[0] > 0) {
                 this.setState({
                     ...this.state,
-                    userMaxToClaim: this.formatNumber(ret)
+                    userMaxToClaim: this.formatNumber(ret),
+                    couldClaim: true
+                })
+            }else {
+                this.setState({
+                    ...this.state,
+                    userMaxToClaim: '0.00',
+                    couldClaim: false
                 })
             }
         })
@@ -2977,7 +2984,7 @@ export default class Home extends React.Component {
                     errTips: false,
                     toDepositNum: val
                 })
-            } else if (val === '') {
+            } else if (val === '' || Number(val) === 0) {
                 this.setState({
                     ...this.state,
                     couldDeposit: false,
@@ -3002,7 +3009,7 @@ export default class Home extends React.Component {
                     errTips: false,
                     toDepositNum: val
                 })
-            } else if (val === '') {
+            } else if (val === '' || Number(val) === 0) {
                 this.setState({
                     ...this.state,
                     couldDeposit: false,
@@ -3027,7 +3034,7 @@ export default class Home extends React.Component {
                     errTips: false,
                     toDepositNum: val
                 })
-            } else if (val === '') {
+            } else if (val === '' || Number(val) === 0) {
                 this.setState({
                     ...this.state,
                     couldDeposit: false,
@@ -3052,7 +3059,7 @@ export default class Home extends React.Component {
                     errTips: false,
                     toDepositNum: val
                 })
-            } else if (val === '') {
+            } else if (val === '' || Number(val) === 0) {
                 this.setState({
                     ...this.state,
                     couldDeposit: false,
@@ -3806,7 +3813,7 @@ export default class Home extends React.Component {
                 USDxToTUSD: '',
                 USDxToUSDC: ''
             })
-            if (val === '') {
+            if (val === '' || Number(val) === 0) {
                 this.setState({
                     ...this.state,
                     errTipsDestroy: false,
