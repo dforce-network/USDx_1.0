@@ -10,13 +10,6 @@ const BN = require('bn.js');
 const MathTool = require('./helpers/MathTool');
 const DataMethod = require('./helpers/DataMethod');
 
-// var collateralNames = new Array('DAI', 'PAX', 'TUSD', 'USDC', 'DAITEST', 'PAXTEST', 'TUSDTEST', 'USDCTEST');
-// var collateralNames = new Array('DAI', 'PAX', 'TUSD', 'USDC');
-
-// var weightTest = new Array(10, 20, 30, 40, 50, 60, 70, 80, 90, 100);
-// var weightTest = new Array(4, 3, 2, 1);
-// var weightTest = new Array(10, 30, 30, 30);
-
 var runTypeArr = new Array('setSection', 'setBackupSection');
 var runSetBackup = 5;
 var runDataList = [];
@@ -45,53 +38,13 @@ contract('DFStore', accounts => {
             var setBackupGasUsed = 0;
 
             var recordMintedPosition = new BN(0);
-            var recordBurnedPosition = new BN(0);
-            var recordMinted = {};
-            var recordMintedTotal = new BN(0);
-            var recordBurned = {};
-            var recordBurnedTotal = new BN(0);
-
-            var dfStoreTokenTotal = new BN(0);
-            var dfStoreTokenBalance = {};
-            var dfStoreLockTokenTotal = new BN(0);
-            var dfStoreLockTokenBalance = {};
-            var dfStoreAccountToken = {};
-            var dfStoreAccountTokenTotal = new BN(0);
-
-            var dfStoreAccountTokenOrigin = new BN(0);
-            var dfStoreAccountTokenCurrent = new BN(0);
-
-            var dfStoreAccountTokenTotalOrigin = new BN(0);
-            var dfStoreAccountTokenTotalCurrent = new BN(0);
-
-            var dfStoreTokenBalanceOrigin = new BN(0);
-            var dfStoreTokenBalanceCurrent = new BN(0);
-
-            var dfStoreLockTokenBalanceOrigin = new BN(0);
-            var dfStoreLockTokenBalanceCurrent = new BN(0);
-
-            var dfStoreLockTokenTotalOrigin = new BN(0);
-            var dfStoreLockTokenTotalCurrent = new BN(0);
-
+            
             var dfStoreMintPosition = new BN(0);
-            var dfStoreMinted = new BN(0);
-            var dfStoreMintedTotal = new BN(0);
-            var dfStoreBurnPosition = new BN(0);
-            var dfStoreBurn = new BN(0);
-            var dfStoreBurnTotal = new BN(0);
-
             var dfStoreTokenAddress = [];
             var dfStoreTokenWeight = [];
             var dfStoreBackupData = {};
-
-            var burnedTotalOrigin = new BN(0);
-            var burnedOrigin = new BN(0);
-            var burnedTotalCurrent = new BN(0);
-            var burnedCurrent = new BN(0);
-
-            var minBurnAmount = new BN(0);
-
-            var balanceOfTokens = new BN(0);
+            var dfStoreSecListBackup = {};
+            var dfStoreBackupIndex = new BN(0);
         }
 
         it('Init the deploy contract', async () => {
@@ -134,30 +87,8 @@ contract('DFStore', accounts => {
             
             owner = accounts[0];
 
-            recordToken = {};
-            recordLockToken = {};
-            recordAccountMap = {};
-            recordAccountTotalMap = {};
-            recordTokenTotal = new BN(0);
-
-            recordMintedPosition = new BN(0);
-            recordBurnedPosition = new BN(0);
-            recordMinted = {};
-            recordMintedTotal = new BN(0);
-            recordBurned = {};
-            recordBurnedTotal = new BN(0);
-
-            recordDfCollateralToken = {};
-
-            depositGasUsed = 0;
-            destroyGasUsed = 0;
-            withdrawGasUsed = 0;
-            updateGasUsed = 0;
-
-            depositGasData = [];
-            destroyGasData = [];
-            withdrawGasData = [];
-            updateGasData = [];
+            setSectionGasUsed = 0;
+            setBackupGasUsed = 0;
             
             console.log('DFStore init finish:' + dfStore.address);
         });
@@ -176,7 +107,7 @@ contract('DFStore', accounts => {
                 dfStoreIndex = dfStoreTimes % runConfig[configIndex]['data'].length;
                 runType = runConfig[configIndex]['data'][dfStoreIndex].hasOwnProperty('type') ? 
                     runConfig[configIndex]['data'][dfStoreIndex]['type'] : 
-                    (dfStoreTimes > 0 && (dfStoreTimes % runSetBackup) == 0  ? runTypeArr[4] : runTypeArr[MathTool.randomNum(0, runTypeArr.length - 1)]);
+                    (dfStoreTimes > 0 && (dfStoreTimes % runSetBackup) == 0  ? runTypeArr[1] : runTypeArr[MathTool.randomNum(0, runTypeArr.length - 2)]);
 
                 var runTimes = 1;
                 if(runConfig[configIndex]['data'][dfStoreIndex].hasOwnProperty('data')){
@@ -196,7 +127,8 @@ contract('DFStore', accounts => {
                             
                             tokenWeightListNew = weightTest;
                             tokenAddressIndex = DataMethod.createIndex(collateralAddress, tokenWeightListNew.length - 1, tokenWeightListNew.length - 1);
-                            tokenAddressIndex.push(0);
+                            tokenAddressIndex.push(-1);
+                            var randomFlag = true;
                             
                             conditionIndex = condition % runConfig[configIndex]['data'][dfStoreIndex]['data'].length;
                             if(runConfig[configIndex]['data'][dfStoreIndex].hasOwnProperty('data')){
@@ -205,6 +137,7 @@ contract('DFStore', accounts => {
 
                                     tokenAddressIndex = [];
                                     tokenAddressIndex = runConfig[configIndex]['data'][dfStoreIndex]['data'][conditionIndex]['tokens'];
+                                    randomFlag = false;
                                 }
                                 
                                 if (runConfig[configIndex]['data'][dfStoreIndex]['data'][conditionIndex].hasOwnProperty('weight')) {
@@ -217,7 +150,7 @@ contract('DFStore', accounts => {
                                 var collateralAddressLength = collateralAddress.length;
                                 for (let index = 0; index < tokenAddressIndex.length; index++) {
                                     
-                                    if (tokenAddressIndex[index] == 0 || tokenAddressIndex[index] > collateralAddressLength) {
+                                    if (tokenAddressIndex[index] <= (randomFlag ?  -1 : 0) || tokenAddressIndex[index] > collateralAddressLength) {
 
                                         var nameIndex = MathTool.randomNum(0, collateralNames.length - 1);
                                         var collaterals = await Collaterals.new(collateralNames[nameIndex] + collateralIndex,
@@ -237,7 +170,7 @@ contract('DFStore', accounts => {
                                         
                                     }else{
 
-                                        tokenAddressList.push(collateralAddress[tokenAddressIndex[index] - 1]);
+                                        tokenAddressList.push(collateralAddress[tokenAddressIndex[index] - (randomFlag ?  0 : 1)]);
                                     }
                                 }
                                 
@@ -247,8 +180,11 @@ contract('DFStore', accounts => {
                                 }
                             }
                             
+                            console.log('tokenAddressIndex:');
                             console.log(tokenAddressIndex);
+                            console.log('tokenWeight:');
                             console.log(tokenWeightListNew);
+                            console.log('\n');
 
                             console.log('collateralAddress:');
                             console.log(collateralAddress);
@@ -337,7 +273,8 @@ contract('DFStore', accounts => {
                             
                             tokenWeightListNew = weightTest;
                             tokenAddressIndex = DataMethod.createIndex(collateralAddress, tokenWeightListNew.length - 1, tokenWeightListNew.length - 1);
-                            tokenAddressIndex.push(0);
+                            tokenAddressIndex.push(-1);
+                            var randomFlag = true;
 
                             dfStoreMintPosition = await dfStore.getMintPosition.call();
                             mintedPosition = MathTool.randomNum(0, Number(dfStoreMintPosition));
@@ -349,6 +286,7 @@ contract('DFStore', accounts => {
 
                                     tokenAddressIndex = [];
                                     tokenAddressIndex = runConfig[configIndex]['data'][dfStoreIndex]['data'][conditionIndex]['tokens'];
+                                    randomFlag = false;
                                 }
                                 
                                 if (runConfig[configIndex]['data'][dfStoreIndex]['data'][conditionIndex].hasOwnProperty('weight')) {
@@ -367,7 +305,7 @@ contract('DFStore', accounts => {
                                 var collateralAddressLength = collateralAddress.length;
                                 for (let index = 0; index < tokenAddressIndex.length; index++) {
                                     
-                                    if (tokenAddressIndex[index] == 0 || tokenAddressIndex[index] > collateralAddressLength) {
+                                    if (tokenAddressIndex[index] <= (randomFlag ?  -1 : 0) || tokenAddressIndex[index] > collateralAddressLength) {
 
                                         var nameIndex = MathTool.randomNum(0, collateralNames.length - 1);
                                         var collaterals = await Collaterals.new(collateralNames[nameIndex] + collateralIndex,
@@ -387,7 +325,7 @@ contract('DFStore', accounts => {
                                         
                                     }else{
 
-                                        tokenAddressList.push(collateralAddress[tokenAddressIndex[index] - 1]);
+                                        tokenAddressList.push(collateralAddress[tokenAddressIndex[index] - (randomFlag ?  0 : 1)]);
                                     }
                                 }
                                 
@@ -396,9 +334,18 @@ contract('DFStore', accounts => {
                                     tokenWeightListNew = DataMethod.createData(weightTest, tokenAddressList.length, tokenAddressList.length);
                                 }
                             }
+
+                            console.log('dfStore mint position:');
+                            console.log(dfStoreMintPosition.toString());
+                            console.log('set backup position:');
+                            console.log(mintedPosition);
+                            console.log('\n');
                             
+                            console.log('tokenAddressIndex:');
                             console.log(tokenAddressIndex);
+                            console.log('tokenWeight:');
                             console.log(tokenWeightListNew);
+                            console.log('\n');
 
                             console.log('collateralAddress:');
                             console.log(collateralAddress);
@@ -418,7 +365,8 @@ contract('DFStore', accounts => {
                             runData['dfStore'] = dfStoreTimes + 1;
                             runData['runTimes'] = condition + 1;
                             runData['type'] = runType;
-                            runData['position'] = mintedPosition;
+                            runData['set position'] = mintedPosition;
+                            runData['dfStore mint position'] = dfStoreMintPosition.toString();
                             runData['tokens'] = tokenAddressIndex;
                             runData['weight'] = tokenWeightListNew;
                             try {
@@ -446,34 +394,30 @@ contract('DFStore', accounts => {
                             }
                             
                             dfStoreBackupData = await dfStore.getBackupSectionData.call(new BN(mintedPosition.toString()));
+                            dfStoreBackupIndex = await dfStore.getBackupSectionIndex.call(dfStoreBackupData[0]);
+                            dfStoreSecListBackup = await dfStore.secListBackup.call(dfStoreBackupIndex);
+
                             console.log('dfStore backup data :');
                             console.log(dfStoreBackupData);
+                            console.log(dfStoreBackupData[0]);
+                            console.log(dfStoreBackupData[1]);
+                            console.log(dfStoreBackupData[2]);
                             console.log('\n');
-                            // assert.equal(dfStoreMintPosition.toString(), recordMintedPosition.toString());
+                            console.log('dfStore backup index :');
+                            console.log(dfStoreBackupIndex.toString());
+                            console.log('dfStore secListBackup :');
+                            console.log(dfStoreSecListBackup);
+                            console.log('\n');
+
+                            assert.equal(dfStoreBackupData[0].toString(), mintedPosition.toString());
+                            assert.equal(dfStoreBackupData[0].toString(), dfStoreSecListBackup['backupIdx'].toString());
+
+                            for (let index = 0; index < dfStoreBackupData[1].length; index++) {
+
+                                assert.equal(dfStoreBackupData[1][index], tokenAddressList[index]);
+                                assert.equal(dfStoreBackupData[2][index].toString(), tokenWeightList[index].toString());
+                            }
                             
-                            // dfStoreTokenAddress = await dfStore.getSectionToken.call(dfStoreMintPosition);
-                            // console.log('dfStore collateral address :');
-                            // console.log(dfStoreTokenAddress);
-                            // console.log('\n');
-
-                            // dfStoreTokenWeight = await dfStore.getSectionWeight.call(dfStoreMintPosition);
-                            // console.log('dfStore tokens weight :');
-                            // console.log(dfStoreTokenWeight);
-                            // console.log('\n');
-                            
-                            // for (let index = 0; index < dfStoreTokenAddress.length; index++) {
-                            //     assert.equal(dfStoreTokenAddress[index], tokenAddressList[index]);
-                            //     assert.equal(dfStoreTokenWeight[index].toString(), tokenWeightList[index].toString());
-                            // }
-
-                            // for (let index = 0; index < collateralAddress.length; index++) {
-
-                            //     assert.equal(await dfStore.getMintedToken.call(collateralAddress[index]), true);
-                            //     if (dfStoreTokenAddress.indexOf(collateralAddress[index]) >= 0)
-                            //         assert.equal(await dfStore.getMintingToken.call(collateralAddress[index]), true);
-                            //     else
-                            //         assert.equal(await dfStore.getMintingToken.call(collateralAddress[index]), false);
-                            // }
                             condition++;
                         }
                         break;
