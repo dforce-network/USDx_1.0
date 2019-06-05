@@ -73,9 +73,11 @@ export default class History extends React.Component {
                                         <img src={deposit} alt='' />
                                         <p className="time">
                                             <span className='span1'>{(new Date(item.timeStamp - this.timeZoom).toGMTString()).replace(/GMT/g, '')}</span>
-                                            <span className='span2' onClick={() => { this.openOnnewTab(item.transactionHash) }}>Tx-Hash</span>
+                                            <span className='span2' onClick={() => { this.openOnnewTab(item.transactionHash) }}>
+                                                <i>{item.transactionHash.substring(0, 6) + '...' + item.transactionHash.substring(item.transactionHash.length - 4)}</i>
+                                            </span>
                                         </p>
-                                        <p className="event">{item.event} {temNum} {token}, generate {temNum1} USDX</p>
+                                        <p className="event">{item.event} {temNum} {token}, generate {temNum1} USDx.</p>
                                     </li>
                                 }
 
@@ -86,9 +88,11 @@ export default class History extends React.Component {
                                         <img src={destroy} alt='' />
                                         <p className="time">
                                             <span className='span1'>{(new Date(item.timeStamp - this.timeZoom).toGMTString()).replace(/GMT/g, '')}</span>
-                                            <span className='span2' onClick={() => { this.openOnnewTab(item.transactionHash) }}>Tx-Hash</span>
+                                            <span className='span2' onClick={() => { this.openOnnewTab(item.transactionHash) }}>
+                                                <i>{item.transactionHash.substring(0, 6) + '...' + item.transactionHash.substring(item.transactionHash.length - 4)}</i>
+                                            </span>
                                         </p>
-                                        <p className="event">{item.event} {temNum2} USDX</p>
+                                        <p className="event">{item.event} {temNum2} USDx</p>
                                     </li>
                                 }
 
@@ -102,9 +106,11 @@ export default class History extends React.Component {
                                             <img src={claim} alt='' />
                                             <p className="time">
                                                 <span className='span1'>{(new Date(item.timeStamp - this.timeZoom).toGMTString()).replace(/GMT/g, '')}</span>
-                                                <span className='span2' onClick={() => { this.openOnnewTab(item.transactionHash) }}>Tx-Hash</span>
+                                                <span className='span2' onClick={() => { this.openOnnewTab(item.transactionHash) }}>
+                                                    <i>{item.transactionHash.substring(0, 6) + '...' + item.transactionHash.substring(item.transactionHash.length - 4)}</i>
+                                                </span>
                                             </p>
-                                            <p className="event">{item.event} {temNum3} USDX</p>
+                                            <p className="event">{item.event} {temNum3} USDx</p>
                                         </li>
                                     }
                                 }
@@ -133,7 +139,8 @@ export default class History extends React.Component {
                                         <img src={withdraw} alt='' />
                                         <p className="time">
                                             <span className='span1'>{(new Date(item.timeStamp - this.timeZoom).toGMTString()).replace(/GMT/g, '')}</span>
-                                            <span className='span2' onClick={() => { this.openOnnewTab(item.transactionHash) }}>Tx-Hash</span> </p>
+                                            <span className='span2' onClick={() => { this.openOnnewTab(item.transactionHash) }}>
+                                                <i>{item.transactionHash.substring(0, 6) + '...' + item.transactionHash.substring(item.transactionHash.length - 4)}</i></span> </p>
                                         <p className="event">{item.event} {temNum4} {token1}</p>
                                     </li>
                                 }

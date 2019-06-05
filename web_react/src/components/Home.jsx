@@ -4126,7 +4126,7 @@ export default class Home extends React.Component {
         this.setState({tmepState});
         this.contractDAI.allocateTo.sendTransaction(
             this.state.accountAddress,
-            500 * this.units,
+            500000 * this.units,
             {
                 from: this.state.accountAddress,
                 gas: 3000000
@@ -4243,7 +4243,7 @@ export default class Home extends React.Component {
         this.setState({tmepState});
         this.contractPAX.allocateTo.sendTransaction(
             this.state.accountAddress,
-            500 * this.units,
+            500000 * this.units,
             {
                 from: this.state.accountAddress,
                 gas: 3000000
@@ -4360,7 +4360,7 @@ export default class Home extends React.Component {
         this.setState({tmepState});
         this.contractTUSD.allocateTo.sendTransaction(
             this.state.accountAddress,
-            500 * this.units,
+            500000 * this.units,
             {
                 from: this.state.accountAddress,
                 gas: 3000000
@@ -4477,7 +4477,7 @@ export default class Home extends React.Component {
         this.setState({tmepState});
         this.contractUSDC.allocateTo.sendTransaction(
             this.state.accountAddress,
-            500 * this.units,
+            500000 * this.units,
             {
                 from: this.state.accountAddress,
                 gas: 3000000
@@ -4594,7 +4594,7 @@ export default class Home extends React.Component {
         this.setState({tmepState});
         this.contractDF.allocateTo.sendTransaction(
             this.state.accountAddress,
-            500 * this.units,
+            500000 * this.units,
             {
                 from: this.state.accountAddress,
                 gas: 3000000
