@@ -268,7 +268,7 @@ export default class Home extends React.Component {
                                     <div className="errtips" style={{ display: this.state.errTipsDestroy ? 'block' : 'none' }}>
                                         {/* <div className="errtips"> */}
                                         <h4>Reminder</h4>
-                                        Insufficient USDx.
+                                        {this.state.getDestroyThresholdBool? 'minimal amount to unconvert is 0.01 USDx.':'Insufficient USDx.'}
                                     </div>
                                     <div className="myBalanceOnPoolSection">
                                         <div className="title">Constituents to be returned:</div>
@@ -3786,7 +3786,7 @@ export default class Home extends React.Component {
         if (val.length > 16) {
             return;
         }
-        if (Number(val) > 0 && Number(val) <= Number(this.state.myUSDx) && Number(val) >= this.state.getDestroyThreshold) {
+        if (Number(val) > 0 && Number(val) <= Number(this.state.myUSDx) ) {
             var USDxToDAI = this.formatNumber(val * (this.state.sectionDAIBurning / this.state.tatolSectionBurning) * this.units);
             var USDxToPAX = this.formatNumber(val * (this.state.sectionPAXBurning / this.state.tatolSectionBurning) * this.units);
             var USDxToTUSD = this.formatNumber(val * (this.state.sectionTUSDBurning / this.state.tatolSectionBurning) * this.units);
@@ -3800,8 +3800,23 @@ export default class Home extends React.Component {
                 USDxToDAI: USDxToDAI,
                 USDxToPAX: USDxToPAX,
                 USDxToTUSD: USDxToTUSD,
-                USDxToUSDC: USDxToUSDC
+                USDxToUSDC: USDxToUSDC,
+                getDestroyThresholdBool: false
             })
+
+            if (Number(val) < Number(this.state.getDestroyThreshold)) {
+                this.setState({
+                    ...this.state,
+                    errTipsDestroy: true,
+                    couldDestroy: false,
+                    toDestroyNum: val,
+                    USDxToDAI: '',
+                    USDxToPAX: '',
+                    USDxToTUSD: '',
+                    USDxToUSDC: '',
+                    getDestroyThresholdBool: true
+                })
+            }
         } else {
             this.setState({
                 ...this.state,
@@ -3811,7 +3826,8 @@ export default class Home extends React.Component {
                 USDxToDAI: '',
                 USDxToPAX: '',
                 USDxToTUSD: '',
-                USDxToUSDC: ''
+                USDxToUSDC: '',
+                getDestroyThresholdBool: false
             })
             if (val === '' || Number(val) === 0) {
                 this.setState({
@@ -3822,7 +3838,8 @@ export default class Home extends React.Component {
                     USDxToDAI: '',
                     USDxToPAX: '',
                     USDxToTUSD: '',
-                    USDxToUSDC: ''
+                    USDxToUSDC: '',
+                    getDestroyThresholdBool: false
                 })
             }
         }
