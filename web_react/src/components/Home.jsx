@@ -161,6 +161,9 @@ export default class Home extends React.Component {
                 <React.Fragment>
                     {/* <Welcome ifShow={this.state.isConnected} connectMetamask={()=>{this.connectMetamask()}}/> */}
                     <Notify transcations={this.state.transcations} netType={this.state.netType}/>
+                    <div
+                        style={{height: '40px', background: 'rgba(249, 230, 198, 1)', textAlign: 'center', lineHeight: '40px', color: '#fff', fontSize: '24px', display: this.state.netType === 'Rinkeby'? 'none' : 'block'}}
+                    >pls switch to Rinkeby test net.</div>
                     <Header
                         status={this.state}
                         DisconnectMetamask={()=>{this.DisconnectMetamask()}}

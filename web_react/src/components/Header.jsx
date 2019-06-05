@@ -79,16 +79,6 @@ export default class Header extends React.Component {
                                     </span>
                                 </td>
                                 <td>
-                                    <span className="token">USDC</span>
-                                    <img style={{ display: this.props.status.approvedUSDC ? 'none' : 'inline-block' }} src={lock} alt="" onClick={() => { this.approve('USDC') }} />
-                                    <img style={{ display: this.props.status.approvedUSDC ? 'inline-block' : 'none' }} src={unlock} alt="" onClick={() => { this.lock('USDC') }} />
-                                    <span onClick={() => { this.allocateTo('USDC')}} className="faucet">Faucet</span>
-                                    <span className="balance">
-                                        {this.props.status.myUSDC ? this.props.status.myUSDC.split('.')[0] : '0'}
-                                        <i>{this.props.status.myUSDC ? '.' + this.props.status.myUSDC.split('.')[1] : '.00'}</i>
-                                    </span>
-                                </td>
-                                <td className='noborder'>
                                     <span className="token">TUSD</span>
                                     <img style={{ display: this.props.status.approvedTUSD ? 'none' : 'inline-block' }} src={lock} alt="" onClick={() => { this.approve('TUSD') }} />
                                     <img style={{ display: this.props.status.approvedTUSD ? 'inline-block' : 'none' }} src={unlock} alt="" onClick={() => { this.lock('TUSD') }} />
@@ -96,6 +86,16 @@ export default class Header extends React.Component {
                                     <span className="balance">
                                         {this.props.status.myTUSD ? this.props.status.myTUSD.split('.')[0] : '0'}
                                         <i>{this.props.status.myTUSD ? '.' + this.props.status.myTUSD.split('.')[1] : '.00'}</i>
+                                    </span>
+                                </td>
+                                <td className='noborder'>
+                                    <span className="token">USDC</span>
+                                    <img style={{ display: this.props.status.approvedUSDC ? 'none' : 'inline-block' }} src={lock} alt="" onClick={() => { this.approve('USDC') }} />
+                                    <img style={{ display: this.props.status.approvedUSDC ? 'inline-block' : 'none' }} src={unlock} alt="" onClick={() => { this.lock('USDC') }} />
+                                    <span onClick={() => { this.allocateTo('USDC')}} className="faucet">Faucet</span>
+                                    <span className="balance">
+                                        {this.props.status.myUSDC ? this.props.status.myUSDC.split('.')[0] : '0'}
+                                        <i>{this.props.status.myUSDC ? '.' + this.props.status.myUSDC.split('.')[1] : '.00'}</i>
                                     </span>
                                 </td>
                             </tr>
