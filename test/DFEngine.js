@@ -1591,7 +1591,8 @@ contract('DFEngine', accounts => {
 
                             tokenWeightListNew = weightTest;
                             tokenAddressIndex = DataMethod.createIndex(collateralAddress, tokenWeightListNew.length - 1, tokenWeightListNew.length - 1);
-                            tokenAddressIndex.push(0);
+                            tokenAddressIndex.push(-1);
+                            var randomFlag = true;
                             
                             conditionIndex = condition % runConfig[configIndex]['data'][dfEngineIndex]['data'].length;
                             if(runConfig[configIndex]['data'][dfEngineIndex].hasOwnProperty('data')){
@@ -1600,6 +1601,7 @@ contract('DFEngine', accounts => {
 
                                     tokenAddressIndex = [];
                                     tokenAddressIndex = runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['tokens'];
+                                    randomFlag = false;
                                 }
                                 
                                 if (runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex].hasOwnProperty('weight')) {
@@ -1612,7 +1614,7 @@ contract('DFEngine', accounts => {
                                 var collateralAddressLength = collateralAddress.length;
                                 for (let index = 0; index < tokenAddressIndex.length; index++) {
                                     
-                                    if (tokenAddressIndex[index] == 0 || tokenAddressIndex[index] > collateralAddressLength) {
+                                    if (tokenAddressIndex[index] <= (randomFlag ?  -1 : 0) || tokenAddressIndex[index] > collateralAddressLength) {
 
                                         var nameIndex = MathTool.randomNum(0, collateralNames.length - 1);
                                         var collaterals = await Collaterals.new(collateralNames[nameIndex] + collateralIndex,
@@ -1632,7 +1634,7 @@ contract('DFEngine', accounts => {
                                         
                                     }else{
 
-                                        tokenAddressList.push(collateralAddress[tokenAddressIndex[index] - 1]);
+                                        tokenAddressList.push(collateralAddress[tokenAddressIndex[index] - (randomFlag ?  0 : 1)]);
                                     }
                                 }
                                 
