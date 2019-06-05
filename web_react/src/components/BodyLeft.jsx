@@ -1,7 +1,6 @@
 // Libraries
 import React from "react";
-
-import { Tooltip, Progress } from 'antd';
+import { Tooltip, Progress, Button } from 'antd';
 
 // images
 import dai from '../assets/img/dai.png';
@@ -14,7 +13,12 @@ export default class Header extends React.Component {
     render() {
         return (
             <div className="bodyleft">
-                <div className="title">Constituents Pending Pool:</div>
+                <div className="title">
+                    <Tooltip placement="bottomLeft" title='Outstanding constituents pending for conversion due to inventory shortage and allocated USDx to be claimed by contributors of each constituent.'>
+                        <Button></Button>
+                    </Tooltip>
+                    Constituents Pending Pool:
+                </div>
                 <div className="pool">
                     <div className="leftSection">
                         {this.props.data.sectionDAI ? (this.props.data.sectionDAI * 100 / this.props.data.tatolSection).toFixed() : '-'}%
@@ -39,7 +43,7 @@ export default class Header extends React.Component {
                                                     (this.props.data.claimDAI / (Number(this.props.data.DAIonPool) + Number(this.props.data.claimDAI))).toFixed(2) * 100 >= 95 ?
                                                         '95'
                                                         :
-                                                        (this.props.data.claimDAI / (Number(this.props.data.DAIonPool) + Number(this.props.data.claimDAI))).toFixed(2) * 100    
+                                                        (this.props.data.claimDAI / (Number(this.props.data.DAIonPool) + Number(this.props.data.claimDAI))).toFixed(2) * 100
                                             :
                                             '0'
                                     }
@@ -173,7 +177,12 @@ export default class Header extends React.Component {
                 </div>
 
                 <div className="totalUSDx">
-                    <div className="title">Total USDx Outstanding:</div>
+                    <div className="title">
+                        <Tooltip placement="bottomLeft" title='Total USDx minted (always identical to the sum total of collaterals)'>
+                            <Button></Button>
+                        </Tooltip>
+                        Total USDx Outstanding:
+                    </div>
                     <div className="usdxNum">
                         <span>{this.props.data.totalSupplyUSDx ? this.props.data.totalSupplyUSDx.split('.')[0] : '0'}</span>
                         <span className="sectionDot">{this.props.data.totalSupplyUSDx ? '.' + this.props.data.totalSupplyUSDx.split('.')[1] : '.00'}</span>
@@ -181,7 +190,12 @@ export default class Header extends React.Component {
                 </div>
 
                 <div className="globalpool">
-                    <div className="title">Global Collateral Pool:</div>
+                    <div className="title">
+                        <Tooltip placement="bottomLeft" title='Constituents locked as collaterals (the sum total is always idential to the amount of outstanding USDx)'>
+                            <Button></Button>
+                        </Tooltip>
+                        Global Collateral Pool:
+                    </div>
                     <div className="sectionToken">
                         <span className="token">DAI</span>
                         <span className="tokenNum">

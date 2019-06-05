@@ -33,6 +33,7 @@ import History from './History';
 import doubt from '../assets/img/doubt.png';
 import exchangeTo from '../assets/img/exchangeTo.png';
 import exchangeBack from '../assets/img/exchangeBack.png';
+import warningtips from '../assets/img/warningtips.png';
 
 
 
@@ -256,7 +257,7 @@ export default class Home extends React.Component {
                                     </div>
                                     <div className="tips tipsMax">
                                         <div className="imgWrap">
-                                            <img src={doubt} alt="" />
+                                            <img src={warningtips} alt="" />
                                             <div className="detials">Please note that 0.1% of USDx equivalent of DF will be consumed for the reconversion of USDx.</div>
                                         </div>
                                         Fee in DF Token:
