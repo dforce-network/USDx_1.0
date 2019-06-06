@@ -161,9 +161,7 @@ export default class Home extends React.Component {
                 <React.Fragment>
                     {/* <Welcome ifShow={this.state.isConnected} connectMetamask={()=>{this.connectMetamask()}}/> */}
                     <Notify transcations={this.state.transcations} netType={this.state.netType}/>
-                    <div
-                        style={{height: '40px', background: 'rgba(249, 230, 198, 1)', textAlign: 'center', lineHeight: '40px', color: '#fff', fontSize: '24px', display: this.state.netType === 'Rinkeby'? 'none' : 'block'}}
-                    >pls switch to Rinkeby test net.</div>
+                    {/* <div style={{height: '40px', background: 'rgba(249, 230, 198, 1)', textAlign: 'center', lineHeight: '40px', color: '#fff', fontSize: '24px', display: this.state.netType === 'Rinkeby'? 'none' : 'block'}}>pls switch to Rinkeby test net.</div> */}
                     <Header
                         status={this.state}
                         DisconnectMetamask={()=>{this.DisconnectMetamask()}}
@@ -832,28 +830,28 @@ export default class Home extends React.Component {
                         this.setState({
                             ...this.state,
                             myDAIonPool: this.formatNumber(myBalance[i]),
-                            myDAIonPoolOrigin: myBalance[i].toFixed()
+                            myDAIonPoolOrigin: this.handleMaxWithdraw(myBalance[i].toString(10))
                         })
                     }
                     if (addressIDs[i] === this.addressPAX) {
                         this.setState({
                             ...this.state,
                             myPAXonPool: this.formatNumber(myBalance[i]),
-                            myPAXonPoolOrigin: myBalance[i].toFixed()
+                            myPAXonPoolOrigin: this.handleMaxWithdraw(myBalance[i].toString(10))
                         })
                     }
                     if (addressIDs[i] === this.addressTUSD) {
                         this.setState({
                             ...this.state,
                             myTUSDonPool: this.formatNumber(myBalance[i]),
-                            myTUSDonPoolOrigin: myBalance[i].toFixed()
+                            myTUSDonPoolOrigin: this.handleMaxWithdraw(myBalance[i].toString(10))
                         })
                     }
                     if (addressIDs[i] === this.addressUSDC) {
                         this.setState({
                             ...this.state,
                             myUSDConPool: this.formatNumber(myBalance[i]),
-                            myUSDConPoolOrigin: myBalance[i].toFixed()
+                            myUSDConPoolOrigin: this.handleMaxWithdraw(myBalance[i].toString(10))
                         })
                     }
                 }
@@ -2291,7 +2289,14 @@ export default class Home extends React.Component {
     }
 
 
-
+    handleMaxWithdraw(NumStr) {
+        if (NumStr.length < 18) {
+            NumStr = '00000000000000000' + NumStr;
+            return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - 18) + '.' + NumStr.substring(NumStr.length - 18)).toString(10);
+        }else {
+            return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - 18) + '.' + NumStr.substring(NumStr.length - 18)).toString(10);
+        }
+    }
 
 
     // adjustMaxToWithdraw
@@ -2299,25 +2304,25 @@ export default class Home extends React.Component {
         if (this.state.toWithdraw === 'DAI') {
             this.setState({
                 ...this.state,
-                toWithdrawNum: this.state.myDAIonPoolOrigin / (10 ** 10) / (10 ** 8)
+                toWithdrawNum: this.state.myDAIonPoolOrigin
             })
         }
         if (this.state.toWithdraw === 'PAX') {
             this.setState({
                 ...this.state,
-                toWithdrawNum: this.state.myPAXonPoolOrigin / (10 ** 10) / (10 ** 8)
+                toWithdrawNum: this.state.myPAXonPoolOrigin
             })
         }
         if (this.state.toWithdraw === 'TUSD') {
             this.setState({
                 ...this.state,
-                toWithdrawNum: this.state.myTUSDonPoolOrigin / (10 ** 10) / (10 ** 8)
+                toWithdrawNum: this.state.myTUSDonPoolOrigin
             })
         }
         if (this.state.toWithdraw === 'USDC') {
             this.setState({
                 ...this.state,
-                toWithdrawNum: this.state.myUSDConPoolOrigin / (10 ** 10) / (10 ** 8)
+                toWithdrawNum: this.state.myUSDConPoolOrigin
             })
         }
 
@@ -2327,7 +2332,7 @@ export default class Home extends React.Component {
     }
     // withdraw number check
     withdrawNumChange (val) {
-        if (val.length > 16) {
+        if (val.length > 20) {
             return;
         }
         if (this.state.toWithdraw === 'DAI') {
