@@ -1,8 +1,9 @@
 pragma solidity ^0.5.2;
 
 import '../update/DFUpgrader.sol';
+import '../utility/DSMath.sol';
 
-contract DFProtocol is DFUpgrader {
+contract DFProtocol is DFUpgrader, DSMath {
 
     event Deposit (address indexed _tokenID, address indexed _sender, uint _amount, uint _balance);
     event Withdraw(address indexed _tokenID, address indexed _sender, uint _amount, uint _balance);
@@ -66,5 +67,21 @@ contract DFProtocol is DFUpgrader {
 
     function getDestroyThreshold() public view returns (uint) {
         return iDFEngine.getDestroyThreshold();
+    }
+
+    function oneClickMinting(uint _feeTokenIdx, uint amount) public {
+        address[] memory _tokens;
+        uint[] memory _mintCW;
+        uint _sumMintCW;
+        uint _mintAmount;
+        (_tokens, _mintCW) = getMintingSection();
+        for (uint i = 0; i < _mintCW.length; i++) {
+            _sumMintCW = add(_sumMintCW, _mintCW[i]);
+        }
+        require(amount % _sumMintCW == 0, "OneClickMinting: amount error");
+        for (uint i = 0; i < _mintCW.length; i++) {
+            _mintAmount = add(_mintAmount, deposit(_tokens[i], _feeTokenIdx, div(mul(amount, _mintCW[i]), _sumMintCW)));
+        }
+        assert(_mintAmount >= amount);
     }
 }
