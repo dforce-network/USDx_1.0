@@ -49,6 +49,24 @@ runConfig = [
                 },
             ]
         },
+        {
+            'type':'oneClickMinting',
+            'data':[
+                {
+                    'accountAddress':1,
+                    'amount':11,
+                }
+            ]
+        },
+        {
+            'type':'oneClickMinting',
+            'data':[
+                {
+                    'accountAddress':1,
+                    'amount':12.1,
+                }
+            ]
+        },
     //section[1]                
         {
             'type':'updateSection',
@@ -59,7 +77,25 @@ runConfig = [
                     'weight':[1, 3],
                 },
             ]
-        },                
+        },
+        {
+            'type':'oneClickMinting',
+            'data':[
+                {
+                    'accountAddress':1,
+                    'amount':12,
+                }
+            ]
+        }, 
+        {
+            'type':'oneClickMinting',
+            'data':[
+                {
+                    'accountAddress':1,
+                    'amount':11,
+                }
+            ]
+        },               
         {
             'type':'deposit',
             // 'times':100,
@@ -82,6 +118,15 @@ runConfig = [
             ]
         }, 
         {
+            'type':'oneClickMinting',
+            'data':[
+                {
+                    'accountAddress':1,
+                    'amount':110,
+                }
+            ]
+        },
+        {
             'type':'withdraw',
             'data':[
                 {
@@ -92,6 +137,15 @@ runConfig = [
             ]
         }, 
         {
+            'type':'oneClickMinting',
+            'data':[
+                {
+                    'accountAddress':1,
+                    'amount':0.2,
+                }
+            ]
+        },
+        {
             'type':'withdraw',
             'data':[
                 {
@@ -101,6 +155,15 @@ runConfig = [
                 }
             ]
         }, 
+        {
+            'type':'oneClickMinting',
+            'data':[
+                {
+                    'accountAddress':1,
+                    'amount':15.3,
+                }
+            ]
+        },
         {
             'type':'destroy',
             'data':[
@@ -158,6 +221,15 @@ runConfig = [
                     'amount':1.9,
                 }
             ]
+        },
+        {
+            'type':'oneClickMinting',
+            'data':[
+                {
+                    'accountAddress':1,
+                    'amount':28,
+                }
+            ]
         },               
         {
             'type':'claim',
@@ -168,6 +240,15 @@ runConfig = [
                 {
                 'accountAddress':2   //return 空或0
                 },
+            ]
+        },
+        {
+            'type':'oneClickMinting',
+            'data':[
+                {
+                    'accountAddress':1,
+                    'amount':11,
+                }
             ]
         },
         {
@@ -197,6 +278,15 @@ runConfig = [
                     'tokenAddress':1,
                     'accountAddress':1,
                     'amount':0.4,
+                }
+            ]
+        },
+        {
+            'type':'oneClickMinting',
+            'data':[
+                {
+                    'accountAddress':1,
+                    'amount':110,
                 }
             ]
         }, 
@@ -240,6 +330,15 @@ runConfig = [
             ]
         },
         {
+            'type':'oneClickMinting',
+            'data':[
+                {
+                    'accountAddress':1,
+                    'amount':151,
+                }
+            ]
+        },
+        {
             'type':'destroy',
             'data':[
                 {
@@ -276,6 +375,15 @@ runConfig = [
             ]
         },
         {
+            'type':'oneClickMinting',
+            'data':[
+                {
+                    'accountAddress':1,
+                    'amount':200,
+                }
+            ]
+        },
+        {
             'type':'destroy',
             'data':[
                 {
@@ -303,11 +411,29 @@ runConfig = [
             ]
         },
         {
+            'type':'oneClickMinting',
+            'data':[
+                {
+                    'accountAddress':1,
+                    'amount':65,
+                }
+            ]
+        },
+        {
             'type':'destroy',
             'data':[
                 {
                     'accountAddress':3,
                     'amount':2.39,
+                }
+            ]
+        },
+        {
+            'type':'oneClickMinting',
+            'data':[
+                {
+                    'accountAddress':1,
+                    'amount':678,
                 }
             ]
         },
@@ -330,11 +456,29 @@ runConfig = [
             ]
         },
         {
+            'type':'oneClickMinting',
+            'data':[
+                {
+                    'accountAddress':1,
+                    'amount':98,
+                }
+            ]
+        },
+        {
             'type':'destroy',
             'data':[
                 {
                     'accountAddress':4,
                     'amount':2.39,
+                }
+            ]
+        },
+        {
+            'type':'oneClickMinting',
+            'data':[
+                {
+                    'accountAddress':1,
+                    'amount':852,
                 }
             ]
         },
@@ -401,6 +545,15 @@ runConfig = [
                     },
                 ]
             },
+            {
+                'type':'oneClickMinting',
+                'data':[
+                    {
+                        'accountAddress':1,
+                        'amount':96.3,
+                    }
+                ]
+            },
         //section[1]                
             {
                 'type':'updateSection',
@@ -411,7 +564,16 @@ runConfig = [
                         'weight':[1, 3],
                     },
                 ]
-            },                
+            },  
+            {
+                'type':'oneClickMinting',
+                'data':[
+                    {
+                        'accountAddress':1,
+                        'amount':8,
+                    }
+                ]
+            },              
             {
                 'type':'deposit',
                 // 'times':100,
@@ -434,6 +596,15 @@ runConfig = [
                 ]
             }, 
             {
+                'type':'oneClickMinting',
+                'data':[
+                    {
+                        'accountAddress':1,
+                        'amount':11,
+                    }
+                ]
+            },
+            {
                 'type':'withdraw',
                 'data':[
                     {
@@ -454,6 +625,15 @@ runConfig = [
                 ]
             }, 
             {
+                'type':'oneClickMinting',
+                'data':[
+                    {
+                        'accountAddress':1,
+                        'amount':5,
+                    }
+                ]
+            },
+            {
                 'type':'destroy',
                 'data':[
                     {
@@ -472,11 +652,29 @@ runConfig = [
                 ]
             },
             {
+                'type':'oneClickMinting',
+                'data':[
+                    {
+                        'accountAddress':1,
+                        'amount':672,
+                    }
+                ]
+            },
+            {
                 'type':'destroy',
                 'data':[
                     {
                         'accountAddress':3,
                         'amount':0.1,
+                    }
+                ]
+            },
+            {
+                'type':'oneClickMinting',
+                'data':[
+                    {
+                        'accountAddress':1,
+                        'amount':60,
                     }
                 ]
             },
@@ -501,6 +699,15 @@ runConfig = [
                 ]
             },
             {
+                'type':'oneClickMinting',
+                'data':[
+                    {
+                        'accountAddress':1,
+                        'amount':1000,
+                    }
+                ]
+            },
+            {
                 'type':'deposit',
                 // 'times':100,
                 'data':[
@@ -508,6 +715,24 @@ runConfig = [
                         'tokenAddress':2,
                         'accountAddress':2,
                         'amount':1.9,
+                    }
+                ]
+            },
+            {
+                'type':'oneClickMinting',
+                'data':[
+                    {
+                        'accountAddress':1,
+                        'amount':100,
+                    }
+                ]
+            },
+            {
+                'type':'oneClickMinting',
+                'data':[
+                    {
+                        'accountAddress':1,
+                        'amount':2000.3,
                     }
                 ]
             },               
@@ -522,6 +747,15 @@ runConfig = [
                     },
                 ]
             },
+            {
+                'type':'oneClickMinting',
+                'data':[
+                    {
+                        'accountAddress':1,
+                        'amount':20,
+                    }
+                ]
+            },
             //section[2]                
             {
                 'type':'updateSection',
@@ -531,6 +765,15 @@ runConfig = [
                         'tokens':[1, 2, 3],
                         'weight':[0.1, 0.3, 0.3],
                     },
+                ]
+            },
+            {
+                'type':'oneClickMinting',
+                'data':[
+                    {
+                        'accountAddress':1,
+                        'amount':7,
+                    }
                 ]
             }, 
             {
@@ -555,6 +798,15 @@ runConfig = [
                 ]
             },
             {
+                'type':'oneClickMinting',
+                'data':[
+                    {
+                        'accountAddress':1,
+                        'amount':14,
+                    }
+                ]
+            },
+            {
                 'type':'withdraw',
                 'data':[
                     {
@@ -575,6 +827,15 @@ runConfig = [
                 ]
             }, 
             {
+                'type':'oneClickMinting',
+                'data':[
+                    {
+                        'accountAddress':1,
+                        'amount':1.4,
+                    }
+                ]
+            },
+            {
                 'type':'withdraw',
                 'data':[
                     {
@@ -591,6 +852,15 @@ runConfig = [
                         'tokenAddress':3,
                         'accountAddress':3,
                         'amount':0.19,
+                    }
+                ]
+            },
+            {
+                'type':'oneClickMinting',
+                'data':[
+                    {
+                        'accountAddress':1,
+                        'amount':2.8,
                     }
                 ]
             }, 
@@ -615,6 +885,15 @@ runConfig = [
                 ]
             },
             {
+                'type':'oneClickMinting',
+                'data':[
+                    {
+                        'accountAddress':1,
+                        'amount':6.3,
+                    }
+                ]
+            },
+            {
                 'type':'destroy',
                 'data':[
                     {
@@ -633,11 +912,29 @@ runConfig = [
                 ]
             },
             {
+                'type':'oneClickMinting',
+                'data':[
+                    {
+                        'accountAddress':1,
+                        'amount':56,
+                    }
+                ]
+            },
+            {
                 'type':'destroy',
                 'data':[
                     {
                         'accountAddress':2,
                         'amount':6.8,
+                    }
+                ]
+            },
+            {
+                'type':'oneClickMinting',
+                'data':[
+                    {
+                        'accountAddress':1,
+                        'amount':11,
                     }
                 ]
             },
@@ -669,6 +966,15 @@ runConfig = [
                 ]
             },
             {
+                'type':'oneClickMinting',
+                'data':[
+                    {
+                        'accountAddress':1,
+                        'amount':69,
+                    }
+                ]
+            },
+            {
                 'type':'destroy',
                 'data':[
                     {
@@ -683,6 +989,15 @@ runConfig = [
                     {
                         'accountAddress':3,
                         'amount':4.79,
+                    }
+                ]
+            },
+            {
+                'type':'oneClickMinting',
+                'data':[
+                    {
+                        'accountAddress':1,
+                        'amount':89,
                     }
                 ]
             },
@@ -710,6 +1025,15 @@ runConfig = [
                     {
                         'accountAddress':4,
                         'amount':2.39,
+                    }
+                ]
+            },
+            {
+                'type':'oneClickMinting',
+                'data':[
+                    {
+                        'accountAddress':1,
+                        'amount':11.3,
                     }
                 ]
             },
