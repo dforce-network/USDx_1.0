@@ -1,15 +1,15 @@
-var usdxAddr = "0x3f999E82746Dfe08429fe338E758846faEd3e8e5";
+var usdxAddr = "0x614912e603d3e436a06C8Af114531672C1Ec7417";
 var dfAddr = "0x4AF82b7C2F049574C9fc742A896DAbEA379b7d51";
 
-var protocolAddr = "0x61F217204e51c9cb0A3B53f91c613d861e6f7c73";
-var storeAddr = "0xB2d0bB042E4F84DE393D34C00Aea7D146D6CBe4C";
-var poolAddr = "0x23083Ed7a998dEAD08e26fdF6da369d27B121528";
-var collateralAddr = "0x4fBddab2840FdBC516fED97c116323B2c41999D4";
-var fundsAddr = "0x892072cAD90E0451BC4f459F6b26FBd3E7701d59";
-var engineAddr = "0xf46c19780e49678224ff15C574eF563fEeAA3498";
-var guardAddr = "0x9e20202B010b0960D45b693Cf6265C47a148c0F2";
-var medianAddr = "0xdADbD64f7df40989D7d3CBeE0bCE264EbCD7699f";
-var feedAddr = "0x1606b4Ab7235480B41623dA10B6E78cf70d0E99E";
+var protocolAddr = "0x1ADb4438d172a99b473FE203c859A18c2a4BA821";
+var storeAddr = "0xA937395881C29c6105c6Bf9a65c0702110125B87";
+var poolAddr = "0xA0CCABACd7a0Bf3214C998AE50CfF0897948b071";
+var collateralAddr = "0x097406DCe77D405fd1d21C6aeE5cCFAa074c93F1";
+var fundsAddr = "0xB5C5110ff5d5Bf5c003c6286B78Bd824e6141889";
+var engineAddr = "0xdba9d97Fc74BF9e8F2Dd536177aCca838f8a3654";
+var guardAddr = "0x1871C81E269b0998564AEC4A4B0dE5677762172c";
+var medianAddr = "0x4496F3664B9fF038fBb5476ed156C6DD6497bdFe";
+var feedAddr = "0x35Dae8f90fe3B9a9983dAF1572Cd35221e4E9963";
 var msgSender = "0x9df7C98C933A0cB409606A3A24B1660a70283542";
 
 var contractUsdx = web3.eth.contract(usdxABI).at(usdxAddr);
@@ -230,7 +230,7 @@ function setDestroyFeeToken() {
   );
 }
 
-let th = new BN(Number(0.1 * 10 ** 18).toLocaleString().replace(/,/g, ''));
+let th = new BN(Number(0.001 * 10 ** 18).toLocaleString().replace(/,/g, ''));
 
 function setDestroyThreshold() {
   contractEngine.setDestroyThreshold.sendTransaction(
@@ -279,7 +279,7 @@ function setPricebyFeed() {
 }
 
 /*
-  user actions.
+  @USER actions.
 */
 function usdxBurnApprove() {
   contractUsdx.approvex.sendTransaction(engineAddr, {
@@ -429,6 +429,18 @@ function tryUSDXForDeposit() {
     500 * 1000000000000000000,
     function (err, ret) {
       console.log(ret.toFixed(), err);
+    }
+  );
+}
+
+function MintinOneKey() {
+  contractProtocol.oneClickMinting.sendTransaction(
+    0,
+    200 * 1000000000000000000, {
+      gas: 5000000
+    },
+    function (err, ret) {
+      console.log(ret, err);
     }
   );
 }

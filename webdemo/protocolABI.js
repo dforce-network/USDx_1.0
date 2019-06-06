@@ -201,6 +201,23 @@ var protocolABI = [{
     "anonymous": false,
     "inputs": [{
         "indexed": true,
+        "name": "_sender",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "OneClickMinting",
+    "type": "event",
+    "signature": "0x1a7a7967c94a832e574705bea4dcc16985f946a1a5c2fdf81a2d845027c1d873"
+  },
+  {
+    "anonymous": false,
+    "inputs": [{
+        "indexed": true,
         "name": "_msgSender",
         "type": "address"
       },
@@ -498,5 +515,23 @@ var protocolABI = [{
     "stateMutability": "view",
     "type": "function",
     "signature": "0x028e1161"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+        "name": "_feeTokenIdx",
+        "type": "uint256"
+      },
+      {
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "oneClickMinting",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x63bf444f"
   }
 ];
