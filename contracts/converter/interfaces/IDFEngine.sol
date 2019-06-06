@@ -14,4 +14,5 @@ contract IDFEngine {
     function getPrices(uint typeID) public returns (uint);
     function getFeeRateByID(uint typeID) public returns (uint);
     function getDestroyThreshold() public view returns (uint);
+    function oneClickMinting(address _sender, uint _feeTokenIdx, uint _amount) public;
 }

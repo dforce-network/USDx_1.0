@@ -8,6 +8,7 @@ contract DFProtocol is DFUpgrader {
     event Withdraw(address indexed _tokenID, address indexed _sender, uint _amount, uint _balance);
     event Destroy (address indexed _sender, uint _amount);
     event Claim   (address indexed _sender, uint _balance);
+    event OneClickMinting(address indexed _sender, uint _amount);
 
     function deposit(address _tokenID, uint _feeTokenIdx, uint _amount) public returns (uint){
         uint _balance = iDFEngine.deposit(msg.sender, _tokenID, _feeTokenIdx, _amount);
@@ -66,5 +67,10 @@ contract DFProtocol is DFUpgrader {
 
     function getDestroyThreshold() public view returns (uint) {
         return iDFEngine.getDestroyThreshold();
+    }
+
+    function oneClickMinting(uint _feeTokenIdx, uint _amount) public {
+        iDFEngine.oneClickMinting(msg.sender, _feeTokenIdx, _amount);
+        emit OneClickMinting(msg.sender, _amount);
     }
 }
