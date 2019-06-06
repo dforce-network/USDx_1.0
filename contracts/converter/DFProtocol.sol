@@ -1,14 +1,14 @@
 pragma solidity ^0.5.2;
 
 import '../update/DFUpgrader.sol';
-import '../utility/DSMath.sol';
 
-contract DFProtocol is DFUpgrader, DSMath {
+contract DFProtocol is DFUpgrader {
 
     event Deposit (address indexed _tokenID, address indexed _sender, uint _amount, uint _balance);
     event Withdraw(address indexed _tokenID, address indexed _sender, uint _amount, uint _balance);
     event Destroy (address indexed _sender, uint _amount);
     event Claim   (address indexed _sender, uint _balance);
+    event OneClickMinting(address indexed _sender, uint _amount);
 
     function deposit(address _tokenID, uint _feeTokenIdx, uint _amount) public returns (uint){
         uint _balance = iDFEngine.deposit(msg.sender, _tokenID, _feeTokenIdx, _amount);
@@ -69,19 +69,8 @@ contract DFProtocol is DFUpgrader, DSMath {
         return iDFEngine.getDestroyThreshold();
     }
 
-    function oneClickMinting(uint _feeTokenIdx, uint amount) public {
-        address[] memory _tokens;
-        uint[] memory _mintCW;
-        uint _sumMintCW;
-        uint _mintAmount;
-        (_tokens, _mintCW) = getMintingSection();
-        for (uint i = 0; i < _mintCW.length; i++) {
-            _sumMintCW = add(_sumMintCW, _mintCW[i]);
-        }
-        require(amount % _sumMintCW == 0, "OneClickMinting: amount error");
-        for (uint i = 0; i < _mintCW.length; i++) {
-            _mintAmount = add(_mintAmount, deposit(_tokens[i], _feeTokenIdx, div(mul(amount, _mintCW[i]), _sumMintCW)));
-        }
-        assert(_mintAmount >= amount);
+    function oneClickMinting(uint _feeTokenIdx, uint _amount) public {
+        iDFEngine.oneClickMinting(msg.sender, _feeTokenIdx, _amount);
+        emit OneClickMinting(msg.sender, _amount);
     }
 }
