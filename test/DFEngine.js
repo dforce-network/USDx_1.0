@@ -151,6 +151,12 @@ contract('DFEngine', accounts => {
             var accountTokenBalanceOrigin = new BN(0);
             var accountTokenBalanceCurrent = new BN(0);
 
+            var accountTokenBalanceMapOrigin = {};
+            var accountTokenBalanceMapCurrent = {};
+
+            var accountTokenTotalOrigin = new BN(0);
+            var accountTokenTotalCurrent = new BN(0);
+
             var burnedTotalOrigin = new BN(0);
             var burnedOrigin = new BN(0);
             var burnedTotalCurrent = new BN(0);
@@ -1582,18 +1588,12 @@ contract('DFEngine', accounts => {
                         while (condition < runTimes) {
                             console.log('config : ' + (configIndex + 1) + ' dfEngine : ' + (dfEngineTimes + 1) + ' runType : ' + runType + ' runTimes ' + (condition + 1) + '\n');
 
-                            // tokenAddress = tokenAddressList[MathTool.randomNum(0, tokenAddressList.length - 1)];
                             accountAddress = accounts[MathTool.randomNum(0, accounts.length - 1)];
                             amount = MathTool.randomNum(10, 500);
 
                             conditionIndex = condition % runConfig[configIndex]['data'][dfEngineIndex]['data'].length;
                             if(runConfig[configIndex]['data'][dfEngineIndex].hasOwnProperty('data')){
-                    
-                                // if (runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex].hasOwnProperty('tokenAddress')) {
-            
-                                //     tokenAddress = collateralAddress[runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['tokenAddress'] - 1];                        
-                                // }
-            
+
                                 if (runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex].hasOwnProperty('accountAddress')) {
                                     
                                     accountAddress = accounts[runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['accountAddress'] - 1];
@@ -1605,9 +1605,6 @@ contract('DFEngine', accounts => {
                                 }
                             }
                             var amountNB = new BN(Number(amount * 10 ** 18).toLocaleString().replace(/,/g,''));
-                            // console.log('deposit token index : ' + (collateralAddress.indexOf(tokenAddress) + 1));
-                            // console.log('deposit token name : ' + await collateralObject[tokenAddress].name.call());
-                            // console.log('deposit token address : ' + tokenAddress);
                             console.log('minting account index : ' + (accounts.indexOf(accountAddress) + 1));
                             console.log('minting account address : ' + accountAddress);
                             console.log('\n');
@@ -1618,25 +1615,8 @@ contract('DFEngine', accounts => {
                             console.log(amountNB.toString());
                             console.log('\n');
 
-                            for (let index = 0; index < tokenAddressList.length; index++) {
-                                accountTokenBalanceOrigin = await collateralObject[tokenAddressList[index]].balanceOf.call(accountAddress);
-                                await collateralObject[tokenAddressList[index]].approve(dfPool.address, amountNB, {from: accountAddress});
-                                console.log(await collateralObject[tokenAddressList[index]].name.call() + ' belance:');
-                                console.log(accountTokenBalanceOrigin);
-                                console.log(accountTokenBalanceOrigin.toString());
-                                console.log('\n');
-                                
-                            }
-                            
-
-                            // transactionData = await dfEngine.deposit(accountAddress, tokenAddress, amountNB, {from: accountAddress});
-                            // depositGasUsed = depositGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : depositGasUsed;
-                            // depositGasData[depositGasData.length] = transactionData.receipt.gasUsed;
-                            // console.log('dfEngine ' + (dfEngineTimes + 1) + ' ' + runType + ' runTimes ' + (condition + 1) + ' gasUsed:' + transactionData.receipt.gasUsed + '\n');
-
                             usdxTotalSupplyOrigin = await usdxToken.totalSupply.call();
                             usdxBalanceOrigin = await usdxToken.balanceOf.call(accountAddress);
-                            // calcDepositorMintTotal = await dfProtocol.getUSDXForDeposit.call(tokenAddress, amountNB, {from: accountAddress});
                             runData = {};
                             runData['dfEngine'] = dfEngineTimes + 1;
                             runData['runTimes'] = condition + 1;
@@ -1646,6 +1626,18 @@ contract('DFEngine', accounts => {
                             runData['amount'] = amount;
                             runData['amountNB'] = amountNB.toString();
                             // runData[await collateralObject[tokenAddress].name.call() + ' balance'] = accountTokenBalanceOrigin.toString();
+                            for (let index = 0; index < tokenAddressList.length; index++) {
+                                accountTokenBalanceMapOrigin[tokenAddressList[index]] = await collateralObject[tokenAddressList[index]].balanceOf.call(accountAddress);
+                                accountTokenTotalOrigin = accountTokenTotalOrigin.add(accountTokenBalanceMapOrigin[tokenAddressList[index]]);
+                                await collateralObject[tokenAddressList[index]].approve(dfPool.address, new BN(0), {from: accountAddress});
+                                await collateralObject[tokenAddressList[index]].approve(dfPool.address, amountNB, {from: accountAddress});
+                                console.log(await collateralObject[tokenAddressList[index]].name.call() + ' belance:');
+                                console.log(accountTokenBalanceOrigin);
+                                console.log(accountTokenBalanceOrigin.toString());
+                                console.log('\n');
+                                
+                            }
+
                             try {
                                 transactionData = await dfProtocol.oneClickMinting(new BN(0), amountNB, {from: accountAddress});
                                 oneClickMintingGasUsed = oneClickMintingGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : oneClickMintingGasUsed;
@@ -1901,7 +1893,7 @@ contract('DFEngine', accounts => {
                             assert.equal(usdxTotalSupply.toString(), dfCollateralTokenTotal.toString());
                             assert.equal(recordTokenTotal.toString(), dfCollateralTokenTotal.add(dfPoolTokenTotal).toString());
 
-                            assert.equal(usdxBalance.sub(usdxBalanceOrigin).toString(), calcDepositorMintTotal.toString());
+                            // assert.equal(usdxBalance.sub(usdxBalanceOrigin).toString(), calcDepositorMintTotal.toString());
                             
                             for (let index = 0; index < collateralAddress.length; index++) {
 
@@ -1918,12 +1910,12 @@ contract('DFEngine', accounts => {
                                         );
                                 }
 
-                                if (recordToken.hasOwnProperty(collateralAddress[index])) {
-                                    assert.equal(
-                                        dfStoreTokenBalance[collateralAddress[index]].toString(), 
-                                        recordToken[collateralAddress[index]].toString()
-                                        );
-                                }
+                                // if (recordToken.hasOwnProperty(collateralAddress[index])) {
+                                //     assert.equal(
+                                //         dfStoreTokenBalance[collateralAddress[index]].toString(), 
+                                //         recordToken[collateralAddress[index]].toString()
+                                //         );
+                                // }
 
                                 if (recordAccountMap.hasOwnProperty(collateralAddress[index])
                                     && recordAccountMap[collateralAddress[index]].hasOwnProperty(accountAddress)
@@ -1948,13 +1940,13 @@ contract('DFEngine', accounts => {
                             assert.equal(dfStoreMintPosition.toString(), recordMintedPosition.toString());
 
                             dfStoreMintedTotal = await dfStore.getTotalMinted.call();
-                            assert.equal(dfStoreMintedTotal.toString(), recordMintedTotal.toString());
+                            // assert.equal(dfStoreMintedTotal.toString(), recordMintedTotal.toString());
                             assert.equal((dfStoreMintedTotal.sub(await dfStore.getTotalBurned.call())).toString(), usdxTotalSupply.toString());
 
                             dfStoreMinted = await dfStore.getSectionMinted.call(dfStoreMintPosition);
-                            assert.equal(
-                                dfStoreMinted.toString(), 
-                                recordMinted.hasOwnProperty(recordMintedPosition) ? recordMinted[recordMintedPosition].toString() : '0');
+                            // assert.equal(
+                            //     dfStoreMinted.toString(), 
+                            //     recordMinted.hasOwnProperty(recordMintedPosition) ? recordMinted[recordMintedPosition].toString() : '0');
 
                             // assert.equal(
                             //     accountTokenBalanceOrigin.sub(amountNB).toString(),
