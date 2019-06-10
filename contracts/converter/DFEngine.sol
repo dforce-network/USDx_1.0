@@ -396,8 +396,7 @@ contract DFEngine is DSMath, DSAuth {
     }
 
     function getWithdrawBalances(address _depositor) public view returns(address[] memory, uint[] memory) {
-        uint position = dfStore.getMintPosition();
-        address[] memory tokens = dfStore.getSectionToken(position);
+        address[] memory tokens = dfStore.getMintedTokenList();
         uint[] memory weight = new uint[](tokens.length);
 
         for (uint i = 0; i < tokens.length; i++) {
