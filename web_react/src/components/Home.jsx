@@ -2,12 +2,9 @@
 import React from 'react';
 import DocuentTitle from 'react-document-title';
 import Cookie from 'react-cookies';
-
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-
-
 import 'antd/dist/antd.css';
 // import { Spin } from 'antd';
 import { Select } from 'antd';
@@ -52,6 +49,8 @@ export default class Home extends React.Component {
     units = 10 ** 18;
     tatolSection = 0;
     tatolSectionBurning = 0;
+    gasFee = 3000000;
+    faucetNum = 500000;
 
     theme = createMuiTheme({
         palette: {
@@ -1031,7 +1030,7 @@ export default class Home extends React.Component {
                 -1,
                 {
                     from: this.state.accountAddress,
-                    gas: 3000000
+                    gas: this.gasFee
                 },
                 (err, ret) => {
                     if (err) {
@@ -1139,7 +1138,7 @@ export default class Home extends React.Component {
                 -1,
                 {
                     from: this.state.accountAddress,
-                    gas: 3000000
+                    gas: this.gasFee
                 },
                 (err, ret) => {
                     if (err) {
@@ -1247,7 +1246,7 @@ export default class Home extends React.Component {
                 -1,
                 {
                     from: this.state.accountAddress,
-                    gas: 3000000
+                    gas: this.gasFee
                 },
                 (err, ret) => {
                     if (err) {
@@ -1355,7 +1354,7 @@ export default class Home extends React.Component {
                 -1,
                 {
                     from: this.state.accountAddress,
-                    gas: 3000000
+                    gas: this.gasFee
                 },
                 (err, ret) => {
                     if (err) {
@@ -1463,7 +1462,7 @@ export default class Home extends React.Component {
                 -1,
                 {
                     from: this.state.accountAddress,
-                    gas: 3000000
+                    gas: this.gasFee
                 },
                 (err, ret) => {
                     if (err) {
@@ -1571,7 +1570,7 @@ export default class Home extends React.Component {
                 -1,
                 {
                     from: this.state.accountAddress,
-                    gas: 3000000
+                    gas: this.gasFee
                 },
                 (err, ret) => {
                     if (err) {
@@ -1703,7 +1702,7 @@ export default class Home extends React.Component {
                 0,
                 {
                     from: this.state.accountAddress,
-                    gas: 3000000
+                    gas: this.gasFee
                 },
                 (err, ret) => {
                     if (err) {
@@ -1801,7 +1800,7 @@ export default class Home extends React.Component {
                 0,
                 {
                     from: this.state.accountAddress,
-                    gas: 3000000
+                    gas: this.gasFee
                 },
                 (err, ret) => {
                     if (err) {
@@ -1899,7 +1898,7 @@ export default class Home extends React.Component {
                 0,
                 {
                     from: this.state.accountAddress,
-                    gas: 3000000
+                    gas: this.gasFee
                 },
                 (err, ret) => {
                     if (err) {
@@ -1997,7 +1996,7 @@ export default class Home extends React.Component {
                 0,
                 {
                     from: this.state.accountAddress,
-                    gas: 3000000
+                    gas: this.gasFee
                 },
                 (err, ret) => {
                     if (err) {
@@ -2095,7 +2094,7 @@ export default class Home extends React.Component {
                 0,
                 {
                     from: this.state.accountAddress,
-                    gas: 3000000
+                    gas: this.gasFee
                 },
                 (err, ret) => {
                     if (err) {
@@ -2193,7 +2192,7 @@ export default class Home extends React.Component {
                 0,
                 {
                     from: this.state.accountAddress,
-                    gas: 3000000
+                    gas: this.gasFee
                 },
                 (err, ret) => {
                     if (err) {
@@ -2496,7 +2495,7 @@ export default class Home extends React.Component {
             num,
             {
                 from: this.state.accountAddress,
-                gas: 3000000
+                gas: this.gasFee
             },
             (err, ret) => {
                 if (err) {
@@ -2619,7 +2618,7 @@ export default class Home extends React.Component {
             num,
             {
                 from: this.state.accountAddress,
-                gas: 3000000
+                gas: this.gasFee
             },
             (err, ret) => {
                 if (err) {
@@ -2742,7 +2741,7 @@ export default class Home extends React.Component {
             num,
             {
                 from: this.state.accountAddress,
-                gas: 3000000
+                gas: this.gasFee
             },
             (err, ret) => {
                 if (err) {
@@ -2865,7 +2864,7 @@ export default class Home extends React.Component {
             num,
             {
                 from: this.state.accountAddress,
-                gas: 3000000
+                gas: this.gasFee
             },
             (err, ret) => {
                 if (err) {
@@ -3156,7 +3155,7 @@ export default class Home extends React.Component {
             num,
             {
                 from: this.state.accountAddress,
-                gas: 3000000
+                gas: this.gasFee
             },
             (err, ret) => {
                 if (err) {
@@ -3288,7 +3287,7 @@ export default class Home extends React.Component {
             num,
             {
                 from: this.state.accountAddress,
-                gas: 3000000
+                gas: this.gasFee
             },
             (err, ret) => {
                 if (err) {
@@ -3420,7 +3419,7 @@ export default class Home extends React.Component {
             num,
             {
                 from: this.state.accountAddress,
-                gas: 3000000
+                gas: this.gasFee
             },
             (err, ret) => {
                 if (err) {
@@ -3552,7 +3551,7 @@ export default class Home extends React.Component {
             num,
             {
                 from: this.state.accountAddress,
-                gas: 3000000
+                gas: this.gasFee
             },
             (err, ret) => {
                 if (err) {
@@ -3761,7 +3760,7 @@ export default class Home extends React.Component {
             this.state.toDestroyNum * this.units,
             {
                 from: this.state.accountAddress,
-                gas: 3000000
+                gas: this.gasFee
             },
             (err, ret) => {
                 if (err) {
@@ -3884,7 +3883,7 @@ export default class Home extends React.Component {
             0,
             {
                 from: this.state.accountAddress,
-                gas: 3000000
+                gas: this.gasFee
             },
             (err, ret) => {
                 if (err) {
@@ -4023,10 +4022,10 @@ export default class Home extends React.Component {
         this.setState({tmepState});
         this.contractDAI.allocateTo.sendTransaction(
             this.state.accountAddress,
-            500000 * this.units,
+            this.faucetNum * this.units,
             {
                 from: this.state.accountAddress,
-                gas: 3000000
+                gas: this.gasFee
             },
             (err, ret) => {
                 if (err) {
@@ -4140,10 +4139,10 @@ export default class Home extends React.Component {
         this.setState({tmepState});
         this.contractPAX.allocateTo.sendTransaction(
             this.state.accountAddress,
-            500000 * this.units,
+            this.faucetNum * this.units,
             {
                 from: this.state.accountAddress,
-                gas: 3000000
+                gas: this.gasFee
             },
             (err, ret) => {
                 if (err) {
@@ -4257,10 +4256,10 @@ export default class Home extends React.Component {
         this.setState({tmepState});
         this.contractTUSD.allocateTo.sendTransaction(
             this.state.accountAddress,
-            500000 * this.units,
+            this.faucetNum * this.units,
             {
                 from: this.state.accountAddress,
-                gas: 3000000
+                gas: this.gasFee
             },
             (err, ret) => {
                 if (err) {
@@ -4374,10 +4373,10 @@ export default class Home extends React.Component {
         this.setState({tmepState});
         this.contractUSDC.allocateTo.sendTransaction(
             this.state.accountAddress,
-            500000 * this.units,
+            this.faucetNum * this.units,
             {
                 from: this.state.accountAddress,
-                gas: 3000000
+                gas: this.gasFee
             },
             (err, ret) => {
                 if (err) {
@@ -4491,10 +4490,10 @@ export default class Home extends React.Component {
         this.setState({tmepState});
         this.contractDF.allocateTo.sendTransaction(
             this.state.accountAddress,
-            500000 * this.units,
+            this.faucetNum * this.units,
             {
                 from: this.state.accountAddress,
-                gas: 3000000
+                gas: this.gasFee
             },
             (err, ret) => {
                 if (err) {

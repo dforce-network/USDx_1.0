@@ -106,7 +106,7 @@ export default class Header extends React.Component {
                         <p className="title">
                             <span className="netdot" style={{ background: this.props.status.netTypeColor ? this.props.status.netTypeColor : '#fff' }}></span>
                             <span className="nettype">
-                                {this.props.status.netType ? this.props.status.netType : 'Disconnect'}
+                                {this.props.status.isConnected ? this.props.status.netType : 'Disconnect'}
                             </span>
                         </p>
                         <div className="logoin">
