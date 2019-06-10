@@ -431,4 +431,29 @@ contract DFEngine is DSMath, DSAuth {
 
         return _withdrawAmount;
     }
+
+    function oneClickMinting(address _depositor, uint _feeTokenIdx, uint _amount) public auth {
+        address[] memory _tokens;
+        uint[] memory _mintCW;
+        uint _sumMintCW;
+
+        (_tokens, _mintCW) = getMintingSection();
+        for (uint i = 0; i < _mintCW.length; i++) {
+            _sumMintCW = add(_sumMintCW, _mintCW[i]);
+        }
+        require(_amount % _sumMintCW == 0, "OneClickMinting: amount error");
+
+        _unifiedCommission(ProcessType.CT_DEPOSIT, _feeTokenIdx, _depositor, _amount);
+
+        for (uint i = 0; i < _mintCW.length; i++) {
+            require(dfPool.transferFromSenderToCol(_tokens[i], _depositor, div(mul(_amount, _mintCW[i]), _sumMintCW)),
+                    "ERC20 TransferFrom: not enough amount");
+        }
+
+        dfStore.addTotalMinted(_amount);
+        dfStore.addSectionMinted(_amount);
+        usdxToken.mint(address(dfPool), _amount);
+        checkUSDXTotalAndColTotal();
+        dfPool.transferOut(address(usdxToken), _depositor, _amount);
+    }
 }
