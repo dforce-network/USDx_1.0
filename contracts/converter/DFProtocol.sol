@@ -33,36 +33,36 @@ contract DFProtocol is DFUpgrader {
         return _balance;
     }
 
-    function getUSDXForDeposit(address tokenID, uint amount) public returns (uint) {
-        return iDFEngine.getDepositMaxMint(msg.sender, tokenID, amount);
+    function getUSDXForDeposit(address _tokenID, uint _amount) public view returns (uint) {
+        return iDFEngine.getDepositMaxMint(msg.sender, _tokenID, _amount);
     }
 
-    function getUserMaxToClaim() public returns (uint) {
+    function getUserMaxToClaim() public view returns (uint) {
         return iDFEngine.getMaxToClaim(msg.sender);
     }
 
-    function getColMaxClaim() public returns (address[] memory, uint[] memory) {
+    function getColMaxClaim() public view returns (address[] memory, uint[] memory) {
         return iDFEngine.getCollateralMaxClaim();
     }
 
-    function getMintingSection() public returns (address[] memory, uint[] memory) {
+    function getMintingSection() public view returns (address[] memory, uint[] memory) {
         return iDFEngine.getMintingSection();
     }
 
-    function getBurningSection() public returns (address[] memory, uint[] memory) {
+    function getBurningSection() public view returns (address[] memory, uint[] memory) {
         return iDFEngine.getBurningSection();
     }
 
-    function getUserWithdrawBalance() public returns (address[] memory, uint[] memory) {
+    function getUserWithdrawBalance() public view returns (address[] memory, uint[] memory) {
         return iDFEngine.getWithdrawBalances(msg.sender);
     }
 
-    function getPrice(uint typeID) public returns (uint) {
-        return iDFEngine.getPrices(typeID);
+    function getPrice(uint _tokenIdx) public view returns (uint) {
+        return iDFEngine.getPrices(_tokenIdx);
     }
 
-    function getFeeRate(uint typeID) public returns (uint) {
-        return iDFEngine.getFeeRateByID(typeID);
+    function getFeeRate(uint _processIdx) public view returns (uint) {
+        return iDFEngine.getFeeRateByID(_processIdx);
     }
 
     function getDestroyThreshold() public view returns (uint) {
