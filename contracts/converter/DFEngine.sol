@@ -180,7 +180,7 @@ contract DFEngine is DSMath, DSAuth {
             }
         }
 
-        require(_remain > 0, "Claim: balance not enough.");
+        require(_remain == 0, "Claim: balance not enough.");
         _unifiedCommission(ProcessType.CT_CLAIM, _feeTokenIdx, _depositor, _amount);
         dfPool.transferOut(address(usdxToken), _depositor, _amount);
         return _amount;
@@ -430,48 +430,5 @@ contract DFEngine is DSMath, DSAuth {
         uint _withdrawAmount = min(_tokenBalance, _depositorBalance);
 
         return _withdrawAmount;
-    }
-
-    // function oneClickMinting2(address _depositor, uint _feeTokenIdx, uint _amount) public auth {
-    //     address[] memory _tokens;
-    //     uint[] memory _mintCW;
-    //     uint _sumMintCW;
-    //     uint _mintAmount;
-    //     uint _cwAmount;
-    //     (_tokens, _mintCW) = getMintingSection();
-    //     for (uint i = 0; i < _mintCW.length; i++) {
-    //         _sumMintCW = add(_sumMintCW, _mintCW[i]);
-    //     }
-    //     require(_amount % _sumMintCW == 0, "OneClickMinting: amount error");
-    //     for (uint i = 0; i < _mintCW.length; i++) {
-    //         _cwAmount = div(mul(_amount, _mintCW[i]), _sumMintCW);
-    //         _mintAmount = add(_mintAmount, deposit(_depositor, _tokens[i], _feeTokenIdx, _cwAmount));
-    //     }
-    //     assert(_mintAmount >= _amount);
-    // }
-
-    function oneClickMinting(address _depositor, uint _feeTokenIdx, uint _amount) public auth {
-        address[] memory _tokens;
-        uint[] memory _mintCW;
-        uint _sumMintCW;
-
-        (_tokens, _mintCW) = getMintingSection();
-        for (uint i = 0; i < _mintCW.length; i++) {
-            _sumMintCW = add(_sumMintCW, _mintCW[i]);
-        }
-        require(_amount % _sumMintCW == 0, "OneClickMinting: amount error");
-
-        _unifiedCommission(ProcessType.CT_DEPOSIT, _feeTokenIdx, _depositor, _amount);
-
-        for (uint i = 0; i < _mintCW.length; i++) {
-            require(dfPool.transferFromSenderToCol(_tokens[i], _depositor, div(mul(_amount, _mintCW[i]), _sumMintCW)),
-                    "ERC20 TransferFrom: not enough amount");
-        }
-
-        dfStore.addTotalMinted(_amount);
-        dfStore.addSectionMinted(_amount);
-        usdxToken.mint(address(dfPool), _amount);
-        checkUSDXTotalAndColTotal();
-        dfPool.transferOut(address(usdxToken), _depositor, _amount);
     }
 }
