@@ -367,9 +367,7 @@ contract DFEngine is DSMath, DSAuth {
     }
 
     function getCollateralMaxClaim() public view returns (address[] memory, uint[] memory) {
-        uint position = dfStore.getMintPosition();
-
-        address[] memory _tokens = dfStore.getSectionToken(position);
+        address[] memory _tokens = dfStore.getMintedTokenList();
         uint[] memory _balance = new uint[](_tokens.length);
 
         for (uint i = 0; i < _tokens.length; i++) {
