@@ -407,16 +407,16 @@ contract DFEngine is DSMath, DSAuth {
         return (tokens, weight);
     }
 
-    function getPrices(uint typeID) public view returns (uint) {
-        address _token = dfStore.getTypeToken(typeID);
+    function getPrices(uint _typeID) public view returns (uint) {
+        address _token = dfStore.getTypeToken(_typeID);
         require(_token != address(0), "_UnifiedCommission: fee token not correct.");
         uint dfPrice = getPrice(dfStore.getTokenMedian(_token));
 
         return dfPrice;
     }
 
-    function getFeeRateByID(uint typeID) public view returns (uint) {
-        return dfStore.getFeeRate(typeID);
+    function getFeeRateByID(uint _typeID) public view returns (uint) {
+        return dfStore.getFeeRate(_typeID);
     }
 
     function getDestroyThreshold() public view returns (uint) {
