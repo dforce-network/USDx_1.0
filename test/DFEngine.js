@@ -28,8 +28,9 @@ const DataMethod = require('./helpers/DataMethod');
 // var weightTest = new Array(4, 3, 2, 1);
 // var weightTest = new Array(10, 30, 30, 30);
 var gasPrice = 10 ** 10;
-var runTypeArr = new Array('deposit', 'destroy', 'withdraw', 'claim', 'oneClickMinting', 'updateSection', 'changeEngine', 'setMinBurnAmount');
+var runTypeArr = new Array('deposit', 'destroy', 'withdraw', 'claim', 'claimAmount', 'oneClickMinting', 'updateSection', 'changeEngine', 'setMinBurnAmount');
 var runUpdateSection = 20;
+var updateSectionIndex = 6;
 var runDataList = [];
 var runData = {};
 
@@ -62,6 +63,7 @@ contract('DFEngine', accounts => {
             var destroyGasUsed = 0;
             var withdrawGasUsed = 0;
             var claimGasUsed = 0;
+            var claimAmountGasUsed = 0;
             var oneClickMintingGasUsed = 0;
             var updateGasUsed = 0;
 
@@ -69,6 +71,7 @@ contract('DFEngine', accounts => {
             var destroyGasData = [];
             var withdrawGasData = [];
             var claimGasData = [];
+            var claimAmountGasData = [];
             var oneClickMintingGasData = [];
             var updateGasData = [];
 
@@ -259,7 +262,7 @@ contract('DFEngine', accounts => {
             for (let index = 1; index < accounts.length; index++) {
                 await dfToken.transfer(accounts[index], amount);
                 balance = await collaterals.balanceOf.call(accounts[index]);
-                // await dSGuard.permitx(accounts[index], dfEngine.address);
+                await dSGuard.permitx(accounts[index], dfEngine.address);
             }
 
             owner = accounts[0];
@@ -279,15 +282,21 @@ contract('DFEngine', accounts => {
 
             recordDfCollateralToken = {};
 
-            depositGasUsed = 0;
-            destroyGasUsed = 0;
-            withdrawGasUsed = 0;
-            updateGasUsed = 0;
+            // depositGasUsed = 0;
+            // destroyGasUsed = 0;
+            // withdrawGasUsed = 0;
+            // claimGasUsed = 0;
+            // claimAmountGasUsed = 0;
+            // oneClickMintingGasUsed = 0;
+            // updateGasUsed = 0;
 
-            depositGasData = [];
-            destroyGasData = [];
-            withdrawGasData = [];
-            updateGasData = [];
+            // depositGasData = [];
+            // destroyGasData = [];
+            // withdrawGasData = [];
+            // claimGasData = [];
+            // claimAmountGasData = [];
+            // oneClickMintingGasData = [];
+            // updateGasData = [];
             
             console.log('DFEngine init finish:' + dfEngine.address);
         });
@@ -311,7 +320,7 @@ contract('DFEngine', accounts => {
                 dfEngineIndex = dfEngineTimes % runConfig[configIndex]['data'].length;
                 runType = runConfig[configIndex]['data'][dfEngineIndex].hasOwnProperty('type') ? 
                     runConfig[configIndex]['data'][dfEngineIndex]['type'] : 
-                    (dfEngineTimes > 0 && (dfEngineTimes % runUpdateSection) == 0  ? runTypeArr[5] : runTypeArr[MathTool.randomNum(0, 4)]);
+                    (dfEngineTimes > 0 && (dfEngineTimes % runUpdateSection) == 0  ? runTypeArr[updateSectionIndex] : runTypeArr[MathTool.randomNum(0, updateSectionIndex - 1)]);
 
                 var runTimes = 1;
                 if(runConfig[configIndex]['data'][dfEngineIndex].hasOwnProperty('data')){
@@ -1590,6 +1599,306 @@ contract('DFEngine', accounts => {
                             condition++;
                         }
                         break;
+                    case runType == 'claimAmount':
+                        while (condition < runTimes) {
+                            console.log('config : ' + (configIndex + 1) + ' dfEngine : ' + (dfEngineTimes + 1) + ' runType : ' + runType + ' runTimes ' + (condition + 1) + '\n');
+
+                            accountAddress = accounts[MathTool.randomNum(0, accounts.length - 1)];
+
+                            conditionIndex = condition % runConfig[configIndex]['data'][dfEngineIndex]['data'].length;
+                            if(runConfig[configIndex]['data'][dfEngineIndex].hasOwnProperty('data')){
+            
+                                if (runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex].hasOwnProperty('accountAddress')) {
+                                    
+                                    accountAddress = accounts[runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['accountAddress'] - 1];
+                                }
+                            }
+
+                            calcMaxClaimAmount = await dfProtocol.getUserMaxToClaim.call({from: accountAddress});
+                            amount = MathTool.randomNum(0, Number(calcMaxClaimAmount.mul(new BN(11)).div(new BN(10))));
+                            if(runConfig[configIndex]['data'][dfEngineIndex].hasOwnProperty('data')){
+                        
+                                if (runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex].hasOwnProperty('amount')) {
+                                    amount = runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['amount'];
+                                    amount = amount * 10 ** 18;
+                                }
+        
+                                if (runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex].hasOwnProperty('total')
+                                    && runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['total']
+                                ) {
+                                    amount = calcMaxClaimAmount;
+                                }
+                            }
+                            var amountNB = typeof(amount) == 'number' ? new BN(amount.toLocaleString().replace(/,/g,'')) : amount;
+                            console.log('claimAmount account index : ' + (accounts.indexOf(accountAddress) + 1));
+                            console.log('claimAmount account address : ' + accountAddress);
+                            console.log('\n');
+                            console.log('create claimAmount random the amount');
+                            console.log(amount);
+                            console.log(amount.toLocaleString().replace(/,/g,''));
+                            console.log(amountNB);
+                            console.log(amountNB.toString());
+                            console.log('\n');
+
+                            // dfStoreTokenBalance = {};
+                            dfStoreLockTokenBalance = {};
+                            // dfStoreTokenTotal = new BN(0);
+                            dfStoreLockTokenTotalOrigin = new BN(0);
+                            dfStoreAccountToken = {};
+                            dfStoreAccountTokenTotalOrigin = new BN(0);
+                            dfPoolTokenBalance = {};
+                            dfPoolTokenTotalOrigin = new BN(0);
+                            dfCollateralTokenBalance = {};
+                            dfCollateralTokenTotalOrigin = new BN(0);
+                            for (let index = 0; index < collateralAddress.length; index++) {
+
+                                // dfStoreTokenBalance[collateralAddress[index]] = await dfStore.getTokenBalance.call(collateralAddress[index]);
+                                // dfStoreTokenTotal = dfStoreTokenTotal.add(dfStoreTokenBalance[collateralAddress[index]]);
+
+                                dfStoreLockTokenBalance[collateralAddress[index]] = await dfStore.getResUSDXBalance.call(collateralAddress[index]);
+                                if (recordLockToken.hasOwnProperty(collateralAddress[index]))
+                                    assert.equal(dfStoreLockTokenBalance[collateralAddress[index]].toString(), recordLockToken[collateralAddress[index]].toString());
+                                dfStoreLockTokenTotalOrigin = dfStoreLockTokenTotalOrigin.add(dfStoreLockTokenBalance[collateralAddress[index]]);
+
+                                dfStoreAccountToken[collateralAddress[index]] = await dfStore.getDepositorBalance.call(accountAddress, collateralAddress[index]);
+                                if (recordAccountMap.hasOwnProperty(collateralAddress[index]) && recordAccountMap[collateralAddress[index]].hasOwnProperty(accountAddress))
+                                    assert.equal(dfStoreAccountToken[collateralAddress[index]].toString(), recordAccountMap[collateralAddress[index]][accountAddress].toString());
+                                dfStoreAccountTokenTotalOrigin = dfStoreAccountTokenTotalOrigin.add(dfStoreAccountToken[collateralAddress[index]]);
+
+                                dfPoolTokenBalance[collateralAddress[index]] = await collateralObject[collateralAddress[index]].balanceOf.call(dfPool.address);
+                                dfPoolTokenTotalOrigin = dfPoolTokenTotalOrigin.add(dfPoolTokenBalance[collateralAddress[index]]);
+
+                                dfCollateralTokenBalance[collateralAddress[index]] = await collateralObject[collateralAddress[index]].balanceOf.call(dfCollateral.address);
+                                dfCollateralTokenTotalOrigin = dfCollateralTokenTotalOrigin.add(dfCollateralTokenBalance[collateralAddress[index]]);
+                            }
+
+                            usdxTotalSupplyOrigin = await usdxToken.totalSupply.call();
+                            usdxBalanceOrigin = await usdxToken.balanceOf.call(accountAddress);
+                            usdxBalanceOfDfPool = await usdxToken.balanceOf.call(dfPool.address);
+                            calcMaxClaimAmount = await dfProtocol.getUserMaxToClaim.call({from: accountAddress});
+                            
+                            console.log('dfStore origin lock token total:');
+                            console.log(dfStoreLockTokenBalance);
+                            console.log(dfStoreLockTokenTotalOrigin);
+                            console.log(dfStoreLockTokenTotalOrigin.toString());
+                            console.log('dfStore origin account token total:');
+                            console.log(dfStoreAccountToken);
+                            console.log(dfStoreAccountTokenTotalOrigin);
+                            console.log(dfStoreAccountTokenTotalOrigin.toString());
+                            console.log('\n');
+                            console.log('dfPool origin token total:');
+                            console.log(dfPoolTokenBalance);
+                            console.log(dfPoolTokenTotalOrigin);
+                            console.log(dfPoolTokenTotalOrigin.toString());
+                            console.log('dfCollateral origin token total:');
+                            console.log(dfCollateralTokenBalance);
+                            console.log(dfCollateralTokenTotalOrigin);
+                            console.log(dfCollateralTokenTotalOrigin.toString());
+                            console.log('\n');
+                            console.log('usdx origin total supply:');
+                            console.log(usdxTotalSupplyOrigin);
+                            console.log(usdxTotalSupplyOrigin.toString());
+                            console.log('usdx origin balance:');
+                            console.log(usdxBalanceOrigin);
+                            console.log(usdxBalanceOrigin.toString());
+                            console.log('usdx dfPool:');
+                            console.log(usdxBalanceOfDfPool);
+                            console.log(usdxBalanceOfDfPool.toString());
+                            console.log('\n');
+                            
+                            runData = {};
+                            runData['dfEngine'] = dfEngineTimes + 1;
+                            runData['runTimes'] = condition + 1;
+                            runData['type'] = runType;
+                            runData['accountAddress'] = accounts.indexOf(accountAddress) + 1;
+                            runData['getMaxToClaim'] = calcMaxClaimAmount.toString() / 10 ** 18;
+                            runData['getMaxToClaim BN'] = calcMaxClaimAmount.toString();
+                            runData['amount'] = amountNB.toString() / 10 ** 18;
+                            runData['amountBN'] = amountNB.toString();
+                            runData['usdx_balance origin'] = usdxBalanceOrigin.toString();
+                            try {
+                                transactionData = await dfEngine.claimAmount(accountAddress, new BN(0), amountNB, {from: accountAddress});
+                                claimAmountGasUsed = claimAmountGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : claimAmountGasUsed;
+                                claimAmountGasData[claimAmountGasData.length] = transactionData.receipt.gasUsed;
+                                runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['gasUsed'] = transactionData.receipt.gasUsed;
+                                runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['result'] = 'success';
+                                runData['usdx_balance current'] = (await usdxToken.balanceOf.call(accountAddress)).toString();
+                                // runData['claim amount'] = runData['usdx_balance current'] - runData['usdx_balance origin'];
+                                runData['gasUsed'] = transactionData.receipt.gasUsed;
+                                runData['gasUsed ETH'] = transactionData.receipt.gasUsed * gasPrice / 10 ** 18;
+                                runData['result'] = 'success';
+                                runDataList[runDataList.length] = runData;
+                                console.log('dfEngine ' + (dfEngineTimes + 1) + ' ' + runType + ' runTimes ' + (condition + 1) + ' gasUsed:' + transactionData.receipt.gasUsed + '\n');
+                            }
+                            catch (error) {
+                                runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['result'] = 'fail';
+                                runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['error'] = error.message;
+                                runData['usdx_balance current'] = (await usdxToken.balanceOf.call(accountAddress)).toString();
+                                // runData['claim amount'] = runData['usdx_balance current'] - runData['usdx_balance origin'];
+                                runData['result'] = 'fail';
+                                runData['error'] = error.message;
+                                runDataList[runDataList.length] = runData;
+                                console.log(error.message + '\n');
+                                condition++;
+                                continue;
+                            }
+    
+                            // var amountNB = dfStoreAccountTokenTotalOrigin.lt(dfStoreLockTokenTotalOrigin) ? dfStoreAccountTokenTotalOrigin : dfStoreLockTokenTotalOrigin;
+                            // console.log('claim account index : ' + (accounts.indexOf(accountAddress) + 1));
+                            // console.log('claim account address : ' + accountAddress);
+                            // console.log('\n');
+                            // console.log('create claim the amount');
+                            // console.log(amountNB);
+                            // console.log(amountNB.toString());
+                            // console.log('\n');
+
+                            amountMin = new BN(0);
+                            amountMinTotal = amountNB;
+                            console.log('--------------------record [claim] claim--------------------');
+                            console.log('--------------------claim start--------------------\n');
+                            for (let index = 0; index < collateralAddress.length && amountMinTotal.gt(new BN(0)); index++) {
+                                amountMin = new BN(0);
+                                if (recordAccountMap.hasOwnProperty(collateralAddress[index]) 
+                                    && recordAccountMap[collateralAddress[index]].hasOwnProperty(accountAddress)
+                                    && recordLockToken.hasOwnProperty(collateralAddress[index])
+                                )
+                                {
+                                    amountMin = recordAccountMap[collateralAddress[index]][accountAddress].lt(recordLockToken[collateralAddress[index]]) ?
+                                        recordAccountMap[collateralAddress[index]][accountAddress] : recordLockToken[collateralAddress[index]];
+                                }else{
+
+                                    if (!recordLockToken.hasOwnProperty(collateralAddress[index]))
+                                        recordLockToken[collateralAddress[index]] = new BN(0);
+
+                                    if (!recordAccountMap.hasOwnProperty(collateralAddress[index])){
+                                        recordAccountMap[collateralAddress[index]] = {};
+                                        recordAccountMap[collateralAddress[index]][accountAddress] = new BN(0);
+                                    }else if (!recordAccountMap[collateralAddress[index]].hasOwnProperty(accountAddress)) {
+                                        recordAccountMap[collateralAddress[index]][accountAddress] = new BN(0);
+                                    }    
+                                }
+
+                                // if (amountMinTotal.lt(amountMin)) {
+                                //     amountMin = amountMinTotal;
+                                //     amountMinTotal = new BN(0);
+                                // }
+                                amountMin = amountMinTotal.lt(amountMin) ? amountMinTotal : amountMin;
+                                amountMinTotal = amountMinTotal.sub(amountMin);
+                                recordLockToken[collateralAddress[index]] = recordLockToken[collateralAddress[index]].sub(amountMin);
+                                recordAccountMap[collateralAddress[index]][accountAddress] = recordAccountMap[collateralAddress[index]][accountAddress].sub(amountMin);
+
+                                assert.equal(
+                                    dfStoreLockTokenBalance[collateralAddress[index]].sub(amountMin).toString(),
+                                    (await dfStore.getResUSDXBalance.call(collateralAddress[index])).toString()
+                                );
+
+                                assert.equal(
+                                    dfStoreAccountToken[collateralAddress[index]].sub(amountMin).toString(),
+                                    (await dfStore.getDepositorBalance.call(accountAddress, collateralAddress[index])).toString()
+                                );
+
+                                // amountMinTotal = amountMinTotal.add(amountMin);
+
+                                console.log('--------------- token index : ' + index);
+                                console.log('token address : ' + collateralAddress[index]);
+                                console.log('[claim claim] amount ' + amountMin);
+                                console.log('record: [claim claim] lock token belance:');
+                                console.log(recordLockToken[collateralAddress[index]]);
+                                console.log(recordLockToken[collateralAddress[index]].toString());
+                                console.log('record: [claim claim] account tokens balance:');
+                                console.log(recordAccountMap[collateralAddress[index]][accountAddress]);
+                                console.log(recordAccountMap[collateralAddress[index]][accountAddress].toString());
+                                console.log('\n');
+                            }
+                            console.log('--------------------record [claim] claim end--------------------\n');
+
+                            assert.equal(recordMintedTotal.toString(), (await dfStore.getTotalMinted.call()).toString());
+                            if (recordMinted.hasOwnProperty(recordMintedPosition))
+                                assert.equal(recordMinted[recordMintedPosition].toString(), (await dfStore.getSectionMinted.call(await dfStore.getMintPosition.call())).toString());
+                            else
+                                assert.equal('0', (await dfStore.getSectionMinted.call(await dfStore.getMintPosition.call())).toString());
+                            // dfStoreTokenBalance = {};
+                            dfStoreLockTokenBalance = {};
+                            // dfStoreTokenTotal = new BN(0);
+                            dfStoreLockTokenTotalCurrent = new BN(0);
+                            dfStoreAccountToken = {};
+                            dfStoreAccountTokenTotalCurrent = new BN(0);
+                            dfPoolTokenTotalCurrent = new BN(0);
+                            dfCollateralTokenBalance = {};
+                            dfCollateralTokenTotalCurrent = new BN(0);
+                            for (let index = 0; index < collateralAddress.length; index++) {
+
+                                // dfStoreTokenBalance[collateralAddress[index]] = await dfStore.getTokenBalance.call(collateralAddress[index]);
+                                // dfStoreTokenTotal = dfStoreTokenTotal.add(dfStoreTokenBalance[collateralAddress[index]]);
+
+                                dfStoreLockTokenBalance[collateralAddress[index]] = await dfStore.getResUSDXBalance.call(collateralAddress[index]);
+                                if (recordLockToken.hasOwnProperty(collateralAddress[index]))
+                                    assert.equal(dfStoreLockTokenBalance[collateralAddress[index]].toString(), recordLockToken[collateralAddress[index]].toString());
+                                dfStoreLockTokenTotalCurrent = dfStoreLockTokenTotalCurrent.add(dfStoreLockTokenBalance[collateralAddress[index]]);
+
+                                dfStoreAccountToken[collateralAddress[index]] = await dfStore.getDepositorBalance.call(accountAddress, collateralAddress[index]);
+                                if (recordAccountMap.hasOwnProperty(collateralAddress[index]) && recordAccountMap[collateralAddress[index]].hasOwnProperty(accountAddress))
+                                    assert.equal(dfStoreAccountToken[collateralAddress[index]].toString(), recordAccountMap[collateralAddress[index]][accountAddress].toString());
+                                dfStoreAccountTokenTotalCurrent = dfStoreAccountTokenTotalCurrent.add(dfStoreAccountToken[collateralAddress[index]]);
+
+                                dfPoolTokenBalance[collateralAddress[index]] = await collateralObject[collateralAddress[index]].balanceOf.call(dfPool.address);
+                                dfPoolTokenTotalCurrent = dfPoolTokenTotalCurrent.add(dfPoolTokenBalance[collateralAddress[index]]);
+
+                                dfCollateralTokenBalance[collateralAddress[index]] = await collateralObject[collateralAddress[index]].balanceOf.call(dfCollateral.address);
+                                dfCollateralTokenTotalCurrent = dfCollateralTokenTotalCurrent.add(dfCollateralTokenBalance[collateralAddress[index]]);
+                            }
+
+                            console.log('dfStore current lock token total:');
+                            console.log(dfStoreLockTokenBalance);
+                            console.log(dfStoreLockTokenTotalCurrent);
+                            console.log(dfStoreLockTokenTotalCurrent.toString());
+                            console.log('dfStore current account token total:');
+                            console.log(dfStoreAccountToken);
+                            console.log(dfStoreAccountTokenTotalCurrent);
+                            console.log(dfStoreAccountTokenTotalCurrent.toString());
+                            console.log('\n');
+                            console.log('dfPool current token total:');
+                            console.log(dfPoolTokenBalance);
+                            console.log(dfPoolTokenTotalCurrent);
+                            console.log(dfPoolTokenTotalCurrent.toString());
+                            console.log('dfCollateral current token total:');
+                            console.log(dfCollateralTokenBalance);
+                            console.log(dfCollateralTokenTotalCurrent);
+                            console.log(dfCollateralTokenTotalCurrent.toString());
+                            console.log('\n');
+
+                            assert.equal(dfStoreLockTokenTotalCurrent.toString(), dfStoreLockTokenTotalOrigin.sub(amountNB).toString());
+                            assert.equal(dfStoreAccountTokenTotalCurrent.toString(), dfStoreAccountTokenTotalOrigin.sub(amountNB).toString());
+                            assert.equal(dfPoolTokenTotalCurrent.toString(), dfPoolTokenTotalOrigin.toString());
+                            assert.equal(dfCollateralTokenTotalCurrent.toString(), dfCollateralTokenTotalOrigin.toString());
+
+                            usdxTotalSupplyCurrent = await usdxToken.totalSupply.call();
+                            usdxBalanceCurrent = await usdxToken.balanceOf.call(accountAddress);
+                            console.log('usdx current total supply:');
+                            console.log(usdxTotalSupplyCurrent);
+                            console.log(usdxTotalSupplyCurrent.toString());
+                            console.log('usdx current balance:');
+                            console.log(usdxBalanceCurrent);
+                            console.log(usdxBalanceCurrent.toString());
+                            console.log('usdx dfPool:');
+                            console.log(usdxBalanceOfDfPool);
+                            console.log(usdxBalanceOfDfPool.toString());
+                            console.log('\n');
+
+                            assert.equal(usdxTotalSupplyCurrent.toString(), usdxTotalSupplyOrigin.toString());
+                            assert.equal(usdxBalanceCurrent.toString(), usdxBalanceOrigin.add(amountNB).toString());
+
+                            // assert.equal(usdxBalanceCurrent.toString(), usdxBalanceOrigin.add(calcMaxClaimAmount).toString());
+                            
+                            assert.equal(usdxBalanceOfDfPool.toString(), dfStoreLockTokenTotalOrigin.toString());
+                            assert.equal(usdxBalanceOfDfPool.toString(), dfStoreLockTokenTotalCurrent.add(amountNB).toString());
+                            
+                            assert.equal((await usdxToken.balanceOf.call(dfPool.address)).toString(), dfStoreLockTokenTotalOrigin.sub(amountNB).toString());
+                            assert.equal((await usdxToken.balanceOf.call(dfPool.address)).toString(), dfStoreLockTokenTotalCurrent.toString());
+
+                            condition++;
+                        }
+                        break;
                     case runType == 'oneClickMinting':
                         while (condition < runTimes) {
                             console.log('config : ' + (configIndex + 1) + ' dfEngine : ' + (dfEngineTimes + 1) + ' runType : ' + runType + ' runTimes ' + (condition + 1) + '\n');
@@ -2251,8 +2560,10 @@ contract('DFEngine', accounts => {
             console.log('destroy max gasUsed:' + destroyGasUsed + ':[' + destroyGasUsed * gasPrice / 10 ** 18 + ']');
             console.log('withdraw max gasUsed:' + withdrawGasUsed + ':[' + withdrawGasUsed * gasPrice / 10 ** 18 + ']');
             console.log('claim max gasUsed:' + claimGasUsed + ':[' + claimGasUsed * gasPrice / 10 ** 18 + ']');
+            console.log('claimAmount max gasUsed:' + claimAmountGasUsed + ':[' + claimAmountGasUsed * gasPrice / 10 ** 18 + ']');
             console.log('update max gasUsed:' + updateGasUsed + ':[' + updateGasUsed * gasPrice / 10 ** 18 + ']');
             console.log('oneClickMinting max gasUsed:' + oneClickMintingGasUsed + ':[' + oneClickMintingGasUsed * gasPrice / 10 ** 18 + ']');
+            
             console.log('\ndeposit gas data:');
             console.log(depositGasData);
             console.log('\ndestroy gas data:');
@@ -2261,9 +2572,11 @@ contract('DFEngine', accounts => {
             console.log(withdrawGasData);
             console.log('\nclaim gas data:');
             console.log(claimGasData);
+            console.log('\nclaimAmount gas data:');
+            console.log(claimAmountGasData);
             console.log('\noneClickMinting gas data:');
             console.log(oneClickMintingGasData);
-
+            
             if (configIndex == runConfig.length - 1) {
 
                 console.log(JSON.stringify(runConfig));
