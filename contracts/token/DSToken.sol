@@ -201,9 +201,6 @@ contract DSToken is DSTokenBase(0), DSStop {
     //     symbol = symbol_;
     // }
 
-    event Mint(address indexed guy, uint wad);
-    event Burn(address indexed guy, uint wad);
-
     function setName(bytes32 name_) public onlyOwner {
         name = name_;
     }
@@ -245,20 +242,24 @@ contract DSToken is DSTokenBase(0), DSStop {
     }
 
     function _mint(address guy, uint wad) internal {
+        require(guy != address(0), "ds-token-mint: mint to the zero address");
+
         _balances[guy] = add(_balances[guy], wad);
         _supply = add(_supply, wad);
-        emit Mint(guy, wad);
+        emit Transfer(address(0), guy, wad);
     }
 
     function _burn(address guy, uint wad) internal {
+        require(guy != address(0), "ds-token-burn: burn from the zero address");
+        require(_balances[guy] >= wad, "ds-token-insufficient-balance");
+
         if (guy != msg.sender && _approvals[guy][msg.sender] != uint(-1)) {
             require(_approvals[guy][msg.sender] >= wad, "ds-token-insufficient-approval");
             _approvals[guy][msg.sender] = sub(_approvals[guy][msg.sender], wad);
         }
 
-        require(_balances[guy] >= wad, "ds-token-insufficient-balance");
         _balances[guy] = sub(_balances[guy], wad);
         _supply = sub(_supply, wad);
-        emit Burn(guy, wad);
+        emit Transfer(guy, address(0), wad);
     }
 }

@@ -255,8 +255,7 @@ contract DFEngine is DSMath, DSAuth {
             }
         }
 
-        usdxToken.transferFrom(_depositor, address(this),_amount);
-        usdxToken.burn(address(this), _amount);
+        usdxToken.burn(_depositor, _amount);
         checkUSDXTotalAndColTotal();
         dfStore.addTotalBurned(_amount);
 
@@ -452,8 +451,7 @@ contract DFEngine is DSMath, DSAuth {
 
         dfStore.addTotalMinted(_amount);
         dfStore.addSectionMinted(_amount);
-        usdxToken.mint(address(dfPool), _amount);
+        usdxToken.mint(_depositor, _amount);
         checkUSDXTotalAndColTotal();
-        dfPool.transferOut(address(usdxToken), _depositor, _amount);
     }
 }
