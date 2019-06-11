@@ -1,14 +1,14 @@
 const BN = require('bn.js');
 
-const Funds = artifacts.require('DFFunds.sol');
+// const Funds = artifacts.require('DFFunds.sol');
 const Protocol = artifacts.require('DFProtocol.sol');
-const Store = artifacts.require('DFStore.sol');
+// const Store = artifacts.require('DFStore.sol');
 const Pool = artifacts.require('DFPool.sol');
-const Collateral = artifacts.require('DFCollateral.sol');
+// const Collateral = artifacts.require('DFCollateral.sol');
 const Engine = artifacts.require('DFEngine.sol');
-const Guard = artifacts.require('DSGuard.sol');
-const PriceFeed = artifacts.require('PriceFeed.sol');
-const Medianizer = artifacts.require('Medianizer.sol');
+// const Guard = artifacts.require('DSGuard.sol');
+// const PriceFeed = artifacts.require('PriceFeed.sol');
+// const Medianizer = artifacts.require('Medianizer.sol');
 const USDx = artifacts.require('USDXToken.sol');
 // const DF = artifacts.require('DFToken.sol');
 const DF_Addr = "0x4AF82b7C2F049574C9fc742A896DAbEA379b7d51";
@@ -18,15 +18,15 @@ module.exports = async function (deployer, network, accounts) {
     if (network == 'development')
         return;
 
-    let contractFunds = await Funds.deployed();
+    // let contractFunds = await Funds.deployed();
     let contractProtocol = await Protocol.deployed();
     let contractPool = await Pool.deployed();
-    let contractStore = await Store.deployed();
-    let contractCollateral = await Collateral.deployed();
+    // let contractStore = await Store.deployed();
+    // let contractCollateral = await Collateral.deployed();
     let contarctEngine = await Engine.deployed();
-    let contractGuard = await Guard.deployed();
-    let contractPriceFeed = await PriceFeed.deployed();
-    let contractMedianizer = await Medianizer.deployed();
+    // let contractGuard = await Guard.deployed();
+    // let contractPriceFeed = await PriceFeed.deployed();
+    // let contractMedianizer = await Medianizer.deployed();
     let contractUSDx = await USDx.deployed();
 
     let erc20ABI = [{

@@ -112,6 +112,10 @@ contract('DFEngine', accounts => {
             var dfStoreLockTokenTotalOrigin = new BN(0);
             var dfStoreLockTokenTotalCurrent = new BN(0);
 
+            var dfStoreTotalCol = new BN(0);
+            var dfStoreTotalColOrigin = new BN(0);
+            var dfStoreTotalColCurrent = new BN(0);
+
             var dfStoreMintPosition = new BN(0);
             var dfStoreMinted = new BN(0);
             var dfStoreMintedTotal = new BN(0);
@@ -386,6 +390,8 @@ contract('DFEngine', accounts => {
                             console.log(accountTokenBalanceOrigin.toString());
                             console.log('\n');
 
+                            await collateralObject[tokenAddress].transfer(dfCollateral.address, new BN(MathTool.randomNum(1000, 2000).toString()));
+
                             // transactionData = await dfEngine.deposit(accountAddress, tokenAddress, amountNB, {from: accountAddress});
                             // depositGasUsed = depositGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : depositGasUsed;
                             // depositGasData[depositGasData.length] = transactionData.receipt.gasUsed;
@@ -425,6 +431,8 @@ contract('DFEngine', accounts => {
                                 condition++;
                                 continue;
                             }
+
+                            await collateralObject[tokenAddress].transfer(dfCollateral.address, new BN(MathTool.randomNum(1000, 2000).toString()));
 
                             recordToken[tokenAddress] = recordToken.hasOwnProperty(tokenAddress) ? recordToken[tokenAddress].add(amountNB) : amountNB;
                             recordTokenTotal = recordTokenTotal.add(amountNB);
@@ -608,6 +616,8 @@ contract('DFEngine', accounts => {
                                 dfCollateralTokenTotal = dfCollateralTokenTotal.add(dfCollateralTokenBalance[collateralAddress[index]]);
                             }
 
+                            dfStoreTotalCol = await dfStore.getTotalCol.call();
+
                             console.log('dfStore token total:');
                             console.log(dfStoreTokenBalance);
                             console.log(dfStoreTokenTotal);
@@ -630,8 +640,8 @@ contract('DFEngine', accounts => {
                             
                             console.log('dfCollateral token total:');
                             console.log(dfCollateralTokenBalance);
-                            console.log(dfCollateralTokenTotal);
-                            console.log(dfCollateralTokenTotal.toString());
+                            console.log(dfStoreTotalCol);
+                            console.log(dfStoreTotalCol.toString());
                             console.log('\n');
                             
                             usdxTotalSupply = await usdxToken.totalSupply.call();
@@ -655,8 +665,8 @@ contract('DFEngine', accounts => {
                             assert.equal(usdxBalanceOfDfPool.toString(), dfStoreLockTokenTotal.toString());
                             // assert.equal(dfStoreTokenTotal.add(dfStoreLockTokenTotal).toString(), dfPoolTokenTotal.toString());
                             assert.equal(dfStoreTokenTotal.toString(), dfPoolTokenTotal.toString());
-                            assert.equal(usdxTotalSupply.toString(), dfCollateralTokenTotal.toString());
-                            assert.equal(recordTokenTotal.toString(), dfCollateralTokenTotal.add(dfPoolTokenTotal).toString());
+                            assert.equal(usdxTotalSupply.toString(), dfStoreTotalCol.toString());
+                            assert.equal(recordTokenTotal.toString(), dfStoreTotalCol.add(dfPoolTokenTotal).toString());
 
                             assert.equal(usdxBalance.sub(usdxBalanceOrigin).toString(), calcDepositorMintTotal.toString());
                             
@@ -705,12 +715,12 @@ contract('DFEngine', accounts => {
                                         );
                                 }
 
-                                if (recordDfCollateralToken.hasOwnProperty(collateralAddress[index])) {
-                                    assert.equal(
-                                        dfCollateralTokenBalance[collateralAddress[index]].toString(), 
-                                        recordDfCollateralToken[collateralAddress[index]].toString()
-                                        );
-                                }
+                                // if (recordDfCollateralToken.hasOwnProperty(collateralAddress[index])) {
+                                //     assert.equal(
+                                //         dfCollateralTokenBalance[collateralAddress[index]].toString(), 
+                                //         recordDfCollateralToken[collateralAddress[index]].toString()
+                                //         );
+                                // }
                                 
                             }
 
@@ -815,9 +825,11 @@ contract('DFEngine', accounts => {
                                 dfAccountToken = await dfStore.getDepositorBalance.call(accountAddress, collateralAddress[index]);
                                 assert.equal(dfWithdrawBalances[1][index].toString(), (dfTokenBalance.lt(dfAccountToken) ? dfTokenBalance : dfAccountToken).toString());
 
-                                if (recordDfCollateralToken.hasOwnProperty(collateralAddress[index])) 
-                                    assert.equal(recordDfCollateralToken[collateralAddress[index]].toString(), dfCollateralTokenBalance[collateralAddress[index]].toString());
+                                // if (recordDfCollateralToken.hasOwnProperty(collateralAddress[index])) 
+                                //     assert.equal(recordDfCollateralToken[collateralAddress[index]].toString(), dfCollateralTokenBalance[collateralAddress[index]].toString());
                             }
+
+                            dfStoreTotalColOrigin = await dfStore.getTotalCol.call();
                             console.log('burned origin token total :');
                             console.log(burnedTotalOrigin);
                             console.log(burnedTotalOrigin.toString());
@@ -826,8 +838,8 @@ contract('DFEngine', accounts => {
                             console.log(burnedOrigin.toString());
                             console.log('DFCollateral origin token total:');
                             console.log(dfCollateralTokenBalance);
-                            console.log(dfCollateralTokenTotalOrigin);
-                            console.log(dfCollateralTokenTotalOrigin.toString());
+                            console.log(dfStoreTotalColOrigin);
+                            console.log(dfStoreTotalColOrigin.toString());
                             console.log('\n');
 
                             assert.equal(recordBurnedTotal.toString(), burnedTotalOrigin.toString());
@@ -851,6 +863,8 @@ contract('DFEngine', accounts => {
                             console.log(approvals);
                             console.log(approvals.toString());
                             console.log('\n');
+
+                            await collateralObject[collateralAddress[MathTool.randomNum(0, collateralAddress.length)]].transfer(dfCollateral.address, new BN(MathTool.randomNum(1000, 2000).toString()));
 
                             runData = {};
                             runData['dfEngine'] = dfEngineTimes + 1;
@@ -886,6 +900,8 @@ contract('DFEngine', accounts => {
                                 condition++;
                                 continue;
                             }
+
+                            await collateralObject[collateralAddress[MathTool.randomNum(0, collateralAddress.length)]].transfer(dfCollateral.address, new BN(MathTool.randomNum(1000, 2000).toString()));
                             
                             assert.equal((await usdxToken.allowance.call(accountAddress, dfEngine.address)).toString(), '0');
                             assert.equal((await dfToken.allowance.call(accountAddress, dfEngine.address)).toString(), '0');
@@ -984,9 +1000,10 @@ contract('DFEngine', accounts => {
                                 balanceOfTokens = await collateralObject[collateralAddress[index]].balanceOf.call(dfCollateral.address);
                                 dfCollateralTokenTotalCurrent = dfCollateralTokenTotalCurrent.add(balanceOfTokens);
 
-                                if (recordDfCollateralToken.hasOwnProperty(collateralAddress[index])) 
-                                    assert.equal(recordDfCollateralToken[collateralAddress[index]].toString(), balanceOfTokens.toString());
+                                // if (recordDfCollateralToken.hasOwnProperty(collateralAddress[index])) 
+                                //     assert.equal(recordDfCollateralToken[collateralAddress[index]].toString(), balanceOfTokens.toString());
                             }
+                            dfStoreTotalColCurrent = await dfStore.getTotalCol.call();
                             console.log('current burned token total :');
                             console.log(burnedTotalCurrent);
                             console.log(burnedTotalCurrent.toString());
@@ -994,8 +1011,8 @@ contract('DFEngine', accounts => {
                             console.log(burnedCurrent);
                             console.log(burnedCurrent.toString());
                             console.log('current DFCollateral token total:');
-                            console.log(dfCollateralTokenTotalCurrent);
-                            console.log(dfCollateralTokenTotalCurrent.toString());
+                            console.log(dfStoreTotalColCurrent);
+                            console.log(dfStoreTotalColCurrent.toString());
                             console.log('\n');
 
                             assert.equal(recordBurnedTotal.toString(), burnedTotalCurrent.toString());
@@ -1056,12 +1073,12 @@ contract('DFEngine', accounts => {
                             console.log(usdxBalanceOfDfPool.toString());
                             console.log('\n');
                             
-                            assert.equal(usdxTotalSupplyOrigin.toString(), dfCollateralTokenTotalOrigin.toString());
-                            assert.equal(usdxTotalSupplyCurrent.toString(), dfCollateralTokenTotalCurrent.toString());
+                            assert.equal(usdxTotalSupplyOrigin.toString(), dfStoreTotalColOrigin.toString());
+                            assert.equal(usdxTotalSupplyCurrent.toString(), dfStoreTotalColCurrent.toString());
 
                             assert.equal(burnedTotalCurrent.sub(burnedTotalOrigin).toString(), amountNB.toString());
                             // assert.equal(burnedCurrent.sub(burnedOrigin).toString(), amountNB.toString());
-                            assert.equal(dfCollateralTokenTotalOrigin.sub(dfCollateralTokenTotalCurrent).toString(), amountNB.toString());
+                            assert.equal(dfStoreTotalColOrigin.sub(dfStoreTotalColCurrent).toString(), amountNB.toString());
                             assert.equal(usdxTotalSupplyOrigin.sub(usdxTotalSupplyCurrent).toString(), amountNB.toString());
                             assert.equal(usdxBalanceOrigin.sub(usdxBalanceCurrent).toString(), amountNB.toString());
                             assert.equal(usdxBalanceOfDfPool.toString(), dfStoreLockTokenTotal.toString());
@@ -1217,6 +1234,8 @@ contract('DFEngine', accounts => {
                                 assert.equal(dfWithdrawBalances[1][index].toString(), (dfTokenBalance.lt(dfAccountToken) ? dfTokenBalance : dfAccountToken).toString());
                             }
 
+                            await collateralObject[collateralAddress[MathTool.randomNum(0, collateralAddress.length)]].transfer(dfCollateral.address, new BN(MathTool.randomNum(1000, 2000).toString()));
+
                             runData = {};
                             runData['dfEngine'] = dfEngineTimes + 1;
                             runData['runTimes'] = condition + 1;
@@ -1248,6 +1267,8 @@ contract('DFEngine', accounts => {
                                 condition++;
                                 continue;
                             }
+
+                            await collateralObject[collateralAddress[MathTool.randomNum(0, collateralAddress.length)]].transfer(dfCollateral.address, new BN(MathTool.randomNum(1000, 2000).toString()));
 
                             dfColMaxClaim = {};
                             dfColMaxClaim = await dfProtocol.getColMaxClaim.call();
@@ -1460,6 +1481,8 @@ contract('DFEngine', accounts => {
                                 dfCollateralTokenTotalOrigin = dfCollateralTokenTotalOrigin.add(dfCollateralTokenBalance[collateralAddress[index]]);
                             }
 
+                            dfStoreTotalColOrigin = await dfStore.getTotalCol.call();
+
                             usdxTotalSupplyOrigin = await usdxToken.totalSupply.call();
                             usdxBalanceOrigin = await usdxToken.balanceOf.call(accountAddress);
                             usdxBalanceOfDfPool = await usdxToken.balanceOf.call(dfPool.address);
@@ -1480,8 +1503,8 @@ contract('DFEngine', accounts => {
                             console.log(dfPoolTokenTotalOrigin.toString());
                             console.log('dfCollateral origin token total:');
                             console.log(dfCollateralTokenBalance);
-                            console.log(dfCollateralTokenTotalOrigin);
-                            console.log(dfCollateralTokenTotalOrigin.toString());
+                            console.log(dfStoreTotalColOrigin);
+                            console.log(dfStoreTotalColOrigin.toString());
                             console.log('\n');
                             console.log('usdx origin total supply:');
                             console.log(usdxTotalSupplyOrigin);
@@ -1494,6 +1517,8 @@ contract('DFEngine', accounts => {
                             console.log(usdxBalanceOfDfPool.toString());
                             console.log('\n');
                             
+                            await collateralObject[collateralAddress[MathTool.randomNum(0, collateralAddress.length)]].transfer(dfCollateral.address, new BN(MathTool.randomNum(1000, 2000).toString()));
+
                             runData = {};
                             runData['dfEngine'] = dfEngineTimes + 1;
                             runData['runTimes'] = condition + 1;
@@ -1528,6 +1553,8 @@ contract('DFEngine', accounts => {
                                 condition++;
                                 continue;
                             }
+
+                            await collateralObject[collateralAddress[MathTool.randomNum(0, collateralAddress.length)]].transfer(dfCollateral.address, new BN(MathTool.randomNum(1000, 2000).toString()));
     
                             var amountNB = dfStoreAccountTokenTotalOrigin.lt(dfStoreLockTokenTotalOrigin) ? dfStoreAccountTokenTotalOrigin : dfStoreLockTokenTotalOrigin;
                             console.log('claim account index : ' + (accounts.indexOf(accountAddress) + 1));
@@ -1649,6 +1676,8 @@ contract('DFEngine', accounts => {
                                 dfCollateralTokenTotalCurrent = dfCollateralTokenTotalCurrent.add(dfCollateralTokenBalance[collateralAddress[index]]);
                             }
 
+                            dfStoreTotalColCurrent = await dfStore.getTotalCol.call();
+
                             console.log('dfStore current lock token total:');
                             console.log(dfStoreLockTokenBalance);
                             console.log(dfStoreLockTokenTotalCurrent);
@@ -1664,14 +1693,14 @@ contract('DFEngine', accounts => {
                             console.log(dfPoolTokenTotalCurrent.toString());
                             console.log('dfCollateral current token total:');
                             console.log(dfCollateralTokenBalance);
-                            console.log(dfCollateralTokenTotalCurrent);
-                            console.log(dfCollateralTokenTotalCurrent.toString());
+                            console.log(dfStoreTotalColCurrent);
+                            console.log(dfStoreTotalColCurrent.toString());
                             console.log('\n');
 
                             assert.equal(dfStoreLockTokenTotalCurrent.toString(), dfStoreLockTokenTotalOrigin.sub(amountNB).toString());
                             assert.equal(dfStoreAccountTokenTotalCurrent.toString(), dfStoreAccountTokenTotalOrigin.sub(amountNB).toString());
                             assert.equal(dfPoolTokenTotalCurrent.toString(), dfPoolTokenTotalOrigin.toString());
-                            assert.equal(dfCollateralTokenTotalCurrent.toString(), dfCollateralTokenTotalOrigin.toString());
+                            assert.equal(dfStoreTotalColCurrent.toString(), dfStoreTotalColOrigin.toString());
 
                             usdxTotalSupplyCurrent = await usdxToken.totalSupply.call();
                             usdxBalanceCurrent = await usdxToken.balanceOf.call(accountAddress);
@@ -1773,6 +1802,8 @@ contract('DFEngine', accounts => {
                                 dfCollateralTokenTotalOrigin = dfCollateralTokenTotalOrigin.add(dfCollateralTokenBalance[collateralAddress[index]]);
                             }
 
+                            dfStoreTotalColOrigin = await dfStore.getTotalCol.call();
+
                             usdxTotalSupplyOrigin = await usdxToken.totalSupply.call();
                             usdxBalanceOrigin = await usdxToken.balanceOf.call(accountAddress);
                             usdxBalanceOfDfPool = await usdxToken.balanceOf.call(dfPool.address);
@@ -1793,8 +1824,8 @@ contract('DFEngine', accounts => {
                             console.log(dfPoolTokenTotalOrigin.toString());
                             console.log('dfCollateral origin token total:');
                             console.log(dfCollateralTokenBalance);
-                            console.log(dfCollateralTokenTotalOrigin);
-                            console.log(dfCollateralTokenTotalOrigin.toString());
+                            console.log(dfStoreTotalColOrigin);
+                            console.log(dfStoreTotalColOrigin.toString());
                             console.log('\n');
                             console.log('usdx origin total supply:');
                             console.log(usdxTotalSupplyOrigin);
@@ -1806,6 +1837,8 @@ contract('DFEngine', accounts => {
                             console.log(usdxBalanceOfDfPool);
                             console.log(usdxBalanceOfDfPool.toString());
                             console.log('\n');
+                            
+                            await collateralObject[collateralAddress[MathTool.randomNum(0, collateralAddress.length)]].transfer(dfCollateral.address, new BN(MathTool.randomNum(1000, 2000).toString()));
                             
                             runData = {};
                             runData['dfEngine'] = dfEngineTimes + 1;
@@ -1843,6 +1876,8 @@ contract('DFEngine', accounts => {
                                 condition++;
                                 continue;
                             }
+
+                            await collateralObject[collateralAddress[MathTool.randomNum(0, collateralAddress.length)]].transfer(dfCollateral.address, new BN(MathTool.randomNum(1000, 2000).toString()));
     
                             // var amountNB = dfStoreAccountTokenTotalOrigin.lt(dfStoreLockTokenTotalOrigin) ? dfStoreAccountTokenTotalOrigin : dfStoreLockTokenTotalOrigin;
                             // console.log('claim account index : ' + (accounts.indexOf(accountAddress) + 1));
@@ -1964,6 +1999,8 @@ contract('DFEngine', accounts => {
                                 dfCollateralTokenTotalCurrent = dfCollateralTokenTotalCurrent.add(dfCollateralTokenBalance[collateralAddress[index]]);
                             }
 
+                            dfStoreTotalColCurrent = await dfStore.getTotalCol.call();
+
                             console.log('dfStore current lock token total:');
                             console.log(dfStoreLockTokenBalance);
                             console.log(dfStoreLockTokenTotalCurrent);
@@ -1979,14 +2016,14 @@ contract('DFEngine', accounts => {
                             console.log(dfPoolTokenTotalCurrent.toString());
                             console.log('dfCollateral current token total:');
                             console.log(dfCollateralTokenBalance);
-                            console.log(dfCollateralTokenTotalCurrent);
-                            console.log(dfCollateralTokenTotalCurrent.toString());
+                            console.log(dfStoreTotalColCurrent);
+                            console.log(dfStoreTotalColCurrent.toString());
                             console.log('\n');
 
                             assert.equal(dfStoreLockTokenTotalCurrent.toString(), dfStoreLockTokenTotalOrigin.sub(amountNB).toString());
                             assert.equal(dfStoreAccountTokenTotalCurrent.toString(), dfStoreAccountTokenTotalOrigin.sub(amountNB).toString());
                             assert.equal(dfPoolTokenTotalCurrent.toString(), dfPoolTokenTotalOrigin.toString());
-                            assert.equal(dfCollateralTokenTotalCurrent.toString(), dfCollateralTokenTotalOrigin.toString());
+                            assert.equal(dfStoreTotalColCurrent.toString(), dfStoreTotalColOrigin.toString());
 
                             usdxTotalSupplyCurrent = await usdxToken.totalSupply.call();
                             usdxBalanceCurrent = await usdxToken.balanceOf.call(accountAddress);
@@ -2046,6 +2083,8 @@ contract('DFEngine', accounts => {
                             console.log(amountNB);
                             console.log(amountNB.toString());
                             console.log('\n');
+
+                            await collateralObject[collateralAddress[MathTool.randomNum(0, collateralAddress.length)]].transfer(dfCollateral.address, new BN(MathTool.randomNum(1000, 2000).toString()));
 
                             usdxTotalSupplyOrigin = await usdxToken.totalSupply.call();
                             usdxBalanceOrigin = await usdxToken.balanceOf.call(accountAddress);
@@ -2115,6 +2154,8 @@ contract('DFEngine', accounts => {
                                 condition++;
                                 continue;
                             }
+
+                            await collateralObject[collateralAddress[MathTool.randomNum(0, collateralAddress.length)]].transfer(dfCollateral.address, new BN(MathTool.randomNum(1000, 2000).toString()));
 
                             recordTokenTotal = recordTokenTotal.add(amountNB);
                             recordAccountTotalMap[accountAddress] = recordAccountTotalMap.hasOwnProperty(accountAddress) ? recordAccountTotalMap[accountAddress].add(amountNB) : amountNB;
@@ -2216,6 +2257,8 @@ contract('DFEngine', accounts => {
                                 dfCollateralTokenTotal = dfCollateralTokenTotal.add(dfCollateralTokenBalance[collateralAddress[index]]);
                             }
 
+                            dfStoreTotalCol = await dfStore.getTotalCol.call();
+
                             console.log('dfStore token total:');
                             console.log(dfStoreTokenBalance);
                             console.log(dfStoreTokenTotal);
@@ -2238,8 +2281,8 @@ contract('DFEngine', accounts => {
                             
                             console.log('dfCollateral token total:');
                             console.log(dfCollateralTokenBalance);
-                            console.log(dfCollateralTokenTotal);
-                            console.log(dfCollateralTokenTotal.toString());
+                            console.log(dfStoreTotalCol);
+                            console.log(dfStoreTotalCol.toString());
                             console.log('\n');
                             
                             usdxTotalSupplyCurrent = await usdxToken.totalSupply.call();
@@ -2262,8 +2305,8 @@ contract('DFEngine', accounts => {
                             assert.equal(usdxBalanceCurrent.toString(), recordAccountTotalMap[accountAddress].sub(dfStoreAccountTokenTotal).toString());
                             assert.equal(usdxBalanceOfDfPool.toString(), dfStoreLockTokenTotal.toString());
                             assert.equal(dfStoreTokenTotal.toString(), dfPoolTokenTotal.toString());
-                            assert.equal(usdxTotalSupplyCurrent.toString(), dfCollateralTokenTotal.toString());
-                            assert.equal(recordTokenTotal.toString(), dfCollateralTokenTotal.add(dfPoolTokenTotal).toString());
+                            assert.equal(usdxTotalSupplyCurrent.toString(), dfStoreTotalCol.toString());
+                            assert.equal(recordTokenTotal.toString(), dfStoreTotalCol.add(dfPoolTokenTotal).toString());
 
                             assert.equal(usdxBalanceCurrent.sub(usdxBalanceOrigin).toString(), amountNB.toString());
                             
@@ -2315,12 +2358,12 @@ contract('DFEngine', accounts => {
                                         );
                                 }
 
-                                if (recordDfCollateralToken.hasOwnProperty(collateralAddress[index])) {
-                                    assert.equal(
-                                        dfCollateralTokenBalance[collateralAddress[index]].toString(), 
-                                        recordDfCollateralToken[collateralAddress[index]].toString()
-                                        );
-                                }
+                                // if (recordDfCollateralToken.hasOwnProperty(collateralAddress[index])) {
+                                //     assert.equal(
+                                //         dfCollateralTokenBalance[collateralAddress[index]].toString(), 
+                                //         recordDfCollateralToken[collateralAddress[index]].toString()
+                                //         );
+                                // }
 
                                 if (accountTokenBalanceMapOrigin.hasOwnProperty(collateralAddress[index])) {
                                     accountTokenBalanceMapCurrent[collateralAddress[index]] = await collateralObject[collateralAddress[index]].balanceOf.call(accountAddress);
@@ -2398,6 +2441,8 @@ contract('DFEngine', accounts => {
                                             await collaterals.transfer(accounts[accountsIndex], amount);
                                             accountsIndex++;
                                         }
+
+                                        await collaterals.transfer(dfCollateral.address, new BN(MathTool.randomNum(1000, 2000).toString()));
         
                                         collateralAddress.push(collaterals.address);
                                         collateralObject[collaterals.address] = collaterals;
