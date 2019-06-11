@@ -201,6 +201,9 @@ contract DSToken is DSTokenBase(0), DSStop {
     //     symbol = symbol_;
     // }
 
+    event Mint(address indexed guy, uint wad);
+    event Burn(address indexed guy, uint wad);
+
     function setName(bytes32 name_) public onlyOwner {
         name = name_;
     }
@@ -246,7 +249,8 @@ contract DSToken is DSTokenBase(0), DSStop {
 
         _balances[guy] = add(_balances[guy], wad);
         _supply = add(_supply, wad);
-        emit Transfer(address(0), guy, wad);
+        // emit Transfer(address(0), guy, wad);
+        emit Mint(guy, wad);
     }
 
     function _burn(address guy, uint wad) internal {
@@ -260,6 +264,7 @@ contract DSToken is DSTokenBase(0), DSStop {
 
         _balances[guy] = sub(_balances[guy], wad);
         _supply = sub(_supply, wad);
-        emit Transfer(guy, address(0), wad);
+        // emit Transfer(guy, address(0), wad);
+        emit Burn(guy, wad);
     }
 }
