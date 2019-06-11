@@ -566,7 +566,7 @@ var engineABI = [{
   {
     "constant": true,
     "inputs": [{
-      "name": "typeID",
+      "name": "_tokenIdx",
       "type": "uint256"
     }],
     "name": "getPrices",
@@ -582,7 +582,7 @@ var engineABI = [{
   {
     "constant": true,
     "inputs": [{
-      "name": "typeID",
+      "name": "_processIdx",
       "type": "uint256"
     }],
     "name": "getFeeRateByID",

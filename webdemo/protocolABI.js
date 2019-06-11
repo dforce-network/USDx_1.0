@@ -366,13 +366,13 @@ var protocolABI = [{
     "signature": "0x379607f5"
   },
   {
-    "constant": false,
+    "constant": true,
     "inputs": [{
-        "name": "tokenID",
+        "name": "_tokenID",
         "type": "address"
       },
       {
-        "name": "amount",
+        "name": "_amount",
         "type": "uint256"
       }
     ],
@@ -382,12 +382,12 @@ var protocolABI = [{
       "type": "uint256"
     }],
     "payable": false,
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function",
     "signature": "0x0078b158"
   },
   {
-    "constant": false,
+    "constant": true,
     "inputs": [],
     "name": "getUserMaxToClaim",
     "outputs": [{
@@ -395,12 +395,12 @@ var protocolABI = [{
       "type": "uint256"
     }],
     "payable": false,
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function",
     "signature": "0x2d0854d7"
   },
   {
-    "constant": false,
+    "constant": true,
     "inputs": [],
     "name": "getColMaxClaim",
     "outputs": [{
@@ -413,12 +413,12 @@ var protocolABI = [{
       }
     ],
     "payable": false,
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function",
     "signature": "0x70032c54"
   },
   {
-    "constant": false,
+    "constant": true,
     "inputs": [],
     "name": "getMintingSection",
     "outputs": [{
@@ -431,12 +431,12 @@ var protocolABI = [{
       }
     ],
     "payable": false,
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function",
     "signature": "0x3b955ea9"
   },
   {
-    "constant": false,
+    "constant": true,
     "inputs": [],
     "name": "getBurningSection",
     "outputs": [{
@@ -449,12 +449,12 @@ var protocolABI = [{
       }
     ],
     "payable": false,
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function",
     "signature": "0x8c4d3e1a"
   },
   {
-    "constant": false,
+    "constant": true,
     "inputs": [],
     "name": "getUserWithdrawBalance",
     "outputs": [{
@@ -467,14 +467,14 @@ var protocolABI = [{
       }
     ],
     "payable": false,
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function",
     "signature": "0xce98b347"
   },
   {
-    "constant": false,
+    "constant": true,
     "inputs": [{
-      "name": "typeID",
+      "name": "_tokenIdx",
       "type": "uint256"
     }],
     "name": "getPrice",
@@ -483,14 +483,14 @@ var protocolABI = [{
       "type": "uint256"
     }],
     "payable": false,
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function",
     "signature": "0xe7572230"
   },
   {
-    "constant": false,
+    "constant": true,
     "inputs": [{
-      "name": "typeID",
+      "name": "_processIdx",
       "type": "uint256"
     }],
     "name": "getFeeRate",
@@ -499,7 +499,7 @@ var protocolABI = [{
       "type": "uint256"
     }],
     "payable": false,
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function",
     "signature": "0xd2aaef4e"
   },
