@@ -170,6 +170,11 @@ contract('DFEngine', accounts => {
             var minBurnAmount = new BN(0);
 
             var balanceOfTokens = new BN(0);
+
+            var dfColMaxClaim = {};
+            var dfWithdrawBalances = {};
+            var dfTokenBalance = new BN(0);
+            var dfAccountToken = new BN(0);
         }
 
         it('Init the deploy contract', async () => {
@@ -655,8 +660,21 @@ contract('DFEngine', accounts => {
 
                             assert.equal(usdxBalance.sub(usdxBalanceOrigin).toString(), calcDepositorMintTotal.toString());
                             
+                            dfColMaxClaim = {};
+                            dfColMaxClaim = await dfProtocol.getColMaxClaim.call();
+                            dfWithdrawBalances = {};
+                            dfWithdrawBalances = await dfProtocol.getUserWithdrawBalance.call({from: accountAddress});
+                            
                             for (let index = 0; index < collateralAddress.length; index++) {
 
+                                assert.equal(dfColMaxClaim[0][index], collateralAddress[index]);
+                                assert.equal(dfColMaxClaim[1][index].toString(), dfStoreLockTokenBalance[collateralAddress[index]].toString());
+
+                                assert.equal(
+                                    dfWithdrawBalances[1][index].toString(), 
+                                    (dfStoreTokenBalance[collateralAddress[index]].lt(dfStoreAccountToken[collateralAddress[index]]) ? 
+                                        dfStoreTokenBalance[collateralAddress[index]] : dfStoreAccountToken[collateralAddress[index]]).toString());
+                                
                                 assert.equal(
                                     dfStoreTokenBalance[collateralAddress[index]].toString(), 
                                     dfPoolTokenBalance[collateralAddress[index]].toString()
@@ -776,12 +794,26 @@ contract('DFEngine', accounts => {
                             burnedTotalOrigin = await dfStore.getTotalBurned.call();
                             burnedOrigin = await dfStore.getSectionBurned.call(await dfStore.getBurnPosition.call());
 
+                            dfColMaxClaim = {};
+                            dfColMaxClaim = await dfProtocol.getColMaxClaim.call();
+                            dfWithdrawBalances = {};
+                            dfWithdrawBalances = await dfProtocol.getUserWithdrawBalance.call({from: accountAddress});
+                            
                             dfCollateralTokenTotalOrigin = new BN(0);
                             dfCollateralTokenBalance = {};
                             for (let index = 0; index < collateralAddress.length; index++) {
 
                                 dfCollateralTokenBalance[collateralAddress[index]] = await collateralObject[collateralAddress[index]].balanceOf.call(dfCollateral.address);
                                 dfCollateralTokenTotalOrigin = dfCollateralTokenTotalOrigin.add(dfCollateralTokenBalance[collateralAddress[index]]);
+
+                                assert.equal(dfColMaxClaim[0][index], collateralAddress[index]);
+                                assert.equal(dfColMaxClaim[1][index].toString(), (await dfStore.getResUSDXBalance.call(collateralAddress[index])).toString());
+
+                                assert.equal(dfWithdrawBalances[0][index], collateralAddress[index]);
+
+                                dfTokenBalance = await dfStore.getTokenBalance.call(collateralAddress[index]);
+                                dfAccountToken = await dfStore.getDepositorBalance.call(accountAddress, collateralAddress[index]);
+                                assert.equal(dfWithdrawBalances[1][index].toString(), (dfTokenBalance.lt(dfAccountToken) ? dfTokenBalance : dfAccountToken).toString());
 
                                 if (recordDfCollateralToken.hasOwnProperty(collateralAddress[index])) 
                                     assert.equal(recordDfCollateralToken[collateralAddress[index]].toString(), dfCollateralTokenBalance[collateralAddress[index]].toString());
@@ -972,6 +1004,11 @@ contract('DFEngine', accounts => {
                             if (recordBurned.hasOwnProperty(recordBurnedPosition))
                                 assert.equal(recordBurned[recordBurnedPosition].toString(), burnedCurrent.toString());
                                                     
+                            dfColMaxClaim = {};
+                            dfColMaxClaim = await dfProtocol.getColMaxClaim.call();
+                            dfWithdrawBalances = {};
+                            dfWithdrawBalances = await dfProtocol.getUserWithdrawBalance.call({from: accountAddress});
+                            
                             dfStoreTokenTotal = new BN(0);
                             dfStoreLockTokenTotal = new BN(0);
                             dfStoreAccountTokenTotal = new BN(0);
@@ -980,11 +1017,17 @@ contract('DFEngine', accounts => {
                                 balanceOfTokens = await dfStore.getTokenBalance.call(collateralAddress[index]);
                                 dfStoreTokenTotal = dfStoreTokenTotal.add(balanceOfTokens);
 
+                                dfAccountToken = await dfStore.getDepositorBalance.call(accountAddress, collateralAddress[index]);
+                                dfStoreAccountTokenTotal = dfStoreAccountTokenTotal.add(dfAccountToken);
+
+                                assert.equal(dfWithdrawBalances[0][index], collateralAddress[index]);
+                                assert.equal(dfWithdrawBalances[1][index].toString(), (balanceOfTokens.lt(dfAccountToken) ? balanceOfTokens : dfAccountToken).toString());
+
                                 balanceOfTokens = await dfStore.getResUSDXBalance.call(collateralAddress[index]);
                                 dfStoreLockTokenTotal = dfStoreLockTokenTotal.add(balanceOfTokens);
 
-                                balanceOfTokens = await dfStore.getDepositorBalance.call(accountAddress, collateralAddress[index]);
-                                dfStoreAccountTokenTotal = dfStoreAccountTokenTotal.add(balanceOfTokens);                
+                                assert.equal(dfColMaxClaim[0][index], collateralAddress[index]);
+                                assert.equal(dfColMaxClaim[1][index].toString(), balanceOfTokens.toString());                
                             }
 
                             console.log('dfStore token total:');
@@ -1157,11 +1200,22 @@ contract('DFEngine', accounts => {
                             console.log(accountTokenBalanceOrigin.toString());
                             console.log('\n');
                             
-                            // if(amountNB.lte(new BN(0))){
-                            //     console.log('withdraw random the amount is zero !!!\n');
-                            //     condition++;
-                            //     continue;
-                            // }
+                            dfColMaxClaim = {};
+                            dfColMaxClaim = await dfProtocol.getColMaxClaim.call();
+                            dfWithdrawBalances = {};
+                            dfWithdrawBalances = await dfProtocol.getUserWithdrawBalance.call({from: accountAddress});
+                            for (let index = 0; index < collateralAddress.length; index++) {
+
+                                assert.equal(dfColMaxClaim[0][index], collateralAddress[index]);
+                                assert.equal(dfColMaxClaim[1][index].toString(), (await dfStore.getResUSDXBalance.call(collateralAddress[index])).toString());
+                                
+                                assert.equal(dfWithdrawBalances[0][index], collateralAddress[index]);
+                                
+                                dfTokenBalance = await dfStore.getTokenBalance.call(collateralAddress[index]);
+                                dfAccountToken = await dfStore.getDepositorBalance.call(accountAddress, collateralAddress[index]);
+
+                                assert.equal(dfWithdrawBalances[1][index].toString(), (dfTokenBalance.lt(dfAccountToken) ? dfTokenBalance : dfAccountToken).toString());
+                            }
 
                             runData = {};
                             runData['dfEngine'] = dfEngineTimes + 1;
@@ -1193,6 +1247,23 @@ contract('DFEngine', accounts => {
                                 console.log(error.message + '\n');
                                 condition++;
                                 continue;
+                            }
+
+                            dfColMaxClaim = {};
+                            dfColMaxClaim = await dfProtocol.getColMaxClaim.call();
+                            dfWithdrawBalances = {};
+                            dfWithdrawBalances = await dfProtocol.getUserWithdrawBalance.call({from: accountAddress});
+                            for (let index = 0; index < collateralAddress.length; index++) {
+
+                                assert.equal(dfColMaxClaim[0][index], collateralAddress[index]);
+                                assert.equal(dfColMaxClaim[1][index].toString(), (await dfStore.getResUSDXBalance.call(collateralAddress[index])).toString());
+                                
+                                assert.equal(dfWithdrawBalances[0][index], collateralAddress[index]);
+                                
+                                dfTokenBalance = await dfStore.getTokenBalance.call(collateralAddress[index]);
+                                dfAccountToken = await dfStore.getDepositorBalance.call(accountAddress, collateralAddress[index]);
+
+                                assert.equal(dfWithdrawBalances[1][index].toString(), (dfTokenBalance.lt(dfAccountToken) ? dfTokenBalance : dfAccountToken).toString());
                             }
 
                             amountMin = new BN(0);
@@ -1352,6 +1423,10 @@ contract('DFEngine', accounts => {
                             dfPoolTokenTotalOrigin = new BN(0);
                             dfCollateralTokenBalance = {};
                             dfCollateralTokenTotalOrigin = new BN(0);
+                            dfColMaxClaim = {};
+                            dfColMaxClaim = await dfProtocol.getColMaxClaim.call();
+                            dfWithdrawBalances = {};
+                            dfWithdrawBalances = await dfProtocol.getUserWithdrawBalance.call({from: accountAddress});
                             for (let index = 0; index < collateralAddress.length; index++) {
 
                                 // dfStoreTokenBalance[collateralAddress[index]] = await dfStore.getTokenBalance.call(collateralAddress[index]);
@@ -1362,10 +1437,21 @@ contract('DFEngine', accounts => {
                                     assert.equal(dfStoreLockTokenBalance[collateralAddress[index]].toString(), recordLockToken[collateralAddress[index]].toString());
                                 dfStoreLockTokenTotalOrigin = dfStoreLockTokenTotalOrigin.add(dfStoreLockTokenBalance[collateralAddress[index]]);
 
+                                assert.equal(dfColMaxClaim[0][index], collateralAddress[index]);
+                                assert.equal(dfColMaxClaim[1][index].toString(), dfStoreLockTokenBalance[collateralAddress[index]].toString());
+
                                 dfStoreAccountToken[collateralAddress[index]] = await dfStore.getDepositorBalance.call(accountAddress, collateralAddress[index]);
                                 if (recordAccountMap.hasOwnProperty(collateralAddress[index]) && recordAccountMap[collateralAddress[index]].hasOwnProperty(accountAddress))
                                     assert.equal(dfStoreAccountToken[collateralAddress[index]].toString(), recordAccountMap[collateralAddress[index]][accountAddress].toString());
                                 dfStoreAccountTokenTotalOrigin = dfStoreAccountTokenTotalOrigin.add(dfStoreAccountToken[collateralAddress[index]]);
+
+                                assert.equal(dfWithdrawBalances[0][index], collateralAddress[index]);
+                                
+                                dfTokenBalance = await dfStore.getTokenBalance.call(collateralAddress[index]);
+                                assert.equal(
+                                    dfWithdrawBalances[1][index].toString(), 
+                                    (dfTokenBalance.lt(dfStoreAccountToken[collateralAddress[index]]) ? 
+                                        dfTokenBalance : dfStoreAccountToken[collateralAddress[index]]).toString());
 
                                 dfPoolTokenBalance[collateralAddress[index]] = await collateralObject[collateralAddress[index]].balanceOf.call(dfPool.address);
                                 dfPoolTokenTotalOrigin = dfPoolTokenTotalOrigin.add(dfPoolTokenBalance[collateralAddress[index]]);
@@ -1526,6 +1612,10 @@ contract('DFEngine', accounts => {
                             dfPoolTokenTotalCurrent = new BN(0);
                             dfCollateralTokenBalance = {};
                             dfCollateralTokenTotalCurrent = new BN(0);
+                            dfColMaxClaim = {};
+                            dfColMaxClaim = await dfProtocol.getColMaxClaim.call();
+                            dfWithdrawBalances = {};
+                            dfWithdrawBalances = await dfProtocol.getUserWithdrawBalance.call({from: accountAddress});
                             for (let index = 0; index < collateralAddress.length; index++) {
 
                                 // dfStoreTokenBalance[collateralAddress[index]] = await dfStore.getTokenBalance.call(collateralAddress[index]);
@@ -1536,10 +1626,21 @@ contract('DFEngine', accounts => {
                                     assert.equal(dfStoreLockTokenBalance[collateralAddress[index]].toString(), recordLockToken[collateralAddress[index]].toString());
                                 dfStoreLockTokenTotalCurrent = dfStoreLockTokenTotalCurrent.add(dfStoreLockTokenBalance[collateralAddress[index]]);
 
+                                assert.equal(dfColMaxClaim[0][index], collateralAddress[index]);
+                                assert.equal(dfColMaxClaim[1][index].toString(), dfStoreLockTokenBalance[collateralAddress[index]].toString());
+
                                 dfStoreAccountToken[collateralAddress[index]] = await dfStore.getDepositorBalance.call(accountAddress, collateralAddress[index]);
                                 if (recordAccountMap.hasOwnProperty(collateralAddress[index]) && recordAccountMap[collateralAddress[index]].hasOwnProperty(accountAddress))
                                     assert.equal(dfStoreAccountToken[collateralAddress[index]].toString(), recordAccountMap[collateralAddress[index]][accountAddress].toString());
                                 dfStoreAccountTokenTotalCurrent = dfStoreAccountTokenTotalCurrent.add(dfStoreAccountToken[collateralAddress[index]]);
+
+                                assert.equal(dfWithdrawBalances[0][index], collateralAddress[index]);
+                                
+                                dfTokenBalance = await dfStore.getTokenBalance.call(collateralAddress[index]);
+                                assert.equal(
+                                    dfWithdrawBalances[1][index].toString(), 
+                                    (dfTokenBalance.lt(dfStoreAccountToken[collateralAddress[index]]) ? 
+                                        dfTokenBalance : dfStoreAccountToken[collateralAddress[index]]).toString());
 
                                 dfPoolTokenBalance[collateralAddress[index]] = await collateralObject[collateralAddress[index]].balanceOf.call(dfPool.address);
                                 dfPoolTokenTotalCurrent = dfPoolTokenTotalCurrent.add(dfPoolTokenBalance[collateralAddress[index]]);
@@ -1826,6 +1927,10 @@ contract('DFEngine', accounts => {
                             dfPoolTokenTotalCurrent = new BN(0);
                             dfCollateralTokenBalance = {};
                             dfCollateralTokenTotalCurrent = new BN(0);
+                            dfColMaxClaim = {};
+                            dfColMaxClaim = await dfProtocol.getColMaxClaim.call();
+                            dfWithdrawBalances = {};
+                            dfWithdrawBalances = await dfProtocol.getUserWithdrawBalance.call({from: accountAddress});
                             for (let index = 0; index < collateralAddress.length; index++) {
 
                                 // dfStoreTokenBalance[collateralAddress[index]] = await dfStore.getTokenBalance.call(collateralAddress[index]);
@@ -1836,10 +1941,21 @@ contract('DFEngine', accounts => {
                                     assert.equal(dfStoreLockTokenBalance[collateralAddress[index]].toString(), recordLockToken[collateralAddress[index]].toString());
                                 dfStoreLockTokenTotalCurrent = dfStoreLockTokenTotalCurrent.add(dfStoreLockTokenBalance[collateralAddress[index]]);
 
+                                assert.equal(dfColMaxClaim[0][index], collateralAddress[index]);
+                                assert.equal(dfColMaxClaim[1][index].toString(), dfStoreLockTokenBalance[collateralAddress[index]].toString());
+
                                 dfStoreAccountToken[collateralAddress[index]] = await dfStore.getDepositorBalance.call(accountAddress, collateralAddress[index]);
                                 if (recordAccountMap.hasOwnProperty(collateralAddress[index]) && recordAccountMap[collateralAddress[index]].hasOwnProperty(accountAddress))
                                     assert.equal(dfStoreAccountToken[collateralAddress[index]].toString(), recordAccountMap[collateralAddress[index]][accountAddress].toString());
                                 dfStoreAccountTokenTotalCurrent = dfStoreAccountTokenTotalCurrent.add(dfStoreAccountToken[collateralAddress[index]]);
+
+                                assert.equal(dfWithdrawBalances[0][index], collateralAddress[index]);
+                                
+                                dfTokenBalance = await dfStore.getTokenBalance.call(collateralAddress[index]);
+                                assert.equal(
+                                    dfWithdrawBalances[1][index].toString(), 
+                                    (dfTokenBalance.lt(dfStoreAccountToken[collateralAddress[index]]) ? 
+                                        dfTokenBalance : dfStoreAccountToken[collateralAddress[index]]).toString());
 
                                 dfPoolTokenBalance[collateralAddress[index]] = await collateralObject[collateralAddress[index]].balanceOf.call(dfPool.address);
                                 dfPoolTokenTotalCurrent = dfPoolTokenTotalCurrent.add(dfPoolTokenBalance[collateralAddress[index]]);
@@ -2151,9 +2267,23 @@ contract('DFEngine', accounts => {
 
                             assert.equal(usdxBalanceCurrent.sub(usdxBalanceOrigin).toString(), amountNB.toString());
                             
+                            dfColMaxClaim = {};
+                            dfColMaxClaim = await dfProtocol.getColMaxClaim.call();
+                            dfWithdrawBalances = {};
+                            dfWithdrawBalances = await dfProtocol.getUserWithdrawBalance.call({from: accountAddress});
+
                             accountTokenBalanceMapCurrent = {};
                             accountTokenTotalCurrent = new BN(0);
                             for (let index = 0; index < collateralAddress.length; index++) {
+
+                                assert.equal(dfColMaxClaim[0][index], collateralAddress[index]);
+                                assert.equal(dfColMaxClaim[1][index].toString(), dfStoreLockTokenBalance[collateralAddress[index]].toString());
+
+                                assert.equal(dfWithdrawBalances[0][index], collateralAddress[index]);
+                                assert.equal(
+                                    dfWithdrawBalances[1][index].toString(), 
+                                    (dfStoreTokenBalance[collateralAddress[index]].lt(dfStoreAccountToken[collateralAddress[index]]) ? 
+                                        dfStoreTokenBalance[collateralAddress[index]] : dfStoreAccountToken[collateralAddress[index]]).toString());
 
                                 assert.equal(
                                     dfStoreTokenBalance[collateralAddress[index]].toString(), 
@@ -2393,8 +2523,13 @@ contract('DFEngine', accounts => {
                                 assert.equal(dfStoreTokenWeight[index].toString(), tokenWeightList[index].toString());
                             }
 
+                            dfColMaxClaim = {};
+                            dfColMaxClaim = await dfProtocol.getColMaxClaim.call();
+
                             for (let index = 0; index < collateralAddress.length; index++) {
 
+                                assert.equal(dfColMaxClaim[0][index], collateralAddress[index]);
+                                assert.equal(dfColMaxClaim[1][index].toString(), (await dfStore.getResUSDXBalance.call(collateralAddress[index])).toString());
                                 assert.equal(
                                     (await collateralObject[collateralAddress[index]].balanceOf.call(dfPool.address)).toString(),
                                     (await dfStore.getTokenBalance.call(collateralAddress[index])).toString()
