@@ -258,6 +258,7 @@ contract DFEngine is DSMath, DSAuth {
         // usdxToken.burn(_depositor, _amount);
         usdxToken.transferFrom(_depositor, address(this),_amount);
         usdxToken.burn(address(this), _amount);
+        dfStore.setTotalCol(sub(dfStore.getTotalCol(), _amount));
         checkUSDXTotalAndColTotal();
         dfStore.addTotalBurned(_amount);
 
@@ -300,6 +301,7 @@ contract DFEngine is DSMath, DSAuth {
         dfStore.addTotalMinted(_mintTotal);
         dfStore.addSectionMinted(_mintTotal);
         usdxToken.mint(address(dfPool), _mintTotal);
+        dfStore.setTotalCol(add(dfStore.getTotalCol(), _mintTotal));
         checkUSDXTotalAndColTotal();
         dfPool.transferOut(address(usdxToken), _depositor, _depositorMintTotal);
         return _depositorMintTotal;
@@ -312,7 +314,10 @@ contract DFEngine is DSMath, DSAuth {
         for (uint i = 0; i < _tokens.length; i++) {
             _colTotal = add(_colTotal, IDSToken(_tokens[i]).balanceOf(_dfCol));
         }
-        require(usdxToken.totalSupply() == _colTotal, "checkUSDXTotalAndColTotal : Usdx and total collateral are not equal.");
+        require(usdxToken.totalSupply() <= _colTotal,
+                "checkUSDXTotalAndColTotal : Amount of the usdx will be greater than collateral.");
+        require(usdxToken.totalSupply() == dfStore.getTotalCol(),
+                "checkUSDXTotalAndColTotal : Usdx and total collateral are not equal.");
     }
 
     function getDepositMaxMint(address _depositor, address _tokenID, uint _amount) public view returns (uint) {

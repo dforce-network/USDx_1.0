@@ -58,4 +58,7 @@ contract IDFStore {
     function setTypeToken(uint tt, address _tokenID) public;
     function getTokenMedian(address _tokenID) public view returns (address);
     function setTokenMedian(address _tokenID, address _median) public;
+
+    function setTotalCol(uint _amount) public;
+    function getTotalCol() public view returns (uint);
 }

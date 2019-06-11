@@ -40,6 +40,9 @@ contract DFStore is DSMath, DSAuth {
     /// @dev  The minimal amount of burned.
     uint private minimalBurnAmount = 10 ** 9;
 
+    /// @dev The total amount of collateral.
+    uint private totalCol;
+
     mapping(uint => uint) public FeeRate;
     mapping(uint => address) public FeeToken;
     mapping(address => address) public TokenMedian;
@@ -316,7 +319,16 @@ contract DFStore is DSMath, DSAuth {
     function setTokenMedian(address _tokenID, address _median) public auth {
         TokenMedian[_tokenID] = _median;
     }
+
     function getTokenMedian(address _tokenID) public view returns (address) {
         return TokenMedian[_tokenID];
+    }
+
+    function setTotalCol(uint _amount) public auth {
+        totalCol = _amount;
+    }
+
+    function getTotalCol() public view returns (uint) {
+        return totalCol;
     }
 }
