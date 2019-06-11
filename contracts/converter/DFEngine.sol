@@ -458,6 +458,7 @@ contract DFEngine is DSMath, DSAuth {
         // usdxToken.mint(_depositor, _amount);
 
         usdxToken.mint(address(dfPool), _amount);
+        dfStore.setTotalCol(add(dfStore.getTotalCol(), _amount));
         checkUSDXTotalAndColTotal();
         dfPool.transferOut(address(usdxToken), _depositor, _amount);
     }
