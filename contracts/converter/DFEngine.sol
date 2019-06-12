@@ -314,9 +314,10 @@ contract DFEngine is DSMath, DSAuth {
         for (uint i = 0; i < _tokens.length; i++) {
             _colTotal = add(_colTotal, IDSToken(_tokens[i]).balanceOf(_dfCol));
         }
-        require(usdxToken.totalSupply() <= _colTotal,
+        uint _usdxTotalSupply = usdxToken.totalSupply();
+        require(_usdxTotalSupply <= _colTotal,
                 "checkUSDXTotalAndColTotal : Amount of the usdx will be greater than collateral.");
-        require(usdxToken.totalSupply() == dfStore.getTotalCol(),
+        require(_usdxTotalSupply == dfStore.getTotalCol(),
                 "checkUSDXTotalAndColTotal : Usdx and total collateral are not equal.");
     }
 

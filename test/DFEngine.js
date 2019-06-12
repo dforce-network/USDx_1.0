@@ -348,7 +348,7 @@ contract('DFEngine', accounts => {
                             console.log('config : ' + (configIndex + 1) + ' dfEngine : ' + (dfEngineTimes + 1) + ' runType : ' + runType + ' runTimes ' + (condition + 1) + '\n');
 
                             tokenAddress = tokenAddressList[MathTool.randomNum(0, tokenAddressList.length - 1)];
-                            accountAddress = accounts[MathTool.randomNum(0, accounts.length - 1)];
+                            accountAddress = accounts[MathTool.randomNum(1, accounts.length - 1)];
                             amount = MathTool.randomNum(10, 500);
 
                             conditionIndex = condition % runConfig[configIndex]['data'][dfEngineIndex]['data'].length;
@@ -361,7 +361,7 @@ contract('DFEngine', accounts => {
             
                                 if (runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex].hasOwnProperty('accountAddress')) {
                                     
-                                    accountAddress = accounts[runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['accountAddress'] - 1];
+                                    accountAddress = accounts[runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['accountAddress']];
                                 }
             
                                 if (runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex].hasOwnProperty('amount')) {
@@ -747,14 +747,14 @@ contract('DFEngine', accounts => {
                         while (condition < runTimes) {
                             console.log('config : ' + (configIndex + 1) + ' dfEngine : ' + (dfEngineTimes + 1) + ' runType : ' + runType + ' runTimes ' + (condition + 1) + '\n');
                             
-                            accountAddress = accounts[MathTool.randomNum(0, accounts.length - 1)];
+                            accountAddress = accounts[MathTool.randomNum(1, accounts.length - 1)];
 
                             conditionIndex = condition % runConfig[configIndex]['data'][dfEngineIndex]['data'].length;
                             if(runConfig[configIndex]['data'][dfEngineIndex].hasOwnProperty('data')){
                     
                                 if (runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex].hasOwnProperty('accountAddress')) {
                                     
-                                    accountAddress = accounts[runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['accountAddress'] - 1];
+                                    accountAddress = accounts[runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['accountAddress']];
                                 }
                             }
 
@@ -864,7 +864,7 @@ contract('DFEngine', accounts => {
                             console.log(approvals.toString());
                             console.log('\n');
 
-                            await collateralObject[collateralAddress[MathTool.randomNum(0, collateralAddress.length)]].transfer(dfCollateral.address, new BN(MathTool.randomNum(1000, 2000).toString()));
+                            await collateralObject[collateralAddress[MathTool.randomNum(0, collateralAddress.length - 1)]].transfer(dfCollateral.address, new BN(MathTool.randomNum(1000, 2000).toString()));
 
                             runData = {};
                             runData['dfEngine'] = dfEngineTimes + 1;
@@ -901,7 +901,7 @@ contract('DFEngine', accounts => {
                                 continue;
                             }
 
-                            await collateralObject[collateralAddress[MathTool.randomNum(0, collateralAddress.length)]].transfer(dfCollateral.address, new BN(MathTool.randomNum(1000, 2000).toString()));
+                            await collateralObject[collateralAddress[MathTool.randomNum(0, collateralAddress.length - 1)]].transfer(dfCollateral.address, new BN(MathTool.randomNum(1000, 2000).toString()));
                             
                             assert.equal((await usdxToken.allowance.call(accountAddress, dfEngine.address)).toString(), '0');
                             assert.equal((await dfToken.allowance.call(accountAddress, dfEngine.address)).toString(), '0');
@@ -1142,7 +1142,7 @@ contract('DFEngine', accounts => {
                             console.log('config : ' + (configIndex + 1) + ' dfEngine : ' + (dfEngineTimes + 1) + ' runType : ' + runType + ' runTimes ' + (condition + 1) + '\n');
 
                             tokenAddress = collateralAddress[MathTool.randomNum(0, collateralAddress.length - 1)];
-                            accountAddress = accounts[MathTool.randomNum(0, accounts.length - 1)];
+                            accountAddress = accounts[MathTool.randomNum(1, accounts.length - 1)];
 
                             conditionIndex = condition % runConfig[configIndex]['data'][dfEngineIndex]['data'].length;
                             if(runConfig[configIndex]['data'][dfEngineIndex].hasOwnProperty('data')){
@@ -1154,7 +1154,7 @@ contract('DFEngine', accounts => {
             
                                 if (runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex].hasOwnProperty('accountAddress')) {
                                     
-                                    accountAddress = accounts[runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['accountAddress'] - 1];
+                                    accountAddress = accounts[runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['accountAddress']];
                                 }
                             }
 
@@ -1234,7 +1234,7 @@ contract('DFEngine', accounts => {
                                 assert.equal(dfWithdrawBalances[1][index].toString(), (dfTokenBalance.lt(dfAccountToken) ? dfTokenBalance : dfAccountToken).toString());
                             }
 
-                            await collateralObject[collateralAddress[MathTool.randomNum(0, collateralAddress.length)]].transfer(dfCollateral.address, new BN(MathTool.randomNum(1000, 2000).toString()));
+                            await collateralObject[collateralAddress[MathTool.randomNum(0, collateralAddress.length - 1)]].transfer(dfCollateral.address, new BN(MathTool.randomNum(1000, 2000).toString()));
 
                             runData = {};
                             runData['dfEngine'] = dfEngineTimes + 1;
@@ -1268,7 +1268,7 @@ contract('DFEngine', accounts => {
                                 continue;
                             }
 
-                            await collateralObject[collateralAddress[MathTool.randomNum(0, collateralAddress.length)]].transfer(dfCollateral.address, new BN(MathTool.randomNum(1000, 2000).toString()));
+                            await collateralObject[collateralAddress[MathTool.randomNum(0, collateralAddress.length - 1)]].transfer(dfCollateral.address, new BN(MathTool.randomNum(1000, 2000).toString()));
 
                             dfColMaxClaim = {};
                             dfColMaxClaim = await dfProtocol.getColMaxClaim.call();
@@ -1423,14 +1423,14 @@ contract('DFEngine', accounts => {
                         while (condition < runTimes) {
                             console.log('config : ' + (configIndex + 1) + ' dfEngine : ' + (dfEngineTimes + 1) + ' runType : ' + runType + ' runTimes ' + (condition + 1) + '\n');
 
-                            accountAddress = accounts[MathTool.randomNum(0, accounts.length - 1)];
+                            accountAddress = accounts[MathTool.randomNum(1, accounts.length - 1)];
 
                             conditionIndex = condition % runConfig[configIndex]['data'][dfEngineIndex]['data'].length;
                             if(runConfig[configIndex]['data'][dfEngineIndex].hasOwnProperty('data')){
             
                                 if (runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex].hasOwnProperty('accountAddress')) {
                                     
-                                    accountAddress = accounts[runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['accountAddress'] - 1];
+                                    accountAddress = accounts[runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['accountAddress']];
                                 }
                             }
 
@@ -1517,7 +1517,7 @@ contract('DFEngine', accounts => {
                             console.log(usdxBalanceOfDfPool.toString());
                             console.log('\n');
                             
-                            await collateralObject[collateralAddress[MathTool.randomNum(0, collateralAddress.length)]].transfer(dfCollateral.address, new BN(MathTool.randomNum(1000, 2000).toString()));
+                            await collateralObject[collateralAddress[MathTool.randomNum(0, collateralAddress.length - 1)]].transfer(dfCollateral.address, new BN(MathTool.randomNum(1000, 2000).toString()));
 
                             runData = {};
                             runData['dfEngine'] = dfEngineTimes + 1;
@@ -1554,7 +1554,7 @@ contract('DFEngine', accounts => {
                                 continue;
                             }
 
-                            await collateralObject[collateralAddress[MathTool.randomNum(0, collateralAddress.length)]].transfer(dfCollateral.address, new BN(MathTool.randomNum(1000, 2000).toString()));
+                            await collateralObject[collateralAddress[MathTool.randomNum(0, collateralAddress.length - 1)]].transfer(dfCollateral.address, new BN(MathTool.randomNum(1000, 2000).toString()));
     
                             var amountNB = dfStoreAccountTokenTotalOrigin.lt(dfStoreLockTokenTotalOrigin) ? dfStoreAccountTokenTotalOrigin : dfStoreLockTokenTotalOrigin;
                             console.log('claim account index : ' + (accounts.indexOf(accountAddress) + 1));
@@ -1733,14 +1733,14 @@ contract('DFEngine', accounts => {
                         while (condition < runTimes) {
                             console.log('config : ' + (configIndex + 1) + ' dfEngine : ' + (dfEngineTimes + 1) + ' runType : ' + runType + ' runTimes ' + (condition + 1) + '\n');
 
-                            accountAddress = accounts[MathTool.randomNum(0, accounts.length - 1)];
+                            accountAddress = accounts[MathTool.randomNum(1, accounts.length - 1)];
 
                             conditionIndex = condition % runConfig[configIndex]['data'][dfEngineIndex]['data'].length;
                             if(runConfig[configIndex]['data'][dfEngineIndex].hasOwnProperty('data')){
             
                                 if (runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex].hasOwnProperty('accountAddress')) {
                                     
-                                    accountAddress = accounts[runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['accountAddress'] - 1];
+                                    accountAddress = accounts[runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['accountAddress']];
                                 }
                             }
 
@@ -1838,7 +1838,7 @@ contract('DFEngine', accounts => {
                             console.log(usdxBalanceOfDfPool.toString());
                             console.log('\n');
                             
-                            await collateralObject[collateralAddress[MathTool.randomNum(0, collateralAddress.length)]].transfer(dfCollateral.address, new BN(MathTool.randomNum(1000, 2000).toString()));
+                            await collateralObject[collateralAddress[MathTool.randomNum(0, collateralAddress.length - 1)]].transfer(dfCollateral.address, new BN(MathTool.randomNum(1000, 2000).toString()));
                             
                             runData = {};
                             runData['dfEngine'] = dfEngineTimes + 1;
@@ -1877,7 +1877,7 @@ contract('DFEngine', accounts => {
                                 continue;
                             }
 
-                            await collateralObject[collateralAddress[MathTool.randomNum(0, collateralAddress.length)]].transfer(dfCollateral.address, new BN(MathTool.randomNum(1000, 2000).toString()));
+                            await collateralObject[collateralAddress[MathTool.randomNum(0, collateralAddress.length - 1)]].transfer(dfCollateral.address, new BN(MathTool.randomNum(1000, 2000).toString()));
     
                             // var amountNB = dfStoreAccountTokenTotalOrigin.lt(dfStoreLockTokenTotalOrigin) ? dfStoreAccountTokenTotalOrigin : dfStoreLockTokenTotalOrigin;
                             // console.log('claim account index : ' + (accounts.indexOf(accountAddress) + 1));
@@ -2056,7 +2056,7 @@ contract('DFEngine', accounts => {
                         while (condition < runTimes) {
                             console.log('config : ' + (configIndex + 1) + ' dfEngine : ' + (dfEngineTimes + 1) + ' runType : ' + runType + ' runTimes ' + (condition + 1) + '\n');
 
-                            accountAddress = accounts[MathTool.randomNum(0, accounts.length - 1)];
+                            accountAddress = accounts[MathTool.randomNum(1, accounts.length - 1)];
                             amount = MathTool.randomNum(1, 100);
                             amount = amount / 2;
 
@@ -2065,7 +2065,7 @@ contract('DFEngine', accounts => {
 
                                 if (runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex].hasOwnProperty('accountAddress')) {
                                     
-                                    accountAddress = accounts[runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['accountAddress'] - 1];
+                                    accountAddress = accounts[runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['accountAddress']];
                                 }
             
                                 if (runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex].hasOwnProperty('amount')) {
@@ -2084,7 +2084,7 @@ contract('DFEngine', accounts => {
                             console.log(amountNB.toString());
                             console.log('\n');
 
-                            await collateralObject[collateralAddress[MathTool.randomNum(0, collateralAddress.length)]].transfer(dfCollateral.address, new BN(MathTool.randomNum(1000, 2000).toString()));
+                            await collateralObject[collateralAddress[MathTool.randomNum(0, collateralAddress.length - 1)]].transfer(dfCollateral.address, new BN(MathTool.randomNum(1000, 2000).toString()));
 
                             usdxTotalSupplyOrigin = await usdxToken.totalSupply.call();
                             usdxBalanceOrigin = await usdxToken.balanceOf.call(accountAddress);
@@ -2155,7 +2155,7 @@ contract('DFEngine', accounts => {
                                 continue;
                             }
 
-                            await collateralObject[collateralAddress[MathTool.randomNum(0, collateralAddress.length)]].transfer(dfCollateral.address, new BN(MathTool.randomNum(1000, 2000).toString()));
+                            await collateralObject[collateralAddress[MathTool.randomNum(0, collateralAddress.length - 1)]].transfer(dfCollateral.address, new BN(MathTool.randomNum(1000, 2000).toString()));
 
                             recordTokenTotal = recordTokenTotal.add(amountNB);
                             recordAccountTotalMap[accountAddress] = recordAccountTotalMap.hasOwnProperty(accountAddress) ? recordAccountTotalMap[accountAddress].add(amountNB) : amountNB;
