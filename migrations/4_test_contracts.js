@@ -1,16 +1,11 @@
 const BN = require('bn.js');
 
-// const Funds = artifacts.require('DFFunds.sol');
 const Protocol = artifacts.require('DFProtocol.sol');
-// const Store = artifacts.require('DFStore.sol');
 const Pool = artifacts.require('DFPool.sol');
-// const Collateral = artifacts.require('DFCollateral.sol');
 const Engine = artifacts.require('DFEngine.sol');
-// const Guard = artifacts.require('DSGuard.sol');
-// const PriceFeed = artifacts.require('PriceFeed.sol');
-// const Medianizer = artifacts.require('Medianizer.sol');
 const USDx = artifacts.require('USDXToken.sol');
-// const DF = artifacts.require('DFToken.sol');
+const Collaterals = artifacts.require('Collaterals_t.sol');
+const DF = artifacts.require('DFToken.sol');
 const DF_Addr = "0x4AF82b7C2F049574C9fc742A896DAbEA379b7d51";
 
 module.exports = async function (deployer, network, accounts) {
@@ -18,237 +13,21 @@ module.exports = async function (deployer, network, accounts) {
     if (network == 'development')
         return;
 
-    // let contractFunds = await Funds.deployed();
     let contractProtocol = await Protocol.deployed();
     let contractPool = await Pool.deployed();
-    // let contractStore = await Store.deployed();
-    // let contractCollateral = await Collateral.deployed();
     let contarctEngine = await Engine.deployed();
-    // let contractGuard = await Guard.deployed();
-    // let contractPriceFeed = await PriceFeed.deployed();
-    // let contractMedianizer = await Medianizer.deployed();
     let contractUSDx = await USDx.deployed();
-
-    let erc20ABI = [{
-        "constant": true,
-        "inputs": [],
-        "name": "name",
-        "outputs": [{
-          "name": "",
-          "type": "string"
-        }],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "constant": false,
-        "inputs": [{
-            "name": "spender",
-            "type": "address"
-          },
-          {
-            "name": "value",
-            "type": "uint256"
-          }
-        ],
-        "name": "approve",
-        "outputs": [{
-          "name": "",
-          "type": "bool"
-        }],
-        "payable": false,
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "constant": true,
-        "inputs": [],
-        "name": "totalSupply",
-        "outputs": [{
-          "name": "",
-          "type": "uint256"
-        }],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "constant": false,
-        "inputs": [{
-            "name": "from",
-            "type": "address"
-          },
-          {
-            "name": "to",
-            "type": "address"
-          },
-          {
-            "name": "value",
-            "type": "uint256"
-          }
-        ],
-        "name": "transferFrom",
-        "outputs": [{
-          "name": "",
-          "type": "bool"
-        }],
-        "payable": false,
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "constant": true,
-        "inputs": [],
-        "name": "decimals",
-        "outputs": [{
-          "name": "",
-          "type": "uint8"
-        }],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "constant": true,
-        "inputs": [{
-          "name": "owner",
-          "type": "address"
-        }],
-        "name": "balanceOf",
-        "outputs": [{
-          "name": "",
-          "type": "uint256"
-        }],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "constant": true,
-        "inputs": [],
-        "name": "symbol",
-        "outputs": [{
-          "name": "",
-          "type": "string"
-        }],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "constant": false,
-        "inputs": [{
-            "name": "to",
-            "type": "address"
-          },
-          {
-            "name": "value",
-            "type": "uint256"
-          }
-        ],
-        "name": "transfer",
-        "outputs": [{
-          "name": "",
-          "type": "bool"
-        }],
-        "payable": false,
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "constant": true,
-        "inputs": [{
-            "name": "owner",
-            "type": "address"
-          },
-          {
-            "name": "spender",
-            "type": "address"
-          }
-        ],
-        "name": "allowance",
-        "outputs": [{
-          "name": "",
-          "type": "uint256"
-        }],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [{
-            "name": "_name",
-            "type": "string"
-          },
-          {
-            "name": "_symbol",
-            "type": "string"
-          },
-          {
-            "name": "guy",
-            "type": "address"
-          }
-        ],
-        "payable": false,
-        "stateMutability": "nonpayable",
-        "type": "constructor"
-      },
-      {
-        "anonymous": false,
-        "inputs": [{
-            "indexed": true,
-            "name": "from",
-            "type": "address"
-          },
-          {
-            "indexed": true,
-            "name": "to",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "name": "value",
-            "type": "uint256"
-          }
-        ],
-        "name": "Transfer",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [{
-            "indexed": true,
-            "name": "owner",
-            "type": "address"
-          },
-          {
-            "indexed": true,
-            "name": "spender",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "name": "value",
-            "type": "uint256"
-          }
-        ],
-        "name": "Approval",
-        "type": "event"
-      }
-    ];
     
     const daiAddr = "0xf494e07dfdbce883bf699cedf818fde2fa432db4";
     const paxAddr = "0x561b11000e95ac053eccec5bcefdc37e16c2491b";
     const tusdAddr = "0x25470030aa105bca679752e5c5e482c295de2b68";
     const usdcAddr = "0xbc34e50f589e389c507e0213501114bd2e70b1d7";
 
-    let contractDAI = web3.eth.contract(erc20ABI).at(daiAddr);
-    let contractPAX = web3.eth.contract(erc20ABI).at(paxAddr);
-    let contractTUSD = web3.eth.contract(erc20ABI).at(tusdAddr);
-    let contractUSDC = web3.eth.contract(erc20ABI).at(usdcAddr);
-
-    let contractDF = web3.eth.contract(erc20ABI).at(DF_Addr);
+    let contractDAI = await Collaterals.at(daiAddr);
+    let contractPAX = await Collaterals.at(paxAddr);
+    let contractTUSD = await Collaterals.at(tusdAddr);
+    let contractUSDC = await Collaterals.at(usdcAddr);
+    let contractDF = await DF.at(DF_Addr);
 
     let count = 0
 
