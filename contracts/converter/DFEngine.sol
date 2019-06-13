@@ -186,7 +186,7 @@ contract DFEngine is DSMath, DSAuth {
         uint _burnedAmount;
         uint _amountTemp = _amount;
         uint _tokenAmount;
-        // uint _srcTokenAmount; 
+        // uint _srcTokenAmount;
 
         _unifiedCommission(ProcessType.CT_DESTROY, _feeTokenIdx, _depositor, _amount);
 
@@ -216,7 +216,10 @@ contract DFEngine is DSMath, DSAuth {
                 _tokenAmount = div(mul(_burnedAmount, _burnCW[i]), _sumBurnCW);
                 IDSWrappedToken(_tokens[i]).unwrap(address(dfCol), _tokenAmount);
                 // _srcTokenAmount = IDSWrappedToken(_tokens[i]).reverseByMultiple(_tokenAmount);
-                dfPool.transferOut(IDSWrappedToken(_tokens[i]).getSrcERC20(), _depositor, IDSWrappedToken(_tokens[i]).reverseByMultiple(_tokenAmount));
+                dfPool.transferOut(
+                    IDSWrappedToken(_tokens[i]).getSrcERC20(),
+                    _depositor,
+                    IDSWrappedToken(_tokens[i]).reverseByMultiple(_tokenAmount));
                 // dfCol.transferOut(_tokens[i], dfPool, div(mul(_burnedAmount, _burnCW[i]), _sumBurnCW));
             }
         }
@@ -285,11 +288,13 @@ contract DFEngine is DSMath, DSAuth {
                 "checkUSDXTotalAndColTotal : Usdx and total collateral are not equal.");
     }
 
-    function getDepositMaxMint(address _depositor, address _tokenID, uint _amount) public view returns (uint) {
+    function getDepositMaxMint(address _depositor, address _srcToken, uint _srcAmount) public view returns (uint) {
+        address _tokenID = dfStore.getWrappedToken(_srcToken);
         require(dfStore.getMintingToken(_tokenID), "CalcDepositorMintTotal: asset not allow.");
 
-        uint _mintAmount;
-        uint _depositorMintAmount;
+        uint _amount = IDSWrappedToken(_tokenID).changeByMultiple(_srcAmount);
+        // uint _mintAmount;
+        // uint _depositorMintAmount;
         uint _depositorMintTotal;
         uint _step = uint(-1);
         address[] memory _tokens;
@@ -312,9 +317,9 @@ contract DFEngine is DSMath, DSAuth {
         }
 
         for (uint i = 0; i < _tokens.length; i++) {
-            _mintAmount = mul(_step, _mintCW[i]);
-            _depositorMintAmount = min(_depositorBalance[i], add(_resUSDXBalance[i], _mintAmount));
-            _depositorMintTotal = add(_depositorMintTotal, _depositorMintAmount);
+            // _mintAmount = mul(_step, _mintCW[i]);
+            // _depositorMintAmount = min(_depositorBalance[i], add(_resUSDXBalance[i], mul(_step, _mintCW[i])));
+            _depositorMintTotal = add(_depositorMintTotal, min(_depositorBalance[i], add(_resUSDXBalance[i], mul(_step, _mintCW[i]))));
         }
 
         return _depositorMintTotal;
@@ -351,29 +356,42 @@ contract DFEngine is DSMath, DSAuth {
 
     function getMintingSection() public view returns(address[] memory, uint[] memory) {
         uint position = dfStore.getMintPosition();
-        uint[] memory weight = dfStore.getSectionWeight(position);
-        address[] memory tokens = dfStore.getSectionToken(position);
+        uint[] memory _weight = dfStore.getSectionWeight(position);
+        address[] memory _tokens = dfStore.getSectionToken(position);
+        address[] memory _srcTokens = new address[](_tokens.length);
 
-        return (tokens, weight);
+        for (uint i = 0; i < _tokens.length; i++) {
+            _srcTokens[i] = IDSWrappedToken(_tokens[i]).getSrcERC20();
+        }
+
+        return (_srcTokens, _weight);
     }
 
     function getBurningSection() public view returns(address[] memory, uint[] memory) {
         uint position = dfStore.getBurnPosition();
-        uint[] memory weight = dfStore.getSectionWeight(position);
-        address[] memory tokens = dfStore.getSectionToken(position);
+        uint[] memory _weight = dfStore.getSectionWeight(position);
+        address[] memory _tokens = dfStore.getSectionToken(position);
 
-        return (tokens, weight);
+        address[] memory _srcTokens = new address[](_tokens.length);
+
+        for (uint i = 0; i < _tokens.length; i++) {
+            _srcTokens[i] = IDSWrappedToken(_tokens[i]).getSrcERC20();
+        }
+
+        return (_srcTokens, _weight);
     }
 
     function getWithdrawBalances(address _depositor) public view returns(address[] memory, uint[] memory) {
-        address[] memory tokens = dfStore.getMintedTokenList();
-        uint[] memory weight = new uint[](tokens.length);
+        address[] memory _tokens = dfStore.getMintedTokenList();
+        uint[] memory _withdrawBalances = new uint[](_tokens.length);
 
-        for (uint i = 0; i < tokens.length; i++) {
-            weight[i] = calcWithdrawAmount(_depositor, tokens[i]);
+        address[] memory _srcTokens = new address[](_tokens.length);
+        for (uint i = 0; i < _tokens.length; i++) {
+            _srcTokens[i] = IDSWrappedToken(_tokens[i]).getSrcERC20();
+            _withdrawBalances[i] = IDSWrappedToken(_tokens[i]).reverseByMultiple(calcWithdrawAmount(_depositor, _tokens[i]));
         }
 
-        return (tokens, weight);
+        return (_srcTokens, _withdrawBalances);
     }
 
     function getPrices(uint _tokenIdx) public view returns (uint) {
@@ -404,6 +422,7 @@ contract DFEngine is DSMath, DSAuth {
         address[] memory _tokens;
         uint[] memory _mintCW;
         uint _sumMintCW;
+        uint _srcAmount;
 
         (_tokens, _mintCW) = getMintingSection();
         for (uint i = 0; i < _mintCW.length; i++) {
@@ -414,8 +433,12 @@ contract DFEngine is DSMath, DSAuth {
         _unifiedCommission(ProcessType.CT_DEPOSIT, _feeTokenIdx, _depositor, _amount);
 
         for (uint i = 0; i < _mintCW.length; i++) {
-            require(dfPool.transferFromSenderToCol(_tokens[i], _depositor, div(mul(_amount, _mintCW[i]), _sumMintCW)),
-                    "ERC20 TransferFrom: not enough amount");
+
+            _srcAmount = IDSWrappedToken(_tokens[i]).reverseByMultiple(div(mul(_amount, _mintCW[i]), _sumMintCW));
+            dfPool.transferFromSender(IDSWrappedToken(_tokens[i]).getSrcERC20(), _depositor, _srcAmount);
+            IDSWrappedToken(_tokens[i]).wrap(address(dfCol), _srcAmount);
+            // require(dfPool.transferFromSenderToCol(_tokens[i], _depositor, div(mul(_amount, _mintCW[i]), _sumMintCW)),
+            //         "ERC20 TransferFrom: not enough amount");
         }
 
         dfStore.addTotalMinted(_amount);
