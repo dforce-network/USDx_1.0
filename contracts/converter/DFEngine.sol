@@ -66,7 +66,7 @@ contract DFEngine is DSMath, DSAuth {
         address _tokenID = dfStore.getWrappedToken(_srcToken);
         require(dfStore.getMintingToken(_tokenID), "Deposit: asset not allow.");
 
-        // dfPool.transferFromSender(_srcToken, _depositor, _srcAmount);
+        dfPool.transferFromSender(_srcToken, _depositor, _srcAmount);
         uint _amount = IDSWrappedToken(_tokenID).wrap(address(dfPool), _srcAmount);
         _unifiedCommission(ProcessType.CT_DEPOSIT, _feeTokenIdx, _depositor, _amount);
 
@@ -179,21 +179,21 @@ contract DFEngine is DSMath, DSAuth {
         require(_amount <= sub(dfStore.getTotalMinted(), dfStore.getTotalBurned()), "Destroy: not enough to burn.");
         address[] memory _tokens;
         uint[] memory _burnCW;
-        uint _burnPosition;
+        // uint _burnPosition;
         uint _sumBurnCW;
         uint _burned;
         uint _minted;
         uint _burnedAmount;
         uint _amountTemp = _amount;
         uint _tokenAmount;
-        uint _srcTokenAmount; 
+        // uint _srcTokenAmount; 
 
         _unifiedCommission(ProcessType.CT_DESTROY, _feeTokenIdx, _depositor, _amount);
 
         while(_amountTemp > 0) {
 
-            _burnPosition = dfStore.getBurnPosition();
-            (_minted, _burned, , _tokens, _burnCW) = dfStore.getSectionData(_burnPosition);
+            // _burnPosition = dfStore.getBurnPosition();
+            (_minted, _burned, , _tokens, _burnCW) = dfStore.getSectionData(dfStore.getBurnPosition());
 
             _sumBurnCW = 0;
             for (uint i = 0; i < _burnCW.length; i++) {
@@ -215,8 +215,8 @@ contract DFEngine is DSMath, DSAuth {
 
                 _tokenAmount = div(mul(_burnedAmount, _burnCW[i]), _sumBurnCW);
                 IDSWrappedToken(_tokens[i]).unwrap(address(dfCol), _tokenAmount);
-                _srcTokenAmount = IDSWrappedToken(_tokens[i]).reverseByMultiple(_tokenAmount);
-                dfPool.transferOut(IDSWrappedToken(_tokens[i]).getSrcERC20(), _depositor, _srcTokenAmount);
+                // _srcTokenAmount = IDSWrappedToken(_tokens[i]).reverseByMultiple(_tokenAmount);
+                dfPool.transferOut(IDSWrappedToken(_tokens[i]).getSrcERC20(), _depositor, IDSWrappedToken(_tokens[i]).reverseByMultiple(_tokenAmount));
                 // dfCol.transferOut(_tokens[i], dfPool, div(mul(_burnedAmount, _burnCW[i]), _sumBurnCW));
             }
         }
