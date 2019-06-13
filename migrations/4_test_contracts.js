@@ -89,9 +89,9 @@ module.exports = async function (deployer, network, accounts) {
     })
 
     let daiW = new BN(Number(0.01 * 10 ** 18).toLocaleString().replace(/,/g, ''));
-    let paxW = new BN(Number(0.03 * 10 ** 18).toLocaleString().replace(/,/g, ''));
-    let tusdW = new BN(Number(0.03 * 10 ** 18).toLocaleString().replace(/,/g, ''));
-    let usdcW = new BN(Number(0.03 * 10 ** 18).toLocaleString().replace(/,/g, ''));
+    let paxW = new BN(Number(0.03 * 10 ** 12).toLocaleString().replace(/,/g, ''));
+    let tusdW = new BN(Number(0.03 * 10 ** 8).toLocaleString().replace(/,/g, ''));
+    let usdcW = new BN(Number(0.03 * 10 ** 6).toLocaleString().replace(/,/g, ''));
 
     await contractProtocol.deposit.sendTransaction(daiAddr, new BN(0), daiW.mul(new BN(100))).then(result => {
         print("contractProtocol.deposit");

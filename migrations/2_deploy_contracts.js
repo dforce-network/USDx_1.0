@@ -11,6 +11,10 @@ const PriceFeed = artifacts.require('PriceFeed.sol');
 const Medianizer = artifacts.require('Medianizer.sol');
 const USDx = artifacts.require('USDXToken.sol');
 const Setting = artifacts.require('DFSetting.sol');
+const xDAI = artifacts.require('DSWrappedToken.sol');
+const xPAX = artifacts.require('DSWrappedToken.sol');
+const xTUSD = artifacts.require('DSWrappedToken.sol');
+const xUSDC = artifacts.require('DSWrappedToken.sol');
 // const DF = artifacts.require('DFToken.sol');
 
 // const USDx_Addr = "0x17996ea27d03d68ddc618f9b8f0faf43838acaf6";
@@ -29,9 +33,9 @@ module.exports = async function (deployer, network, accounts) {
     await deployer.deploy(Store,
         [
             '0xf494e07dfdbce883bf699cedf818fde2fa432db4',
-            '0x561b11000e95ac053eccec5bcefdc37e16c2491b',
-            '0x25470030aa105bca679752e5c5e482c295de2b68',
-            '0xbc34e50f589e389c507e0213501114bd2e70b1d7'
+            '0x2901ea287e0299d595783faedae3ca0ab2bc4e53',
+            '0xfb010ff66700b6ace85fa68e2d98ab754b6f7af4',
+            '0x481f8ff13489695b2e1c81691a95a81f8cb96e32'
         ], [daiW, paxW, tusdW, usdcW]);
     await deployer.deploy(Collateral);
     await deployer.deploy(Funds, DF_Addr);
@@ -40,4 +44,8 @@ module.exports = async function (deployer, network, accounts) {
     await deployer.deploy(PriceFeed);
     await deployer.deploy(Engine, USDx.address, Store.address, Pool.address, Collateral.address, Funds.address);
     await deployer.deploy(Setting, Store.address);
+    await deployer.deploy(xDAI, '0xf494e07dfdbce883bf699cedf818fde2fa432db4', 18, 'xDAI');
+    await deployer.deploy(xPAX, '0x2901ea287e0299d595783faedae3ca0ab2bc4e53', 12, 'xPAX');
+    await deployer.deploy(xTUSD, '0xfb010ff66700b6ace85fa68e2d98ab754b6f7af4', 8, 'xTUSD');
+    await deployer.deploy(xUSDC, '0x481f8ff13489695b2e1c81691a95a81f8cb96e32', 6, 'xUSDC');
 };

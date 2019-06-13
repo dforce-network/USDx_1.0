@@ -11,6 +11,10 @@ const PriceFeed = artifacts.require('PriceFeed.sol');
 const Medianizer = artifacts.require('Medianizer.sol');
 const USDx = artifacts.require('USDXToken.sol');
 const Setting = artifacts.require('DFSetting.sol');
+const xDAI = artifacts.require('DSWrappedToken.sol');
+const xPAX = artifacts.require('DSWrappedToken.sol');
+const xTUSD = artifacts.require('DSWrappedToken.sol');
+const xUSDC = artifacts.require('DSWrappedToken.sol');
 // const DF = artifacts.require('DFToken.sol');
 const DF_Addr = "0x4AF82b7C2F049574C9fc742A896DAbEA379b7d51";
 
@@ -28,6 +32,11 @@ module.exports = async function (deployer, network, accounts) {
     let contractUSDx = await USDx.deployed();
     let contractSetting = await Setting.deployed();
     // let contractDF = await DF.deployed();
+
+    let contractxDAI  = await xDAI.deployed();
+    let contractxPAX  = await xPAX.deployed();
+    let contractxTUSD  = await xTUSD.deployed();
+    let contractxUSDC  = await xUSDC.deployed();
 
     let count = 0
 
@@ -51,6 +60,31 @@ module.exports = async function (deployer, network, accounts) {
     }).catch(error => {
         perror("contractUSDx.setAuthority")
     })
+
+    // xDAI
+    await contractxDAI.setAuthority.sendTransaction(contractEngine.address).then(result => {
+        print("contractxDAI.setAuthority");
+        printTx(result.tx);
+    }).catch(error => {
+        perror("contractxDAI.setAuthority")
+    })
+
+    // xPAX
+    await contractxPAX.setAuthority.sendTransaction(contractEngine.address).then(result => {
+        print("contractxPAX.setAuthority");
+        printTx(result.tx);
+    }).catch(error => {
+        perror("contractxPAX.setAuthority")
+    })
+
+    // xUSDC
+    await contractxUSDC.setAuthority.sendTransaction(contractEngine.address).then(result => {
+        print("contractxUSDC.setAuthority");
+        printTx(result.tx);
+    }).catch(error => {
+        perror("contractxUSDC.setAuthority")
+    })
+    
 
     // // DF
     // await contractDF.setAuthority.sendTransaction(contractEngine.address).then(result => {
