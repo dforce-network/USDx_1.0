@@ -16,6 +16,8 @@ contract DFStore is DSMath, DSAuth {
 
     Section[] public secList;
 
+    mapping(address => address) public wrappedTokens;
+
     uint backupSeed = 1;
     mapping(uint => Section) public secListBackup;
 
@@ -52,8 +54,8 @@ contract DFStore is DSMath, DSAuth {
 
     event UpdateSection(address[] _colIDs, uint[] _number);
 
-    constructor(address[] memory _colIDs, uint[] memory _weights) public {
-        _setSection(_colIDs, _weights);
+    constructor(address[] memory _srcToken, address[] memory _colIDs, uint[] memory _weights) public {
+        _setSection(_srcToken, _colIDs, _weights);
         _setMinBurnAmount(minimalBurnAmount);
     }
 
@@ -133,7 +135,7 @@ contract DFStore is DSMath, DSAuth {
         secList[_position].backupIdx = _backupIdx;
     }
 
-    function _setSection(address[] memory _colIDs, uint[] memory _weight) internal {
+    function _setSection(address[] memory _srcTokens, address[] memory _colIDs, uint[] memory _weight) internal {
         require(_colIDs.length == _weight.length, "_SetSection: data not allow.");
 
         secList.push(Section(0, 0, 0, new address[](_colIDs.length), new uint[](_weight.length)));
@@ -152,6 +154,7 @@ contract DFStore is DSMath, DSAuth {
             secList[_mintPosition].cw[i] = _weight[i];
             secList[_mintPosition].colIDs[i] = _colIDs[i];
             mintingTokens[_colIDs[i]] = true;
+            wrappedTokens[_srcTokens[i]] = _colIDs[i];
 
             if (mintedTokens[_colIDs[i]])
                 continue;
@@ -164,8 +167,8 @@ contract DFStore is DSMath, DSAuth {
         emit UpdateSection(secList[mintPosition].colIDs, secList[mintPosition].cw);
     }
 
-    function setSection(address[] memory _colIDs, uint[] memory _weight) public auth {
-        _setSection(_colIDs, _weight);
+    function setSection(address[] memory _srcTokens, address[] memory _colIDs, uint[] memory _weight) public auth {
+        _setSection(_srcTokens, _colIDs, _weight);
     }
 
     function setBackupSection(uint _position, address[] memory _colIDs, uint[] memory _weight) public auth {
@@ -330,5 +333,13 @@ contract DFStore is DSMath, DSAuth {
 
     function getTotalCol() public view returns (uint) {
         return totalCol;
+    }
+
+    function setWrappedToken(address _srcToken, address _wrappedToken) public auth {
+        wrappedTokens[_srcToken] = _wrappedToken;
+    }
+
+    function getWrappedToken(address _srcToken) public view returns (address) {
+        return  wrappedTokens[_srcToken];
     }
 }

@@ -13,6 +13,8 @@
 
 pragma solidity ^0.5.2;
 
+import "../utility/DSMath.sol";
+
 contract DSAuthEvents {
     event LogSetAuthority (address indexed authority);
     event LogSetOwner     (address indexed owner);
@@ -72,18 +74,6 @@ contract DSAuth is DSAuthEvents {
     }
 }
 
-contract DSMath {
-    function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) >= x, "ds-math-add-overflow");
-    }
-    function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) <= x, "ds-math-sub-underflow");
-    }
-    function mul(uint x, uint y) internal pure returns (uint z) {
-        require(y == 0 || (z = x * y) / y == x, "ds-math-mul-overflow");
-    }
-}
-
 contract DSNote {
     event LogNote(
         bytes4   indexed  sig,
@@ -111,7 +101,7 @@ contract DSNote {
     }
 }
 
-contract DSStop is DSNote, DSAuth {
+contract DSStop is DSNote, DSAuth, DSMath {
     bool public stopped;
 
     modifier stoppable {

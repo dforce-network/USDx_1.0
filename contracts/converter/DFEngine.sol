@@ -1,6 +1,7 @@
 pragma solidity ^0.5.2;
 
 import '../token/interfaces/IDSToken.sol';
+import '../token/interfaces/IDSWrappedToken.sol';
 import '../storage/interfaces/IDFStore.sol';
 import '../storage/interfaces/IDFPool.sol';
 import '../storage/interfaces/IDFCollateral.sol';
@@ -60,8 +61,9 @@ contract DFEngine is DSMath, DSAuth {
         }
     }
 
-    function deposit(address _depositor, address _tokenID, uint _feeTokenIdx, uint _amount) public auth returns (uint) {
-        require(_amount > 0, "Deposit: amount not allow.");
+    function deposit(address _depositor, address _srcToken, uint _feeTokenIdx, uint _srcAmount) public auth returns (uint) {
+        require(_srcAmount > 0, "Deposit: amount not allow.");
+        address _tokenID = dfStore.getWrappedToken(_srcToken);
         require(dfStore.getMintingToken(_tokenID), "Deposit: asset not allow.");
         address[] memory _tokens;
         uint[] memory _mintCW;
@@ -70,14 +72,15 @@ contract DFEngine is DSMath, DSAuth {
         uint[] memory _tokenBalance = new uint[](_tokens.length);
         uint[] memory _resUSDXBalance = new uint[](_tokens.length);
         uint[] memory _depositorBalance = new uint[](_tokens.length);
-        uint _depositorMintAmount;
+        // uint _depositorMintAmount;
         uint _depositorMintTotal;
         //For stack limit sake.
         uint _misc = uint(-1);
 
+        uint _amount = IDSWrappedToken(_tokenID).wrap(_srcAmount);
         _unifiedCommission(ProcessType.CT_DEPOSIT, _feeTokenIdx, _depositor, _amount);
 
-        dfPool.transferFromSender(_tokenID, _depositor, _amount);
+        // dfPool.transferFromSender(_tokenID, _depositor, _amount);
         for (uint i = 0; i < _tokens.length; i++) {
             _tokenBalance[i] = dfStore.getTokenBalance(_tokens[i]);
             _resUSDXBalance[i] = dfStore.getResUSDXBalance(_tokens[i]);
@@ -94,18 +97,18 @@ contract DFEngine is DSMath, DSAuth {
         }
             /** Just retrieve minting tokens here. If minted balance has USDX, call claim.*/
         for (uint i = 0; i < _tokens.length; i++) {
-            _depositorMintAmount = min(_depositorBalance[i], _resUSDXBalance[i]);
+            _misc = min(_depositorBalance[i], _resUSDXBalance[i]);
 
-            if (_depositorMintAmount == 0) {
+            if (_misc == 0) {
                 if (_tokenID == _tokens[i]) {
                     dfStore.setDepositorBalance(_depositor, _tokens[i], _depositorBalance[i]);
                 }
                 continue;
             }
 
-            dfStore.setDepositorBalance(_depositor, _tokens[i], sub(_depositorBalance[i], _depositorMintAmount));
-            dfStore.setResUSDXBalance(_tokens[i], sub(_resUSDXBalance[i], _depositorMintAmount));
-            _depositorMintTotal = add(_depositorMintTotal, _depositorMintAmount);
+            dfStore.setDepositorBalance(_depositor, _tokens[i], sub(_depositorBalance[i], _misc));
+            dfStore.setResUSDXBalance(_tokens[i], sub(_resUSDXBalance[i], _misc));
+            _depositorMintTotal = add(_depositorMintTotal, _misc);
         }
 
         if (_depositorMintTotal > 0)

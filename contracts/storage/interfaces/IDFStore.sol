@@ -61,4 +61,7 @@ contract IDFStore {
 
     function setTotalCol(uint _amount) public;
     function getTotalCol() public view returns (uint);
+
+    function setWrappedToken(address _srcToken, address _wrappedToken) public;
+    function getWrappedToken(address _srcToken) public view returns (address);
 }
