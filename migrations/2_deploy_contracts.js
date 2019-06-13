@@ -10,6 +10,7 @@ const Guard = artifacts.require('DSGuard.sol');
 const PriceFeed = artifacts.require('PriceFeed.sol');
 const Medianizer = artifacts.require('Medianizer.sol');
 const USDx = artifacts.require('USDXToken.sol');
+const Setting = artifacts.require('DFSetting.sol');
 // const DF = artifacts.require('DFToken.sol');
 
 // const USDx_Addr = "0x17996ea27d03d68ddc618f9b8f0faf43838acaf6";
@@ -38,4 +39,5 @@ module.exports = async function (deployer, network, accounts) {
     await deployer.deploy(Medianizer);
     await deployer.deploy(PriceFeed);
     await deployer.deploy(Engine, USDx.address, Store.address, Pool.address, Collateral.address, Funds.address);
+    await deployer.deploy(Setting, Store.address);
 };

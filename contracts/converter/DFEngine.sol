@@ -44,26 +44,6 @@ contract DFEngine is DSMath, DSAuth {
         dfFunds = IDFFunds(_dfFunds);
     }
 
-    //set commission rate.
-    function setCommissionRate(ProcessType ct, uint rate) public auth {
-        dfStore.setFeeRate(uint(ct), rate);
-    }
-
-    //set type of token.
-    function setCommissionToken(TokenType ft, address _tokenID) public auth {
-        dfStore.setTypeToken(uint(ft), _tokenID);
-    }
-
-    //set token's medianizer.
-    function setCommissionMedian(address _tokenID, address _median) public auth {
-        dfStore.setTokenMedian(_tokenID, _median);
-    }
-
-    //set destroy threshold of minimal usdx.
-    function setDestroyThreshold(uint _amount) public auth {
-        dfStore.setMinBurnAmount(_amount);
-    }
-
     function getPrice(address oracle) public view returns (uint) {
         bytes32 price = IMedianizer(oracle).read();
         return uint(price);
@@ -78,10 +58,6 @@ contract DFEngine is DSMath, DSAuth {
             uint dfFee = div(mul(mul(_amount, rate), WAD), mul(10000, dfPrice));
             IDSToken(_token).transferFrom(depositor, address(dfFunds), dfFee);
         }
-    }
-
-    function updateMintSection(address[] memory _tokens, uint[] memory _weight) public auth {
-        dfStore.setSection(_tokens, _weight);
     }
 
     function deposit(address _depositor, address _tokenID, uint _feeTokenIdx, uint _amount) public auth returns (uint) {
