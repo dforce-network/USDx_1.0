@@ -17,7 +17,7 @@ contract DSWrappedToken is DSToken {
     }
 
     function _calMultiple() internal {
-        multiple = rpow(10, sub(max(srcDecimals, decimals), min(srcDecimals, decimals)));
+        multiple = pwr(10, sub(max(srcDecimals, decimals), min(srcDecimals, decimals)));
         flag = (srcDecimals > decimals);
     }
 
