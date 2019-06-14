@@ -136,7 +136,7 @@ contract DFStore is DSMath, DSAuth {
     }
 
     function _setSection(address[] memory _srcTokens, address[] memory _colIDs, uint[] memory _weight) internal {
-        require(_colIDs.length == _weight.length, "_SetSection: data not allow.");
+        require(_colIDs.length == _weight.length && _colIDs.length == _srcTokens.length, "_SetSection: data not allow.");
 
         secList.push(Section(0, 0, 0, new address[](_colIDs.length), new uint[](_weight.length)));
         uint _mintPosition = secList.length - 1;

@@ -61,20 +61,22 @@ library SafeMath {
 }
 
 contract Collaterals_t {
-    uint8  public decimals = 18;
+    uint  public decimals = 18;
     string public name;
     string public symbol;
 
     using SafeMath for uint256;
     mapping (address => uint256) private _balances;
     mapping (address => mapping (address => uint256)) private _allowed;
-    uint256 private _totalSupply = 10**28; //10 billion
+    uint256 private _totalSupply = 10**58; //10 billion
 
-    constructor(string memory _name, string memory _symbol, address guy) public {
+    constructor(string memory _name, string memory _symbol, address guy, uint  _decimals) public {
         name = _name;
         symbol = _symbol;
+        _totalSupply = 10 ** (_decimals + 10);
         _balances[msg.sender] = _totalSupply;
-        uint _value = 10**24;
+        decimals = _decimals;
+        uint _value = 10 ** (_decimals + 5);
         _transfer(msg.sender, guy, _value);
     }
 

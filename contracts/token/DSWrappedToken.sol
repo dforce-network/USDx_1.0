@@ -7,8 +7,9 @@ contract DSWrappedToken is DSToken {
     uint public srcDecimals;
     uint public multiple;
     bool public flag;
+    string symbol;
 
-    constructor(address _srcERC20, uint _srcDecimals, bytes32 _symbol) public {
+    constructor(address _srcERC20, uint _srcDecimals, string memory _symbol) public {
         srcERC20 = _srcERC20;
         srcDecimals = _srcDecimals;
         symbol = _symbol;
