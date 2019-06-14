@@ -186,4 +186,19 @@ contract DFProtocolView is DSMath {
 
 		return (_srcTokens, _srcBalance);
     }
+
+    function getPoolStatus() public view returns (address[] memory, uint[] memory) {
+		address[] memory _tokens = dfStore.getMintedTokenList();
+		uint[] memory _srcBalance = new uint[](_tokens.length);
+		address[] memory _srcTokens = new address[](_tokens.length);
+        uint _xAmount;
+
+		for (uint i = 0; i < _tokens.length; i++) {
+            _xAmount = dfStore.getTokenBalance(_tokens[i]);
+			_srcBalance[i] = IDSWrappedToken(_tokens[i]).reverseByMultiple(_xAmount);
+			_srcTokens[i] = IDSWrappedToken(_tokens[i]).getSrcERC20();
+		}
+
+		return (_srcTokens, _srcBalance);
+    }
 }
