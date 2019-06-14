@@ -159,6 +159,5 @@ var xUSDC = await deployer.deploy(DSWrappedToken, '0x481f8ff13489695b2e1c81691a9
         printTx(result.tx);
     }).catch(error => {
         perror("contractCollateral.approve xUSDC")
-    })
-    
+    }) 
 };
