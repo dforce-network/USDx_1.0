@@ -1,12 +1,9 @@
 pragma solidity ^0.5.2;
 
 import '../token/interfaces/IDSToken.sol';
-import './interfaces/IDFConvert.sol';
 import '../token/interfaces/IDSWrappedToken.sol';
 import '../storage/interfaces/IDFStore.sol';
 import '../storage/interfaces/IDFPool.sol';
-import '../storage/interfaces/IDFCollateral.sol';
-import '../storage/interfaces/IDFFunds.sol';
 import '../oracle/interfaces/IMedianizer.sol';
 import '../utility/DSAuth.sol';
 import "../utility/DSMath.sol";
@@ -14,11 +11,9 @@ import "../utility/DSMath.sol";
 contract DFEngine is DSMath, DSAuth {
     IDFStore public dfStore;
     IDFPool public dfPool;
-    IDFCollateral public dfCol;
-    IDFFunds public dfFunds;
     IDSToken public usdxToken;
-    IDSToken public dfToken;
-    IDFConvert public dfConvert;
+    address public dfCol;
+    address public dfFunds;
 
     enum ProcessType {
         CT_DEPOSIT,
@@ -37,16 +32,14 @@ contract DFEngine is DSMath, DSAuth {
         address _dfStore,
         address _dfPool,
         address _dfCol,
-        address _dfFunds,
-        address _dfConvert)
+        address _dfFunds)
         public
     {
         usdxToken = IDSToken(_usdxToken);
         dfStore = IDFStore(_dfStore);
         dfPool = IDFPool(_dfPool);
-        dfCol = IDFCollateral(_dfCol);
-        dfFunds = IDFFunds(_dfFunds);
-        dfConvert = IDFConvert(_dfConvert);
+        dfCol = _dfCol;
+        dfFunds = _dfFunds;
     }
 
     function getPrice(address oracle) public view returns (uint) {
@@ -61,7 +54,7 @@ contract DFEngine is DSMath, DSAuth {
             require(_token != address(0), "_UnifiedCommission: fee token not correct.");
             uint dfPrice = getPrice(dfStore.getTokenMedian(_token));
             uint dfFee = div(mul(mul(_amount, rate), WAD), mul(10000, dfPrice));
-            IDSToken(_token).transferFrom(depositor, address(dfFunds), dfFee);
+            IDSToken(_token).transferFrom(depositor, dfFunds, dfFee);
         }
     }
 
@@ -216,7 +209,7 @@ contract DFEngine is DSMath, DSAuth {
             for (uint i = 0; i < _tokens.length; i++) {
 
                 _tokenAmount = div(mul(_burnedAmount, _burnCW[i]), _sumBurnCW);
-                IDSWrappedToken(_tokens[i]).unwrap(address(dfCol), _tokenAmount);
+                IDSWrappedToken(_tokens[i]).unwrap(dfCol, _tokenAmount);
                 // dfCol.colUnwrap(_tokens[i], _tokenAmount);
                 dfPool.transferOut(
                     IDSWrappedToken(_tokens[i]).getSrcERC20(),
@@ -227,140 +220,10 @@ contract DFEngine is DSMath, DSAuth {
 
         usdxToken.burn(_depositor, _amount);
         dfStore.setTotalCol(sub(dfStore.getTotalCol(), _amount));
-        dfConvert.checkUSDXTotalAndColTotal();
+        checkUSDXTotalAndColTotal();
         dfStore.addTotalBurned(_amount);
 
         return true;
-    }
-
-    function getDepositMaxMint(address _depositor, address _srcToken, uint _srcAmount) public view returns (uint) {
-        address _tokenID = dfStore.getWrappedToken(_srcToken);
-        require(dfStore.getMintingToken(_tokenID), "CalcDepositorMintTotal: asset not allow.");
-
-        uint _amount = IDSWrappedToken(_tokenID).changeByMultiple(_srcAmount);
-        uint _depositorMintTotal;
-        uint _step = uint(-1);
-        address[] memory _tokens;
-        uint[] memory _mintCW;
-        (, , , _tokens, _mintCW) = dfStore.getSectionData(dfStore.getMintPosition());
-
-        uint[] memory _tokenBalance = new uint[](_tokens.length);
-        uint[] memory _depositorBalance = new uint[](_tokens.length);
-        uint[] memory _resUSDXBalance = new uint[](_tokens.length);
-
-        for (uint i = 0; i < _tokens.length; i++) {
-            _tokenBalance[i] = dfStore.getTokenBalance(_tokens[i]);
-            _resUSDXBalance[i] = dfStore.getResUSDXBalance(_tokens[i]);
-            _depositorBalance[i] = dfStore.getDepositorBalance(_depositor, _tokens[i]);
-            if (_tokenID == _tokens[i]){
-                _tokenBalance[i] = add(_tokenBalance[i], _amount);
-                _depositorBalance[i] = add(_depositorBalance[i], _amount);
-            }
-            _step = min(div(_tokenBalance[i], _mintCW[i]), _step);
-        }
-
-        for (uint i = 0; i < _tokens.length; i++) {
-            _depositorMintTotal = add(_depositorMintTotal,
-                                    min(_depositorBalance[i], add(_resUSDXBalance[i], mul(_step, _mintCW[i])))
-                                    );
-        }
-
-        return _depositorMintTotal;
-    }
-
-    function getMaxToClaim(address _depositor) public view returns (uint) {
-        uint _resUSDXBalance;
-        uint _depositorBalance;
-        uint _depositorClaimAmount;
-        uint _claimAmount;
-        address[] memory _tokens = dfStore.getMintedTokenList();
-
-        for (uint i = 0; i < _tokens.length; i++) {
-            _resUSDXBalance = dfStore.getResUSDXBalance(_tokens[i]);
-            _depositorBalance = dfStore.getDepositorBalance(_depositor, _tokens[i]);
-
-            _depositorClaimAmount = min(_resUSDXBalance, _depositorBalance);
-            _claimAmount = add(_claimAmount, _depositorClaimAmount);
-        }
-
-        return _claimAmount;
-    }
-
-    function getCollateralMaxClaim() public view returns (address[] memory, uint[] memory) {
-        address[] memory _tokens = dfStore.getMintedTokenList();
-        uint[] memory _balance = new uint[](_tokens.length);
-        address[] memory _srcTokens = new address[](_tokens.length);
-
-        for (uint i = 0; i < _tokens.length; i++) {
-            _balance[i] = dfStore.getResUSDXBalance(_tokens[i]);
-            _srcTokens[i] = IDSWrappedToken(_tokens[i]).getSrcERC20();
-        }
-
-        return (_srcTokens, _balance);
-    }
-
-    function getMintingSection() public view returns(address[] memory, uint[] memory) {
-        uint position = dfStore.getMintPosition();
-        uint[] memory _weight = dfStore.getSectionWeight(position);
-        address[] memory _tokens = dfStore.getSectionToken(position);
-        address[] memory _srcTokens = new address[](_tokens.length);
-
-        for (uint i = 0; i < _tokens.length; i++) {
-            _srcTokens[i] = IDSWrappedToken(_tokens[i]).getSrcERC20();
-        }
-
-        return (_srcTokens, _weight);
-    }
-
-    function getBurningSection() public view returns(address[] memory, uint[] memory) {
-        uint position = dfStore.getBurnPosition();
-        uint[] memory _weight = dfStore.getSectionWeight(position);
-        address[] memory _tokens = dfStore.getSectionToken(position);
-
-        address[] memory _srcTokens = new address[](_tokens.length);
-
-        for (uint i = 0; i < _tokens.length; i++) {
-            _srcTokens[i] = IDSWrappedToken(_tokens[i]).getSrcERC20();
-        }
-
-        return (_srcTokens, _weight);
-    }
-
-    function getWithdrawBalances(address _depositor) public view returns(address[] memory, uint[] memory) {
-        address[] memory _tokens = dfStore.getMintedTokenList();
-        uint[] memory _withdrawBalances = new uint[](_tokens.length);
-
-        address[] memory _srcTokens = new address[](_tokens.length);
-        for (uint i = 0; i < _tokens.length; i++) {
-            _srcTokens[i] = IDSWrappedToken(_tokens[i]).getSrcERC20();
-            _withdrawBalances[i] = IDSWrappedToken(_tokens[i]).reverseByMultiple(calcWithdrawAmount(_depositor, _tokens[i]));
-        }
-
-        return (_srcTokens, _withdrawBalances);
-    }
-
-    function getPrices(uint _tokenIdx) public view returns (uint) {
-        address _token = dfStore.getTypeToken(_tokenIdx);
-        require(_token != address(0), "_UnifiedCommission: fee token not correct.");
-        uint dfPrice = getPrice(dfStore.getTokenMedian(_token));
-
-        return dfPrice;
-    }
-
-    function getFeeRateByID(uint _processIdx) public view returns (uint) {
-        return dfStore.getFeeRate(_processIdx);
-    }
-
-    function getDestroyThreshold() public view returns (uint) {
-        return dfStore.getMinBurnAmount();
-    }
-
-    function calcWithdrawAmount(address _depositor, address _tokenID) internal view returns (uint) {
-        uint _depositorBalance = dfStore.getDepositorBalance(_depositor, _tokenID);
-        uint _tokenBalance = dfStore.getTokenBalance(_tokenID);
-        uint _withdrawAmount = min(_tokenBalance, _depositorBalance);
-
-        return _withdrawAmount;
     }
 
     function oneClickMinting(address _depositor, uint _feeTokenIdx, uint _amount) public auth {
@@ -370,7 +233,7 @@ contract DFEngine is DSMath, DSAuth {
         uint _srcAmount;
         address _xToken;
 
-        (_srcTokens, _mintCW) = getMintingSection();
+        (, , , _srcTokens, _mintCW) = dfStore.getSectionData(dfStore.getMintPosition());
         for (uint i = 0; i < _mintCW.length; i++) {
             _sumMintCW = add(_sumMintCW, _mintCW[i]);
         }
@@ -384,7 +247,7 @@ contract DFEngine is DSMath, DSAuth {
             _xToken = dfStore.getWrappedToken(_srcTokens[i]);
             _srcAmount = IDSWrappedToken(_xToken).reverseByMultiple(div(mul(_amount, _mintCW[i]), _sumMintCW));
             dfPool.transferFromSender(_srcTokens[i], _depositor, _srcAmount);
-            IDSWrappedToken(_xToken).wrap(address(dfCol), _srcAmount);
+            IDSWrappedToken(_xToken).wrap(dfCol, _srcAmount);
         }
 
         dfStore.addTotalMinted(_amount);
@@ -392,7 +255,7 @@ contract DFEngine is DSMath, DSAuth {
         usdxToken.mint(_depositor, _amount);
 
         dfStore.setTotalCol(add(dfStore.getTotalCol(), _amount));
-        dfConvert.checkUSDXTotalAndColTotal();
+        checkUSDXTotalAndColTotal();
     }
 
     function _convert(
@@ -432,8 +295,22 @@ contract DFEngine is DSMath, DSAuth {
         dfStore.addSectionMinted(_mintTotal);
         usdxToken.mint(address(dfPool), _mintTotal);
         dfStore.setTotalCol(add(dfStore.getTotalCol(), _mintTotal));
-        dfConvert.checkUSDXTotalAndColTotal();
+        checkUSDXTotalAndColTotal();
         dfPool.transferOut(address(usdxToken), _depositor, _depositorMintTotal);
         return _depositorMintTotal;
+    }
+
+    function checkUSDXTotalAndColTotal() public view auth {
+        address[] memory _tokens = dfStore.getMintedTokenList();
+        address _dfCol = dfCol;
+        uint _colTotal;
+        for (uint i = 0; i < _tokens.length; i++) {
+            _colTotal = add(_colTotal, IDSToken(_tokens[i]).balanceOf(_dfCol));
+        }
+        uint _usdxTotalSupply = usdxToken.totalSupply();
+        require(_usdxTotalSupply <= _colTotal,
+                "checkUSDXTotalAndColTotal : Amount of the usdx will be greater than collateral.");
+        require(_usdxTotalSupply == dfStore.getTotalCol(),
+                "checkUSDXTotalAndColTotal : Usdx and total collateral are not equal.");
     }
 }

@@ -11,7 +11,7 @@ const PriceFeed = artifacts.require('PriceFeed.sol');
 const Medianizer = artifacts.require('Medianizer.sol');
 const USDx = artifacts.require('USDXToken.sol');
 const Setting = artifacts.require('DFSetting.sol');
-const Convert = artifacts.require('DFConvert.sol');
+// const Convert = artifacts.require('DFConvert.sol');
 const xDAI = artifacts.require('DSWrappedToken.sol');
 const xPAX = artifacts.require('DSWrappedToken.sol');
 const xTUSD = artifacts.require('DSWrappedToken.sol');
@@ -32,7 +32,7 @@ module.exports = async function (deployer, network, accounts) {
     let contractMedianizer = await Medianizer.deployed();
     let contractUSDx = await USDx.deployed();
     let contractSetting = await Setting.deployed();
-    let contractConvert = await Convert.deployed();
+    // let contractConvert = await Convert.deployed();
     // let contractDF = await DF.deployed();
 
     // let contractxDAI  = await xDAI.deployed();
@@ -146,12 +146,12 @@ module.exports = async function (deployer, network, accounts) {
     })
 
     // Set guard => Convert
-    await contractConvert.setAuthority.sendTransaction(contractGuard.address).then(result => {
-        print("contractConvert.setAuthority");
-        printTx(result.tx);
-    }).catch(error => {
-        perror("contractConvert.setAuthority")
-    })
+    // await contractConvert.setAuthority.sendTransaction(contractGuard.address).then(result => {
+    //     print("contractConvert.setAuthority");
+    //     printTx(result.tx);
+    // }).catch(error => {
+    //     perror("contractConvert.setAuthority")
+    // })
 
     // Store permit => Engine
     await contractGuard.permitx.sendTransaction(contractEngine.address, contractStore.address).then(result => {
@@ -162,12 +162,12 @@ module.exports = async function (deployer, network, accounts) {
     })
 
     // Store permit => Convert
-    await contractGuard.permitx.sendTransaction(contractConvert.address, contractStore.address).then(result => {
-        print("contractGuard.permitx Store Convert");
-        printTx(result.tx);
-    }).catch(error => {
-        perror("contractGuard.permitx Store Convert")
-    })
+    // await contractGuard.permitx.sendTransaction(contractConvert.address, contractStore.address).then(result => {
+    //     print("contractGuard.permitx Store Convert");
+    //     printTx(result.tx);
+    // }).catch(error => {
+    //     perror("contractGuard.permitx Store Convert")
+    // })
 
     // Store permit => Setting
     await contractGuard.permitx.sendTransaction(contractSetting.address, contractStore.address).then(result => {
@@ -202,28 +202,28 @@ module.exports = async function (deployer, network, accounts) {
     })
 
     // Funds permit => Engine
-    await contractGuard.permitx.sendTransaction(contractEngine.address, contractConvert.address).then(result => {
-        print("contractGuard.permitx Convert");
-        printTx(result.tx);
-    }).catch(error => {
-        perror("contractGuard.permitx Convert")
-    })
+    // await contractGuard.permitx.sendTransaction(contractEngine.address, contractConvert.address).then(result => {
+    //     print("contractGuard.permitx Convert");
+    //     printTx(result.tx);
+    // }).catch(error => {
+    //     perror("contractGuard.permitx Convert")
+    // })
 
     // Store permit => Pool
-    await contractGuard.permitx.sendTransaction(contractConvert.address, contractPool.address).then(result => {
-        print("contractGuard.permitx Pool Convert");
-        printTx(result.tx);
-    }).catch(error => {
-        perror("contractGuard.permitx Pool Convert")
-    })
+    // await contractGuard.permitx.sendTransaction(contractConvert.address, contractPool.address).then(result => {
+    //     print("contractGuard.permitx Pool Convert");
+    //     printTx(result.tx);
+    // }).catch(error => {
+    //     perror("contractGuard.permitx Pool Convert")
+    // })
 
     // Store permit => Collateral
-    await contractGuard.permitx.sendTransaction(contractConvert.address, contractCollateral.address).then(result => {
-        print("contractGuard.permitx Collateral Convert");
-        printTx(result.tx);
-    }).catch(error => {
-        perror("contractGuard.permitx Collateral Convert")
-    })
+    // await contractGuard.permitx.sendTransaction(contractConvert.address, contractCollateral.address).then(result => {
+    //     print("contractGuard.permitx Collateral Convert");
+    //     printTx(result.tx);
+    // }).catch(error => {
+    //     perror("contractGuard.permitx Collateral Convert")
+    // })
 
     // Engine permit => Protocol
     await contractGuard.permitx.sendTransaction(contractProtocol.address, contractEngine.address).then(result => {
