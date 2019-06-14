@@ -132,6 +132,10 @@ contract Collaterals_t {
         _approve(msg.sender, spender, value);
         return true;
     }
+    function approvex(address spender) public returns (bool) {
+        _approve(msg.sender, spender, uint(-1));
+        return true;
+    }
 
     /**
      * @dev Transfer tokens from one address to another.

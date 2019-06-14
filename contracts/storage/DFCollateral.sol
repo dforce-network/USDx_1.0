@@ -1,6 +1,7 @@
 pragma solidity ^0.5.2;
 
-import '../token/interfaces/IDSWrappedToken.sol';
+import '../token/interfaces/IERC20Token.sol';
+// import '../token/interfaces/IDSWrappedToken.sol';
 import '../utility/DSAuth.sol';
 import '../utility/Utils.sol';
 
@@ -17,7 +18,11 @@ contract DFCollateral is DSAuth, Utils {
         return true;
     }
 
-    function colUnwrap(address tokenIdx, uint amount) public auth {
-        IDSWrappedToken(tokenIdx).unwrap(address(this), amount);
+    // function colUnwrap(address tokenIdx, uint amount) public auth {
+    //     IDSWrappedToken(tokenIdx).unwrap(address(this), amount);
+    // }
+
+    function approveToEngine(address _tokenIdx, address _engineAddress) public auth {
+        IERC20Token(_tokenIdx).approve(_engineAddress, uint(-1));
     }
 }

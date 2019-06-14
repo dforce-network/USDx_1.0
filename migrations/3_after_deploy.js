@@ -35,10 +35,10 @@ module.exports = async function (deployer, network, accounts) {
     let contractConvert = await Convert.deployed();
     // let contractDF = await DF.deployed();
 
-    let contractxDAI  = await xDAI.deployed();
-    let contractxPAX  = await xPAX.deployed();
-    let contractxTUSD  = await xTUSD.deployed();
-    let contractxUSDC  = await xUSDC.deployed();
+    // let contractxDAI  = await xDAI.deployed();
+    // let contractxPAX  = await xPAX.deployed();
+    // let contractxTUSD  = await xTUSD.deployed();
+    // let contractxUSDC  = await xUSDC.deployed();
 
     let count = 0
 
@@ -64,28 +64,28 @@ module.exports = async function (deployer, network, accounts) {
     })
 
     // xDAI
-    await contractxDAI.setAuthority.sendTransaction(contractEngine.address).then(result => {
-        print("contractxDAI.setAuthority");
-        printTx(result.tx);
-    }).catch(error => {
-        perror("contractxDAI.setAuthority")
-    })
+    // await contractxDAI.setAuthority.sendTransaction(contractEngine.address).then(result => {
+    //     print("contractxDAI.setAuthority");
+    //     printTx(result.tx);
+    // }).catch(error => {
+    //     perror("contractxDAI.setAuthority")
+    // })
 
-    // xPAX
-    await contractxPAX.setAuthority.sendTransaction(contractEngine.address).then(result => {
-        print("contractxPAX.setAuthority");
-        printTx(result.tx);
-    }).catch(error => {
-        perror("contractxPAX.setAuthority")
-    })
+    // // xPAX
+    // await contractxPAX.setAuthority.sendTransaction(contractEngine.address).then(result => {
+    //     print("contractxPAX.setAuthority");
+    //     printTx(result.tx);
+    // }).catch(error => {
+    //     perror("contractxPAX.setAuthority")
+    // })
 
-    // xUSDC
-    await contractxUSDC.setAuthority.sendTransaction(contractEngine.address).then(result => {
-        print("contractxUSDC.setAuthority");
-        printTx(result.tx);
-    }).catch(error => {
-        perror("contractxUSDC.setAuthority")
-    })
+    // // xUSDC
+    // await contractxUSDC.setAuthority.sendTransaction(contractEngine.address).then(result => {
+    //     print("contractxUSDC.setAuthority");
+    //     printTx(result.tx);
+    // }).catch(error => {
+    //     perror("contractxUSDC.setAuthority")
+    // })
     
 
     // // DF

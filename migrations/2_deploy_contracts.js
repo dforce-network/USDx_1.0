@@ -54,9 +54,9 @@ var xUSDC = await deployer.deploy(DSWrappedToken, '0x481f8ff13489695b2e1c81691a9
             xUSDC.address,
         ],
         [daiW, paxW, tusdW, usdcW]);
-    await deployer.deploy(Collateral);
+    let contractCollateral = await deployer.deploy(Collateral);
     await deployer.deploy(Funds, DF_Addr);
-    await deployer.deploy(Pool, Collateral.address);
+    let contractPool = await deployer.deploy(Pool, Collateral.address);
     await deployer.deploy(Medianizer);
     await deployer.deploy(PriceFeed);
     await deployer.deploy(Convert, USDx.address, Store.address, Pool.address, Collateral.address);
@@ -108,6 +108,56 @@ var xUSDC = await deployer.deploy(DSWrappedToken, '0x481f8ff13489695b2e1c81691a9
         printTx(result.tx);
     }).catch(error => {
         perror("xUSDC.setAuthority")
+    })
+
+    await contractPool.approveToEngine.sendTransaction(xDAI.address, Engine.address).then(result => {
+        print("contractPool.approve xDAI");
+        printTx(result.tx);
+    }).catch(error => {
+        perror("contractPool.approve xDAI")
+    })
+
+    await contractPool.approveToEngine.sendTransaction(xPAX.address, Engine.address).then(result => {
+        print("contractPool.approve xPAX");
+        printTx(result.tx);
+    }).catch(error => {
+        perror("contractPool.approve xPAX")
+    })
+    await contractPool.approveToEngine.sendTransaction(xTUSD.address, Engine.address).then(result => {
+        print("contractPool.approve xTUSD");
+        printTx(result.tx);
+    }).catch(error => {
+        perror("contractPool.approve xTUSD")
+    })
+    await contractPool.approveToEngine.sendTransaction(xUSDC.address, Engine.address).then(result => {
+        print("contractPool.approve xUSDC");
+        printTx(result.tx);
+    }).catch(error => {
+        perror("contractPool.approve xUSDC")
+    })
+    await contractCollateral.approveToEngine.sendTransaction(xDAI.address, Engine.address).then(result => {
+        print("contractCollateral.approve xDAI");
+        printTx(result.tx);
+    }).catch(error => {
+        perror("contractCollateral.approve xDAI")
+    })
+    await contractCollateral.approveToEngine.sendTransaction(xPAX.address, Engine.address).then(result => {
+        print("contractCollateral.approve xPAX");
+        printTx(result.tx);
+    }).catch(error => {
+        perror("contractCollateral.approve xPAX")
+    })
+    await contractCollateral.approveToEngine.sendTransaction(xTUSD.address, Engine.address).then(result => {
+        print("contractCollateral.approve xTUSD");
+        printTx(result.tx);
+    }).catch(error => {
+        perror("contractCollateral.approve xTUSD")
+    })
+    await contractCollateral.approveToEngine.sendTransaction(xUSDC.address, Engine.address).then(result => {
+        print("contractCollateral.approve xUSDC");
+        printTx(result.tx);
+    }).catch(error => {
+        perror("contractCollateral.approve xUSDC")
     })
     
 };

@@ -143,8 +143,8 @@ contract DFEngine is DSMath, DSAuth {
         dfStore.setDepositorBalance(_depositor, _tokenID, _depositorBalance);
         dfStore.setTokenBalance(_tokenID, sub(_tokenBalance, _withdrawAmount));
         _unifiedCommission(ProcessType.CT_WITHDRAW, _feeTokenIdx, _depositor, _withdrawAmount);
-        // IDSWrappedToken(_tokenID).unwrap(address(dfPool), _withdrawAmount);
-        dfPool.poolUnwrap(_tokenID, _withdrawAmount);
+        IDSWrappedToken(_tokenID).unwrap(address(dfPool), _withdrawAmount);
+        // dfPool.poolUnwrap(_tokenID, _withdrawAmount);
         uint _srcWithdrawAmount = IDSWrappedToken(_tokenID).reverseByMultiple(_withdrawAmount);
         dfPool.transferOut(_srcToken, _depositor, _srcWithdrawAmount);
 
@@ -216,8 +216,8 @@ contract DFEngine is DSMath, DSAuth {
             for (uint i = 0; i < _tokens.length; i++) {
 
                 _tokenAmount = div(mul(_burnedAmount, _burnCW[i]), _sumBurnCW);
-                // IDSWrappedToken(_tokens[i]).unwrap(address(dfCol), _tokenAmount);
-                dfCol.colUnwrap(_tokens[i], _tokenAmount);
+                IDSWrappedToken(_tokens[i]).unwrap(address(dfCol), _tokenAmount);
+                // dfCol.colUnwrap(_tokens[i], _tokenAmount);
                 dfPool.transferOut(
                     IDSWrappedToken(_tokens[i]).getSrcERC20(),
                     _depositor,
