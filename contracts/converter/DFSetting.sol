@@ -42,7 +42,7 @@ contract DFSetting is DSAuth {
         dfStore.setMinBurnAmount(_amount);
     }
 
-    function updateMintSection(address[] memory _tokens, uint[] memory _weight) public auth {
-        dfStore.setSection(_tokens, _weight);
+    function updateMintSection(address[] memory _srcTokens, address[] memory _colIDs, uint[] memory _weight) public auth {
+        dfStore.setSection(_srcTokens, _colIDs, _weight);
     }
 }

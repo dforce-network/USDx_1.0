@@ -91,7 +91,7 @@ contract DSMath {
     /**
      * @dev x to the power of y
      */
-    function pwr(uint256 x, uint256 y)
+    function pow(uint256 x, uint256 y)
         public
         pure
         returns (uint256)
