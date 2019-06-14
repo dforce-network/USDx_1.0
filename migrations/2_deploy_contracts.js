@@ -2,6 +2,7 @@ const BN = require('bn.js');
 
 const Funds = artifacts.require('DFFunds.sol');
 const Protocol = artifacts.require('DFProtocol.sol');
+const ProtocolView = artifacts.require('DFProtocolView.sol');
 const Store = artifacts.require('DFStore.sol');
 const Pool = artifacts.require('DFPool.sol');
 const Collateral = artifacts.require('DFCollateral.sol');
@@ -63,6 +64,8 @@ var xUSDC = await deployer.deploy(DSWrappedToken, '0x481f8ff13489695b2e1c81691a9
     // await deployer.deploy(Engine, USDx.address, Store.address, Pool.address, Collateral.address, Funds.address, Convert.address);
     await deployer.deploy(Engine, USDx.address, Store.address, Pool.address, Collateral.address, Funds.address);
     await deployer.deploy(Setting, Store.address);
+
+    await deployer.deploy(ProtocolView, Store.address, Collateral.address, Funds.address);
 
     let count = 0
 

@@ -7,7 +7,7 @@ import '../oracle/interfaces/IMedianizer.sol';
 import '../utility/DSAuth.sol';
 import "../utility/DSMath.sol";
 
-contract DFEngine is DSMath, DSAuth {
+contract DFProtocolView is DSMath, DSAuth {
     IDFStore public dfStore;
     address public dfCol;
     address public dfFunds;
