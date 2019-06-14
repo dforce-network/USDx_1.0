@@ -1,6 +1,7 @@
 pragma solidity ^0.5.2;
 
 import '../token/interfaces/IDSToken.sol';
+import './interfaces/IDFConvert.sol';
 import '../token/interfaces/IDSWrappedToken.sol';
 import '../storage/interfaces/IDFStore.sol';
 import '../storage/interfaces/IDFPool.sol';
@@ -17,6 +18,7 @@ contract DFEngine is DSMath, DSAuth {
     IDFFunds public dfFunds;
     IDSToken public usdxToken;
     IDSToken public dfToken;
+    IDFConvert public dfConvert;
 
     enum ProcessType {
         CT_DEPOSIT,
@@ -35,7 +37,8 @@ contract DFEngine is DSMath, DSAuth {
         address _dfStore,
         address _dfPool,
         address _dfCol,
-        address _dfFunds)
+        address _dfFunds,
+        address _dfConvert)
         public
     {
         usdxToken = IDSToken(_usdxToken);
@@ -43,6 +46,7 @@ contract DFEngine is DSMath, DSAuth {
         dfPool = IDFPool(_dfPool);
         dfCol = IDFCollateral(_dfCol);
         dfFunds = IDFFunds(_dfFunds);
+        dfConvert = IDFConvert(_dfConvert);
     }
 
     function getPrice(address oracle) public view returns (uint) {
@@ -94,7 +98,7 @@ contract DFEngine is DSMath, DSAuth {
             _misc = min(div(_tokenBalance[i], _mintCW[i]), _misc);
         }
         if (_misc > 0) {
-            return _convert(_depositor, _tokens, _mintCW, _tokenBalance, _resUSDXBalance, _depositorBalance, _misc);
+            return dfConvert._convert(_depositor, _tokens, _mintCW, _tokenBalance, _resUSDXBalance, _depositorBalance, _misc);
         }
             /** Just retrieve minting tokens here. If minted balance has USDX, call claim.*/
         for (uint i = 0; i < _tokens.length; i++) {
@@ -220,66 +224,10 @@ contract DFEngine is DSMath, DSAuth {
 
         usdxToken.burn(_depositor, _amount);
         dfStore.setTotalCol(sub(dfStore.getTotalCol(), _amount));
-        checkUSDXTotalAndColTotal();
+        dfConvert.checkUSDXTotalAndColTotal();
         dfStore.addTotalBurned(_amount);
 
         return true;
-    }
-
-    function _convert(
-        address _depositor,
-        address[] memory _tokens,
-        uint[] memory _mintCW,
-        uint[] memory _tokenBalance,
-        uint[] memory _resUSDXBalance,
-        uint[] memory _depositorBalance,
-        uint _step)
-        internal
-        returns(uint)
-    {
-        uint _mintAmount;
-        uint _mintTotal;
-        uint _depositorMintAmount;
-        uint _depositorMintTotal;
-
-        for (uint i = 0; i < _tokens.length; i++) {
-            _mintAmount = mul(_step, _mintCW[i]);
-            _depositorMintAmount = min(_depositorBalance[i], add(_resUSDXBalance[i], _mintAmount));
-            dfStore.setTokenBalance(_tokens[i], sub(_tokenBalance[i], _mintAmount));
-            dfPool.transferToCol(_tokens[i], _mintAmount);
-            _mintTotal = add(_mintTotal, _mintAmount);
-
-            if (_depositorMintAmount == 0){
-                dfStore.setResUSDXBalance(_tokens[i], add(_resUSDXBalance[i], _mintAmount));
-                continue;
-            }
-
-            dfStore.setDepositorBalance(_depositor, _tokens[i], sub(_depositorBalance[i], _depositorMintAmount));
-            dfStore.setResUSDXBalance(_tokens[i], sub(add(_resUSDXBalance[i], _mintAmount), _depositorMintAmount));
-            _depositorMintTotal = add(_depositorMintTotal, _depositorMintAmount);
-        }
-
-        dfStore.addTotalMinted(_mintTotal);
-        dfStore.addSectionMinted(_mintTotal);
-        usdxToken.mint(address(dfPool), _mintTotal);
-        dfStore.setTotalCol(add(dfStore.getTotalCol(), _mintTotal));
-        checkUSDXTotalAndColTotal();
-        dfPool.transferOut(address(usdxToken), _depositor, _depositorMintTotal);
-        return _depositorMintTotal;
-    }
-
-    function checkUSDXTotalAndColTotal() internal view {
-        address[] memory _tokens = dfStore.getMintedTokenList();
-        address _dfCol = address(dfCol);
-        uint _colTotal;
-        for (uint i = 0; i < _tokens.length; i++) {
-            _colTotal = add(_colTotal, IDSToken(_tokens[i]).balanceOf(_dfCol));
-        }
-        uint _usdxTotalSupply = usdxToken.totalSupply();
-        require(_usdxTotalSupply <= _colTotal,
-                "checkUSDXTotalAndColTotal : Amount of the usdx will be greater than collateral.");
-        require(_usdxTotalSupply == dfStore.getTotalCol(),
-                "checkUSDXTotalAndColTotal : Usdx and total collateral are not equal.");
     }
 
     function getDepositMaxMint(address _depositor, address _srcToken, uint _srcAmount) public view returns (uint) {
@@ -439,6 +387,6 @@ contract DFEngine is DSMath, DSAuth {
         usdxToken.mint(_depositor, _amount);
 
         dfStore.setTotalCol(add(dfStore.getTotalCol(), _amount));
-        checkUSDXTotalAndColTotal();
+        dfConvert.checkUSDXTotalAndColTotal();
     }
 }
