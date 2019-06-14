@@ -4,10 +4,9 @@ import '../token/interfaces/IDSToken.sol';
 import '../token/interfaces/IDSWrappedToken.sol';
 import '../storage/interfaces/IDFStore.sol';
 import '../oracle/interfaces/IMedianizer.sol';
-import '../utility/DSAuth.sol';
 import "../utility/DSMath.sol";
 
-contract DFProtocolView is DSMath, DSAuth {
+contract DFProtocolView is DSMath {
     IDFStore public dfStore;
     address public dfCol;
     address public dfFunds;
@@ -40,18 +39,8 @@ contract DFProtocolView is DSMath, DSAuth {
         return uint(price);
     }
 
-    function _unifiedCommission(ProcessType ct, uint _feeTokenIdx, address depositor, uint _amount) internal {
-        uint rate = dfStore.getFeeRate(uint(ct));
-        if(rate > 0) {
-            address _token = dfStore.getTypeToken(_feeTokenIdx);
-            require(_token != address(0), "_UnifiedCommission: fee token not correct.");
-            uint dfPrice = getPrice(dfStore.getTokenMedian(_token));
-            uint dfFee = div(mul(mul(_amount, rate), WAD), mul(10000, dfPrice));
-            IDSToken(_token).transferFrom(depositor, address(dfFunds), dfFee);
-        }
-    }
-
-    function getDepositMaxMint(address _depositor, address _srcToken, uint _srcAmount) public view returns (uint) {
+    function getUSDXForDeposit(address _srcToken, uint _srcAmount) public view returns (uint) {
+        address _depositor = msg.sender;
         address _tokenID = dfStore.getWrappedToken(_srcToken);
         require(dfStore.getMintingToken(_tokenID), "CalcDepositorMintTotal: asset not allow.");
 
@@ -86,7 +75,8 @@ contract DFProtocolView is DSMath, DSAuth {
         return _depositorMintTotal;
     }
 
-    function getMaxToClaim(address _depositor) public view returns (uint) {
+    function getUserMaxToClaim() public view returns (uint) {
+        address _depositor = msg.sender;
         uint _resUSDXBalance;
         uint _depositorBalance;
         uint _depositorClaimAmount;
@@ -104,7 +94,7 @@ contract DFProtocolView is DSMath, DSAuth {
         return _claimAmount;
     }
 
-    function getCollateralMaxClaim() public view returns (address[] memory, uint[] memory) {
+    function getColMaxClaim() public view returns (address[] memory, uint[] memory) {
         address[] memory _tokens = dfStore.getMintedTokenList();
         uint[] memory _balance = new uint[](_tokens.length);
         address[] memory _srcTokens = new address[](_tokens.length);
@@ -144,7 +134,8 @@ contract DFProtocolView is DSMath, DSAuth {
         return (_srcTokens, _weight);
     }
 
-    function getWithdrawBalances(address _depositor) public view returns(address[] memory, uint[] memory) {
+    function getUserWithdrawBalance() public view returns(address[] memory, uint[] memory) {
+        address _depositor = msg.sender;
         address[] memory _tokens = dfStore.getMintedTokenList();
         uint[] memory _withdrawBalances = new uint[](_tokens.length);
 
@@ -157,7 +148,7 @@ contract DFProtocolView is DSMath, DSAuth {
         return (_srcTokens, _withdrawBalances);
     }
 
-    function getPrices(uint _tokenIdx) public view returns (uint) {
+    function getPrice(uint _tokenIdx) public view returns (uint) {
         address _token = dfStore.getTypeToken(_tokenIdx);
         require(_token != address(0), "_UnifiedCommission: fee token not correct.");
         uint dfPrice = getPrice(dfStore.getTokenMedian(_token));
@@ -165,7 +156,7 @@ contract DFProtocolView is DSMath, DSAuth {
         return dfPrice;
     }
 
-    function getFeeRateByID(uint _processIdx) public view returns (uint) {
+    function getFeeRate(uint _processIdx) public view returns (uint) {
         return dfStore.getFeeRate(_processIdx);
     }
 
