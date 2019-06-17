@@ -40,13 +40,7 @@ var xUSDC = await deployer.deploy(DSWrappedToken, '0x481f8ff13489695b2e1c81691a9
     console.log('xTUSD address : ' + xTUSD.address);
     console.log('xUSDC address : ' + xUSDC.address);
     console.log('----------------------------------\n');
-    await deployer.deploy(Store,
-        [
-            '0xf494e07dfdbce883bf699cedf818fde2fa432db4',
-            '0x2901ea287e0299d595783faedae3ca0ab2bc4e53',
-            '0xfb010ff66700b6ace85fa68e2d98ab754b6f7af4',
-            '0x481f8ff13489695b2e1c81691a95a81f8cb96e32'
-        ], 
+    await deployer.deploy(Store, 
         [
             xDAI.address,
             xPAX.address,

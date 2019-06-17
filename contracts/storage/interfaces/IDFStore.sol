@@ -21,7 +21,7 @@ contract IDFStore {
     function getBackupSectionIndex(uint _position) public view returns (uint);
     function setBackupSectionIndex(uint _position, uint _backupIdx) public;
 
-    function setSection(address[] memory _srcTokens, address[] memory _colIDs, uint[] memory _weight) public;
+    function setSection(address[] memory _wrappedTokens, uint[] memory _weight) public;
     function setBackupSection(uint _position, address[] memory _tokens, uint[] memory _weight) public;
     function burnSectionMoveon() public;
 
