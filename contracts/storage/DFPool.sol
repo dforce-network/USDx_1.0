@@ -1,7 +1,6 @@
 pragma solidity ^0.5.2;
 
 import '../token/interfaces/IERC20Token.sol';
-// import '../token/interfaces/IDSWrappedToken.sol';
 import '../utility/DSAuth.sol';
 import '../utility/Utils.sol';
 
@@ -51,10 +50,6 @@ contract DFPool is DSAuth, Utils {
         assert(IERC20Token(_tokenID).transferFrom(_from, dfcol, _amount));
         return true;
     }
-
-    // function poolUnwrap(address tokenIdx, uint amount) public auth {
-    //     IDSWrappedToken(tokenIdx).unwrap(address(this), amount);
-    // }
 
     function approveToEngine(address _tokenIdx, address _engineAddress) public auth {
         IERC20Token(_tokenIdx).approve(_engineAddress, uint(-1));

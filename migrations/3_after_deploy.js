@@ -11,7 +11,6 @@ const PriceFeed = artifacts.require('PriceFeed.sol');
 const Medianizer = artifacts.require('Medianizer.sol');
 const USDx = artifacts.require('USDXToken.sol');
 const Setting = artifacts.require('DFSetting.sol');
-// const Convert = artifacts.require('DFConvert.sol');
 const xDAI = artifacts.require('DSWrappedToken.sol');
 const xPAX = artifacts.require('DSWrappedToken.sol');
 const xTUSD = artifacts.require('DSWrappedToken.sol');
@@ -32,13 +31,7 @@ module.exports = async function (deployer, network, accounts) {
     let contractMedianizer = await Medianizer.deployed();
     let contractUSDx = await USDx.deployed();
     let contractSetting = await Setting.deployed();
-    // let contractConvert = await Convert.deployed();
     // let contractDF = await DF.deployed();
-
-    // let contractxDAI  = await xDAI.deployed();
-    // let contractxPAX  = await xPAX.deployed();
-    // let contractxTUSD  = await xTUSD.deployed();
-    // let contractxUSDC  = await xUSDC.deployed();
 
     let count = 0
 
@@ -62,32 +55,7 @@ module.exports = async function (deployer, network, accounts) {
     }).catch(error => {
         perror("contractUSDx.setAuthority")
     })
-
-    // xDAI
-    // await contractxDAI.setAuthority.sendTransaction(contractEngine.address).then(result => {
-    //     print("contractxDAI.setAuthority");
-    //     printTx(result.tx);
-    // }).catch(error => {
-    //     perror("contractxDAI.setAuthority")
-    // })
-
-    // // xPAX
-    // await contractxPAX.setAuthority.sendTransaction(contractEngine.address).then(result => {
-    //     print("contractxPAX.setAuthority");
-    //     printTx(result.tx);
-    // }).catch(error => {
-    //     perror("contractxPAX.setAuthority")
-    // })
-
-    // // xUSDC
-    // await contractxUSDC.setAuthority.sendTransaction(contractEngine.address).then(result => {
-    //     print("contractxUSDC.setAuthority");
-    //     printTx(result.tx);
-    // }).catch(error => {
-    //     perror("contractxUSDC.setAuthority")
-    // })
     
-
     // // DF
     // await contractDF.setAuthority.sendTransaction(contractEngine.address).then(result => {
     //     print("contractDF.setAuthority");
@@ -145,14 +113,6 @@ module.exports = async function (deployer, network, accounts) {
         perror("contractEngine.setAuthority")
     })
 
-    // Set guard => Convert
-    // await contractConvert.setAuthority.sendTransaction(contractGuard.address).then(result => {
-    //     print("contractConvert.setAuthority");
-    //     printTx(result.tx);
-    // }).catch(error => {
-    //     perror("contractConvert.setAuthority")
-    // })
-
     // Store permit => Engine
     await contractGuard.permitx.sendTransaction(contractEngine.address, contractStore.address).then(result => {
         print("contractGuard.permitx Store Engine");
@@ -160,14 +120,6 @@ module.exports = async function (deployer, network, accounts) {
     }).catch(error => {
         perror("contractGuard.permitx Store Engine")
     })
-
-    // Store permit => Convert
-    // await contractGuard.permitx.sendTransaction(contractConvert.address, contractStore.address).then(result => {
-    //     print("contractGuard.permitx Store Convert");
-    //     printTx(result.tx);
-    // }).catch(error => {
-    //     perror("contractGuard.permitx Store Convert")
-    // })
 
     // Store permit => Setting
     await contractGuard.permitx.sendTransaction(contractSetting.address, contractStore.address).then(result => {
@@ -201,30 +153,6 @@ module.exports = async function (deployer, network, accounts) {
         perror("contractGuard.permitx Funds")
     })
 
-    // Funds permit => Engine
-    // await contractGuard.permitx.sendTransaction(contractEngine.address, contractConvert.address).then(result => {
-    //     print("contractGuard.permitx Convert");
-    //     printTx(result.tx);
-    // }).catch(error => {
-    //     perror("contractGuard.permitx Convert")
-    // })
-
-    // Store permit => Pool
-    // await contractGuard.permitx.sendTransaction(contractConvert.address, contractPool.address).then(result => {
-    //     print("contractGuard.permitx Pool Convert");
-    //     printTx(result.tx);
-    // }).catch(error => {
-    //     perror("contractGuard.permitx Pool Convert")
-    // })
-
-    // Store permit => Collateral
-    // await contractGuard.permitx.sendTransaction(contractConvert.address, contractCollateral.address).then(result => {
-    //     print("contractGuard.permitx Collateral Convert");
-    //     printTx(result.tx);
-    // }).catch(error => {
-    //     perror("contractGuard.permitx Collateral Convert")
-    // })
-
     // Engine permit => Protocol
     await contractGuard.permitx.sendTransaction(contractProtocol.address, contractEngine.address).then(result => {
         print("contractGuard.permitx Engine");
@@ -248,7 +176,7 @@ module.exports = async function (deployer, network, accounts) {
         perror("contractProtocol.confirmImplChange")
     })
 
-    //Set commission rate deposit ==> 0
+    // Set commission rate deposit ==> 0
     await contractSetting.setCommissionRate.sendTransaction(0, 0).then(result => {
         print("contractSetting.setCommissionRate");
         printTx(result.tx);
@@ -256,7 +184,7 @@ module.exports = async function (deployer, network, accounts) {
         perror("contractSetting.setCommissionRate")
     })
 
-    //Set commission rate destroy ==> 0.001
+    // Set commission rate destroy ==> 0.001
     await contractSetting.setCommissionRate.sendTransaction(1, 10).then(result => {
         print("contractSetting.setCommissionRate");
         printTx(result.tx);
@@ -264,7 +192,7 @@ module.exports = async function (deployer, network, accounts) {
         perror("contractSetting.setCommissionRate")
     })
 
-    //Set commission token ==> DF
+    // Set commission token ==> DF
     await contractSetting.setCommissionToken.sendTransaction(0, DF_Addr).then(result => {
         print("contractSetting.setCommissionToken");
         printTx(result.tx);
@@ -272,7 +200,7 @@ module.exports = async function (deployer, network, accounts) {
         perror("contractSetting.setCommissionToken")
     })
 
-    //Set destroy usdx threshold ==> 0.01
+    // Set destroy usdx threshold ==> 0.01
     let th = new BN(Number(0.01 * 10 ** 18).toLocaleString().replace(/,/g, ''));
     await contractSetting.setDestroyThreshold.sendTransaction(th).then(result => {
         print("contractSetting.setDestroyThreshold");
@@ -281,7 +209,7 @@ module.exports = async function (deployer, network, accounts) {
         perror("contractSetting.setDestroyThreshold")
     })
 
-    //Set DF medianizer
+    // Set DF medianizer
     await contractSetting.setCommissionMedian.sendTransaction(DF_Addr, contractMedianizer.address).then(result => {
         print("contractSetting.setCommissionMedian");
         printTx(result.tx);

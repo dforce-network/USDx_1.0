@@ -12,7 +12,6 @@ const PriceFeed = artifacts.require('PriceFeed.sol');
 const Medianizer = artifacts.require('Medianizer.sol');
 const USDx = artifacts.require('USDXToken.sol');
 const Setting = artifacts.require('DFSetting.sol');
-// const Convert = artifacts.require('DFConvert.sol');
 const DSWrappedToken = artifacts.require('DSWrappedToken.sol');
 // const DF = artifacts.require('DFToken.sol');
 
@@ -60,8 +59,6 @@ var xUSDC = await deployer.deploy(DSWrappedToken, '0x481f8ff13489695b2e1c81691a9
     let contractPool = await deployer.deploy(Pool, Collateral.address);
     await deployer.deploy(Medianizer);
     await deployer.deploy(PriceFeed);
-    // await deployer.deploy(Convert, USDx.address, Store.address, Pool.address, Collateral.address);
-    // await deployer.deploy(Engine, USDx.address, Store.address, Pool.address, Collateral.address, Funds.address, Convert.address);
     await deployer.deploy(Engine, USDx.address, Store.address, Pool.address, Collateral.address, Funds.address);
     await deployer.deploy(Setting, Store.address);
 

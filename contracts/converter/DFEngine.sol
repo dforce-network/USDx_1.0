@@ -74,8 +74,6 @@ contract DFEngine is DSMath, DSAuth {
         uint[] memory _tokenBalance = new uint[](_tokens.length);
         uint[] memory _resUSDXBalance = new uint[](_tokens.length);
         uint[] memory _depositorBalance = new uint[](_tokens.length);
-        // uint _depositorMintAmount;
-        // uint _depositorMintTotal;
         //For stack limit sake.
         uint _misc = uint(-1);
 
@@ -86,14 +84,14 @@ contract DFEngine is DSMath, DSAuth {
             if (_tokenID == _tokens[i]){
                 _tokenBalance[i] = add(_tokenBalance[i], _amount);
                 _depositorBalance[i] = add(_depositorBalance[i], _amount);
-                // _index = i;
             }
             _misc = min(div(_tokenBalance[i], _mintCW[i]), _misc);
         }
         if (_misc > 0) {
             return _convert(_depositor, _tokens, _mintCW, _tokenBalance, _resUSDXBalance, _depositorBalance, _misc);
         }
-            /** Just retrieve minting tokens here. If minted balance has USDX, call claim.*/
+        /** Just retrieve minting tokens here. If minted balance has USDX, call claim.*/
+        /// @dev reuse _tokenBalance[0], _tokenBalance[1] to avoid stack too deep
         _tokenBalance[1] = 0;
         for (uint i = 0; i < _tokens.length; i++) {
             _tokenBalance[0] = min(_depositorBalance[i], _resUSDXBalance[i]);
@@ -137,7 +135,6 @@ contract DFEngine is DSMath, DSAuth {
         dfStore.setTokenBalance(_tokenID, sub(_tokenBalance, _withdrawAmount));
         _unifiedCommission(ProcessType.CT_WITHDRAW, _feeTokenIdx, _depositor, _withdrawAmount);
         IDSWrappedToken(_tokenID).unwrap(address(dfPool), _withdrawAmount);
-        // dfPool.poolUnwrap(_tokenID, _withdrawAmount);
         uint _srcWithdrawAmount = IDSWrappedToken(_tokenID).reverseByMultiple(_withdrawAmount);
         dfPool.transferOut(_srcToken, _depositor, _srcWithdrawAmount);
 
@@ -210,7 +207,6 @@ contract DFEngine is DSMath, DSAuth {
 
                 _tokenAmount = div(mul(_burnedAmount, _burnCW[i]), _sumBurnCW);
                 IDSWrappedToken(_tokens[i]).unwrap(dfCol, _tokenAmount);
-                // dfCol.colUnwrap(_tokens[i], _tokenAmount);
                 dfPool.transferOut(
                     IDSWrappedToken(_tokens[i]).getSrcERC20(),
                     _depositor,
@@ -300,7 +296,7 @@ contract DFEngine is DSMath, DSAuth {
         return _depositorMintTotal;
     }
 
-    function checkUSDXTotalAndColTotal() public view auth {
+    function checkUSDXTotalAndColTotal() public view {
         address[] memory _tokens = dfStore.getMintedTokenList();
         address _dfCol = dfCol;
         uint _colTotal;

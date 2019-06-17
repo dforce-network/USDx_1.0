@@ -5,6 +5,5 @@ contract IDFPool {
     function transferFromSender(address _tokenID, address _from, uint _amount) public returns (bool);
     function transferToCol(address _tokenID, uint _amount) public returns (bool);
     function transferFromSenderToCol(address _tokenID, address _from, uint _amount) public returns (bool);
-    function poolUnwrap(address tokenIdx, uint amount) public;
     function approveToEngine(address _tokenIdx, address _engineAddress) public;
 }
