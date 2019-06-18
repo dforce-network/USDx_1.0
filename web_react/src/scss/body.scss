@@ -271,7 +271,8 @@ div.body {
                     div.maxNum {
                         position: absolute;
                         // background: green;
-                        left: 340px;
+                        // left: 340px;
+                        right: 155px;
                         top: 12px;
                         cursor: pointer;
                         opacity: 0.7;
@@ -738,6 +739,10 @@ div.body {
                         margin-top: 20px;
                         padding-left: 20px;
                         font-size: 14px;
+                        // background: red;
+                        overflow: hidden;
+                        text-overflow:ellipsis;
+                        white-space: nowrap;
                     }
 
                     div.input {
@@ -750,7 +755,8 @@ div.body {
                         div.maxNum {
                             position: absolute;
                             // background: green;
-                            left: 68%;
+                            // left: 68%;
+                            right: 120px;
                             top: 8px;
                             cursor: pointer;
                         }
