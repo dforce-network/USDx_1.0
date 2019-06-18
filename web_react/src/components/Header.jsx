@@ -106,14 +106,14 @@ export default class Header extends React.Component {
                         <p className="title">
                             <span className="netdot" style={{ background: this.props.status.netTypeColor ? this.props.status.netTypeColor : '#fff' }}></span>
                             <span className="nettype">
-                                {this.props.status.isConnected ? this.props.status.netType : 'Disconnect'}
+                                {this.props.status.isConnected ? this.props.status.netType : 'Unconnect'}
                             </span>
                         </p>
                         <div className="logoin">
                             {this.props.status.isConnected ? this.props.status.accountAddress.substring(0, 8) + '...' + this.props.status.accountAddress.substring(this.props.status.accountAddress.length - 6) : 'Connect to MetaMask'}
                             <div className="popup">
                                 <span><em></em></span>
-                                <p style={{ display: this.props.status.isConnected ? 'none' : 'block' }} onClick={() => { this.connectMetamask() }}>Login</p>
+                                <p style={{ display: this.props.status.isConnected ? 'none' : 'block' }} onClick={() => { this.connectMetamask() }}>Connect</p>
                                 <p className="out" style={{ display: this.props.status.isConnected ? 'block' : 'none' }} onClick={() => { this.DisconnectMetamask() }}>Logout</p>
                             </div>
                         </div>
