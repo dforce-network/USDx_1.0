@@ -1,6 +1,5 @@
 pragma solidity ^0.5.2;
 
-import '../token/interfaces/IDSToken.sol';
 import '../token/interfaces/IDSWrappedToken.sol';
 import '../storage/interfaces/IDFStore.sol';
 import '../oracle/interfaces/IMedianizer.sol';
