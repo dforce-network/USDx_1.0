@@ -42,13 +42,27 @@
 
         div.notification-text {
             font-size: 14px;
-            width: 280px;
+            width: 100%;
             padding-left: 44px;
             margin-top: 5px;
             margin-bottom: 10px;
 
             a.notification-a {
-                margin-left: 10px;
+                margin-left: 8px;
+                padding-left: 8px;
+                position: relative;
+
+                &::after {
+                    content: '';
+                    display: block;
+                    width: 2px;
+                    height: 12px;
+                    top: 3px;
+                    left: 0px;
+                    position: absolute;
+                    background: #9696a2;
+                    opacity: 0.5;
+                }
             }
         }
     }
