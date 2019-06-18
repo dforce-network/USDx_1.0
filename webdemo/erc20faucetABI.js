@@ -1,4 +1,4 @@
-const abiTokens = [{
+const erc20Faucet = [{
         "constant": false,
         "inputs": [{
                 "name": "_owner",
@@ -266,6 +266,4 @@ const abiTokens = [{
         "stateMutability": "view",
         "type": "function"
     }
-]
-
-export default abiTokens;
+];
