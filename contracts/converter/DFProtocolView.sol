@@ -34,11 +34,6 @@ contract DFProtocolView is DSMath {
         dfFunds = _dfFunds;
     }
 
-    function getPrice(address oracle) public view returns (uint) {
-        bytes32 price = IMedianizer(oracle).read();
-        return uint(price);
-    }
-
     function getUSDXForDeposit(address _srcToken, uint _srcAmount) public view returns (uint) {
         address _depositor = msg.sender;
         address _tokenID = dfStore.getWrappedToken(_srcToken);
@@ -151,9 +146,8 @@ contract DFProtocolView is DSMath {
     function getPrice(uint _tokenIdx) public view returns (uint) {
         address _token = dfStore.getTypeToken(_tokenIdx);
         require(_token != address(0), "_UnifiedCommission: fee token not correct.");
-        uint dfPrice = getPrice(dfStore.getTokenMedian(_token));
-
-        return dfPrice;
+        bytes32 price = IMedianizer(dfStore.getTokenMedian(_token)).read();
+        return uint(price);
     }
 
     function getFeeRate(uint _processIdx) public view returns (uint) {
