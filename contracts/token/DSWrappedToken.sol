@@ -2,7 +2,7 @@ pragma solidity ^0.5.2;
 
 import './DSToken.sol';
 
-contract DSWrappedToken is DSToken {
+contract DSWrappedToken is DSToken(bytes32(0)) {
     address private srcERC20;
     uint public srcDecimals;
     uint public multiple;

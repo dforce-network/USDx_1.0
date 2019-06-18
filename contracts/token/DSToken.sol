@@ -187,9 +187,9 @@ contract DSToken is DSTokenBase(0), DSStop {
     bytes32  public  symbol;
     uint256  public  decimals = 18;
 
-    // constructor(bytes32 symbol_) public {
-    //     symbol = symbol_;
-    // }
+    constructor(bytes32 symbol_) public {
+        symbol = symbol_;
+    }
 
     function setName(bytes32 name_) public onlyOwner {
         name = name_;
