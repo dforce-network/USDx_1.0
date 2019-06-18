@@ -211,11 +211,11 @@ contract DFEngine is DSMath, DSAuth {
                     IDSWrappedToken(_tokens[i]).getSrcERC20(),
                     _depositor,
                     IDSWrappedToken(_tokens[i]).reverseByMultiple(_tokenAmount));
+                dfStore.setTotalCol(sub(dfStore.getTotalCol(), _tokenAmount));
             }
         }
 
         usdxToken.burn(_depositor, _amount);
-        dfStore.setTotalCol(sub(dfStore.getTotalCol(), _amount));
         checkUSDXTotalAndColTotal();
         dfStore.addTotalBurned(_amount);
 
@@ -243,14 +243,13 @@ contract DFEngine is DSMath, DSAuth {
             _xToken = dfStore.getWrappedToken(_srcTokens[i]);
             _srcAmount = IDSWrappedToken(_xToken).reverseByMultiple(div(mul(_amount, _mintCW[i]), _sumMintCW));
             dfPool.transferFromSender(_srcTokens[i], _depositor, _srcAmount);
+            dfStore.setTotalCol(add(dfStore.getTotalCol(), div(mul(_amount, _mintCW[i]), _sumMintCW)));
             IDSWrappedToken(_xToken).wrap(dfCol, _srcAmount);
         }
 
         dfStore.addTotalMinted(_amount);
         dfStore.addSectionMinted(_amount);
         usdxToken.mint(_depositor, _amount);
-
-        dfStore.setTotalCol(add(dfStore.getTotalCol(), _amount));
         checkUSDXTotalAndColTotal();
     }
 
@@ -275,6 +274,7 @@ contract DFEngine is DSMath, DSAuth {
             _depositorMintAmount = min(_depositorBalance[i], add(_resUSDXBalance[i], _mintAmount));
             dfStore.setTokenBalance(_tokens[i], sub(_tokenBalance[i], _mintAmount));
             dfPool.transferToCol(_tokens[i], _mintAmount);
+            dfStore.setTotalCol(add(dfStore.getTotalCol(), _mintAmount));
             _mintTotal = add(_mintTotal, _mintAmount);
 
             if (_depositorMintAmount == 0){
@@ -290,7 +290,6 @@ contract DFEngine is DSMath, DSAuth {
         dfStore.addTotalMinted(_mintTotal);
         dfStore.addSectionMinted(_mintTotal);
         usdxToken.mint(address(dfPool), _mintTotal);
-        dfStore.setTotalCol(add(dfStore.getTotalCol(), _mintTotal));
         checkUSDXTotalAndColTotal();
         dfPool.transferOut(address(usdxToken), _depositor, _depositorMintTotal);
         return _depositorMintTotal;
