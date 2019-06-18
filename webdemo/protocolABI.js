@@ -201,6 +201,23 @@ var protocolABI = [{
     "anonymous": false,
     "inputs": [{
         "indexed": true,
+        "name": "_sender",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "OneClickMinting",
+    "type": "event",
+    "signature": "0x1a7a7967c94a832e574705bea4dcc16985f946a1a5c2fdf81a2d845027c1d873"
+  },
+  {
+    "anonymous": false,
+    "inputs": [{
+        "indexed": true,
         "name": "_msgSender",
         "type": "address"
       },
@@ -349,13 +366,13 @@ var protocolABI = [{
     "signature": "0x379607f5"
   },
   {
-    "constant": false,
+    "constant": true,
     "inputs": [{
-        "name": "tokenID",
+        "name": "_tokenID",
         "type": "address"
       },
       {
-        "name": "amount",
+        "name": "_amount",
         "type": "uint256"
       }
     ],
@@ -365,12 +382,12 @@ var protocolABI = [{
       "type": "uint256"
     }],
     "payable": false,
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function",
     "signature": "0x0078b158"
   },
   {
-    "constant": false,
+    "constant": true,
     "inputs": [],
     "name": "getUserMaxToClaim",
     "outputs": [{
@@ -378,12 +395,12 @@ var protocolABI = [{
       "type": "uint256"
     }],
     "payable": false,
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function",
     "signature": "0x2d0854d7"
   },
   {
-    "constant": false,
+    "constant": true,
     "inputs": [],
     "name": "getColMaxClaim",
     "outputs": [{
@@ -396,12 +413,12 @@ var protocolABI = [{
       }
     ],
     "payable": false,
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function",
     "signature": "0x70032c54"
   },
   {
-    "constant": false,
+    "constant": true,
     "inputs": [],
     "name": "getMintingSection",
     "outputs": [{
@@ -414,12 +431,12 @@ var protocolABI = [{
       }
     ],
     "payable": false,
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function",
     "signature": "0x3b955ea9"
   },
   {
-    "constant": false,
+    "constant": true,
     "inputs": [],
     "name": "getBurningSection",
     "outputs": [{
@@ -432,12 +449,12 @@ var protocolABI = [{
       }
     ],
     "payable": false,
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function",
     "signature": "0x8c4d3e1a"
   },
   {
-    "constant": false,
+    "constant": true,
     "inputs": [],
     "name": "getUserWithdrawBalance",
     "outputs": [{
@@ -450,14 +467,14 @@ var protocolABI = [{
       }
     ],
     "payable": false,
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function",
     "signature": "0xce98b347"
   },
   {
-    "constant": false,
+    "constant": true,
     "inputs": [{
-      "name": "typeID",
+      "name": "_tokenIdx",
       "type": "uint256"
     }],
     "name": "getPrice",
@@ -466,14 +483,14 @@ var protocolABI = [{
       "type": "uint256"
     }],
     "payable": false,
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function",
     "signature": "0xe7572230"
   },
   {
-    "constant": false,
+    "constant": true,
     "inputs": [{
-      "name": "typeID",
+      "name": "_processIdx",
       "type": "uint256"
     }],
     "name": "getFeeRate",
@@ -482,7 +499,7 @@ var protocolABI = [{
       "type": "uint256"
     }],
     "payable": false,
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function",
     "signature": "0xd2aaef4e"
   },
@@ -498,5 +515,23 @@ var protocolABI = [{
     "stateMutability": "view",
     "type": "function",
     "signature": "0x028e1161"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+        "name": "_feeTokenIdx",
+        "type": "uint256"
+      },
+      {
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "oneClickMinting",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x63bf444f"
   }
 ];

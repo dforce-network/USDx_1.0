@@ -192,5 +192,30 @@ var poolABI = [{
     "stateMutability": "nonpayable",
     "type": "function",
     "signature": "0x0577dd14"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+        "name": "_tokenID",
+        "type": "address"
+      },
+      {
+        "name": "_from",
+        "type": "address"
+      },
+      {
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "transferFromSenderToCol",
+    "outputs": [{
+      "name": "",
+      "type": "bool"
+    }],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x39bf99a2"
   }
 ];

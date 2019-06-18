@@ -566,7 +566,7 @@ var engineABI = [{
   {
     "constant": true,
     "inputs": [{
-      "name": "typeID",
+      "name": "_tokenIdx",
       "type": "uint256"
     }],
     "name": "getPrices",
@@ -582,7 +582,7 @@ var engineABI = [{
   {
     "constant": true,
     "inputs": [{
-      "name": "typeID",
+      "name": "_processIdx",
       "type": "uint256"
     }],
     "name": "getFeeRateByID",
@@ -607,5 +607,27 @@ var engineABI = [{
     "stateMutability": "view",
     "type": "function",
     "signature": "0x028e1161"
+  },
+  {
+    "constant": false,
+    "inputs": [{
+        "name": "_depositor",
+        "type": "address"
+      },
+      {
+        "name": "_feeTokenIdx",
+        "type": "uint256"
+      },
+      {
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "oneClickMinting",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x615fa02b"
   }
 ];
