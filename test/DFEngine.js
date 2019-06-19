@@ -914,7 +914,7 @@ contract('DFEngine', accounts => {
                         
                                 if (runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex].hasOwnProperty('amount')) {
                                     amount = runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['amount'];
-                                    amount = amount * 10 ** (18 - minBurnAmount.toString().length);
+                                    amount = amount * 10 ** (18 - (minBurnAmount.toString().length - 1));
                                 }
         
                                 if (runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex].hasOwnProperty('total')
@@ -1034,7 +1034,8 @@ contract('DFEngine', accounts => {
                             runData['runTimes'] = condition + 1;
                             runData['type'] = runType;
                             runData['accountAddress'] = accounts.indexOf(accountAddress);
-                            runData['amount'] = amount / 10 ** 8;
+                            // runData['amount'] = amount / 10 ** 8;
+                            runData['amount'] = amount / 10 ** (18 - (minBurnAmount.toString().length - 1));
                             runData['amountNB'] = amountNB.toString();
                             runData['min amount'] = minBurnAmount.toString() / 10 ** 18;
                             runData['min amount BN'] = minBurnAmount.toString();
