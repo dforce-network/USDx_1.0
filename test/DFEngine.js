@@ -528,7 +528,7 @@ contract('DFEngine', accounts => {
                                 runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['error'] = error.message;
                                 runData['result'] = 'fail';
                                 runData['error'] = error.message;
-                                // runDataList[runDataList.length] = runData;
+                                runDataList[runDataList.length] = runData;
                                 console.log(error.message + '\n');
                                 condition++;
                                 continue;
@@ -907,12 +907,14 @@ contract('DFEngine', accounts => {
                             console.log(usdxBalanceOrigin.toString());
                             console.log('\n');
                             
-                            amount = MathTool.randomNum(0, Number(usdxBalanceOrigin.mul(new BN(11)).div(new BN(10)).div(new BN(Number(10 ** 10).toLocaleString().replace(/,/g,'')))));
+                            // amount = MathTool.randomNum(0, Number(usdxBalanceOrigin.mul(new BN(11)).div(new BN(10)).div(new BN(Number(10 ** 10).toLocaleString().replace(/,/g,'')))));
+                            minBurnAmount = await dfProtocolView.getDestroyThreshold.call();
+                            amount = MathTool.randomNum(0, Number(usdxBalanceOrigin.mul(new BN(11)).div(new BN(10)).div(minBurnAmount)));
                             if(runConfig[configIndex]['data'][dfEngineIndex].hasOwnProperty('data')){
                         
                                 if (runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex].hasOwnProperty('amount')) {
                                     amount = runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['amount'];
-                                    amount = amount * 10 ** 8;
+                                    amount = amount * 10 ** (18 - minBurnAmount.toString().length);
                                 }
         
                                 if (runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex].hasOwnProperty('total')
@@ -921,7 +923,8 @@ contract('DFEngine', accounts => {
                                     amount = usdxBalanceOrigin;
                                 }
                             }
-                            var amountNB = typeof(amount) == 'number' ? new BN((amount * 10 ** 10).toLocaleString().replace(/,/g,'')) : amount;
+                            // var amountNB = typeof(amount) == 'number' ? new BN((amount * 10 ** 10).toLocaleString().replace(/,/g,'')) : amount;
+                            var amountNB = typeof(amount) == 'number' ? (new BN(amount.toLocaleString().replace(/,/g,''))).mul(minBurnAmount) : amount;
                             console.log('destroy account index : ' + accounts.indexOf(accountAddress));
                             console.log('destroy account address : ' + accountAddress);
                             console.log('create destroy random the amount');
@@ -930,7 +933,6 @@ contract('DFEngine', accounts => {
                             console.log(amountNB);
                             console.log(amountNB.toString());
                             console.log('\n');
-                            minBurnAmount = await dfProtocolView.getDestroyThreshold.call();
                             console.log('min burn amount');
                             console.log(minBurnAmount);
                             console.log(minBurnAmount.toString());
@@ -1057,7 +1059,7 @@ contract('DFEngine', accounts => {
                                 runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['error'] = error.message;
                                 runData['result'] = 'fail';
                                 runData['error'] = error.message;
-                                // runDataList[runDataList.length] = runData;
+                                runDataList[runDataList.length] = runData;
                                 console.log(error.message + '\n');
                                 condition++;
                                 continue;
@@ -1465,7 +1467,7 @@ contract('DFEngine', accounts => {
                                 runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['error'] = error.message;
                                 runData['result'] = 'fail';
                                 runData['error'] = error.message;
-                                // runDataList[runDataList.length] = runData;
+                                runDataList[runDataList.length] = runData;
                                 console.log(error.message + '\n');
                                 condition++;
                                 continue;
@@ -2299,7 +2301,7 @@ contract('DFEngine', accounts => {
                             //     }
                             // }
 
-                            tokenWeightListNew = weightTest;
+                            tokenWeightListNew = DataMethod.createMixIndexData(weightTest, weightTest.length, weightTest.length);
                             tokenAddressIndex = DataMethod.createIndex(collateralAddress, tokenWeightListNew.length - 1, tokenWeightListNew.length - 1);
                             tokenAddressIndex.push(-1);
                             var randomFlag = true;
@@ -2409,8 +2411,12 @@ contract('DFEngine', accounts => {
 
                             // }
 
+                            console.log('tokenAddressIndex : ');
                             console.log(tokenAddressIndex);
+                            console.log('\n');
+                            console.log('tokenWeightListNew : ');
                             console.log(tokenWeightListNew);
+                            console.log('\n');
 
                             console.log('collateralAddress:');
                             console.log(collateralAddress);
@@ -2418,25 +2424,23 @@ contract('DFEngine', accounts => {
                             console.log('tokenAddressListNew:');
                             console.log(tokenAddressListNew);
                             console.log('\n');
-                            console.log('xCollateralAddress:');
-                            console.log(xCollateralAddress);
-                            console.log('\n');
-                            console.log('xTokenDecimalsList:');
-                            console.log(xTokenDecimalsList);
-                            console.log('\n');
                             
-                            // tokenWeightListNew = [];
                             xTokenAddressList = [];
                             tokenDecimalsList = [];
                             for (let index = 0; index < tokenWeightListNew.length; index++) {
                                 tokenWeightListNew[index] = new BN((tokenWeightListNew[index] * 10 ** 18).toLocaleString().replace(/,/g, ''));
                                 xTokenAddressList.push(xCollateralAddress[collateralAddress.indexOf(tokenAddressListNew[index])]);
                                 tokenDecimalsList.push(xTokenDecimalsList[collateralAddress.indexOf(tokenAddressListNew[index])]);
-                                
                             }
 
+                            console.log('xCollateralAddress:');
+                            console.log(xCollateralAddress);
+                            console.log('\n');
                             console.log('xTokenAddressList:');
                             console.log(xTokenAddressList);
+                            console.log('\n');
+                            console.log('xTokenDecimalsList:');
+                            console.log(xTokenDecimalsList);
                             console.log('\n');
                             console.log('tokenDecimalsList:');
                             console.log(tokenDecimalsList);
@@ -2497,23 +2501,21 @@ contract('DFEngine', accounts => {
                             console.log(dfStoreTokenWeight);
                             console.log('\n');
                             
-                            for (let index = 0; index < dfStoreTokenAddress.length; index++) {
-                                assert.equal(dfStoreTokenAddress[index], xTokenAddressList[index]);
-                                assert.equal(dfStoreTokenAddress[index], await dfStore.getWrappedToken.call(tokenAddressListNew[index]));
-                                assert.equal(dfStoreTokenWeight[index].toString(), tokenWeightListNew[index].toString());
-                            }
-
                             tokenAddressList = [];
                             tokenAddressList = tokenAddressListNew;
                             tokenWeightList = [];
                             tokenWeightList = tokenWeightListNew;
-
                             console.log('tokenAddressList:');
                             console.log(tokenAddressList);
                             console.log('\n');
                             console.log('tokenWeightList:');
                             console.log(tokenWeightList);
                             console.log('\n');
+                            for (let index = 0; index < dfStoreTokenAddress.length; index++) {
+                                assert.equal(dfStoreTokenAddress[index], xTokenAddressList[index]);
+                                assert.equal(dfStoreTokenAddress[index], await dfStore.getWrappedToken.call(tokenAddressList[index]));
+                                assert.equal(dfStoreTokenWeight[index].toString(), tokenWeightList[index].toString());
+                            }
 
                             dfColMaxClaim = {};
                             dfColMaxClaim = await dfProtocolView.getColMaxClaim.call();
