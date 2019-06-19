@@ -148,6 +148,7 @@ export default class Home extends React.Component {
                 this.getPrice();
                 this.getColMaxClaim();
                 this.getUserWithdrawBalance();
+                this.isSyncing();
             }else {
                 console.log('not connected...');
                 return;
@@ -730,30 +731,43 @@ export default class Home extends React.Component {
                     if (claimAddress[i] === this.addressDAI) {
                         this.setState({
                             ...this.state,
-                            claimDAI: this.formatNumber(claimNumber[i], 'DAI')
+                            claimDAI: this.formatNumber(claimNumber[i], 'USDx')
                         })
                     }
                     if (claimAddress[i] === this.addressPAX) {
                         this.setState({
                             ...this.state,
-                            claimPAX: this.formatNumber(claimNumber[i], 'PAX')
+                            claimPAX: this.formatNumber(claimNumber[i], 'USDx')
                         })
                     }
                     if (claimAddress[i] === this.addressTUSD) {
                         this.setState({
                             ...this.state,
-                            claimTUSD: this.formatNumber(claimNumber[i], 'TUSD')
+                            claimTUSD: this.formatNumber(claimNumber[i], 'USDx')
                         })
                     }
                     if (claimAddress[i] === this.addressUSDC) {
                         this.setState({
                             ...this.state,
-                            claimUSDC: this.formatNumber(claimNumber[i], 'USDC')
+                            claimUSDC: this.formatNumber(claimNumber[i], 'USDx')
                         })
                     }
                 }
             }
         })
+    }
+
+    // isSyncing
+    isSyncing() {
+        this.Web3.eth.isSyncing((res) => {
+            if(res){
+                console.log(res);
+            }
+        })
+        // lastSyncState: false
+        // this.Web3.eth.syncing((err, ret)=>{
+        //     console.log(err, ret);
+        // })
     }
 
 
@@ -1144,7 +1158,7 @@ export default class Home extends React.Component {
                                 tmepState.transcations[key] = {
                                     ...tmepState.transcations[key],
                                     class: 'error',
-                                    msg: 'Approve ' + token + ' error'
+                                    msg: 'User reject transaction'
                                 }
                                 this.setState({tmepState});
 
@@ -1252,7 +1266,7 @@ export default class Home extends React.Component {
                                 tmepState.transcations[key] = {
                                     ...tmepState.transcations[key],
                                     class: 'error',
-                                    msg: 'Approve ' + token + ' error'
+                                    msg: 'User reject transaction'
                                 }
                                 this.setState({tmepState});
 
@@ -1360,7 +1374,7 @@ export default class Home extends React.Component {
                                 tmepState.transcations[key] = {
                                     ...tmepState.transcations[key],
                                     class: 'error',
-                                    msg: 'Approve ' + token + ' error'
+                                    msg: 'User reject transaction'
                                 }
                                 this.setState({tmepState});
 
@@ -1468,7 +1482,7 @@ export default class Home extends React.Component {
                                 tmepState.transcations[key] = {
                                     ...tmepState.transcations[key],
                                     class: 'error',
-                                    msg: 'Approve ' + token + ' error'
+                                    msg: 'User reject transaction'
                                 }
                                 this.setState({tmepState});
 
@@ -1576,7 +1590,7 @@ export default class Home extends React.Component {
                                 tmepState.transcations[key] = {
                                     ...tmepState.transcations[key],
                                     class: 'error',
-                                    msg: 'Approve ' + token + ' error'
+                                    msg: 'User reject transaction'
                                 }
                                 this.setState({tmepState});
 
@@ -1684,7 +1698,7 @@ export default class Home extends React.Component {
                                 tmepState.transcations[key] = {
                                     ...tmepState.transcations[key],
                                     class: 'error',
-                                    msg: 'Approve ' + token + ' error'
+                                    msg: 'User reject transaction'
                                 }
                                 this.setState({tmepState});
 
@@ -1815,7 +1829,8 @@ export default class Home extends React.Component {
                             if (tmepState.transcations[key].title === 'Lock ' + token) {
                                 tmepState.transcations[key] = {
                                     ...tmepState.transcations[key],
-                                    class: 'error'
+                                    class: 'error',
+                                    msg: 'User reject transaction'
                                 }
                                 this.setState({tmepState});
 
@@ -1913,7 +1928,8 @@ export default class Home extends React.Component {
                             if (tmepState.transcations[key].title === 'Lock ' + token) {
                                 tmepState.transcations[key] = {
                                     ...tmepState.transcations[key],
-                                    class: 'error'
+                                    class: 'error',
+                                    msg: 'User reject transaction'
                                 }
                                 this.setState({tmepState});
 
@@ -2011,7 +2027,8 @@ export default class Home extends React.Component {
                             if (tmepState.transcations[key].title === 'Lock ' + token) {
                                 tmepState.transcations[key] = {
                                     ...tmepState.transcations[key],
-                                    class: 'error'
+                                    class: 'error',
+                                    msg: 'User reject transaction'
                                 }
                                 this.setState({tmepState});
 
@@ -2109,7 +2126,8 @@ export default class Home extends React.Component {
                             if (tmepState.transcations[key].title === 'Lock ' + token) {
                                 tmepState.transcations[key] = {
                                     ...tmepState.transcations[key],
-                                    class: 'error'
+                                    class: 'error',
+                                    msg: 'User reject transaction'
                                 }
                                 this.setState({tmepState});
 
@@ -2207,7 +2225,8 @@ export default class Home extends React.Component {
                             if (tmepState.transcations[key].title === 'Lock ' + token) {
                                 tmepState.transcations[key] = {
                                     ...tmepState.transcations[key],
-                                    class: 'error'
+                                    class: 'error',
+                                    msg: 'User reject transaction'
                                 }
                                 this.setState({tmepState});
 
@@ -2305,7 +2324,8 @@ export default class Home extends React.Component {
                             if (tmepState.transcations[key].title === 'Lock ' + token) {
                                 tmepState.transcations[key] = {
                                     ...tmepState.transcations[key],
-                                    class: 'error'
+                                    class: 'error',
+                                    msg: 'User reject transaction'
                                 }
                                 this.setState({tmepState});
 
@@ -4179,7 +4199,8 @@ export default class Home extends React.Component {
                         if (tmepState.transcations[key].title === 'Allocate DAI') {
                             tmepState.transcations[key] = {
                                 ...tmepState.transcations[key],
-                                class: 'error'
+                                class: 'error',
+                                msg: 'User reject transaction'
                             }
                             this.setState({tmepState});
 
@@ -4296,7 +4317,8 @@ export default class Home extends React.Component {
                         if (tmepState.transcations[key].title === 'Allocate PAX') {
                             tmepState.transcations[key] = {
                                 ...tmepState.transcations[key],
-                                class: 'error'
+                                class: 'error',
+                                msg: 'User reject transaction'
                             }
                             this.setState({tmepState});
 
@@ -4413,7 +4435,8 @@ export default class Home extends React.Component {
                         if (tmepState.transcations[key].title === 'Allocate TUSD') {
                             tmepState.transcations[key] = {
                                 ...tmepState.transcations[key],
-                                class: 'error'
+                                class: 'error',
+                                msg: 'User reject transaction'
                             }
                             this.setState({tmepState});
 
@@ -4530,7 +4553,8 @@ export default class Home extends React.Component {
                         if (tmepState.transcations[key].title === 'Allocate USDC') {
                             tmepState.transcations[key] = {
                                 ...tmepState.transcations[key],
-                                class: 'error'
+                                class: 'error',
+                                msg: 'User reject transaction'
                             }
                             this.setState({tmepState});
 
@@ -4647,7 +4671,8 @@ export default class Home extends React.Component {
                         if (tmepState.transcations[key].title === 'Allocate DF') {
                             tmepState.transcations[key] = {
                                 ...tmepState.transcations[key],
-                                class: 'error'
+                                class: 'error',
+                                msg: 'User reject transaction'
                             }
                             this.setState({tmepState});
 

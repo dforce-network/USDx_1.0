@@ -65,7 +65,7 @@ export default class Header extends React.Component {
                                     <span onClick={() => { this.allocateTo('DAI')}} className="faucet">Faucet</span>
                                     <span className="balance">
                                         {this.props.status.myDAI ? this.props.status.myDAI.split('.')[0] : '0'}
-                                        <i>{this.props.status.myDAI ? '.' + this.props.status.myDAI.split('.')[1] : '.00'}</i>
+                                        <i>{this.props.status.myDAI ? this.props.status.myDAI.split('.')[1]?'.' + this.props.status.myDAI.split('.')[1]:'.00' : '.00'}</i>
                                     </span>
                                 </td>
                                 <td>
@@ -75,7 +75,7 @@ export default class Header extends React.Component {
                                     <span onClick={() => { this.allocateTo('PAX')}} className="faucet">Faucet</span>
                                     <span className="balance">
                                         {this.props.status.myPAX ? this.props.status.myPAX.split('.')[0] : '0'}
-                                        <i>{this.props.status.myPAX ? '.' + this.props.status.myPAX.split('.')[1] : '.00'}</i>
+                                        <i>{this.props.status.myPAX ? this.props.status.myPAX.split('.')[1]?'.' + this.props.status.myPAX.split('.')[1]:'.00' : '.00'}</i>
                                     </span>
                                 </td>
                                 <td>
@@ -85,7 +85,7 @@ export default class Header extends React.Component {
                                     <span onClick={() => { this.allocateTo('TUSD')}} className="faucet">Faucet</span>
                                     <span className="balance">
                                         {this.props.status.myTUSD ? this.props.status.myTUSD.split('.')[0] : '0'}
-                                        <i>{this.props.status.myTUSD ? '.' + this.props.status.myTUSD.split('.')[1] : '.00'}</i>
+                                        <i>{this.props.status.myTUSD ? this.props.status.myTUSD.split('.')[1]?'.' + this.props.status.myTUSD.split('.')[1]:'.00' : '.00'}</i>
                                     </span>
                                 </td>
                                 <td className='noborder'>
@@ -95,7 +95,7 @@ export default class Header extends React.Component {
                                     <span onClick={() => { this.allocateTo('USDC')}} className="faucet">Faucet</span>
                                     <span className="balance">
                                         {this.props.status.myUSDC ? this.props.status.myUSDC.split('.')[0] : '0'}
-                                        <i>{this.props.status.myUSDC ? '.' + this.props.status.myUSDC.split('.')[1] : '.00'}</i>
+                                        <i>{this.props.status.myUSDC ? this.props.status.myUSDC.split('.')[1]?'.' + this.props.status.myUSDC.split('.')[1]:'.00' : '.00'}</i>
                                     </span>
                                 </td>
                             </tr>
