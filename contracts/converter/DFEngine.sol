@@ -211,11 +211,11 @@ contract DFEngine is DSMath, DSAuth {
                     IDSWrappedToken(_tokens[i]).getSrcERC20(),
                     _depositor,
                     IDSWrappedToken(_tokens[i]).reverseByMultiple(_tokenAmount));
+                dfStore.setTotalCol(sub(dfStore.getTotalCol(), _tokenAmount));
             }
         }
 
         usdxToken.burn(_depositor, _amount);
-        dfStore.setTotalCol(sub(dfStore.getTotalCol(), _amount));
         checkUSDXTotalAndColTotal();
         dfStore.addTotalBurned(_amount);
 
@@ -223,13 +223,12 @@ contract DFEngine is DSMath, DSAuth {
     }
 
     function oneClickMinting(address _depositor, uint _feeTokenIdx, uint _amount) public auth {
-        address[] memory _srcTokens;
+        address[] memory _tokens;
         uint[] memory _mintCW;
         uint _sumMintCW;
         uint _srcAmount;
-        address _xToken;
 
-        (, , , _srcTokens, _mintCW) = dfStore.getSectionData(dfStore.getMintPosition());
+        (, , , _tokens, _mintCW) = dfStore.getSectionData(dfStore.getMintPosition());
         for (uint i = 0; i < _mintCW.length; i++) {
             _sumMintCW = add(_sumMintCW, _mintCW[i]);
         }
@@ -240,17 +239,15 @@ contract DFEngine is DSMath, DSAuth {
 
         for (uint i = 0; i < _mintCW.length; i++) {
 
-            _xToken = dfStore.getWrappedToken(_srcTokens[i]);
-            _srcAmount = IDSWrappedToken(_xToken).reverseByMultiple(div(mul(_amount, _mintCW[i]), _sumMintCW));
-            dfPool.transferFromSender(_srcTokens[i], _depositor, _srcAmount);
-            IDSWrappedToken(_xToken).wrap(dfCol, _srcAmount);
+            _srcAmount = IDSWrappedToken(_tokens[i]).reverseByMultiple(div(mul(_amount, _mintCW[i]), _sumMintCW));
+            dfPool.transferFromSender(IDSWrappedToken(_tokens[i]).getSrcERC20(), _depositor, _srcAmount);
+            dfStore.setTotalCol(add(dfStore.getTotalCol(), div(mul(_amount, _mintCW[i]), _sumMintCW)));
+            IDSWrappedToken(_tokens[i]).wrap(dfCol, _srcAmount);
         }
 
         dfStore.addTotalMinted(_amount);
         dfStore.addSectionMinted(_amount);
         usdxToken.mint(_depositor, _amount);
-
-        dfStore.setTotalCol(add(dfStore.getTotalCol(), _amount));
         checkUSDXTotalAndColTotal();
     }
 
@@ -275,6 +272,7 @@ contract DFEngine is DSMath, DSAuth {
             _depositorMintAmount = min(_depositorBalance[i], add(_resUSDXBalance[i], _mintAmount));
             dfStore.setTokenBalance(_tokens[i], sub(_tokenBalance[i], _mintAmount));
             dfPool.transferToCol(_tokens[i], _mintAmount);
+            dfStore.setTotalCol(add(dfStore.getTotalCol(), _mintAmount));
             _mintTotal = add(_mintTotal, _mintAmount);
 
             if (_depositorMintAmount == 0){
@@ -290,7 +288,6 @@ contract DFEngine is DSMath, DSAuth {
         dfStore.addTotalMinted(_mintTotal);
         dfStore.addSectionMinted(_mintTotal);
         usdxToken.mint(address(dfPool), _mintTotal);
-        dfStore.setTotalCol(add(dfStore.getTotalCol(), _mintTotal));
         checkUSDXTotalAndColTotal();
         dfPool.transferOut(address(usdxToken), _depositor, _depositorMintTotal);
         return _depositorMintTotal;

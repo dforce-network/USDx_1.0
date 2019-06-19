@@ -41,7 +41,7 @@ contract DFStore is DSMath, DSAuth {
     uint private totalBurned;
 
     /// @dev  The minimal amount of burned.
-    uint private minimalBurnAmount = 10 ** 9;
+    uint private minimalBurnAmount = 10 ** 14;
 
     /// @dev The total amount of collateral.
     uint private totalCol;

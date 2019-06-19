@@ -3,9 +3,9 @@ const BN = require('bn.js');
 const Protocol = artifacts.require('DFProtocol.sol');
 const Pool = artifacts.require('DFPool.sol');
 const Engine = artifacts.require('DFEngine.sol');
-const USDx = artifacts.require('USDXToken.sol');
+const USDx = artifacts.require('DSToken.sol');
 const Collaterals = artifacts.require('Collaterals_t.sol');
-const DF = artifacts.require('DFToken.sol');
+const DF = artifacts.require('DSToken.sol');
 const DF_Addr = "0x4AF82b7C2F049574C9fc742A896DAbEA379b7d51";
 
 module.exports = async function (deployer, network, accounts) {
