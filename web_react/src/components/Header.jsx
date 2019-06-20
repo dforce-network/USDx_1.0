@@ -22,6 +22,24 @@ export default class Header extends React.Component {
     allocateTo (token) {
         this.props.allocateTo(token);
     }
+    toThousands(str) {
+        var num = str;
+        var re = /\d{3}$/;
+        var result = '';
+
+        while ( re.test(num) ) {
+            result = RegExp.lastMatch + result;
+            if (num !== RegExp.lastMatch) {
+                result = ',' + result;
+                num = RegExp.leftContext;
+            } else {
+                num = '';
+                break;
+            }
+        }
+        if (num) { result = num + result; }
+        return result;
+    }
 
 
     render() {
@@ -38,14 +56,14 @@ export default class Header extends React.Component {
                                     <img style={{ display: this.props.status.approvedDF ? 'inline-block' : 'none' }} src={unlock} alt="" onClick={() => { this.lock('DF') }} />
                                     <span onClick={() => { this.allocateTo('DF')}} className="faucet">Faucet</span>
                                     <span className="balance">
-                                        {this.props.status.myDF ? this.props.status.myDF.split('.')[0] : '0'}
+                                        {this.props.status.myDF ? this.toThousands(this.props.status.myDF.split('.')[0]) : '0'}
                                         <i>{this.props.status.myDF ? '.' + this.props.status.myDF.split('.')[1] : '.00'}</i>
                                     </span>
                                 </td>
                                 <td>
                                     <span className="token">ETH</span>
                                     <span className="balance">
-                                        {this.props.status.myETH ? this.props.status.myETH.split('.')[0] : '0'}
+                                        {this.props.status.myETH ? this.toThousands(this.props.status.myETH.split('.')[0]) : '0'}
                                         <i>{this.props.status.myETH ? '.' + this.props.status.myETH.split('.')[1] : '.00'}</i>
                                     </span>
                                 </td>
@@ -54,7 +72,7 @@ export default class Header extends React.Component {
                                     <img style={{ display: this.props.status.approvedUSDx ? 'none' : 'inline-block' }} src={lock} alt="" onClick={() => { this.approve('USDx') }} />
                                     <img style={{ display: this.props.status.approvedUSDx ? 'inline-block' : 'none' }} src={unlock} alt="" onClick={() => { this.lock('USDx') }} />
                                     <span className="balance">
-                                        {this.props.status.myUSDx ? this.props.status.myUSDx.split('.')[0] : '0'}
+                                        {this.props.status.myUSDx ? this.toThousands(this.props.status.myUSDx.split('.')[0]) : '0'}
                                         <i>{this.props.status.myUSDx ? '.' + this.props.status.myUSDx.split('.')[1] : '.00'}</i>
                                     </span>
                                 </td>
@@ -64,7 +82,7 @@ export default class Header extends React.Component {
                                     <img style={{ display: this.props.status.approvedDAI ? 'inline-block' : 'none' }} src={unlock} alt="" onClick={() => { this.lock('DAI') }} />
                                     <span onClick={() => { this.allocateTo('DAI')}} className="faucet">Faucet</span>
                                     <span className="balance">
-                                        {this.props.status.myDAI ? this.props.status.myDAI.split('.')[0] : '0'}
+                                        {this.props.status.myDAI ? this.toThousands(this.props.status.myDAI.split('.')[0]) : '0'}
                                         <i>{this.props.status.myDAI ? this.props.status.myDAI.split('.')[1]?'.' + this.props.status.myDAI.split('.')[1]:'.00' : '.00'}</i>
                                     </span>
                                 </td>
@@ -74,7 +92,7 @@ export default class Header extends React.Component {
                                     <img style={{ display: this.props.status.approvedPAX ? 'inline-block' : 'none' }} src={unlock} alt="" onClick={() => { this.lock('PAX') }} />
                                     <span onClick={() => { this.allocateTo('PAX')}} className="faucet">Faucet</span>
                                     <span className="balance">
-                                        {this.props.status.myPAX ? this.props.status.myPAX.split('.')[0] : '0'}
+                                        {this.props.status.myPAX ? this.toThousands(this.props.status.myPAX.split('.')[0]) : '0'}
                                         <i>{this.props.status.myPAX ? this.props.status.myPAX.split('.')[1]?'.' + this.props.status.myPAX.split('.')[1]:'.00' : '.00'}</i>
                                     </span>
                                 </td>
@@ -84,7 +102,7 @@ export default class Header extends React.Component {
                                     <img style={{ display: this.props.status.approvedTUSD ? 'inline-block' : 'none' }} src={unlock} alt="" onClick={() => { this.lock('TUSD') }} />
                                     <span onClick={() => { this.allocateTo('TUSD')}} className="faucet">Faucet</span>
                                     <span className="balance">
-                                        {this.props.status.myTUSD ? this.props.status.myTUSD.split('.')[0] : '0'}
+                                        {this.props.status.myTUSD ? this.toThousands(this.props.status.myTUSD.split('.')[0]) : '0'}
                                         <i>{this.props.status.myTUSD ? this.props.status.myTUSD.split('.')[1]?'.' + this.props.status.myTUSD.split('.')[1]:'.00' : '.00'}</i>
                                     </span>
                                 </td>
@@ -94,7 +112,7 @@ export default class Header extends React.Component {
                                     <img style={{ display: this.props.status.approvedUSDC ? 'inline-block' : 'none' }} src={unlock} alt="" onClick={() => { this.lock('USDC') }} />
                                     <span onClick={() => { this.allocateTo('USDC')}} className="faucet">Faucet</span>
                                     <span className="balance">
-                                        {this.props.status.myUSDC ? this.props.status.myUSDC.split('.')[0] : '0'}
+                                        {this.props.status.myUSDC ? this.toThousands(this.props.status.myUSDC.split('.')[0]) : '0'}
                                         <i>{this.props.status.myUSDC ? this.props.status.myUSDC.split('.')[1]?'.' + this.props.status.myUSDC.split('.')[1]:'.00' : '.00'}</i>
                                     </span>
                                 </td>

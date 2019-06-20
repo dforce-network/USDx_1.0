@@ -75,6 +75,25 @@ export default class History extends React.Component {
         }
     }
 
+    toThousands(str) {
+        var num = str;
+        var re = /\d{3}$/;
+        var result = '';
+
+        while ( re.test(num) ) {
+            result = RegExp.lastMatch + result;
+            if (num !== RegExp.lastMatch) {
+                result = ',' + result;
+                num = RegExp.leftContext;
+            } else {
+                num = '';
+                break;
+            }
+        }
+        if (num) { result = num + result; }
+        return result;
+    }
+
     render() {
         return (
             <div className="history">

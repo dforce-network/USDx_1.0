@@ -130,6 +130,48 @@ export default class Home extends React.Component {
                 return;
             }
             if (this.state.accountAddress !== this.Web3.eth.coinbase) {
+                console.log('ReConnect...');
+                this.setState({
+                    DAIonBank: '0.00',
+                    DAIonPool: '0.00',
+                    PAXonBank: '0.00',
+                    PAXonPool: '0.00',
+                    TUSDonBank: '0.00',
+                    TUSDonPool: '0.00',
+                    USDConBank: '0.00',
+                    USDConPool: '0.00',
+                    approvedDAI: false,
+                    approvedDF: false,
+                    approvedPAX: false,
+                    approvedTUSD: false,
+                    approvedUSDC: false,
+                    approvedUSDx: false,
+                    claimDAI: '0.00',
+                    claimPAX: '0.00',
+                    claimTUSD: '0.00',
+                    claimUSDC: '0.00',
+                    couldClaim: false,
+                    myDAI: '0.00',
+                    myDAIonPool: '0.00',
+                    myDF: '0.00',
+                    myETH: '0.00',
+                    myPAX: '0.00',
+                    myPAXonPool: '0.00',
+                    myTUSD: '0.00',
+                    myTUSDonPool: '0.00',
+                    myUSDC: '0.00',
+                    myUSDConPool: '0.00',
+                    myUSDx: '0.00',
+                    toDepositNum: '',
+                    toDestroyNum: '',
+                    toWithdrawNum: '',
+                    userMaxToClaim: '0.00',
+                    myHistory: [],
+                    couldDeposit: false,
+                    maxGenerateUSDx: '0.00',
+                    transcations: {}
+                });
+                clearTimeout();
                 this.connectMetamask();
             } else {
                 return;
@@ -221,7 +263,7 @@ export default class Home extends React.Component {
                                     <div className="claim">
                                         Max USDx to claim:
                                         <span>
-                                            <i>{this.state.userMaxToClaim? this.state.userMaxToClaim.split('.')[0] : '0'}</i>
+                                            <i>{this.state.userMaxToClaim? this.toThousands(this.state.userMaxToClaim.split('.')[0]) : '0'}</i>
                                             {this.state.userMaxToClaim? '.' + this.state.userMaxToClaim.split('.')[1] : '.00'}
                                         </span>
                                     </div>
@@ -280,28 +322,28 @@ export default class Home extends React.Component {
                                         <p className='partToken'>
                                             <span>DAI</span>
                                             <span className='right'>
-                                                {this.state.USDxToDAI ? this.state.USDxToDAI.split('.')[0] : '0'}
+                                                {this.state.USDxToDAI ? this.toThousands(this.state.USDxToDAI.split('.')[0]) : '0'}
                                                 <i>{this.state.USDxToDAI ? this.state.USDxToDAI.split('.')[1]? '.' + this.state.USDxToDAI.split('.')[1]:'.00' : '.00'}</i>
                                             </span>
                                         </p>
                                         <p className='partToken marginR marginl'>
                                             <span>PAX</span>
                                             <span className='right'>
-                                                {this.state.USDxToPAX ? this.state.USDxToPAX.split('.')[0] : '0'}
+                                                {this.state.USDxToPAX ? this.toThousands(this.state.USDxToPAX.split('.')[0]) : '0'}
                                                 <i>{this.state.USDxToPAX ? this.state.USDxToPAX.split('.')[1]?'.' + this.state.USDxToPAX.split('.')[1]:'.00' : '.00'}</i>
                                             </span>
                                         </p>
                                         <p className='partToken'>
                                             <span>TUSD</span>
                                             <span className='right'>
-                                                {this.state.USDxToTUSD ? this.state.USDxToTUSD.split('.')[0] : '0'}
+                                                {this.state.USDxToTUSD ? this.toThousands(this.state.USDxToTUSD.split('.')[0]) : '0'}
                                                 <i>{this.state.USDxToTUSD ? this.state.USDxToTUSD.split('.')[1]?'.' + this.state.USDxToTUSD.split('.')[1]:'.00' : '.00'}</i>
                                             </span>
                                         </p>
                                         <p className='partToken marginl'>
                                             <span>USDC</span>
                                             <span className='right'>
-                                                {this.state.USDxToUSDC ? this.state.USDxToUSDC.split('.')[0] : '0'}
+                                                {this.state.USDxToUSDC ? this.toThousands(this.state.USDxToUSDC.split('.')[0]) : '0'}
                                                 <i>{this.state.USDxToUSDC ? this.state.USDxToUSDC.split('.')[1]?'.' + this.state.USDxToUSDC.split('.')[1]:'.00' : '.00'}</i>
                                             </span>
                                         </p>
@@ -347,28 +389,28 @@ export default class Home extends React.Component {
                                         <p className='partToken'>
                                             <span>DAI</span>
                                             <span className='right'>
-                                                {this.state.myDAIonPool ? this.state.myDAIonPool.split('.')[0] : '0'}
+                                                {this.state.myDAIonPool ? this.toThousands(this.state.myDAIonPool.split('.')[0]) : '0'}
                                                 <i>{this.state.myDAIonPool ? '.' + this.state.myDAIonPool.split('.')[1] : '.00'}</i>
                                             </span>
                                         </p>
                                         <p className='partToken marginl'>
                                             <span>PAX</span>
                                             <span className='right'>
-                                                {this.state.myPAXonPool ? this.state.myPAXonPool.split('.')[0] : '0'}
+                                                {this.state.myPAXonPool ? this.toThousands(this.state.myPAXonPool.split('.')[0]) : '0'}
                                                 <i>{this.state.myPAXonPool ? '.' + this.state.myPAXonPool.split('.')[1] : '.00'}</i>
                                             </span>
                                         </p>
                                         <p className='partToken'>
                                             <span>TUSD</span>
                                             <span className='right'>
-                                                {this.state.myTUSDonPool ? this.state.myTUSDonPool.split('.')[0] : '0'}
+                                                {this.state.myTUSDonPool ? this.toThousands(this.state.myTUSDonPool.split('.')[0]) : '0'}
                                                 <i>{this.state.myTUSDonPool ? '.' + this.state.myTUSDonPool.split('.')[1] : '.00'}</i>
                                             </span>
                                         </p>
                                         <p className='partToken marginl'>
                                             <span>USDC</span>
                                             <span className='right'>
-                                                {this.state.myUSDConPool ? this.state.myUSDConPool.split('.')[0] : '0'}
+                                                {this.state.myUSDConPool ? this.toThousands(this.state.myUSDConPool.split('.')[0]) : '0'}
                                                 <i>{this.state.myUSDConPool ? '.' + this.state.myUSDConPool.split('.')[1] : '.00'}</i>
                                             </span>
                                         </p>
@@ -446,6 +488,25 @@ export default class Home extends React.Component {
         );
     }
 
+    // toThousands
+    toThousands(str) {
+        var num = str;
+        var re = /\d{3}$/;
+        var result = '';
+
+        while ( re.test(num) ) {
+            result = RegExp.lastMatch + result;
+            if (num !== RegExp.lastMatch) {
+                result = ',' + result;
+                num = RegExp.leftContext;
+            } else {
+                num = '';
+                break;
+            }
+        }
+        if (num) { result = num + result; }
+        return result;
+    }
 
     // getNetType
     getNetType () {
@@ -1654,7 +1715,7 @@ export default class Home extends React.Component {
                                             this.destroy();
                                         }, 4000)
                                     }
-                                } 
+                                }
                                 if (data && data.status === '0x0') {
                                     clearInterval(approveDFtimer);
                                     const keys = Object.keys(this.state.transcations);
