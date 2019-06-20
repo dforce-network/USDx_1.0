@@ -3900,7 +3900,7 @@ export default class Home extends React.Component {
                 getDestroyThresholdBool: false
             })
 
-            if (Number(val) < Number(this.state.getDestroyThreshold) || Number(val) % Number(this.state.getDestroyThreshold) !== 0) {
+            if (Number(val) < Number(this.state.getDestroyThreshold) || Number(val * (1 / this.state.getDestroyThreshold)) % Number(this.state.getDestroyThreshold * (1 / this.state.getDestroyThreshold)) !== 0) {
                 this.setState({
                     ...this.state,
                     errTipsDestroy: true,
