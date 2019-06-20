@@ -171,7 +171,6 @@ export default class Home extends React.Component {
                     maxGenerateUSDx: '0.00',
                     transcations: {}
                 });
-                clearTimeout();
                 this.connectMetamask();
             } else {
                 return;
@@ -3877,11 +3876,6 @@ export default class Home extends React.Component {
             return;
         }
         if (Number(val) > 0 && Number(val) <= Number(this.state.myUSDx) ) {
-            // var USDxToDAI = this.formatNumber(val * (this.state.sectionDAIBurning * 100 / (this.state.tatolSectionBurning * 100)), '');
-            // var USDxToPAX = this.formatNumber(val * (this.state.sectionPAXBurning * 100 / (this.state.tatolSectionBurning * 100)), '');
-            // var USDxToTUSD = this.formatNumber(val * (this.state.sectionTUSDBurning * 100 / (this.state.tatolSectionBurning * 100)), '');
-            // var USDxToUSDC = this.formatNumber(val * (this.state.sectionUSDCBurning * 100 / (this.state.tatolSectionBurning * 100)), '');
-
             var USDxToDAI = this.Web3.toBigNumber(val).mul(this.Web3.toBigNumber(this.state.sectionDAIBurning).div(this.Web3.toBigNumber(this.state.tatolSectionBurning)));
             var USDxToPAX = this.Web3.toBigNumber(val).mul(this.Web3.toBigNumber(this.state.sectionPAXBurning).div(this.Web3.toBigNumber(this.state.tatolSectionBurning)));
             var USDxToTUSD = this.Web3.toBigNumber(val).mul(this.Web3.toBigNumber(this.state.sectionTUSDBurning).div(this.Web3.toBigNumber(this.state.tatolSectionBurning)));
@@ -3901,7 +3895,7 @@ export default class Home extends React.Component {
                 getDestroyThresholdBool: false
             })
 
-            if (Number(val) < Number(this.state.getDestroyThreshold)) {
+            if (Number(val) < Number(this.state.getDestroyThreshold) || Number(val) % Number(this.state.getDestroyThreshold) !== 0) {
                 this.setState({
                     ...this.state,
                     errTipsDestroy: true,
