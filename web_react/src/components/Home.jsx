@@ -387,28 +387,28 @@ export default class Home extends React.Component {
                                         <div className="title">Constituent balance:</div>
                                         <p className='partToken'>
                                             <span>DAI</span>
-                                            <span className='right'>
+                                            <span className='right' title={this.state.myDAIonPoolOrigin}>
                                                 {this.state.myDAIonPool ? this.toThousands(this.state.myDAIonPool.split('.')[0]) : '0'}
                                                 <i>{this.state.myDAIonPool ? '.' + this.state.myDAIonPool.split('.')[1] : '.00'}</i>
                                             </span>
                                         </p>
                                         <p className='partToken marginl'>
                                             <span>PAX</span>
-                                            <span className='right'>
+                                            <span className='right' title={this.state.myPAXonPoolOrigin}>
                                                 {this.state.myPAXonPool ? this.toThousands(this.state.myPAXonPool.split('.')[0]) : '0'}
                                                 <i>{this.state.myPAXonPool ? '.' + this.state.myPAXonPool.split('.')[1] : '.00'}</i>
                                             </span>
                                         </p>
                                         <p className='partToken'>
                                             <span>TUSD</span>
-                                            <span className='right'>
+                                            <span className='right' title={this.state.myTUSDonPoolOrigin}>
                                                 {this.state.myTUSDonPool ? this.toThousands(this.state.myTUSDonPool.split('.')[0]) : '0'}
                                                 <i>{this.state.myTUSDonPool ? '.' + this.state.myTUSDonPool.split('.')[1] : '.00'}</i>
                                             </span>
                                         </p>
                                         <p className='partToken marginl'>
                                             <span>USDC</span>
-                                            <span className='right'>
+                                            <span className='right' title={this.state.myUSDConPoolOrigin}>
                                                 {this.state.myUSDConPool ? this.toThousands(this.state.myUSDConPool.split('.')[0]) : '0'}
                                                 <i>{this.state.myUSDConPool ? '.' + this.state.myUSDConPool.split('.')[1] : '.00'}</i>
                                             </span>
@@ -3195,9 +3195,11 @@ export default class Home extends React.Component {
             return;
         }
         var address = this.addressDAI;
+        var tempUnits = this.state.decimalsDAI;
 
         if (this.state.toDeposit === 'DAI') {
             address = this.addressDAI;
+            tempUnits = this.state.decimalsDAI;
             if (Number(val) > 0 && Number(val) <= Number(this.state.myDAI)) {
                 this.setState({
                     ...this.state,
@@ -3223,6 +3225,7 @@ export default class Home extends React.Component {
         }
         if (this.state.toDeposit === 'PAX') {
             address = this.addressPAX;
+            tempUnits = this.state.decimalsPAX;
             if (Number(val) > 0 && Number(val) <= Number(this.state.myPAX)) {
                 this.setState({
                     ...this.state,
@@ -3248,6 +3251,7 @@ export default class Home extends React.Component {
         }
         if (this.state.toDeposit === 'TUSD') {
             address = this.addressTUSD;
+            tempUnits = this.state.decimalsTUSD;
             if (Number(val) > 0 && Number(val) <= Number(this.state.myTUSD)) {
                 this.setState({
                     ...this.state,
@@ -3273,6 +3277,7 @@ export default class Home extends React.Component {
         }
         if (this.state.toDeposit === 'USDC') {
             address = this.addressUSDC;
+            tempUnits = this.state.decimalsUSDC;
             if (Number(val) > 0 && Number(val) <= Number(this.state.myUSDC)) {
                 this.setState({
                     ...this.state,
@@ -3297,7 +3302,7 @@ export default class Home extends React.Component {
             }
         }
 
-        this.getUSDXForDeposit(address, val * this.units);
+        this.getUSDXForDeposit(address, val * (10 ** tempUnits));
 
     }
     // depositOptChange
