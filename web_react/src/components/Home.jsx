@@ -46,7 +46,7 @@ export default class Home extends React.Component {
     addressProtocol = '0x14A196527D3BF75379730Bb59E223475Daa64b36';
     addressProtocolView = '0xc8c288016a8f27c36a23c39295148366072b6bc4';
     addressCollateral = '0x301e0BeA94C5356fAB2ae2f4832586a66f413E4a';
-    addressEngine = '0xD26a88951C6281F89cCdb720FCBBcC7a936CbfF6';
+    addressEngine = '0xEdaE4362f7580ad763c87ef2e288dea6573603f5';
     addressPool = '0x6E98C74D4B65cBaD652A3b6daA7a7Bd772cd1DC5';
     units = 10 ** 18;
     tatolSection = 0;
@@ -844,25 +844,29 @@ export default class Home extends React.Component {
         this.contractDAI.balanceOf.call(this.state.accountAddress, (err, ret) => {
             this.setState({
                 ...this.state,
-                myDAI: this.formatNumber(ret, 'DAI')
+                myDAI: this.formatNumber(ret, 'DAI'),
+                myDAIOrigin: ret.toString(10)
             });
         });
         this.contractPAX.balanceOf.call(this.state.accountAddress, (err, ret) => {
             this.setState({
                 ...this.state,
-                myPAX: this.formatNumber(ret, 'PAX')
+                myPAX: this.formatNumber(ret, 'PAX'),
+                myPAXOrigin: ret.toString(10)
             });
         });
         this.contractTUSD.balanceOf.call(this.state.accountAddress, (err, ret) => {
             this.setState({
                 ...this.state,
-                myTUSD: this.formatNumber(ret, 'TUSD')
+                myTUSD: this.formatNumber(ret, 'TUSD'),
+                myTUSDOrigin: ret.toString(10)
             });
         });
         this.contractUSDC.balanceOf.call(this.state.accountAddress, (err, ret) => {
             this.setState({
                 ...this.state,
-                myUSDC: this.formatNumber(ret, 'USDC')
+                myUSDC: this.formatNumber(ret, 'USDC'),
+                myUSDCOrigin: ret.toString(10)
             });
         });
         this.contractDF.balanceOf.call(this.state.accountAddress, (err, ret) => {
@@ -3324,24 +3328,23 @@ export default class Home extends React.Component {
         if (!this.state.couldDeposit) {
             return;
         }
-
         var addr;
         var num;
         if (this.state.toDeposit === 'DAI') {
             addr = this.addressDAI;
-            num = this.state.toDepositNum * (10 ** this.state.decimalsDAI);
+            num = this.Web3.toBigNumber(this.state.toDepositNum).mul(this.Web3.toBigNumber(10 ** this.state.decimalsDAI));
             this.depositDAI(addr, num);
         } else if (this.state.toDeposit === 'PAX') {
             addr = this.addressPAX;
-            num = this.state.toDepositNum * (10 ** this.state.decimalsPAX);
+            num = this.Web3.toBigNumber(this.state.toDepositNum).mul(this.Web3.toBigNumber(10 ** this.state.decimalsPAX));
             this.depositPAX(addr, num);
         } else if (this.state.toDeposit === 'TUSD') {
             addr = this.addressTUSD;
-            num = this.state.toDepositNum * (10 ** this.state.decimalsTUSD);
+            num = this.Web3.toBigNumber(this.state.toDepositNum).mul(this.Web3.toBigNumber(10 ** this.state.decimalsTUSD));
             this.depositTUSD(addr, num);
         } else if (this.state.toDeposit === 'USDC') {
             addr = this.addressUSDC;
-            num = this.state.toDepositNum * (10 ** this.state.decimalsUSDC);
+            num = this.Web3.toBigNumber(this.state.toDepositNum).mul(this.Web3.toBigNumber(10 ** this.state.decimalsUSDC));
             this.depositUSDC(addr, num);
         }
     }
@@ -3368,7 +3371,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Deposit ' + num / (10 ** this.state.decimalsDAI) + ' DAI',
+            title: 'Deposit ' + num.div(10 ** this.state.decimalsDAI) + ' DAI',
         }
         this.setState({tmepState});
         this.contractProtocol.deposit.sendTransaction(
@@ -3500,7 +3503,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Deposit ' + num / (10 ** this.state.decimalsPAX) + ' PAX',
+            title: 'Deposit ' + num.div(10 ** this.state.decimalsPAX) + ' PAX',
         }
         this.setState({tmepState});
         this.contractProtocol.deposit.sendTransaction(
@@ -3632,7 +3635,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Deposit ' + num / (10 ** this.state.decimalsTUSD) + ' TUSD',
+            title: 'Deposit ' + num.div(10 ** this.state.decimalsTUSD) + ' TUSD',
         }
         this.setState({tmepState});
         this.contractProtocol.deposit.sendTransaction(
@@ -3764,7 +3767,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Deposit ' + num / (10 ** this.state.decimalsUSDC) + ' USDC',
+            title: 'Deposit ' + num.div(10 ** this.state.decimalsUSDC) + ' USDC',
         }
         this.setState({tmepState});
         this.contractProtocol.deposit.sendTransaction(

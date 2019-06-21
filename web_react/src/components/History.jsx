@@ -127,7 +127,7 @@ export default class History extends React.Component {
                                                 <i>{item.transactionHash.substring(0, 6) + '...' + item.transactionHash.substring(item.transactionHash.length - 4)}</i>
                                             </span>
                                         </p>
-                                        <p className="event">{item.event} {temNum} {token}, generate {temNum1} USDx.</p>
+                                        <p className="event">{item.event} {this.toThousands(temNum.split('.')[0]) + '.' + temNum.split('.')[1]} {token}, generate {this.toThousands(temNum1.split('.')[0]) + '.' + temNum1.split('.')[1]} USDx.</p>
                                     </li>
                                 }
 
@@ -142,7 +142,7 @@ export default class History extends React.Component {
                                                 <i>{item.transactionHash.substring(0, 6) + '...' + item.transactionHash.substring(item.transactionHash.length - 4)}</i>
                                             </span>
                                         </p>
-                                        <p className="event">{item.event} {temNum2} USDx.</p>
+                                        <p className="event">{item.event} {this.toThousands(temNum2.split('.')[0]) + '.' + temNum2.split('.')[1]} USDx.</p>
                                     </li>
                                 }
 
@@ -160,7 +160,7 @@ export default class History extends React.Component {
                                                     <i>{item.transactionHash.substring(0, 6) + '...' + item.transactionHash.substring(item.transactionHash.length - 4)}</i>
                                                 </span>
                                             </p>
-                                            <p className="event">{item.event} {temNum3} USDx.</p>
+                                            <p className="event">{item.event} {this.toThousands(temNum3.split('.')[0]) + '.' + temNum3.split('.')[1]} USDx.</p>
                                         </li>
                                     }
                                 }
@@ -191,7 +191,7 @@ export default class History extends React.Component {
                                             <span className='span1'>{(new Date(item.timeStamp - this.timeZoom).toGMTString()).replace(/GMT/g, '')}</span>
                                             <span className='span2' onClick={() => { this.openOnnewTab(item.transactionHash) }}>
                                                 <i>{item.transactionHash.substring(0, 6) + '...' + item.transactionHash.substring(item.transactionHash.length - 4)}</i></span> </p>
-                                        <p className="event">{item.event} {temNum4} {token1}.</p>
+                                        <p className="event">{item.event} {this.toThousands(temNum4.split('.')[0]) + '.' + temNum4.split('.')[1]} {token1}.</p>
                                     </li>
                                 }
                             }

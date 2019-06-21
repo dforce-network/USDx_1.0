@@ -1,5 +1,6 @@
 // Libraries
 import React from "react";
+import { Drawer } from 'antd';
 // images
 import logo from '../assets/img/logo.png';
 import lock from '../assets/img/lock.png';
@@ -7,6 +8,32 @@ import unlock from '../assets/img/unlock.png';
 
 
 export default class Header extends React.Component {
+    constructor(props){
+        super(props);
+        this.Web3 = window.web3;
+        this.state = {
+            showMintage: false
+        };
+    }
+    exMintage(){
+        var MaxNumDAI = this.Web3.toBigNumber(this.props.status.myDAIOrigin).div(this.Web3.toBigNumber(10 ** this.props.status.decimalsDAI)).div()
+
+
+
+
+
+        this.setState({
+            ...this.state,
+            showMintage: !this.state.showMintage
+        })
+    }
+    onClose = () => {
+        this.setState({
+            ...this.state,
+            showMintage: false
+        });
+    };
+
     DisconnectMetamask () {
         this.props.DisconnectMetamask();
     }
@@ -116,6 +143,51 @@ export default class Header extends React.Component {
                                         <i>{this.props.status.myUSDC ? this.props.status.myUSDC.split('.')[1]?'.' + this.props.status.myUSDC.split('.')[1]:'.00' : '.00'}</i>
                                     </span>
                                 </td>
+
+                                {/* <td className='noborder'>
+                                    <p className="oneStep" style={{ background: 'red' }} onClick={() => { this.exMintage() }}>Mintage</p>
+                                    <Drawer
+                                        placement='top'
+                                        closable={false}
+                                        onClose={this.onClose}
+                                        visible={this.state.showMintage}
+                                        height={253}
+                                        // style={{marginBottom: '-60px'}}
+                                        // getContainer={'.nihaoButton'}
+                                        style={{}}
+                                        bodyStyle={{background: 'none'}}
+                                    >
+                                        <div>
+                                            <p>Max USDx available to generate: <span>999.87</span></p>
+                                            <div>
+                                                <input type="text"/>
+                                                <button>GENERATE</button>
+                                            </div>
+                                            <p>Constituents to be used:</p>
+                                            <div>
+                                                <p>
+                                                    DAI
+                                                    <span>1234567</span>
+                                                </p>
+                                                <p>
+                                                    PAX
+                                                    <span>1234567</span>
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <p>
+                                                    TUSD
+                                                    <span>1234567</span>
+                                                </p>
+                                                <p>
+                                                    USDC
+                                                    <span>1234567</span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </Drawer>
+                                </td> */}
+
                             </tr>
                         </tbody>
                     </table>
