@@ -1,5 +1,4 @@
-const abiProtocolView = [
-    {
+const abiProtocolView = [{
         "inputs": [{
                 "name": "_dfStore",
                 "type": "address"
@@ -16,6 +15,18 @@ const abiProtocolView = [
         "payable": false,
         "stateMutability": "nonpayable",
         "type": "constructor"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "calcMaxMinting",
+        "outputs": [{
+            "name": "",
+            "type": "uint256"
+        }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
     },
     {
         "constant": true,
@@ -232,11 +243,11 @@ const abiProtocolView = [
     {
         "constant": true,
         "inputs": [{
-                "name": "x",
+                "name": "base",
                 "type": "uint256"
             },
             {
-                "name": "y",
+                "name": "exponent",
                 "type": "uint256"
             }
         ],

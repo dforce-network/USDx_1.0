@@ -1,6 +1,8 @@
 // Libraries
 import React from "react";
 import { Drawer } from 'antd';
+import Button from '@material-ui/core/Button';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 // images
 import logo from '../assets/img/logo.png';
 import lock from '../assets/img/lock.png';
@@ -8,20 +10,28 @@ import unlock from '../assets/img/unlock.png';
 
 
 export default class Header extends React.Component {
+    theme = createMuiTheme({
+        palette: {
+            primary: { main: 'rgba(1, 215, 179, 1)' },
+            secondary: { main: 'rgba(56, 132, 255, 1)' }
+        },
+        typography: {
+            useNextVariants: true,
+        },
+    });
+
     constructor(props){
         super(props);
         this.Web3 = window.web3;
         this.state = {
-            showMintage: false
+            showMintage: false,
+            maxInputNum: ''
         };
     }
+
+
     exMintage(){
-        var MaxNumDAI = this.Web3.toBigNumber(this.props.status.myDAIOrigin).div(this.Web3.toBigNumber(10 ** this.props.status.decimalsDAI)).div()
-
-
-
-
-
+        this.getMaxNumToGenerateOnestep();
         this.setState({
             ...this.state,
             showMintage: !this.state.showMintage
@@ -49,6 +59,74 @@ export default class Header extends React.Component {
     allocateTo (token) {
         this.props.allocateTo(token);
     }
+    getMaxNumToGenerateOnestep(){
+        this.props.getMaxNumToGenerateOnestep();
+    }
+    toGenerateMax(){
+        this.props.toGenerateMax(this.Web3.toBigNumber(this.state.maxInputNum));
+        // console.log(this.Web3.toBigNumber(this.state.maxInputNum));
+        // console.log(this.Web3.toBigNumber(this.state.maxInputNum).toString(10));
+    }
+    oneStepMintageMax(){
+        if(!this.props.status.calcMaxMinting){
+            return;
+        }
+        this.setState({
+            ...this.state,
+            maxInputNum: this.Web3.toBigNumber(this.props.status.calcMaxMinting).div(10 ** 18)
+        })
+        this.oneStepMintage(this.Web3.toBigNumber(this.props.status.calcMaxMinting).div(10 ** 18));
+    }
+    oneStepMintage(val){
+        var toUsedDAI = this.Web3.toBigNumber(val).mul(this.Web3.toBigNumber(this.props.status.sectionDAI)).div(this.props.status.tatolSection).toString(10);
+        var toUsedPAX = this.Web3.toBigNumber(val).mul(this.Web3.toBigNumber(this.props.status.sectionPAX)).div(this.props.status.tatolSection).toString(10);
+        var toUsedTUSD = this.Web3.toBigNumber(val).mul(this.Web3.toBigNumber(this.props.status.sectionTUSD)).div(this.props.status.tatolSection).toString(10);
+        var toUsedUSDC = this.Web3.toBigNumber(val).mul(this.Web3.toBigNumber(this.props.status.sectionUSDC)).div(this.props.status.tatolSection).toString(10);
+
+        this.setState({
+            ...this.state,
+            maxInputNum: val,
+            toUsedDAI: toUsedDAI,
+            toUsedPAX: toUsedPAX,
+            toUsedTUSD: toUsedTUSD,
+            toUsedUSDC: toUsedUSDC,
+            toUsedDAIError: false,
+            toUsedPAXError: false,
+            toUsedTUSDError: false,
+            toUsedUSDCError: false
+        })
+
+
+        if(this.Web3.toBigNumber(toUsedDAI).sub(this.Web3.toBigNumber(this.props.status.myDAI)) > 0){
+            this.setState({
+                ...this.state,
+                maxInputNum: val,
+                toUsedDAIError: true
+            })
+        }
+        if(this.Web3.toBigNumber(toUsedPAX).sub(this.Web3.toBigNumber(this.props.status.myPAX)) > 0){
+            this.setState({
+                ...this.state,
+                maxInputNum: val,
+                toUsedPAXError: true
+            })
+        }
+        if(this.Web3.toBigNumber(toUsedTUSD).sub(this.Web3.toBigNumber(this.props.status.myTUSD)) > 0){
+            this.setState({
+                ...this.state,
+                maxInputNum: val,
+                toUsedTUSDError: true
+            })
+        }
+        if(this.Web3.toBigNumber(toUsedUSDC).sub(this.Web3.toBigNumber(this.props.status.myUSDC)) > 0){
+            this.setState({
+                ...this.state,
+                maxInputNum: val,
+                toUsedUSDCError: true
+            })
+        }
+    }
+    
     toThousands(str) {
         var num = str;
         var re = /\d{3}$/;
@@ -71,6 +149,7 @@ export default class Header extends React.Component {
 
     render() {
         return (
+            <MuiThemeProvider theme={this.theme}>
             <div className="headerWrap">
                 <div className="myHeader">
                     <div className="logo"><img src={logo} alt="" /></div>
@@ -152,36 +231,45 @@ export default class Header extends React.Component {
                                         onClose={this.onClose}
                                         visible={this.state.showMintage}
                                         height={253}
-                                        // style={{marginBottom: '-60px'}}
-                                        // getContainer={'.nihaoButton'}
-                                        style={{}}
-                                        bodyStyle={{background: 'none'}}
+                                        // style={{top: this.state.showMintage? '85px' : '0px'}}
+                                        bodyStyle={{background: 'red'}}
                                     >
                                         <div>
-                                            <p>Max USDx available to generate: <span>999.87</span></p>
+                                            <p>Max USDx available to generate: <span>{this.props.status.calcMaxMinting? this.props.status.calcMaxMinting.div(10 ** 18).toString() : '0.00'}</span></p>
                                             <div>
-                                                <input type="text"/>
-                                                <button>GENERATE</button>
+                                                <input type="text" onChange={(val)=>{this.oneStepMintage(val.target.value)}} value={this.state.maxInputNum}/>
+                                                <div>
+                                                    <Button
+                                                        onClick={() => { this.toGenerateMax() }}
+                                                        variant="contained"
+                                                        color="secondary"
+                                                        disabled={!this.state.toUsedDAIError && !this.state.toUsedPAXError && !this.state.toUsedTUSDError && !this.state.toUsedUSDCError && Number(this.state.maxInputNum) > 0 ? false : true}
+                                                        fullWidth={true}
+                                                    >
+                                                        GENERATE
+                                                    </Button>
+                                                </div>
+                                                <a onClick={()=>{this.oneStepMintageMax()}}>Max</a>
                                             </div>
                                             <p>Constituents to be used:</p>
                                             <div>
                                                 <p>
                                                     DAI
-                                                    <span>1234567</span>
+                                                    <span style={{color: this.state.toUsedDAIError? 'red':'#9696a2'}}>{this.state.toUsedDAI? this.state.toUsedDAI : '0.00'}</span>
                                                 </p>
                                                 <p>
                                                     PAX
-                                                    <span>1234567</span>
+                                                    <span style={{color: this.state.toUsedPAXError? 'red':'#9696a2'}}>{this.state.toUsedPAX? this.state.toUsedPAX : '0.00'}</span>
                                                 </p>
                                             </div>
                                             <div>
                                                 <p>
                                                     TUSD
-                                                    <span>1234567</span>
+                                                    <span style={{color: this.state.toUsedTUSDError? 'red':'#9696a2'}}>{this.state.toUsedTUSD? this.state.toUsedTUSD : '0.00'}</span>
                                                 </p>
                                                 <p>
                                                     USDC
-                                                    <span>1234567</span>
+                                                    <span style={{color: this.state.toUsedUSDCError? 'red':'#9696a2'}}>{this.state.toUsedUSDC? this.state.toUsedUSDC : '0.00'}</span>
                                                 </p>
                                             </div>
                                         </div>
@@ -219,6 +307,7 @@ export default class Header extends React.Component {
                     </div>
                 </div>
             </div>
+            </MuiThemeProvider>
         )
     }
 }

@@ -44,7 +44,7 @@ export default class Home extends React.Component {
     addressUSDx = '0x39b976BBA9acB620a98614ca80f5D4AF47FFAffa';
 
     addressProtocol = '0x14A196527D3BF75379730Bb59E223475Daa64b36';
-    addressProtocolView = '0xc8c288016a8f27c36a23c39295148366072b6bc4';
+    addressProtocolView = '0x63e8de7fff70935b6e6a96620b549e806e752306';
     addressCollateral = '0x301e0BeA94C5356fAB2ae2f4832586a66f413E4a';
     addressEngine = '0xEdaE4362f7580ad763c87ef2e288dea6573603f5';
     addressPool = '0x6E98C74D4B65cBaD652A3b6daA7a7Bd772cd1DC5';
@@ -78,7 +78,8 @@ export default class Home extends React.Component {
             toDestroyNum: '',
             tab1: true,
             netType: 'Main',
-            myHistory: []
+            myHistory: [],
+            gasPrice: 0
         }
         if (window.web3) {
             this.Web3 = window.web3;
@@ -190,6 +191,7 @@ export default class Home extends React.Component {
                 this.getColMaxClaim();
                 this.getUserWithdrawBalance();
                 this.isSyncing();
+                this.getGasPrice();
             }else {
                 console.log('not connected...');
                 return;
@@ -213,6 +215,8 @@ export default class Home extends React.Component {
                         approve={(v)=>{this.approve(v)}}
                         lock={(v)=>{this.lock(v)}}
                         allocateTo={(v)=>{this.allocateTo(v)}}
+                        getMaxNumToGenerateOnestep={()=>{this.getMaxNumToGenerateOnestep()}}
+                        toGenerateMax={(BN)=>{this.toGenerateMax(BN)}}
                     />
                     <MuiThemeProvider theme={this.theme}>
                     <div className="body">
@@ -478,6 +482,7 @@ export default class Home extends React.Component {
                 this.getUserWithdrawBalance();
                 this.getMyHistory();
                 Cookie.save('isLogin', 'true', { path: '/' });
+                this.getGasPrice();
             },
             err => {
                 console.log(err);
@@ -727,6 +732,19 @@ export default class Home extends React.Component {
             }
         })
     }
+    // getMaxNumToGenerateOnestep
+    getMaxNumToGenerateOnestep(){
+        this.contractProtocolView.calcMaxMinting.call((err, ret) => {
+            // console.log(err, ret);
+            if(ret){
+                this.setState({
+                    ...this.state,
+                    calcMaxMinting: ret
+                })
+            }
+        })
+    }
+
     // getDestroyThreshold
     getDestroyThreshold () {
         this.contractProtocolView.getDestroyThreshold.call((err, ret) => {
@@ -830,6 +848,16 @@ export default class Home extends React.Component {
         // })
     }
 
+    // get price
+    getGasPrice() {
+        this.Web3.eth.getGasPrice((e, r) => {
+            // console.log(e, Number(r));
+            this.setState({
+                ...this.state,
+                gasPrice: Number(r)
+            })
+        })
+    }
 
 
     // var num = new BN((amount * 10 ** 18).toLocaleString().replace(/,/g,''))
@@ -2706,108 +2734,120 @@ export default class Home extends React.Component {
             title: 'Withdraw ' + num / (10 ** this.state.decimalsDAI) + ' DAI',
         }
         this.setState({tmepState});
-        this.contractProtocol.withdraw.sendTransaction(
+        // get Limit first
+        this.contractProtocol.withdraw.estimateGas(
             addr,
             0,
             num,
             {
-                from: this.state.accountAddress,
-                gas: this.gasFee
+                from: this.state.accountAddress
             },
-            (err, ret) => {
-                if (err) {
-                    const keys = Object.keys(this.state.transcations);
-                    const tmepState = this.state;
-                    keys.map((key) => {
-                        if (tmepState.transcations[key].id === id) {
-                            tmepState.transcations[key] = {
-                                ...tmepState.transcations[key],
-                                class: 'error',
-                                msg: 'User reject transaction'
-                            }
-                            this.setState({tmepState});
-
-                            setTimeout(() => {
-                                delete tmepState.transcations[key];
-                                this.setState({tmepState});
-                            }, 3000);
-                        };
-                        return false;
-                    });
-                }
-                if (ret) {
-                    const keys = Object.keys(this.state.transcations);
-                    const tmepState = this.state;
-
-                    keys.map((key) => {
-                        if (tmepState.transcations[key].id === id) {
-                            tmepState.transcations[key].txhash = ret;
-                            tmepState.transcations[key] = {
-                                ...tmepState.transcations[key],
-                                msg: 'Waiting for confirmation...'
-                            }
-                            this.setState({tmepState});
-                        };
-                        return false;
-                    });
-
-                    var timerOBJ = {};
-                    var tempRnum = Math.random();
-                    timerOBJ[tempRnum] = setInterval(() => {
-                        console.log('i am checking withdraw DAI... =>' + tempRnum);
-                        this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
-                            if (data && data.status === '0x1') {
-                                clearInterval(timerOBJ[tempRnum]);
-                                const keys = Object.keys(this.state.transcations);
-                                const tmepState = this.state;
-                                keys.map((key) => {
-                                    if (tmepState.transcations[key].txhash === ret) {
-                                        tmepState.transcations[key] = {
-                                            ...tmepState.transcations[key],
-                                            class: 'success',
-                                            msg: 'Transaction succeeded'
-                                        }
-                                        tmepState.toWithdrawNum = '';
-                                        tmepState.couldWithdraw = false;
+            (err, gasLimit) => {
+                this.contractProtocol.withdraw.sendTransaction(
+                    addr,
+                    0,
+                    num,
+                    {
+                        from: this.state.accountAddress,
+                        gas: gasLimit,
+                        gasPrice: this.state.gasPrice
+                    },
+                    (err, ret) => {
+                        if (err) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        class: 'error',
+                                        msg: 'User reject transaction'
+                                    }
+                                    this.setState({tmepState});
+        
+                                    setTimeout(() => {
+                                        delete tmepState.transcations[key];
                                         this.setState({tmepState});
-
+                                    }, 3000);
+                                };
+                                return false;
+                            });
+                        }
+                        if (ret) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+        
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key].txhash = ret;
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        msg: 'Waiting for confirmation...'
+                                    }
+                                    this.setState({tmepState});
+                                };
+                                return false;
+                            });
+        
+                            var timerOBJ = {};
+                            var tempRnum = Math.random();
+                            timerOBJ[tempRnum] = setInterval(() => {
+                                console.log('i am checking withdraw DAI... =>' + tempRnum);
+                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                    if (data && data.status === '0x1') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'success',
+                                                    msg: 'Transaction succeeded'
+                                                }
+                                                tmepState.toWithdrawNum = '';
+                                                tmepState.couldWithdraw = false;
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
                                         setTimeout(() => {
-                                            delete tmepState.transcations[key];
-                                            this.setState({tmepState});
-                                        }, 3000);
-                                    };
-                                    return false;
+                                            this.getMyBalance();
+                                            this.getPoolBankTotalStatus();
+                                            this.getUserWithdrawBalance();
+                                        }, 3000)
+                                    } 
+                                    if (data && data.status === '0x0') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'error',
+                                                    msg: 'Transaction failed'
+                                                }
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                    }
                                 })
-                                setTimeout(() => {
-                                    this.getMyBalance();
-                                    this.getPoolBankTotalStatus();
-                                    this.getUserWithdrawBalance();
-                                }, 3000)
-                            } 
-                            if (data && data.status === '0x0') {
-                                clearInterval(timerOBJ[tempRnum]);
-                                const keys = Object.keys(this.state.transcations);
-                                const tmepState = this.state;
-                                keys.map((key) => {
-                                    if (tmepState.transcations[key].txhash === ret) {
-                                        tmepState.transcations[key] = {
-                                            ...tmepState.transcations[key],
-                                            class: 'error',
-                                            msg: 'Transaction failed'
-                                        }
-                                        this.setState({tmepState});
-
-                                        setTimeout(() => {
-                                            delete tmepState.transcations[key];
-                                            this.setState({tmepState});
-                                        }, 3000);
-                                    };
-                                    return false;
-                                })
-                            }
-                        })
-                    }, 2000);
-                }
+                            }, 2000);
+                        }
+                    }
+                )
             }
         )
     }
@@ -2829,108 +2869,120 @@ export default class Home extends React.Component {
             title: 'Withdraw ' + num / (10 ** this.state.decimalsPAX) + ' PAX',
         }
         this.setState({tmepState});
-        this.contractProtocol.withdraw.sendTransaction(
+        // get Limit first
+        this.contractProtocol.withdraw.estimateGas(
             addr,
             0,
             num,
             {
-                from: this.state.accountAddress,
-                gas: this.gasFee
+                from: this.state.accountAddress
             },
-            (err, ret) => {
-                if (err) {
-                    const keys = Object.keys(this.state.transcations);
-                    const tmepState = this.state;
-                    keys.map((key) => {
-                        if (tmepState.transcations[key].id === id) {
-                            tmepState.transcations[key] = {
-                                ...tmepState.transcations[key],
-                                class: 'error',
-                                msg: 'User reject transaction'
-                            }
-                            this.setState({tmepState});
-
-                            setTimeout(() => {
-                                delete tmepState.transcations[key];
-                                this.setState({tmepState});
-                            }, 3000);
-                        };
-                        return false;
-                    });
-                }
-                if (ret) {
-                    const keys = Object.keys(this.state.transcations);
-                    const tmepState = this.state;
-
-                    keys.map((key) => {
-                        if (tmepState.transcations[key].id === id) {
-                            tmepState.transcations[key].txhash = ret;
-                            tmepState.transcations[key] = {
-                                ...tmepState.transcations[key],
-                                msg: 'Waiting for confirmation...'
-                            }
-                            this.setState({tmepState});
-                        };
-                        return false;
-                    });
-
-                    var timerOBJ = {};
-                    var tempRnum = Math.random();
-                    timerOBJ[tempRnum] = setInterval(() => {
-                        console.log('i am checking withdraw PAX... =>' + tempRnum);
-                        this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
-                            if (data && data.status === '0x1') {
-                                clearInterval(timerOBJ[tempRnum]);
-                                const keys = Object.keys(this.state.transcations);
-                                const tmepState = this.state;
-                                keys.map((key) => {
-                                    if (tmepState.transcations[key].txhash === ret) {
-                                        tmepState.transcations[key] = {
-                                            ...tmepState.transcations[key],
-                                            class: 'success',
-                                            msg: 'Transaction succeeded'
-                                        }
-                                        tmepState.toWithdrawNum = '';
-                                        tmepState.couldWithdraw = false;
+            (err, gasLimit) => {
+                this.contractProtocol.withdraw.sendTransaction(
+                    addr,
+                    0,
+                    num,
+                    {
+                        from: this.state.accountAddress,
+                        gas: gasLimit,
+                        gasPrice: this.state.gasPrice
+                    },
+                    (err, ret) => {
+                        if (err) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        class: 'error',
+                                        msg: 'User reject transaction'
+                                    }
+                                    this.setState({tmepState});
+        
+                                    setTimeout(() => {
+                                        delete tmepState.transcations[key];
                                         this.setState({tmepState});
-
+                                    }, 3000);
+                                };
+                                return false;
+                            });
+                        }
+                        if (ret) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+        
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key].txhash = ret;
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        msg: 'Waiting for confirmation...'
+                                    }
+                                    this.setState({tmepState});
+                                };
+                                return false;
+                            });
+        
+                            var timerOBJ = {};
+                            var tempRnum = Math.random();
+                            timerOBJ[tempRnum] = setInterval(() => {
+                                console.log('i am checking withdraw PAX... =>' + tempRnum);
+                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                    if (data && data.status === '0x1') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'success',
+                                                    msg: 'Transaction succeeded'
+                                                }
+                                                tmepState.toWithdrawNum = '';
+                                                tmepState.couldWithdraw = false;
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
                                         setTimeout(() => {
-                                            delete tmepState.transcations[key];
-                                            this.setState({tmepState});
-                                        }, 3000);
-                                    };
-                                    return false;
+                                            this.getMyBalance();
+                                            this.getPoolBankTotalStatus();
+                                            this.getUserWithdrawBalance();
+                                        }, 3000)
+                                    } 
+                                    if (data && data.status === '0x0') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'error',
+                                                    msg: 'Transaction failed'
+                                                }
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                    }
                                 })
-                                setTimeout(() => {
-                                    this.getMyBalance();
-                                    this.getPoolBankTotalStatus();
-                                    this.getUserWithdrawBalance();
-                                }, 3000)
-                            } 
-                            if (data && data.status === '0x0') {
-                                clearInterval(timerOBJ[tempRnum]);
-                                const keys = Object.keys(this.state.transcations);
-                                const tmepState = this.state;
-                                keys.map((key) => {
-                                    if (tmepState.transcations[key].txhash === ret) {
-                                        tmepState.transcations[key] = {
-                                            ...tmepState.transcations[key],
-                                            class: 'error',
-                                            msg: 'Transaction failed'
-                                        }
-                                        this.setState({tmepState});
-
-                                        setTimeout(() => {
-                                            delete tmepState.transcations[key];
-                                            this.setState({tmepState});
-                                        }, 3000);
-                                    };
-                                    return false;
-                                })
-                            }
-                        })
-                    }, 2000);
-                }
+                            }, 2000);
+                        }
+                    }
+                )
             }
         )
     }
@@ -2952,108 +3004,120 @@ export default class Home extends React.Component {
             title: 'Withdraw ' + num / (10 ** this.state.decimalsTUSD) + ' TUSD',
         }
         this.setState({tmepState});
-        this.contractProtocol.withdraw.sendTransaction(
+        // get Limit first
+        this.contractProtocol.withdraw.estimateGas(
             addr,
             0,
             num,
             {
-                from: this.state.accountAddress,
-                gas: this.gasFee
+                from: this.state.accountAddress
             },
-            (err, ret) => {
-                if (err) {
-                    const keys = Object.keys(this.state.transcations);
-                    const tmepState = this.state;
-                    keys.map((key) => {
-                        if (tmepState.transcations[key].id === id) {
-                            tmepState.transcations[key] = {
-                                ...tmepState.transcations[key],
-                                class: 'error',
-                                msg: 'User reject transaction'
-                            }
-                            this.setState({tmepState});
-
-                            setTimeout(() => {
-                                delete tmepState.transcations[key];
-                                this.setState({tmepState});
-                            }, 3000);
-                        };
-                        return false;
-                    });
-                }
-                if (ret) {
-                    const keys = Object.keys(this.state.transcations);
-                    const tmepState = this.state;
-
-                    keys.map((key) => {
-                        if (tmepState.transcations[key].id === id) {
-                            tmepState.transcations[key].txhash = ret;
-                            tmepState.transcations[key] = {
-                                ...tmepState.transcations[key],
-                                msg: 'Waiting for confirmation...'
-                            }
-                            this.setState({tmepState});
-                        };
-                        return false;
-                    });
-
-                    var timerOBJ = {};
-                    var tempRnum = Math.random();
-                    timerOBJ[tempRnum] = setInterval(() => {
-                        console.log('i am checking withdraw TUSD... =>' + tempRnum);
-                        this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
-                            if (data && data.status === '0x1') {
-                                clearInterval(timerOBJ[tempRnum]);
-                                const keys = Object.keys(this.state.transcations);
-                                const tmepState = this.state;
-                                keys.map((key) => {
-                                    if (tmepState.transcations[key].txhash === ret) {
-                                        tmepState.transcations[key] = {
-                                            ...tmepState.transcations[key],
-                                            class: 'success',
-                                            msg: 'Transaction succeeded'
-                                        }
-                                        tmepState.toWithdrawNum = '';
-                                        tmepState.couldWithdraw = false;
+            (err, gasLimit) => {
+                this.contractProtocol.withdraw.sendTransaction(
+                    addr,
+                    0,
+                    num,
+                    {
+                        from: this.state.accountAddress,
+                        gas: gasLimit,
+                        gasPrice: this.state.gasPrice
+                    },
+                    (err, ret) => {
+                        if (err) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        class: 'error',
+                                        msg: 'User reject transaction'
+                                    }
+                                    this.setState({tmepState});
+        
+                                    setTimeout(() => {
+                                        delete tmepState.transcations[key];
                                         this.setState({tmepState});
-
+                                    }, 3000);
+                                };
+                                return false;
+                            });
+                        }
+                        if (ret) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+        
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key].txhash = ret;
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        msg: 'Waiting for confirmation...'
+                                    }
+                                    this.setState({tmepState});
+                                };
+                                return false;
+                            });
+        
+                            var timerOBJ = {};
+                            var tempRnum = Math.random();
+                            timerOBJ[tempRnum] = setInterval(() => {
+                                console.log('i am checking withdraw TUSD... =>' + tempRnum);
+                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                    if (data && data.status === '0x1') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'success',
+                                                    msg: 'Transaction succeeded'
+                                                }
+                                                tmepState.toWithdrawNum = '';
+                                                tmepState.couldWithdraw = false;
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
                                         setTimeout(() => {
-                                            delete tmepState.transcations[key];
-                                            this.setState({tmepState});
-                                        }, 3000);
-                                    };
-                                    return false;
+                                            this.getMyBalance();
+                                            this.getPoolBankTotalStatus();
+                                            this.getUserWithdrawBalance();
+                                        }, 3000)
+                                    } 
+                                    if (data && data.status === '0x0') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'error',
+                                                    msg: 'Transaction failed'
+                                                }
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                    }
                                 })
-                                setTimeout(() => {
-                                    this.getMyBalance();
-                                    this.getPoolBankTotalStatus();
-                                    this.getUserWithdrawBalance();
-                                }, 3000)
-                            } 
-                            if (data && data.status === '0x0') {
-                                clearInterval(timerOBJ[tempRnum]);
-                                const keys = Object.keys(this.state.transcations);
-                                const tmepState = this.state;
-                                keys.map((key) => {
-                                    if (tmepState.transcations[key].txhash === ret) {
-                                        tmepState.transcations[key] = {
-                                            ...tmepState.transcations[key],
-                                            class: 'error',
-                                            msg: 'Transaction failed'
-                                        }
-                                        this.setState({tmepState});
-
-                                        setTimeout(() => {
-                                            delete tmepState.transcations[key];
-                                            this.setState({tmepState});
-                                        }, 3000);
-                                    };
-                                    return false;
-                                })
-                            }
-                        })
-                    }, 2000);
-                }
+                            }, 2000);
+                        }
+                    }
+                )
             }
         )
     }
@@ -3075,108 +3139,120 @@ export default class Home extends React.Component {
             title: 'Withdraw ' + num / (10 ** this.state.decimalsUSDC) + ' USDC',
         }
         this.setState({tmepState});
-        this.contractProtocol.withdraw.sendTransaction(
+        // get Limit first
+        this.contractProtocol.withdraw.estimateGas(
             addr,
             0,
             num,
             {
-                from: this.state.accountAddress,
-                gas: this.gasFee
+                from: this.state.accountAddress
             },
-            (err, ret) => {
-                if (err) {
-                    const keys = Object.keys(this.state.transcations);
-                    const tmepState = this.state;
-                    keys.map((key) => {
-                        if (tmepState.transcations[key].id === id) {
-                            tmepState.transcations[key] = {
-                                ...tmepState.transcations[key],
-                                class: 'error',
-                                msg: 'User reject transaction'
-                            }
-                            this.setState({tmepState});
-
-                            setTimeout(() => {
-                                delete tmepState.transcations[key];
-                                this.setState({tmepState});
-                            }, 3000);
-                        };
-                        return false;
-                    });
-                }
-                if (ret) {
-                    const keys = Object.keys(this.state.transcations);
-                    const tmepState = this.state;
-
-                    keys.map((key) => {
-                        if (tmepState.transcations[key].id === id) {
-                            tmepState.transcations[key].txhash = ret;
-                            tmepState.transcations[key] = {
-                                ...tmepState.transcations[key],
-                                msg: 'Waiting for confirmation...'
-                            }
-                            this.setState({tmepState});
-                        };
-                        return false;
-                    });
-
-                    var timerOBJ = {};
-                    var tempRnum = Math.random();
-                    timerOBJ[tempRnum] = setInterval(() => {
-                        console.log('i am checking withdraw USDC... =>' + tempRnum);
-                        this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
-                            if (data && data.status === '0x1') {
-                                clearInterval(timerOBJ[tempRnum]);
-                                const keys = Object.keys(this.state.transcations);
-                                const tmepState = this.state;
-                                keys.map((key) => {
-                                    if (tmepState.transcations[key].txhash === ret) {
-                                        tmepState.transcations[key] = {
-                                            ...tmepState.transcations[key],
-                                            class: 'success',
-                                            msg: 'Transaction succeeded'
-                                        }
-                                        tmepState.toWithdrawNum = '';
-                                        tmepState.couldWithdraw = false;
+            (err, gasLimit) => {
+                this.contractProtocol.withdraw.sendTransaction(
+                    addr,
+                    0,
+                    num,
+                    {
+                        from: this.state.accountAddress,
+                        gas: gasLimit,
+                        gasPrice: this.state.gasPrice
+                    },
+                    (err, ret) => {
+                        if (err) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        class: 'error',
+                                        msg: 'User reject transaction'
+                                    }
+                                    this.setState({tmepState});
+        
+                                    setTimeout(() => {
+                                        delete tmepState.transcations[key];
                                         this.setState({tmepState});
-
+                                    }, 3000);
+                                };
+                                return false;
+                            });
+                        }
+                        if (ret) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+        
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key].txhash = ret;
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        msg: 'Waiting for confirmation...'
+                                    }
+                                    this.setState({tmepState});
+                                };
+                                return false;
+                            });
+        
+                            var timerOBJ = {};
+                            var tempRnum = Math.random();
+                            timerOBJ[tempRnum] = setInterval(() => {
+                                console.log('i am checking withdraw USDC... =>' + tempRnum);
+                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                    if (data && data.status === '0x1') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'success',
+                                                    msg: 'Transaction succeeded'
+                                                }
+                                                tmepState.toWithdrawNum = '';
+                                                tmepState.couldWithdraw = false;
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
                                         setTimeout(() => {
-                                            delete tmepState.transcations[key];
-                                            this.setState({tmepState});
-                                        }, 3000);
-                                    };
-                                    return false;
+                                            this.getMyBalance();
+                                            this.getPoolBankTotalStatus();
+                                            this.getUserWithdrawBalance();
+                                        }, 3000)
+                                    } 
+                                    if (data && data.status === '0x0') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'error',
+                                                    msg: 'Transaction failed'
+                                                }
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                    }
                                 })
-                                setTimeout(() => {
-                                    this.getMyBalance();
-                                    this.getPoolBankTotalStatus();
-                                    this.getUserWithdrawBalance();
-                                }, 3000)
-                            } 
-                            if (data && data.status === '0x0') {
-                                clearInterval(timerOBJ[tempRnum]);
-                                const keys = Object.keys(this.state.transcations);
-                                const tmepState = this.state;
-                                keys.map((key) => {
-                                    if (tmepState.transcations[key].txhash === ret) {
-                                        tmepState.transcations[key] = {
-                                            ...tmepState.transcations[key],
-                                            class: 'error',
-                                            msg: 'Transaction failed'
-                                        }
-                                        this.setState({tmepState});
-
-                                        setTimeout(() => {
-                                            delete tmepState.transcations[key];
-                                            this.setState({tmepState});
-                                        }, 3000);
-                                    };
-                                    return false;
-                                })
-                            }
-                        })
-                    }, 2000);
-                }
+                            }, 2000);
+                        }
+                    }
+                )
             }
         )
     }
@@ -3374,109 +3450,122 @@ export default class Home extends React.Component {
             title: 'Deposit ' + num.div(10 ** this.state.decimalsDAI) + ' DAI',
         }
         this.setState({tmepState});
-        this.contractProtocol.deposit.sendTransaction(
+        // get Limit first
+        this.contractProtocol.deposit.estimateGas(
             addr,
             0,
             num,
             {
-                from: this.state.accountAddress,
-                gas: this.gasFee
+                from: this.state.accountAddress
             },
-            (err, ret) => {
-                if (err) {
-                    const keys = Object.keys(this.state.transcations);
-                    const tmepState = this.state;
-                    keys.map((key) => {
-                        if (tmepState.transcations[key].id === id) {
-                            tmepState.transcations[key] = {
-                                ...tmepState.transcations[key],
-                                class: 'error',
-                                msg: 'User reject transaction'
-                            }
-                            this.setState({tmepState});
-
-                            setTimeout(() => {
-                                delete tmepState.transcations[key];
-                                this.setState({tmepState});
-                            }, 3000);
-                        };
-                        return false;
-                    });
-                }
-                if (ret) {
-                    const keys = Object.keys(this.state.transcations);
-                    const tmepState = this.state;
-
-                    keys.map((key) => {
-                        if (tmepState.transcations[key].id === id) {
-                            tmepState.transcations[key].txhash = ret;
-                            tmepState.transcations[key] = {
-                                ...tmepState.transcations[key],
-                                msg: 'Waiting for confirmation...'
-                            }
-                            this.setState({tmepState});
-                        };
-                        return false;
-                    });
-
-                    var timerOBJ = {};
-                    var tempRnum = Math.random();
-                    timerOBJ[tempRnum] = setInterval(() => {
-                        console.log('i am checking deposit DAI... =>' + tempRnum);
-                        this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
-                            if (data && data.status === '0x1') {
-                                clearInterval(timerOBJ[tempRnum]);
-                                const keys = Object.keys(this.state.transcations);
-                                const tmepState = this.state;
-                                keys.map((key) => {
-                                    if (tmepState.transcations[key].txhash === ret) {
-                                        tmepState.transcations[key] = {
-                                            ...tmepState.transcations[key],
-                                            class: 'success',
-                                            msg: 'Transaction succeeded'
-                                        }
-                                        tmepState.toDepositNum = '';
-                                        tmepState.couldDeposit = false;
-                                        tmepState.maxGenerateUSDx = '';
+            (err, gasLimit) => {
+                // console.log(err, gasLimit);
+                this.contractProtocol.deposit.sendTransaction(
+                    addr,
+                    0,
+                    num,
+                    {
+                        from: this.state.accountAddress,
+                        gas: gasLimit,
+                        gasPrice: this.state.gasPrice
+                    },
+                    (err, ret) => {
+                        if (err) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        class: 'error',
+                                        msg: 'User reject transaction'
+                                    }
+                                    this.setState({tmepState});
+        
+                                    setTimeout(() => {
+                                        delete tmepState.transcations[key];
                                         this.setState({tmepState});
-
+                                    }, 3000);
+                                };
+                                return false;
+                            });
+                        }
+                        if (ret) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+        
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key].txhash = ret;
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        msg: 'Waiting for confirmation...'
+                                    }
+                                    this.setState({tmepState});
+                                };
+                                return false;
+                            });
+        
+                            var timerOBJ = {};
+                            var tempRnum = Math.random();
+                            timerOBJ[tempRnum] = setInterval(() => {
+                                console.log('i am checking deposit DAI... =>' + tempRnum);
+                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                    if (data && data.status === '0x1') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'success',
+                                                    msg: 'Transaction succeeded'
+                                                }
+                                                tmepState.toDepositNum = '';
+                                                tmepState.couldDeposit = false;
+                                                tmepState.maxGenerateUSDx = '';
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
                                         setTimeout(() => {
-                                            delete tmepState.transcations[key];
-                                            this.setState({tmepState});
-                                        }, 3000);
-                                    };
-                                    return false;
+                                            this.getMyBalance();
+                                            this.getPoolBankTotalStatus();
+                                            this.getUserWithdrawBalance();
+                                        }, 3000)
+                                    } 
+                                    if (data && data.status === '0x0') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'error',
+                                                    msg: 'Transaction failed'
+                                                }
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                    }
                                 })
-                                setTimeout(() => {
-                                    this.getMyBalance();
-                                    this.getPoolBankTotalStatus();
-                                    this.getUserWithdrawBalance();
-                                }, 3000)
-                            } 
-                            if (data && data.status === '0x0') {
-                                clearInterval(timerOBJ[tempRnum]);
-                                const keys = Object.keys(this.state.transcations);
-                                const tmepState = this.state;
-                                keys.map((key) => {
-                                    if (tmepState.transcations[key].txhash === ret) {
-                                        tmepState.transcations[key] = {
-                                            ...tmepState.transcations[key],
-                                            class: 'error',
-                                            msg: 'Transaction failed'
-                                        }
-                                        this.setState({tmepState});
-
-                                        setTimeout(() => {
-                                            delete tmepState.transcations[key];
-                                            this.setState({tmepState});
-                                        }, 3000);
-                                    };
-                                    return false;
-                                })
-                            }
-                        })
-                    }, 2000);
-                }
+                            }, 2000);
+                        }
+                    }
+                )
             }
         )
     }
@@ -3506,109 +3595,121 @@ export default class Home extends React.Component {
             title: 'Deposit ' + num.div(10 ** this.state.decimalsPAX) + ' PAX',
         }
         this.setState({tmepState});
-        this.contractProtocol.deposit.sendTransaction(
+        // get Limit first
+        this.contractProtocol.deposit.estimateGas(
             addr,
             0,
             num,
             {
-                from: this.state.accountAddress,
-                gas: this.gasFee
+                from: this.state.accountAddress
             },
-            (err, ret) => {
-                if (err) {
-                    const keys = Object.keys(this.state.transcations);
-                    const tmepState = this.state;
-                    keys.map((key) => {
-                        if (tmepState.transcations[key].id === id) {
-                            tmepState.transcations[key] = {
-                                ...tmepState.transcations[key],
-                                class: 'error',
-                                msg: 'User reject transaction'
-                            }
-                            this.setState({tmepState});
-
-                            setTimeout(() => {
-                                delete tmepState.transcations[key];
-                                this.setState({tmepState});
-                            }, 3000);
-                        };
-                        return false;
-                    });
-                }
-                if (ret) {
-                    const keys = Object.keys(this.state.transcations);
-                    const tmepState = this.state;
-
-                    keys.map((key) => {
-                        if (tmepState.transcations[key].id === id) {
-                            tmepState.transcations[key].txhash = ret;
-                            tmepState.transcations[key] = {
-                                ...tmepState.transcations[key],
-                                msg: 'Waiting for confirmation...'
-                            }
-                            this.setState({tmepState});
-                        };
-                        return false;
-                    });
-
-                    var timerOBJ = {};
-                    var tempRnum = Math.random();
-                    timerOBJ[tempRnum] = setInterval(() => {
-                        console.log('i am checking deposit PAX... =>' + tempRnum);
-                        this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
-                            if (data && data.status === '0x1') {
-                                clearInterval(timerOBJ[tempRnum]);
-                                const keys = Object.keys(this.state.transcations);
-                                const tmepState = this.state;
-                                keys.map((key) => {
-                                    if (tmepState.transcations[key].txhash === ret) {
-                                        tmepState.transcations[key] = {
-                                            ...tmepState.transcations[key],
-                                            class: 'success',
-                                            msg: 'Transaction succeeded'
-                                        }
-                                        tmepState.toDepositNum = '';
-                                        tmepState.couldDeposit = false;
-                                        tmepState.maxGenerateUSDx = '';
+            (err, gasLimit) => {
+                this.contractProtocol.deposit.sendTransaction(
+                    addr,
+                    0,
+                    num,
+                    {
+                        from: this.state.accountAddress,
+                        gas: gasLimit,
+                        gasPrice: this.state.gasPrice
+                    },
+                    (err, ret) => {
+                        if (err) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        class: 'error',
+                                        msg: 'User reject transaction'
+                                    }
+                                    this.setState({tmepState});
+        
+                                    setTimeout(() => {
+                                        delete tmepState.transcations[key];
                                         this.setState({tmepState});
-
+                                    }, 3000);
+                                };
+                                return false;
+                            });
+                        }
+                        if (ret) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+        
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key].txhash = ret;
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        msg: 'Waiting for confirmation...'
+                                    }
+                                    this.setState({tmepState});
+                                };
+                                return false;
+                            });
+        
+                            var timerOBJ = {};
+                            var tempRnum = Math.random();
+                            timerOBJ[tempRnum] = setInterval(() => {
+                                console.log('i am checking deposit PAX... =>' + tempRnum);
+                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                    if (data && data.status === '0x1') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'success',
+                                                    msg: 'Transaction succeeded'
+                                                }
+                                                tmepState.toDepositNum = '';
+                                                tmepState.couldDeposit = false;
+                                                tmepState.maxGenerateUSDx = '';
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
                                         setTimeout(() => {
-                                            delete tmepState.transcations[key];
-                                            this.setState({tmepState});
-                                        }, 3000);
-                                    };
-                                    return false;
+                                            this.getMyBalance();
+                                            this.getPoolBankTotalStatus();
+                                            this.getUserWithdrawBalance();
+                                        }, 3000)
+                                    } 
+                                    if (data && data.status === '0x0') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'error',
+                                                    msg: 'Transaction failed'
+                                                }
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                    }
                                 })
-                                setTimeout(() => {
-                                    this.getMyBalance();
-                                    this.getPoolBankTotalStatus();
-                                    this.getUserWithdrawBalance();
-                                }, 3000)
-                            } 
-                            if (data && data.status === '0x0') {
-                                clearInterval(timerOBJ[tempRnum]);
-                                const keys = Object.keys(this.state.transcations);
-                                const tmepState = this.state;
-                                keys.map((key) => {
-                                    if (tmepState.transcations[key].txhash === ret) {
-                                        tmepState.transcations[key] = {
-                                            ...tmepState.transcations[key],
-                                            class: 'error',
-                                            msg: 'Transaction failed'
-                                        }
-                                        this.setState({tmepState});
-
-                                        setTimeout(() => {
-                                            delete tmepState.transcations[key];
-                                            this.setState({tmepState});
-                                        }, 3000);
-                                    };
-                                    return false;
-                                })
-                            }
-                        })
-                    }, 2000);
-                }
+                            }, 2000);
+                        }
+                    }
+                )
             }
         )
     }
@@ -3638,109 +3739,121 @@ export default class Home extends React.Component {
             title: 'Deposit ' + num.div(10 ** this.state.decimalsTUSD) + ' TUSD',
         }
         this.setState({tmepState});
-        this.contractProtocol.deposit.sendTransaction(
+        // get Limit first
+        this.contractProtocol.deposit.estimateGas(
             addr,
             0,
             num,
             {
-                from: this.state.accountAddress,
-                gas: this.gasFee
+                from: this.state.accountAddress
             },
-            (err, ret) => {
-                if (err) {
-                    const keys = Object.keys(this.state.transcations);
-                    const tmepState = this.state;
-                    keys.map((key) => {
-                        if (tmepState.transcations[key].id === id) {
-                            tmepState.transcations[key] = {
-                                ...tmepState.transcations[key],
-                                class: 'error',
-                                msg: 'User reject transaction'
-                            }
-                            this.setState({tmepState});
-
-                            setTimeout(() => {
-                                delete tmepState.transcations[key];
-                                this.setState({tmepState});
-                            }, 3000);
-                        };
-                        return false;
-                    });
-                }
-                if (ret) {
-                    const keys = Object.keys(this.state.transcations);
-                    const tmepState = this.state;
-
-                    keys.map((key) => {
-                        if (tmepState.transcations[key].id === id) {
-                            tmepState.transcations[key].txhash = ret;
-                            tmepState.transcations[key] = {
-                                ...tmepState.transcations[key],
-                                msg: 'Waiting for confirmation...'
-                            }
-                            this.setState({tmepState});
-                        };
-                        return false;
-                    });
-
-                    var timerOBJ = {};
-                    var tempRnum = Math.random();
-                    timerOBJ[tempRnum] = setInterval(() => {
-                        console.log('i am checking deposit TUSD... =>' + tempRnum);
-                        this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
-                            if (data && data.status === '0x1') {
-                                clearInterval(timerOBJ[tempRnum]);
-                                const keys = Object.keys(this.state.transcations);
-                                const tmepState = this.state;
-                                keys.map((key) => {
-                                    if (tmepState.transcations[key].txhash === ret) {
-                                        tmepState.transcations[key] = {
-                                            ...tmepState.transcations[key],
-                                            class: 'success',
-                                            msg: 'Transaction succeeded'
-                                        }
-                                        tmepState.toDepositNum = '';
-                                        tmepState.couldDeposit = false;
-                                        tmepState.maxGenerateUSDx = '';
+            (err, gasLimit) => {
+                this.contractProtocol.deposit.sendTransaction(
+                    addr,
+                    0,
+                    num,
+                    {
+                        from: this.state.accountAddress,
+                        gas: gasLimit,
+                        gasPrice: this.state.gasPrice
+                    },
+                    (err, ret) => {
+                        if (err) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        class: 'error',
+                                        msg: 'User reject transaction'
+                                    }
+                                    this.setState({tmepState});
+        
+                                    setTimeout(() => {
+                                        delete tmepState.transcations[key];
                                         this.setState({tmepState});
-
+                                    }, 3000);
+                                };
+                                return false;
+                            });
+                        }
+                        if (ret) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+        
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key].txhash = ret;
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        msg: 'Waiting for confirmation...'
+                                    }
+                                    this.setState({tmepState});
+                                };
+                                return false;
+                            });
+        
+                            var timerOBJ = {};
+                            var tempRnum = Math.random();
+                            timerOBJ[tempRnum] = setInterval(() => {
+                                console.log('i am checking deposit TUSD... =>' + tempRnum);
+                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                    if (data && data.status === '0x1') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'success',
+                                                    msg: 'Transaction succeeded'
+                                                }
+                                                tmepState.toDepositNum = '';
+                                                tmepState.couldDeposit = false;
+                                                tmepState.maxGenerateUSDx = '';
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
                                         setTimeout(() => {
-                                            delete tmepState.transcations[key];
-                                            this.setState({tmepState});
-                                        }, 3000);
-                                    };
-                                    return false;
+                                            this.getMyBalance();
+                                            this.getPoolBankTotalStatus();
+                                            this.getUserWithdrawBalance();
+                                        }, 3000)
+                                    } 
+                                    if (data && data.status === '0x0') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'error',
+                                                    msg: 'Transaction failed'
+                                                }
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                    }
                                 })
-                                setTimeout(() => {
-                                    this.getMyBalance();
-                                    this.getPoolBankTotalStatus();
-                                    this.getUserWithdrawBalance();
-                                }, 3000)
-                            } 
-                            if (data && data.status === '0x0') {
-                                clearInterval(timerOBJ[tempRnum]);
-                                const keys = Object.keys(this.state.transcations);
-                                const tmepState = this.state;
-                                keys.map((key) => {
-                                    if (tmepState.transcations[key].txhash === ret) {
-                                        tmepState.transcations[key] = {
-                                            ...tmepState.transcations[key],
-                                            class: 'error',
-                                            msg: 'Transaction failed'
-                                        }
-                                        this.setState({tmepState});
-
-                                        setTimeout(() => {
-                                            delete tmepState.transcations[key];
-                                            this.setState({tmepState});
-                                        }, 3000);
-                                    };
-                                    return false;
-                                })
-                            }
-                        })
-                    }, 2000);
-                }
+                            }, 2000);
+                        }
+                    }
+                )
             }
         )
     }
@@ -3770,109 +3883,121 @@ export default class Home extends React.Component {
             title: 'Deposit ' + num.div(10 ** this.state.decimalsUSDC) + ' USDC',
         }
         this.setState({tmepState});
-        this.contractProtocol.deposit.sendTransaction(
+        // get Limit first
+        this.contractProtocol.deposit.estimateGas(
             addr,
             0,
             num,
             {
-                from: this.state.accountAddress,
-                gas: this.gasFee
+                from: this.state.accountAddress
             },
-            (err, ret) => {
-                if (err) {
-                    const keys = Object.keys(this.state.transcations);
-                    const tmepState = this.state;
-                    keys.map((key) => {
-                        if (tmepState.transcations[key].id === id) {
-                            tmepState.transcations[key] = {
-                                ...tmepState.transcations[key],
-                                class: 'error',
-                                msg: 'User reject transaction'
-                            }
-                            this.setState({tmepState});
-
-                            setTimeout(() => {
-                                delete tmepState.transcations[key];
-                                this.setState({tmepState});
-                            }, 3000);
-                        };
-                        return false;
-                    });
-                }
-                if (ret) {
-                    const keys = Object.keys(this.state.transcations);
-                    const tmepState = this.state;
-
-                    keys.map((key) => {
-                        if (tmepState.transcations[key].id === id) {
-                            tmepState.transcations[key].txhash = ret;
-                            tmepState.transcations[key] = {
-                                ...tmepState.transcations[key],
-                                msg: 'Waiting for confirmation...'
-                            }
-                            this.setState({tmepState});
-                        };
-                        return false;
-                    });
-
-                    var timerOBJ = {};
-                    var tempRnum = Math.random();
-                    timerOBJ[tempRnum] = setInterval(() => {
-                        console.log('i am checking deposit USDC... =>' + tempRnum);
-                        this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
-                            if (data && data.status === '0x1') {
-                                clearInterval(timerOBJ[tempRnum]);
-                                const keys = Object.keys(this.state.transcations);
-                                const tmepState = this.state;
-                                keys.map((key) => {
-                                    if (tmepState.transcations[key].txhash === ret) {
-                                        tmepState.transcations[key] = {
-                                            ...tmepState.transcations[key],
-                                            class: 'success',
-                                            msg: 'Transaction succeeded'
-                                        }
-                                        tmepState.toDepositNum = '';
-                                        tmepState.couldDeposit = false;
-                                        tmepState.maxGenerateUSDx = '';
+            (err, gasLimit) => {
+                this.contractProtocol.deposit.sendTransaction(
+                    addr,
+                    0,
+                    num,
+                    {
+                        from: this.state.accountAddress,
+                        gas: gasLimit,
+                        gasPrice: this.state.gasPrice
+                    },
+                    (err, ret) => {
+                        if (err) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        class: 'error',
+                                        msg: 'User reject transaction'
+                                    }
+                                    this.setState({tmepState});
+        
+                                    setTimeout(() => {
+                                        delete tmepState.transcations[key];
                                         this.setState({tmepState});
-
+                                    }, 3000);
+                                };
+                                return false;
+                            });
+                        }
+                        if (ret) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+        
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key].txhash = ret;
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        msg: 'Waiting for confirmation...'
+                                    }
+                                    this.setState({tmepState});
+                                };
+                                return false;
+                            });
+        
+                            var timerOBJ = {};
+                            var tempRnum = Math.random();
+                            timerOBJ[tempRnum] = setInterval(() => {
+                                console.log('i am checking deposit USDC... =>' + tempRnum);
+                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                    if (data && data.status === '0x1') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'success',
+                                                    msg: 'Transaction succeeded'
+                                                }
+                                                tmepState.toDepositNum = '';
+                                                tmepState.couldDeposit = false;
+                                                tmepState.maxGenerateUSDx = '';
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
                                         setTimeout(() => {
-                                            delete tmepState.transcations[key];
-                                            this.setState({tmepState});
-                                        }, 3000);
-                                    };
-                                    return false;
+                                            this.getMyBalance();
+                                            this.getPoolBankTotalStatus();
+                                            this.getUserWithdrawBalance();
+                                        }, 3000)
+                                    } 
+                                    if (data && data.status === '0x0') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'error',
+                                                    msg: 'Transaction failed'
+                                                }
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                    }
                                 })
-                                setTimeout(() => {
-                                    this.getMyBalance();
-                                    this.getPoolBankTotalStatus();
-                                    this.getUserWithdrawBalance();
-                                }, 3000)
-                            } 
-                            if (data && data.status === '0x0') {
-                                clearInterval(timerOBJ[tempRnum]);
-                                const keys = Object.keys(this.state.transcations);
-                                const tmepState = this.state;
-                                keys.map((key) => {
-                                    if (tmepState.transcations[key].txhash === ret) {
-                                        tmepState.transcations[key] = {
-                                            ...tmepState.transcations[key],
-                                            class: 'error',
-                                            msg: 'Transaction failed'
-                                        }
-                                        this.setState({tmepState});
-
-                                        setTimeout(() => {
-                                            delete tmepState.transcations[key];
-                                            this.setState({tmepState});
-                                        }, 3000);
-                                    };
-                                    return false;
-                                })
-                            }
-                        })
-                    }, 2000);
-                }
+                            }, 2000);
+                        }
+                    }
+                )
             }
         )
     }
@@ -3982,108 +4107,119 @@ export default class Home extends React.Component {
             title: 'Reconvert ' + this.state.toDestroyNum + ' USDx',
         }
         this.setState({tmepState});
-        this.contractProtocol.destroy.sendTransaction(
+        // get Limit first
+        this.contractProtocol.destroy.estimateGas(
             0,
             this.state.toDestroyNum * this.units,
             {
-                from: this.state.accountAddress,
-                gas: this.gasFee
+                from: this.state.accountAddress
             },
-            (err, ret) => {
-                if (err) {
-                    const keys = Object.keys(this.state.transcations);
-                    const tmepState = this.state;
-                    keys.map((key) => {
-                        if (tmepState.transcations[key].id === id) {
-                            tmepState.transcations[key] = {
-                                ...tmepState.transcations[key],
-                                class: 'error',
-                                msg: 'User reject transaction'
-                            }
-                            this.setState({tmepState});
-
-                            setTimeout(() => {
-                                delete tmepState.transcations[key];
-                                this.setState({tmepState});
-                            }, 3000);
-                        };
-                        return false;
-                    });
-                }
-                if (ret) {
-                    const keys = Object.keys(this.state.transcations);
-                    const tmepState = this.state;
-
-                    keys.map((key) => {
-                        if (tmepState.transcations[key].id === id) {
-                            tmepState.transcations[key].txhash = ret;
-                            tmepState.transcations[key] = {
-                                ...tmepState.transcations[key],
-                                msg: 'Waiting for confirmation...'
-                            }
-                            this.setState({tmepState});
-                        };
-                        return false;
-                    });
-
-                    var timerOBJ = {};
-                    var tempRnum = Math.random();
-                    timerOBJ[tempRnum] = setInterval(() => {
-                        console.log('i am checking Reconvert USDx... =>' + tempRnum);
-                        this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
-                            if (data && data.status === '0x1') {
-                                clearInterval(timerOBJ[tempRnum]);
-                                const keys = Object.keys(this.state.transcations);
-                                const tmepState = this.state;
-                                keys.map((key) => {
-                                    if (tmepState.transcations[key].txhash === ret) {
-                                        tmepState.transcations[key] = {
-                                            ...tmepState.transcations[key],
-                                            class: 'success',
-                                            msg: 'Transaction succeeded'
-                                        }
-                                        tmepState.toDestroyNum = '';
-                                        tmepState.couldDestroy = false;
-                                        tmepState.USDxToDAI = tmepState.USDxToPAX = tmepState.USDxToTUSD = tmepState.USDxToUSDC = '';
+            (err, gasLimit) => {
+                this.contractProtocol.destroy.sendTransaction(
+                    0,
+                    this.state.toDestroyNum * this.units,
+                    {
+                        from: this.state.accountAddress,
+                        gas: gasLimit,
+                        gasPrice: this.state.gasPrice
+                    },
+                    (err, ret) => {
+                        if (err) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        class: 'error',
+                                        msg: 'User reject transaction'
+                                    }
+                                    this.setState({tmepState});
+        
+                                    setTimeout(() => {
+                                        delete tmepState.transcations[key];
                                         this.setState({tmepState});
-
+                                    }, 3000);
+                                };
+                                return false;
+                            });
+                        }
+                        if (ret) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+        
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key].txhash = ret;
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        msg: 'Waiting for confirmation...'
+                                    }
+                                    this.setState({tmepState});
+                                };
+                                return false;
+                            });
+        
+                            var timerOBJ = {};
+                            var tempRnum = Math.random();
+                            timerOBJ[tempRnum] = setInterval(() => {
+                                console.log('i am checking Reconvert USDx... =>' + tempRnum);
+                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                    if (data && data.status === '0x1') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'success',
+                                                    msg: 'Transaction succeeded'
+                                                }
+                                                tmepState.toDestroyNum = '';
+                                                tmepState.couldDestroy = false;
+                                                tmepState.USDxToDAI = tmepState.USDxToPAX = tmepState.USDxToTUSD = tmepState.USDxToUSDC = '';
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
                                         setTimeout(() => {
-                                            delete tmepState.transcations[key];
-                                            this.setState({tmepState});
-                                        }, 3000);
-                                    };
-                                    return false;
+                                            this.getMyBalance();
+                                            this.getPoolBankTotalStatus();
+                                            this.getUserWithdrawBalance();
+                                        }, 3000)
+                                    } 
+                                    if (data && data.status === '0x0') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'error',
+                                                    msg: 'Transaction failed'
+                                                }
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                    }
                                 })
-                                setTimeout(() => {
-                                    this.getMyBalance();
-                                    this.getPoolBankTotalStatus();
-                                    this.getUserWithdrawBalance();
-                                }, 3000)
-                            } 
-                            if (data && data.status === '0x0') {
-                                clearInterval(timerOBJ[tempRnum]);
-                                const keys = Object.keys(this.state.transcations);
-                                const tmepState = this.state;
-                                keys.map((key) => {
-                                    if (tmepState.transcations[key].txhash === ret) {
-                                        tmepState.transcations[key] = {
-                                            ...tmepState.transcations[key],
-                                            class: 'error',
-                                            msg: 'Transaction failed'
-                                        }
-                                        this.setState({tmepState});
-
-                                        setTimeout(() => {
-                                            delete tmepState.transcations[key];
-                                            this.setState({tmepState});
-                                        }, 3000);
-                                    };
-                                    return false;
-                                })
-                            }
-                        })
-                    }, 2000);
-                }
+                            }, 2000);
+                        }
+                    }
+                )
             }
         )
     }
@@ -4106,108 +4242,246 @@ export default class Home extends React.Component {
             title: 'CLAIM USDx',
         }
         this.setState({tmepState});
-        this.contractProtocol.claim.sendTransaction(
+        // get Limit first
+        this.contractProtocol.claim.estimateGas(
             0,
             {
-                from: this.state.accountAddress,
-                gas: this.gasFee
+                from: this.state.accountAddress
             },
-            (err, ret) => {
-                if (err) {
-                    const keys = Object.keys(this.state.transcations);
-                    const tmepState = this.state;
-                    keys.map((key) => {
-                        if (tmepState.transcations[key].id === id) {
-                            tmepState.transcations[key] = {
-                                ...tmepState.transcations[key],
-                                class: 'error',
-                                msg: 'User reject transaction'
-                            }
-                            this.setState({tmepState});
-
-                            setTimeout(() => {
-                                delete tmepState.transcations[key];
-                                this.setState({tmepState});
-                            }, 3000);
-                        };
-                        return false;
-                    });
-                }
-                if (ret) {
-                    const keys = Object.keys(this.state.transcations);
-                    const tmepState = this.state;
-
-                    keys.map((key) => {
-                        if (tmepState.transcations[key].id === id) {
-                            tmepState.transcations[key].txhash = ret;
-                            tmepState.transcations[key] = {
-                                ...tmepState.transcations[key],
-                                msg: 'Waiting for confirmation...'
-                            }
-                            this.setState({tmepState});
-                        };
-                        return false;
-                    });
-
-                    var timerOBJ = {};
-                    var tempRnum = Math.random();
-                    timerOBJ[tempRnum] = setInterval(() => {
-                        console.log('i am checking claim USDx... =>' + tempRnum);
-                        this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
-                            if (data && data.status === '0x1') {
-                                clearInterval(timerOBJ[tempRnum]);
-                                const keys = Object.keys(this.state.transcations);
-                                const tmepState = this.state;
-                                keys.map((key) => {
-                                    if (tmepState.transcations[key].txhash === ret) {
-                                        tmepState.transcations[key] = {
-                                            ...tmepState.transcations[key],
-                                            class: 'success',
-                                            msg: 'Transaction succeeded'
-                                        }
+            (err, gasLimit) => {
+                this.contractProtocol.claim.sendTransaction(
+                    0,
+                    {
+                        from: this.state.accountAddress,
+                        gas: gasLimit,
+                        gasPrice: this.state.gasPrice
+                    },
+                    (err, ret) => {
+                        if (err) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        class: 'error',
+                                        msg: 'User reject transaction'
+                                    }
+                                    this.setState({tmepState});
+        
+                                    setTimeout(() => {
+                                        delete tmepState.transcations[key];
                                         this.setState({tmepState});
-
+                                    }, 3000);
+                                };
+                                return false;
+                            });
+                        }
+                        if (ret) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+        
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key].txhash = ret;
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        msg: 'Waiting for confirmation...'
+                                    }
+                                    this.setState({tmepState});
+                                };
+                                return false;
+                            });
+        
+                            var timerOBJ = {};
+                            var tempRnum = Math.random();
+                            timerOBJ[tempRnum] = setInterval(() => {
+                                console.log('i am checking claim USDx... =>' + tempRnum);
+                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                    if (data && data.status === '0x1') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'success',
+                                                    msg: 'Transaction succeeded'
+                                                }
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
                                         setTimeout(() => {
-                                            delete tmepState.transcations[key];
-                                            this.setState({tmepState});
-                                        }, 3000);
-                                    };
-                                    return false;
+                                            this.getMyBalance();
+                                            this.getPoolBankTotalStatus();
+                                            this.getUserWithdrawBalance();
+                                        }, 3000)
+                                    }
+                                    if (data && data.status === '0x0') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'error',
+                                                    msg: 'Transaction failed'
+                                                }
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                    }
                                 })
-                                setTimeout(() => {
-                                    this.getMyBalance();
-                                    this.getPoolBankTotalStatus();
-                                    this.getUserWithdrawBalance();
-                                }, 3000)
-                            }
-                            if (data && data.status === '0x0') {
-                                clearInterval(timerOBJ[tempRnum]);
-                                const keys = Object.keys(this.state.transcations);
-                                const tmepState = this.state;
-                                keys.map((key) => {
-                                    if (tmepState.transcations[key].txhash === ret) {
-                                        tmepState.transcations[key] = {
-                                            ...tmepState.transcations[key],
-                                            class: 'error',
-                                            msg: 'Transaction failed'
-                                        }
-                                        this.setState({tmepState});
-
-                                        setTimeout(() => {
-                                            delete tmepState.transcations[key];
-                                            this.setState({tmepState});
-                                        }, 3000);
-                                    };
-                                    return false;
-                                })
-                            }
-                        })
-                    }, 2000);
-                }
+                            }, 2000);
+                        }
+                    }
+                )
             }
         )
     }
 
+    // toGenerateMax
+    toGenerateMax(BN){
+        // console.log(BN);
+        // console.log(BN.toString(10));
+
+        const id = Math.random();
+        const msg = 'Waiting for transaction signature...';
+        const tmepState = this.state;
+        tmepState.transcations[id] = {
+            id: id,
+            msg: msg,
+            class: 'inprocess',
+            title: 'Mintage ' + this.toThousands(BN.toString(10)) + ' USDx',
+        }
+        this.setState({tmepState});
+        // get Limit first
+        this.contractProtocol.oneClickMinting.estimateGas(
+            0,
+            BN.mul(this.Web3.toBigNumber(10 ** 18)),
+            {
+                from: this.state.accountAddress
+            },
+            (err, gasLimit) => {
+                this.contractProtocol.oneClickMinting.sendTransaction(
+                    0,
+                    BN.mul(this.Web3.toBigNumber(10 ** 18)),
+                    {
+                        from: this.state.accountAddress,
+                        gas: gasLimit,
+                        gasPrice: this.state.gasPrice
+                    },
+                    (err, ret) => {
+                        if (err) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        class: 'error',
+                                        msg: 'User reject transaction'
+                                    }
+                                    this.setState({tmepState});
+        
+                                    setTimeout(() => {
+                                        delete tmepState.transcations[key];
+                                        this.setState({tmepState});
+                                    }, 3000);
+                                };
+                                return false;
+                            });
+                        }
+                        if (ret) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+        
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key].txhash = ret;
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        msg: 'Waiting for confirmation...'
+                                    }
+                                    this.setState({tmepState});
+                                };
+                                return false;
+                            });
+        
+                            var timerOBJ = {};
+                            var tempRnum = Math.random();
+                            timerOBJ[tempRnum] = setInterval(() => {
+                                console.log('i am checking deposit DAI... =>' + tempRnum);
+                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                    if (data && data.status === '0x1') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'success',
+                                                    msg: 'Transaction succeeded'
+                                                }
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                        setTimeout(() => {
+                                            this.getMyBalance();
+                                            this.getPoolBankTotalStatus();
+                                            this.getUserWithdrawBalance();
+                                        }, 3000)
+                                    } 
+                                    if (data && data.status === '0x0') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'error',
+                                                    msg: 'Transaction failed'
+                                                }
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                    }
+                                })
+                            }, 2000);
+                        }
+                    }
+                )
+            }
+        )
+    }
 
 
     // faucet Token
@@ -4247,103 +4521,114 @@ export default class Home extends React.Component {
             title: 'Allocate DAI',
         }
         this.setState({tmepState});
-        this.contractDAI.allocateTo.sendTransaction(
+        // get Limit first
+        this.contractDAI.allocateTo.estimateGas(
             this.state.accountAddress,
             this.faucetNum * (10 ** this.state.decimalsDAI),
             {
-                from: this.state.accountAddress,
-                gas: this.gasFee
+                from: this.state.accountAddress
             },
-            (err, ret) => {
-                if (err) {
-                    const keys = Object.keys(this.state.transcations);
-                    const tmepState = this.state;
-                    keys.map((key) => {
-                        if (tmepState.transcations[key].title === 'Allocate DAI') {
-                            tmepState.transcations[key] = {
-                                ...tmepState.transcations[key],
-                                class: 'error',
-                                msg: 'User reject transaction'
-                            }
-                            this.setState({tmepState});
-
-                            setTimeout(() => {
-                                delete tmepState.transcations[key];
-                                this.setState({tmepState});
-                            }, 3000);
-                        };
-                        return false;
-                    });
-                }
-                if (ret) {
-                    const keys = Object.keys(this.state.transcations);
-                    const tmepState = this.state;
-
-                    keys.map((key) => {
-                        if (tmepState.transcations[key].title === 'Allocate DAI') {
-                            tmepState.transcations[key].txhash = ret;
-                            tmepState.transcations[key] = {
-                                ...tmepState.transcations[key],
-                                msg: 'Waiting for confirmation...'
-                            }
-                            this.setState({tmepState});
-                        };
-                        return false;
-                    });
-
-                    var allocateDAItimer = setInterval(() => {
-                        console.log('i am checking Allocate DAI...');
-                        this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
-                            if (data && data.status === '0x1') {
-                                clearInterval(allocateDAItimer);
-                                const keys = Object.keys(this.state.transcations);
-                                const tmepState = this.state;
-                                keys.map((key) => {
-                                    if (tmepState.transcations[key].txhash === ret) {
-                                        tmepState.transcations[key] = {
-                                            ...tmepState.transcations[key],
-                                            class: 'success',
-                                            msg: 'Transaction succeeded'
-                                        }
+            (err, gasLimit) => {
+                this.contractDAI.allocateTo.sendTransaction(
+                    this.state.accountAddress,
+                    this.faucetNum * (10 ** this.state.decimalsDAI),
+                    {
+                        from: this.state.accountAddress,
+                        gas: gasLimit,
+                        gasPrice: this.state.gasPrice
+                    },
+                    (err, ret) => {
+                        if (err) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].title === 'Allocate DAI') {
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        class: 'error',
+                                        msg: 'User reject transaction'
+                                    }
+                                    this.setState({tmepState});
+        
+                                    setTimeout(() => {
+                                        delete tmepState.transcations[key];
                                         this.setState({tmepState});
-
+                                    }, 3000);
+                                };
+                                return false;
+                            });
+                        }
+                        if (ret) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+        
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].title === 'Allocate DAI') {
+                                    tmepState.transcations[key].txhash = ret;
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        msg: 'Waiting for confirmation...'
+                                    }
+                                    this.setState({tmepState});
+                                };
+                                return false;
+                            });
+        
+                            var allocateDAItimer = setInterval(() => {
+                                console.log('i am checking Allocate DAI...');
+                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                    if (data && data.status === '0x1') {
+                                        clearInterval(allocateDAItimer);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'success',
+                                                    msg: 'Transaction succeeded'
+                                                }
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
                                         setTimeout(() => {
-                                            delete tmepState.transcations[key];
-                                            this.setState({tmepState});
-                                        }, 3000);
-                                    };
-                                    return false;
+                                            this.getMyBalance();
+                                            this.getPoolBankTotalStatus();
+                                            this.getUserWithdrawBalance();
+                                        }, 3000)
+                                    }
+                                    if (data && data.status === '0x0') {
+                                        clearInterval(allocateDAItimer);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'error',
+                                                    msg: 'Transaction failed'
+                                                }
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                    }
                                 })
-                                setTimeout(() => {
-                                    this.getMyBalance();
-                                    this.getPoolBankTotalStatus();
-                                    this.getUserWithdrawBalance();
-                                }, 3000)
-                            }
-                            if (data && data.status === '0x0') {
-                                clearInterval(allocateDAItimer);
-                                const keys = Object.keys(this.state.transcations);
-                                const tmepState = this.state;
-                                keys.map((key) => {
-                                    if (tmepState.transcations[key].txhash === ret) {
-                                        tmepState.transcations[key] = {
-                                            ...tmepState.transcations[key],
-                                            class: 'error',
-                                            msg: 'Transaction failed'
-                                        }
-                                        this.setState({tmepState});
-
-                                        setTimeout(() => {
-                                            delete tmepState.transcations[key];
-                                            this.setState({tmepState});
-                                        }, 3000);
-                                    };
-                                    return false;
-                                })
-                            }
-                        })
-                    }, 2000);
-                }
+                            }, 2000);
+                        }
+                    }
+                )
             }
         )
     }
@@ -4365,103 +4650,115 @@ export default class Home extends React.Component {
             title: 'Allocate PAX',
         }
         this.setState({tmepState});
-        this.contractPAX.allocateTo.sendTransaction(
+        // get Limit first
+        this.contractPAX.allocateTo.estimateGas(
             this.state.accountAddress,
             this.faucetNum * (10 ** this.state.decimalsPAX),
             {
                 from: this.state.accountAddress,
                 gas: this.gasFee
             },
-            (err, ret) => {
-                if (err) {
-                    const keys = Object.keys(this.state.transcations);
-                    const tmepState = this.state;
-                    keys.map((key) => {
-                        if (tmepState.transcations[key].title === 'Allocate PAX') {
-                            tmepState.transcations[key] = {
-                                ...tmepState.transcations[key],
-                                class: 'error',
-                                msg: 'User reject transaction'
-                            }
-                            this.setState({tmepState});
-
-                            setTimeout(() => {
-                                delete tmepState.transcations[key];
-                                this.setState({tmepState});
-                            }, 3000);
-                        };
-                        return false;
-                    });
-                }
-                if (ret) {
-                    const keys = Object.keys(this.state.transcations);
-                    const tmepState = this.state;
-
-                    keys.map((key) => {
-                        if (tmepState.transcations[key].title === 'Allocate PAX') {
-                            tmepState.transcations[key].txhash = ret;
-                            tmepState.transcations[key] = {
-                                ...tmepState.transcations[key],
-                                msg: 'Waiting for confirmation...'
-                            }
-                            this.setState({tmepState});
-                        };
-                        return false;
-                    });
-
-                    var allocatePAXtimer = setInterval(() => {
-                        console.log('i am checking Allocate PAX...');
-                        this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
-                            if (data && data.status === '0x1') {
-                                clearInterval(allocatePAXtimer);
-                                const keys = Object.keys(this.state.transcations);
-                                const tmepState = this.state;
-                                keys.map((key) => {
-                                    if (tmepState.transcations[key].txhash === ret) {
-                                        tmepState.transcations[key] = {
-                                            ...tmepState.transcations[key],
-                                            class: 'success',
-                                            msg: 'Transaction succeeded'
-                                        }
+            (err, gasLimit) => {
+                this.contractPAX.allocateTo.sendTransaction(
+                    this.state.accountAddress,
+                    this.faucetNum * (10 ** this.state.decimalsPAX),
+                    {
+                        from: this.state.accountAddress,
+                        gas: gasLimit,
+                        gasPrice: this.state.gasPrice
+                    },
+                    (err, ret) => {
+                        if (err) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].title === 'Allocate PAX') {
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        class: 'error',
+                                        msg: 'User reject transaction'
+                                    }
+                                    this.setState({tmepState});
+        
+                                    setTimeout(() => {
+                                        delete tmepState.transcations[key];
                                         this.setState({tmepState});
-
+                                    }, 3000);
+                                };
+                                return false;
+                            });
+                        }
+                        if (ret) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+        
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].title === 'Allocate PAX') {
+                                    tmepState.transcations[key].txhash = ret;
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        msg: 'Waiting for confirmation...'
+                                    }
+                                    this.setState({tmepState});
+                                };
+                                return false;
+                            });
+        
+                            var allocatePAXtimer = setInterval(() => {
+                                console.log('i am checking Allocate PAX...');
+                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                    if (data && data.status === '0x1') {
+                                        clearInterval(allocatePAXtimer);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'success',
+                                                    msg: 'Transaction succeeded'
+                                                }
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
                                         setTimeout(() => {
-                                            delete tmepState.transcations[key];
-                                            this.setState({tmepState});
-                                        }, 3000);
-                                    };
-                                    return false;
+                                            this.getMyBalance();
+                                            this.getPoolBankTotalStatus();
+                                            this.getUserWithdrawBalance();
+                                        }, 3000)
+                                    }
+                                    if (data && data.status === '0x0') {
+                                        clearInterval(allocatePAXtimer);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'error',
+                                                    msg: 'Transaction failed'
+                                                }
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                    }
                                 })
-                                setTimeout(() => {
-                                    this.getMyBalance();
-                                    this.getPoolBankTotalStatus();
-                                    this.getUserWithdrawBalance();
-                                }, 3000)
-                            }
-                            if (data && data.status === '0x0') {
-                                clearInterval(allocatePAXtimer);
-                                const keys = Object.keys(this.state.transcations);
-                                const tmepState = this.state;
-                                keys.map((key) => {
-                                    if (tmepState.transcations[key].txhash === ret) {
-                                        tmepState.transcations[key] = {
-                                            ...tmepState.transcations[key],
-                                            class: 'error',
-                                            msg: 'Transaction failed'
-                                        }
-                                        this.setState({tmepState});
-
-                                        setTimeout(() => {
-                                            delete tmepState.transcations[key];
-                                            this.setState({tmepState});
-                                        }, 3000);
-                                    };
-                                    return false;
-                                })
-                            }
-                        })
-                    }, 2000);
-                }
+                            }, 2000);
+                        }
+                    }
+                )
             }
         )
     }
@@ -4483,103 +4780,114 @@ export default class Home extends React.Component {
             title: 'Allocate TUSD',
         }
         this.setState({tmepState});
-        this.contractTUSD.allocateTo.sendTransaction(
+        // get Limit first
+        this.contractTUSD.allocateTo.estimateGas(
             this.state.accountAddress,
             this.faucetNum * (10 ** this.state.decimalsTUSD),
             {
-                from: this.state.accountAddress,
-                gas: this.gasFee
+                from: this.state.accountAddress
             },
-            (err, ret) => {
-                if (err) {
-                    const keys = Object.keys(this.state.transcations);
-                    const tmepState = this.state;
-                    keys.map((key) => {
-                        if (tmepState.transcations[key].title === 'Allocate TUSD') {
-                            tmepState.transcations[key] = {
-                                ...tmepState.transcations[key],
-                                class: 'error',
-                                msg: 'User reject transaction'
-                            }
-                            this.setState({tmepState});
-
-                            setTimeout(() => {
-                                delete tmepState.transcations[key];
-                                this.setState({tmepState});
-                            }, 3000);
-                        };
-                        return false;
-                    });
-                }
-                if (ret) {
-                    const keys = Object.keys(this.state.transcations);
-                    const tmepState = this.state;
-
-                    keys.map((key) => {
-                        if (tmepState.transcations[key].title === 'Allocate TUSD') {
-                            tmepState.transcations[key].txhash = ret;
-                            tmepState.transcations[key] = {
-                                ...tmepState.transcations[key],
-                                msg: 'Waiting for confirmation...'
-                            }
-                            this.setState({tmepState});
-                        };
-                        return false;
-                    });
-
-                    var allocateTUSDtimer = setInterval(() => {
-                        console.log('i am checking Allocate TUSD...');
-                        this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
-                            if (data && data.status === '0x1') {
-                                clearInterval(allocateTUSDtimer);
-                                const keys = Object.keys(this.state.transcations);
-                                const tmepState = this.state;
-                                keys.map((key) => {
-                                    if (tmepState.transcations[key].txhash === ret) {
-                                        tmepState.transcations[key] = {
-                                            ...tmepState.transcations[key],
-                                            class: 'success',
-                                            msg: 'Transaction succeeded'
-                                        }
+            (err, gasLimit) => {
+                this.contractTUSD.allocateTo.sendTransaction(
+                    this.state.accountAddress,
+                    this.faucetNum * (10 ** this.state.decimalsTUSD),
+                    {
+                        from: this.state.accountAddress,
+                        gas: gasLimit,
+                        gasPrice: this.state.gasPrice
+                    },
+                    (err, ret) => {
+                        if (err) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].title === 'Allocate TUSD') {
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        class: 'error',
+                                        msg: 'User reject transaction'
+                                    }
+                                    this.setState({tmepState});
+        
+                                    setTimeout(() => {
+                                        delete tmepState.transcations[key];
                                         this.setState({tmepState});
-
+                                    }, 3000);
+                                };
+                                return false;
+                            });
+                        }
+                        if (ret) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+        
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].title === 'Allocate TUSD') {
+                                    tmepState.transcations[key].txhash = ret;
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        msg: 'Waiting for confirmation...'
+                                    }
+                                    this.setState({tmepState});
+                                };
+                                return false;
+                            });
+        
+                            var allocateTUSDtimer = setInterval(() => {
+                                console.log('i am checking Allocate TUSD...');
+                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                    if (data && data.status === '0x1') {
+                                        clearInterval(allocateTUSDtimer);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'success',
+                                                    msg: 'Transaction succeeded'
+                                                }
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
                                         setTimeout(() => {
-                                            delete tmepState.transcations[key];
-                                            this.setState({tmepState});
-                                        }, 3000);
-                                    };
-                                    return false;
+                                            this.getMyBalance();
+                                            this.getPoolBankTotalStatus();
+                                            this.getUserWithdrawBalance();
+                                        }, 3000)
+                                    }
+                                    if (data && data.status === '0x0') {
+                                        clearInterval(allocateTUSDtimer);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'error',
+                                                    msg: 'Transaction failed'
+                                                }
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                    }
                                 })
-                                setTimeout(() => {
-                                    this.getMyBalance();
-                                    this.getPoolBankTotalStatus();
-                                    this.getUserWithdrawBalance();
-                                }, 3000)
-                            }
-                            if (data && data.status === '0x0') {
-                                clearInterval(allocateTUSDtimer);
-                                const keys = Object.keys(this.state.transcations);
-                                const tmepState = this.state;
-                                keys.map((key) => {
-                                    if (tmepState.transcations[key].txhash === ret) {
-                                        tmepState.transcations[key] = {
-                                            ...tmepState.transcations[key],
-                                            class: 'error',
-                                            msg: 'Transaction failed'
-                                        }
-                                        this.setState({tmepState});
-
-                                        setTimeout(() => {
-                                            delete tmepState.transcations[key];
-                                            this.setState({tmepState});
-                                        }, 3000);
-                                    };
-                                    return false;
-                                })
-                            }
-                        })
-                    }, 2000);
-                }
+                            }, 2000);
+                        }
+                    }
+                )
             }
         )
     }
@@ -4601,103 +4909,114 @@ export default class Home extends React.Component {
             title: 'Allocate USDC',
         }
         this.setState({tmepState});
-        this.contractUSDC.allocateTo.sendTransaction(
+        // get Limit first
+        this.contractUSDC.allocateTo.estimateGas(
             this.state.accountAddress,
             this.faucetNum * (10 ** this.state.decimalsUSDC),
             {
-                from: this.state.accountAddress,
-                gas: this.gasFee
+                from: this.state.accountAddress
             },
-            (err, ret) => {
-                if (err) {
-                    const keys = Object.keys(this.state.transcations);
-                    const tmepState = this.state;
-                    keys.map((key) => {
-                        if (tmepState.transcations[key].title === 'Allocate USDC') {
-                            tmepState.transcations[key] = {
-                                ...tmepState.transcations[key],
-                                class: 'error',
-                                msg: 'User reject transaction'
-                            }
-                            this.setState({tmepState});
-
-                            setTimeout(() => {
-                                delete tmepState.transcations[key];
-                                this.setState({tmepState});
-                            }, 3000);
-                        };
-                        return false;
-                    });
-                }
-                if (ret) {
-                    const keys = Object.keys(this.state.transcations);
-                    const tmepState = this.state;
-
-                    keys.map((key) => {
-                        if (tmepState.transcations[key].title === 'Allocate USDC') {
-                            tmepState.transcations[key].txhash = ret;
-                            tmepState.transcations[key] = {
-                                ...tmepState.transcations[key],
-                                msg: 'Waiting for confirmation...'
-                            }
-                            this.setState({tmepState});
-                        };
-                        return false;
-                    });
-
-                    var allocateUSDCtimer = setInterval(() => {
-                        console.log('i am checking Allocate USDC...');
-                        this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
-                            if (data && data.status === '0x1') {
-                                clearInterval(allocateUSDCtimer);
-                                const keys = Object.keys(this.state.transcations);
-                                const tmepState = this.state;
-                                keys.map((key) => {
-                                    if (tmepState.transcations[key].txhash === ret) {
-                                        tmepState.transcations[key] = {
-                                            ...tmepState.transcations[key],
-                                            class: 'success',
-                                            msg: 'Transaction succeeded'
-                                        }
+            (err, gasLimit) => {
+                this.contractUSDC.allocateTo.sendTransaction(
+                    this.state.accountAddress,
+                    this.faucetNum * (10 ** this.state.decimalsUSDC),
+                    {
+                        from: this.state.accountAddress,
+                        gas: gasLimit,
+                        gasPrice: this.state.gasPrice
+                    },
+                    (err, ret) => {
+                        if (err) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].title === 'Allocate USDC') {
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        class: 'error',
+                                        msg: 'User reject transaction'
+                                    }
+                                    this.setState({tmepState});
+        
+                                    setTimeout(() => {
+                                        delete tmepState.transcations[key];
                                         this.setState({tmepState});
-
+                                    }, 3000);
+                                };
+                                return false;
+                            });
+                        }
+                        if (ret) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+        
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].title === 'Allocate USDC') {
+                                    tmepState.transcations[key].txhash = ret;
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        msg: 'Waiting for confirmation...'
+                                    }
+                                    this.setState({tmepState});
+                                };
+                                return false;
+                            });
+        
+                            var allocateUSDCtimer = setInterval(() => {
+                                console.log('i am checking Allocate USDC...');
+                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                    if (data && data.status === '0x1') {
+                                        clearInterval(allocateUSDCtimer);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'success',
+                                                    msg: 'Transaction succeeded'
+                                                }
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
                                         setTimeout(() => {
-                                            delete tmepState.transcations[key];
-                                            this.setState({tmepState});
-                                        }, 3000);
-                                    };
-                                    return false;
+                                            this.getMyBalance();
+                                            this.getPoolBankTotalStatus();
+                                            this.getUserWithdrawBalance();
+                                        }, 3000)
+                                    }
+                                    if (data && data.status === '0x0') {
+                                        clearInterval(allocateUSDCtimer);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'error',
+                                                    msg: 'Transaction failed'
+                                                }
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                    }
                                 })
-                                setTimeout(() => {
-                                    this.getMyBalance();
-                                    this.getPoolBankTotalStatus();
-                                    this.getUserWithdrawBalance();
-                                }, 3000)
-                            }
-                            if (data && data.status === '0x0') {
-                                clearInterval(allocateUSDCtimer);
-                                const keys = Object.keys(this.state.transcations);
-                                const tmepState = this.state;
-                                keys.map((key) => {
-                                    if (tmepState.transcations[key].txhash === ret) {
-                                        tmepState.transcations[key] = {
-                                            ...tmepState.transcations[key],
-                                            class: 'error',
-                                            msg: 'Transaction failed'
-                                        }
-                                        this.setState({tmepState});
-
-                                        setTimeout(() => {
-                                            delete tmepState.transcations[key];
-                                            this.setState({tmepState});
-                                        }, 3000);
-                                    };
-                                    return false;
-                                })
-                            }
-                        })
-                    }, 2000);
-                }
+                            }, 2000);
+                        }
+                    }
+                )
             }
         )
     }
@@ -4719,103 +5038,114 @@ export default class Home extends React.Component {
             title: 'Allocate DF',
         }
         this.setState({tmepState});
-        this.contractDF.allocateTo.sendTransaction(
+        // get Limit first
+        this.contractDF.allocateTo.estimateGas(
             this.state.accountAddress,
             this.faucetNum * (10 ** this.state.decimalsDF),
             {
-                from: this.state.accountAddress,
-                gas: this.gasFee
+                from: this.state.accountAddress
             },
-            (err, ret) => {
-                if (err) {
-                    const keys = Object.keys(this.state.transcations);
-                    const tmepState = this.state;
-                    keys.map((key) => {
-                        if (tmepState.transcations[key].title === 'Allocate DF') {
-                            tmepState.transcations[key] = {
-                                ...tmepState.transcations[key],
-                                class: 'error',
-                                msg: 'User reject transaction'
-                            }
-                            this.setState({tmepState});
-
-                            setTimeout(() => {
-                                delete tmepState.transcations[key];
-                                this.setState({tmepState});
-                            }, 3000);
-                        };
-                        return false;
-                    });
-                }
-                if (ret) {
-                    const keys = Object.keys(this.state.transcations);
-                    const tmepState = this.state;
-
-                    keys.map((key) => {
-                        if (tmepState.transcations[key].title === 'Allocate DF') {
-                            tmepState.transcations[key].txhash = ret;
-                            tmepState.transcations[key] = {
-                                ...tmepState.transcations[key],
-                                msg: 'Waiting for confirmation...'
-                            }
-                            this.setState({tmepState});
-                        };
-                        return false;
-                    });
-
-                    var allocateDFtimer = setInterval(() => {
-                        console.log('i am checking Allocate DF...');
-                        this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
-                            if (data && data.status === '0x1') {
-                                clearInterval(allocateDFtimer);
-                                const keys = Object.keys(this.state.transcations);
-                                const tmepState = this.state;
-                                keys.map((key) => {
-                                    if (tmepState.transcations[key].txhash === ret) {
-                                        tmepState.transcations[key] = {
-                                            ...tmepState.transcations[key],
-                                            class: 'success',
-                                            msg: 'Transaction succeeded'
-                                        }
+            (err, gasLimit) => {
+                this.contractDF.allocateTo.sendTransaction(
+                    this.state.accountAddress,
+                    this.faucetNum * (10 ** this.state.decimalsDF),
+                    {
+                        from: this.state.accountAddress,
+                        gas: gasLimit,
+                        gasPrice: this.state.gasPrice
+                    },
+                    (err, ret) => {
+                        if (err) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].title === 'Allocate DF') {
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        class: 'error',
+                                        msg: 'User reject transaction'
+                                    }
+                                    this.setState({tmepState});
+        
+                                    setTimeout(() => {
+                                        delete tmepState.transcations[key];
                                         this.setState({tmepState});
-
+                                    }, 3000);
+                                };
+                                return false;
+                            });
+                        }
+                        if (ret) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+        
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].title === 'Allocate DF') {
+                                    tmepState.transcations[key].txhash = ret;
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        msg: 'Waiting for confirmation...'
+                                    }
+                                    this.setState({tmepState});
+                                };
+                                return false;
+                            });
+        
+                            var allocateDFtimer = setInterval(() => {
+                                console.log('i am checking Allocate DF...');
+                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                    if (data && data.status === '0x1') {
+                                        clearInterval(allocateDFtimer);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'success',
+                                                    msg: 'Transaction succeeded'
+                                                }
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
                                         setTimeout(() => {
-                                            delete tmepState.transcations[key];
-                                            this.setState({tmepState});
-                                        }, 3000);
-                                    };
-                                    return false;
+                                            this.getMyBalance();
+                                            this.getPoolBankTotalStatus();
+                                            this.getUserWithdrawBalance();
+                                        }, 3000)
+                                    }
+                                    if (data && data.status === '0x0') {
+                                        clearInterval(allocateDFtimer);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'error',
+                                                    msg: 'Transaction failed'
+                                                }
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                    }
                                 })
-                                setTimeout(() => {
-                                    this.getMyBalance();
-                                    this.getPoolBankTotalStatus();
-                                    this.getUserWithdrawBalance();
-                                }, 3000)
-                            }
-                            if (data && data.status === '0x0') {
-                                clearInterval(allocateDFtimer);
-                                const keys = Object.keys(this.state.transcations);
-                                const tmepState = this.state;
-                                keys.map((key) => {
-                                    if (tmepState.transcations[key].txhash === ret) {
-                                        tmepState.transcations[key] = {
-                                            ...tmepState.transcations[key],
-                                            class: 'error',
-                                            msg: 'Transaction failed'
-                                        }
-                                        this.setState({tmepState});
-
-                                        setTimeout(() => {
-                                            delete tmepState.transcations[key];
-                                            this.setState({tmepState});
-                                        }, 3000);
-                                    };
-                                    return false;
-                                })
-                            }
-                        })
-                    }, 2000);
-                }
+                            }, 2000);
+                        }
+                    }
+                )
             }
         )
     }
