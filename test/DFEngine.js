@@ -451,6 +451,8 @@ contract('DFEngine', accounts => {
                             assert.equal(tokenAddress, await xCollateralObject[xTokenAddress].getSrcERC20.call());
 
                             var amountNB = new BN(Number(amount * 10 ** tokenDecimals.toString()).toLocaleString().replace(/,/g,''));
+                            var amountReal = await xCollateralObject[xTokenAddress].reverseByMultiple.call(
+                                await xCollateralObject[xTokenAddress].changeByMultiple.call(amountNB));
                             console.log('deposit token index : ' + (collateralAddress.indexOf(tokenAddress) + 1));
                             console.log('deposit token name : ' + await collateralObject[tokenAddress].name.call());
                             console.log('deposit token address : ' + tokenAddress);
@@ -510,6 +512,7 @@ contract('DFEngine', accounts => {
                             runData['decimals'] = tokenDecimals.toString();
                             runData['amount'] = amount;
                             runData['amountNB'] = amountNB.toString();
+                            runData['amount real'] = amountReal.toString();
                             try {
                                 transactionData = await dfProtocol.deposit(tokenAddress, new BN(0), amountNB, {from: accountAddress});
                                 depositGasUsed = depositGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : depositGasUsed;
@@ -864,7 +867,7 @@ contract('DFEngine', accounts => {
                             //     recordMinted.hasOwnProperty(recordMintedPosition) ? recordMinted[recordMintedPosition].toString() : '0');
 
                             accountTokenBalanceCurrent = await collateralObject[tokenAddress].balanceOf.call(accountAddress);
-                            assert.equal(accountTokenBalanceOrigin.sub(amountNB).toString(), accountTokenBalanceCurrent.toString());
+                            assert.equal(accountTokenBalanceOrigin.sub(amountReal).toString(), accountTokenBalanceCurrent.toString());
 
                             runData[tokenName + ' balance current'] = accountTokenBalanceCurrent.toString() / (10 ** tokenDecimals.toString());
                             runData[tokenName + ' balance current BN'] = accountTokenBalanceCurrent.toString();
@@ -1355,11 +1358,12 @@ contract('DFEngine', accounts => {
                             amountTotal = dfWithdrawBalances[1][dfWithdrawBalances[0].indexOf(tokenAddress)];
                             amount = MathTool.randomNum(0, Number(amountTotal.mul(new BN(11)).div(new BN(10))));
                             // amount = MathTool.randomNum(0, 50);
+                            var tokenDecimals = collateralDecimals[collateralAddress.indexOf(tokenAddress)];
                             if(runConfig[configIndex]['data'][dfEngineIndex].hasOwnProperty('data')){
                         
                                 if (runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex].hasOwnProperty('amount')) {
                                     amount = runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex]['amount'];
-                                    // amount = amount * 10 ** 18;
+                                    amount = amount * 10 ** tokenDecimals.toString();
                                 }
         
                                 if (runConfig[configIndex]['data'][dfEngineIndex]['data'][conditionIndex].hasOwnProperty('total')
@@ -1368,9 +1372,11 @@ contract('DFEngine', accounts => {
                                     amount = amountTotal;
                                 }
                             }
-                            var tokenDecimals = collateralDecimals[collateralAddress.indexOf(tokenAddress)];
-                            var amountNB = typeof(amount) == 'number' ? new BN(Number(amount * 10 ** tokenDecimals.toString()).toLocaleString().replace(/,/g,'')) : amount;
-                            console.log('withdraw token name : ' + await collateralObject[tokenAddress].name.call());
+                            // var tokenDecimals = collateralDecimals[collateralAddress.indexOf(tokenAddress)];
+                            // var amountNB = typeof(amount) == 'number' ? new BN(Number(amount * 10 ** tokenDecimals.toString()).toLocaleString().replace(/,/g,'')) : amount;
+                            var amountNB = typeof(amount) == 'number' ? new BN(amount.toLocaleString().replace(/,/g,'')) : amount;
+                            var tokenName = await collateralObject[tokenAddress].name.call();
+                            console.log('withdraw token name : ' + tokenName);
                             console.log('withdraw token address : ' + tokenAddress);
                             console.log('withdraw token decimals : ' + tokenDecimals.toString());
                             console.log('withdraw account index : ' + accounts.indexOf(accountAddress));
@@ -1384,6 +1390,8 @@ contract('DFEngine', accounts => {
                             console.log('\n');
 
                             xTokenAddress = await dfStore.getWrappedToken.call(tokenAddress);
+                            var amountReal = await xCollateralObject[xTokenAddress].reverseByMultiple.call(
+                                await xCollateralObject[xTokenAddress].changeByMultiple.call(amountNB));
                             dfStoreTokenBalanceOrigin = await dfStore.getTokenBalance.call(xTokenAddress);
                             dfStoreLockTokenBalanceOrigin = await dfStore.getResUSDXBalance.call(xTokenAddress);
                             dfStoreAccountTokenOrigin = await dfStore.getDepositorBalance.call(accountAddress, xTokenAddress);
@@ -1448,8 +1456,10 @@ contract('DFEngine', accounts => {
                             runData[tokenName + ' balance'] = accountTokenBalanceOrigin.toString() / (10 ** tokenDecimals.toString());
                             runData[tokenName + ' balance BN'] = accountTokenBalanceOrigin.toString();
                             
-                            runData['amount'] = amount / 10 ** 18;
+                            runData['decimals'] = tokenDecimals.toString();
+                            runData['amount'] = amount / 10 ** tokenDecimals.toString();
                             runData['amountNB'] = amountNB.toString();
+                            runData['amount real'] = amountReal.toString();
                             runData['depositor balance'] = dfStoreAccountTokenOrigin.toString();
                             try {
                                 transactionData = await dfProtocol.withdraw(tokenAddress, new BN(0), amountNB, {from: accountAddress});
@@ -1497,7 +1507,7 @@ contract('DFEngine', accounts => {
                             }
 
                             amountMin = new BN(0);
-                            amountMin = amountTotal.lt(amountNB) ? amountTotal : amountNB;
+                            amountMin = amountTotal.lt(amountReal) ? amountTotal : amountReal;
                             // if (recordAccountMap.hasOwnProperty(tokenAddress) 
                             //         && recordAccountMap[tokenAddress].hasOwnProperty(accountAddress)
                             //         && recordToken.hasOwnProperty(tokenAddress)
@@ -2047,10 +2057,6 @@ contract('DFEngine', accounts => {
                             }
 
                             try {
-                                console.log('amountNB');
-                            console.log(amountNB);
-                            console.log(amountNB.toString());
-                            console.log('accountAddress : ' + accountAddress);
                                 transactionData = await dfProtocol.oneClickMinting(new BN(0), amountNB, {from: accountAddress});
                                 oneClickMintingGasUsed = oneClickMintingGasUsed < transactionData.receipt.gasUsed ? transactionData.receipt.gasUsed : oneClickMintingGasUsed;
                                 oneClickMintingGasData[oneClickMintingGasData.length] = transactionData.receipt.gasUsed;
@@ -2365,6 +2371,9 @@ contract('DFEngine', accounts => {
                                         xCollateralAddress.push(wrappedToken.address);
                                         xCollateralObject[wrappedToken.address] = wrappedToken;
                                         xTokenDecimalsList.push(decimals);
+
+                                        await dfPool.approveToEngine(wrappedToken.address, dfEngine.address);
+                                        await dfCollateral.approveToEngine(wrappedToken.address, dfEngine.address);
 
                                         collateralIndex++;
                                         
@@ -2715,7 +2724,50 @@ contract('DFEngine', accounts => {
                 
             }
 
-            
+            console.log('collateralAddress : ');
+            console.log(collateralAddress);
+
+            console.log('xCollateralAddress : ');
+            console.log(xCollateralAddress);
+
+            console.log('dSGuard : ');
+            console.log(dSGuard.address);
+
+            console.log('usdxToken : ');
+            console.log(usdxToken.address);
+
+            console.log('dfToken : ');
+            console.log(dfToken.address);
+
+            console.log('dfStore : ');
+            console.log(dfStore.address);
+
+            console.log('dfCollateral : ');
+            console.log(dfCollateral.address);
+
+            console.log('dfPool : ');
+            console.log(dfPool.address);
+
+            console.log('dfFunds : ');
+            console.log(dfFunds.address);
+
+            console.log('priceFeed : ');
+            console.log(priceFeed.address);
+
+            console.log('medianizer : ');
+            console.log(medianizer.address);
+
+            console.log('dfEngine : ');
+            console.log(dfEngine.address);
+
+            console.log('dfSetting : ');
+            console.log(dfSetting.address);
+
+            console.log('dfProtocol : ');
+            console.log(dfProtocol.address);
+
+            console.log('dfProtocolView : ');
+            console.log(dfProtocolView.address);
         });
     }
 
