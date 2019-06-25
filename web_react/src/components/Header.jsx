@@ -223,7 +223,7 @@ export default class Header extends React.Component {
                                     </span>
                                 </td>
 
-                                {/* <td className='noborder'>
+                                <td className='noborder'>
                                     <p className="oneStep" style={{ background: 'red' }} onClick={() => { this.exMintage() }}>Mintage</p>
                                     <Drawer
                                         placement='top'
@@ -274,7 +274,7 @@ export default class Header extends React.Component {
                                             </div>
                                         </div>
                                     </Drawer>
-                                </td> */}
+                                </td>
 
                             </tr>
                         </tbody>

@@ -2695,24 +2695,23 @@ export default class Home extends React.Component {
         if (!this.state.couldWithdraw) {
             return;
         }
-
         var addr;
         var num;
         if (this.state.toWithdraw === 'DAI') {
             addr = this.addressDAI;
-            num = this.state.toWithdrawNum * (10 ** this.state.decimalsDAI);
+            num = this.Web3.toBigNumber(this.state.toWithdrawNum).mul(this.Web3.toBigNumber(10 ** this.state.decimalsDAI));
             this.withdrawDAI(addr, num);
         } else if (this.state.toWithdraw === 'PAX') {
             addr = this.addressPAX;
-            num = this.state.toWithdrawNum * (10 ** this.state.decimalsPAX);
+            num = this.Web3.toBigNumber(this.state.toWithdrawNum).mul(this.Web3.toBigNumber(10 ** this.state.decimalsPAX));
             this.withdrawPAX(addr, num);
         } else if (this.state.toWithdraw === 'TUSD') {
             addr = this.addressTUSD;
-            num = this.state.toWithdrawNum * (10 ** this.state.decimalsTUSD);
+            num = this.Web3.toBigNumber(this.state.toWithdrawNum).mul(this.Web3.toBigNumber(10 ** this.state.decimalsTUSD));
             this.withdrawTUSD(addr, num);
         } else if (this.state.toWithdraw === 'USDC') {
             addr = this.addressUSDC;
-            num = this.state.toWithdrawNum * (10 ** this.state.decimalsUSDC);
+            num = this.Web3.toBigNumber(this.state.toWithdrawNum).mul(this.Web3.toBigNumber(10 ** this.state.decimalsUSDC));
             this.withdrawUSDC(addr, num);
         }
     }
@@ -2731,7 +2730,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Withdraw ' + num / (10 ** this.state.decimalsDAI) + ' DAI',
+            title: 'Withdraw ' + this.toThousands(num.div(10 ** this.state.decimalsDAI).toString(10)) + ' DAI',
         }
         this.setState({tmepState});
         // get Limit first
@@ -2866,7 +2865,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Withdraw ' + num / (10 ** this.state.decimalsPAX) + ' PAX',
+            title: 'Withdraw ' + this.toThousands(num.div(10 ** this.state.decimalsPAX).toString(10)) + ' PAX',
         }
         this.setState({tmepState});
         // get Limit first
@@ -3001,7 +3000,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Withdraw ' + num / (10 ** this.state.decimalsTUSD) + ' TUSD',
+            title: 'Withdraw ' + this.toThousands(num.div(10 ** this.state.decimalsTUSD).toString(10)) + ' TUSD',
         }
         this.setState({tmepState});
         // get Limit first
@@ -3136,7 +3135,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Withdraw ' + num / (10 ** this.state.decimalsUSDC) + ' USDC',
+            title: 'Withdraw ' + this.toThousands(num.div(10 ** this.state.decimalsUSDC).toString(10)) + ' USDC',
         }
         this.setState({tmepState});
         // get Limit first
@@ -3447,7 +3446,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Deposit ' + num.div(10 ** this.state.decimalsDAI) + ' DAI',
+            title: 'Deposit ' + this.toThousands(num.div(10 ** this.state.decimalsDAI).toString(10)) + ' DAI',
         }
         this.setState({tmepState});
         // get Limit first
@@ -3592,7 +3591,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Deposit ' + num.div(10 ** this.state.decimalsPAX) + ' PAX',
+            title: 'Deposit ' + this.toThousands(num.div(10 ** this.state.decimalsPAX).toString(10)) + ' PAX',
         }
         this.setState({tmepState});
         // get Limit first
@@ -3736,7 +3735,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Deposit ' + num.div(10 ** this.state.decimalsTUSD) + ' TUSD',
+            title: 'Deposit ' + this.toThousands(num.div(10 ** this.state.decimalsTUSD).toString(10)) + ' TUSD',
         }
         this.setState({tmepState});
         // get Limit first
@@ -3880,7 +3879,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Deposit ' + num.div(10 ** this.state.decimalsUSDC) + ' USDC',
+            title: 'Deposit ' + this.toThousands(num.div(10 ** this.state.decimalsUSDC).toString(10)) + ' USDC',
         }
         this.setState({tmepState});
         // get Limit first
@@ -4104,7 +4103,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Reconvert ' + this.state.toDestroyNum + ' USDx',
+            title: 'Reconvert ' + this.toThousands(this.state.toDestroyNum) + ' USDx',
         }
         this.setState({tmepState});
         // get Limit first
