@@ -36,10 +36,10 @@ import right_net from '../assets/img/right_net.png';
 
 
 export default class Home extends React.Component {
-    addressDAI = '0xf494e07dfdbce883bf699cedf818fde2fa432db4';
-    addressPAX = '0x2901ea287e0299d595783faedae3ca0ab2bc4e53';
-    addressTUSD = '0xfb010ff66700b6ace85fa68e2d98ab754b6f7af4';
-    addressUSDC = '0x481f8ff13489695b2e1c81691a95a81f8cb96e32';
+    addressDAI = '0xf494e07dfdbce883bf699cedf818fde2fa432db4'.toLowerCase();
+    addressPAX = '0x2901ea287e0299d595783faedae3ca0ab2bc4e53'.toLowerCase();
+    addressTUSD = '0xfb010ff66700b6ace85fa68e2d98ab754b6f7af4'.toLowerCase();
+    addressUSDC = '0x481f8ff13489695b2e1c81691a95a81f8cb96e32'.toLowerCase();
     addressDF = '0x4AF82b7C2F049574C9fc742A896DAbEA379b7d51';
     addressUSDx = '0x39b976BBA9acB620a98614ca80f5D4AF47FFAffa';
 
@@ -645,7 +645,7 @@ export default class Home extends React.Component {
                 var secArry = ret[1];
 
                 for (let i = 0; i < addressArry.length; i++) {
-                    if (addressArry[i] === this.addressDAI) {
+                    if (addressArry[i].toLowerCase() === this.addressDAI) {
                         this.sectionDAI = secArry[i].div(10 ** 18).toFixed();
                         this.tatolSection = Number(this.tatolSection) + Number(this.sectionDAI);
                         this.setState({
@@ -654,7 +654,7 @@ export default class Home extends React.Component {
                             tatolSection: this.tatolSection
                         })
                     }
-                    if (addressArry[i] === this.addressPAX) {
+                    if (addressArry[i].toLowerCase() === this.addressPAX) {
                         this.sectionPAX = secArry[i].div(10 ** 18).toFixed();
                         this.tatolSection = Number(this.tatolSection) + Number(this.sectionPAX);
                         this.setState({
@@ -663,7 +663,7 @@ export default class Home extends React.Component {
                             tatolSection: this.tatolSection
                         })
                     }
-                    if (addressArry[i] === this.addressUSDC) {
+                    if (addressArry[i].toLowerCase() === this.addressUSDC) {
                         this.sectionUSDC = secArry[i].div(10 ** 18).toFixed();
                         this.tatolSection = Number(this.tatolSection) + Number(this.sectionUSDC);
                         this.setState({
@@ -672,7 +672,7 @@ export default class Home extends React.Component {
                             tatolSection: this.tatolSection
                         })
                     }
-                    if (addressArry[i] === this.addressTUSD) {
+                    if (addressArry[i].toLowerCase() === this.addressTUSD) {
                         this.sectionTUSD = secArry[i].div(10 ** 18).toFixed();
                         this.tatolSection = Number(this.tatolSection) + Number(this.sectionTUSD);
                         this.setState({
@@ -695,7 +695,7 @@ export default class Home extends React.Component {
                 var sectionArry = ret[1];
 
                 for (let i = 0; i < addrArry.length; i++) {
-                    if (addrArry[i] === this.addressDAI) {
+                    if (addrArry[i].toLowerCase() === this.addressDAI) {
                         this.sectionDAIBurning = sectionArry[i].div(10 ** 16).toFixed();
                         this.tatolSectionBurning = Number(this.tatolSectionBurning) + Number(this.sectionDAIBurning);
                         this.setState({
@@ -704,7 +704,7 @@ export default class Home extends React.Component {
                             tatolSectionBurning: this.tatolSectionBurning
                         })
                     }
-                    if (addrArry[i] === this.addressPAX) {
+                    if (addrArry[i].toLowerCase() === this.addressPAX) {
                         this.sectionPAXBurning = sectionArry[i].div(10 ** 16).toFixed();
                         this.tatolSectionBurning = Number(this.tatolSectionBurning) + Number(this.sectionPAXBurning);
                         this.setState({
@@ -713,7 +713,7 @@ export default class Home extends React.Component {
                             tatolSectionBurning: this.tatolSectionBurning
                         })
                     }
-                    if (addrArry[i] === this.addressTUSD) {
+                    if (addrArry[i].toLowerCase() === this.addressTUSD) {
                         this.sectionTUSDBurning = sectionArry[i].div(10 ** 16).toFixed();
                         this.tatolSectionBurning = Number(this.tatolSectionBurning) + Number(this.sectionTUSDBurning);
                         this.setState({
@@ -722,7 +722,7 @@ export default class Home extends React.Component {
                             tatolSectionBurning: this.tatolSectionBurning
                         })
                     }
-                    if (addrArry[i] === this.addressUSDC) {
+                    if (addrArry[i].toLowerCase() === this.addressUSDC) {
                         this.sectionUSDCBurning = sectionArry[i].div(10 ** 16).toFixed();
                         this.tatolSectionBurning = Number(this.tatolSectionBurning) + Number(this.sectionUSDCBurning);
                         this.setState({
