@@ -190,7 +190,7 @@ export default class Home extends React.Component {
                 this.getPrice();
                 this.getColMaxClaim();
                 this.getUserWithdrawBalance();
-                this.isSyncing();
+                // this.isSyncing();
                 this.getGasPrice();
             }else {
                 console.log('not connected...');
@@ -835,7 +835,8 @@ export default class Home extends React.Component {
         })
     }
 
-    // isSyncing
+
+    // *** isSyncing ***
     isSyncing() {
         this.Web3.eth.isSyncing((res) => {
             if(res){
@@ -848,7 +849,8 @@ export default class Home extends React.Component {
         // })
     }
 
-    // get price
+
+    // *** get price ***
     getGasPrice() {
         this.Web3.eth.getGasPrice((e, r) => {
             // console.log(e, Number(r));
@@ -860,8 +862,7 @@ export default class Home extends React.Component {
     }
 
 
-    // var num = new BN((amount * 10 ** 18).toLocaleString().replace(/,/g,''))
-    // getMyBalance
+    // *** get My Balance ***
     getMyBalance () {
         this.Web3.eth.getBalance(this.state.accountAddress, (err, ret) => {
             this.setState({
@@ -910,7 +911,9 @@ export default class Home extends React.Component {
             });
         });
     }
-    // getPoolBankTotalStatus
+
+
+    // *** get Pool_Bank_Total Status ***
     getPoolBankTotalStatus () {
         this.contractUSDx.totalSupply.call((err, ret) => {
             this.setState({
@@ -989,7 +992,9 @@ export default class Home extends React.Component {
             }
         })
     }
-    // getUserWithdrawBalance
+
+
+    // *** get User Withdraw Balance ***
     getUserWithdrawBalance () {
         this.contractProtocolView.getUserWithdrawBalance.call((err, ret)=>{
             // console.log(err, ret);
@@ -1030,9 +1035,43 @@ export default class Home extends React.Component {
             }
         })
     }
+    handleMaxWithdraw(NumStr, token) {
+        if(token === 'DAI') {
+            if (NumStr.length < 18) {
+                NumStr = '00000000000000000' + NumStr;
+                return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - this.state.decimalsDAI) + '.' + NumStr.substring(NumStr.length - this.state.decimalsDAI)).toString(10);
+            }else {
+                return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - this.state.decimalsDAI) + '.' + NumStr.substring(NumStr.length - this.state.decimalsDAI)).toString(10);
+            }
+        }
+        if(token === 'PAX') {
+            if (NumStr.length < 18) {
+                NumStr = '00000000000000000' + NumStr;
+                return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - this.state.decimalsPAX) + '.' + NumStr.substring(NumStr.length - this.state.decimalsPAX)).toString(10);
+            }else {
+                return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - this.state.decimalsPAX) + '.' + NumStr.substring(NumStr.length - this.state.decimalsPAX)).toString(10);
+            }
+        }
+        if(token === 'TUSD') {
+            if (NumStr.length < 18) {
+                NumStr = '00000000000000000' + NumStr;
+                return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - this.state.decimalsTUSD) + '.' + NumStr.substring(NumStr.length - this.state.decimalsTUSD)).toString(10);
+            }else {
+                return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - this.state.decimalsTUSD) + '.' + NumStr.substring(NumStr.length - this.state.decimalsTUSD)).toString(10);
+            }
+        }
+        if(token === 'USDC') {
+            if (NumStr.length < 18) {
+                NumStr = '00000000000000000' + NumStr;
+                return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - this.state.decimalsUSDC) + '.' + NumStr.substring(NumStr.length - this.state.decimalsUSDC)).toString(10);
+            }else {
+                return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - this.state.decimalsUSDC) + '.' + NumStr.substring(NumStr.length - this.state.decimalsUSDC)).toString(10);
+            }
+        }
+    }
 
 
-    // format number
+    // *** format number ***
     formatNumber(BNr, token) {
         var originStr = '0';
 
@@ -1089,7 +1128,7 @@ export default class Home extends React.Component {
     }
 
 
-    // check approve
+    // *** check if approve ***
     checkApprove () {
         this.contractDAI.allowance.call(this.state.accountAddress, this.addressPool, (err, ret) => {
             if (err) {
@@ -1208,7 +1247,7 @@ export default class Home extends React.Component {
     }
 
 
-    // Approve token
+    // *** Approve ***
     approve (token) {
         if (!this.state.isConnected) {
             return;
@@ -1884,7 +1923,9 @@ export default class Home extends React.Component {
         }
         
     }
-    // Lock token
+
+
+    // *** Lock ***
     lock (token) {
         const keys = Object.keys(this.state.transcations);
         for (var i = 0; i < keys.length; i++) {
@@ -2503,43 +2544,7 @@ export default class Home extends React.Component {
     }
 
 
-    handleMaxWithdraw(NumStr, token) {
-        if(token === 'DAI') {
-            if (NumStr.length < 18) {
-                NumStr = '00000000000000000' + NumStr;
-                return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - this.state.decimalsDAI) + '.' + NumStr.substring(NumStr.length - this.state.decimalsDAI)).toString(10);
-            }else {
-                return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - this.state.decimalsDAI) + '.' + NumStr.substring(NumStr.length - this.state.decimalsDAI)).toString(10);
-            }
-        }
-        if(token === 'PAX') {
-            if (NumStr.length < 18) {
-                NumStr = '00000000000000000' + NumStr;
-                return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - this.state.decimalsPAX) + '.' + NumStr.substring(NumStr.length - this.state.decimalsPAX)).toString(10);
-            }else {
-                return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - this.state.decimalsPAX) + '.' + NumStr.substring(NumStr.length - this.state.decimalsPAX)).toString(10);
-            }
-        }
-        if(token === 'TUSD') {
-            if (NumStr.length < 18) {
-                NumStr = '00000000000000000' + NumStr;
-                return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - this.state.decimalsTUSD) + '.' + NumStr.substring(NumStr.length - this.state.decimalsTUSD)).toString(10);
-            }else {
-                return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - this.state.decimalsTUSD) + '.' + NumStr.substring(NumStr.length - this.state.decimalsTUSD)).toString(10);
-            }
-        }
-        if(token === 'USDC') {
-            if (NumStr.length < 18) {
-                NumStr = '00000000000000000' + NumStr;
-                return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - this.state.decimalsUSDC) + '.' + NumStr.substring(NumStr.length - this.state.decimalsUSDC)).toString(10);
-            }else {
-                return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - this.state.decimalsUSDC) + '.' + NumStr.substring(NumStr.length - this.state.decimalsUSDC)).toString(10);
-            }
-        }
-    }
-
-
-    // adjustMaxToWithdraw
+    // *** adjust Max To Withdraw ***
     adjustMaxToWithdraw () {
         if (this.state.toWithdraw === 'DAI') {
             this.setState({
@@ -2570,7 +2575,7 @@ export default class Home extends React.Component {
             this.withdrawNumChange(this.state.toWithdrawNum);
         }, 500)
     }
-    // withdraw number check
+    // *** withdraw ***
     withdrawNumChange (val) {
         if (val.length > 20) {
             return;
@@ -2676,7 +2681,6 @@ export default class Home extends React.Component {
             }
         }
     }
-    // depositOptChange
     withdrawOptChange(token) {
         this.setState({
             ...this.state,
@@ -2690,7 +2694,6 @@ export default class Home extends React.Component {
             this.withdrawNumChange(this.state.toWithdrawNum);
         }, 500);
     }
-    // withdraw
     withdraw () {
         if (!this.state.couldWithdraw) {
             return;
@@ -2715,7 +2718,6 @@ export default class Home extends React.Component {
             this.withdrawUSDC(addr, num);
         }
     }
-    // withdrawDAI
     withdrawDAI (addr, num) {
         var str1;
         var str2;
@@ -2853,7 +2855,6 @@ export default class Home extends React.Component {
             }
         )
     }
-    // withdrawPAX
     withdrawPAX (addr, num) {
         var str1;
         var str2;
@@ -2991,7 +2992,6 @@ export default class Home extends React.Component {
             }
         )
     }
-    // withdrawTUSD
     withdrawTUSD (addr, num) {
         var str1;
         var str2;
@@ -3129,7 +3129,6 @@ export default class Home extends React.Component {
             }
         )
     }
-    // withdrawUSDC
     withdrawUSDC (addr, num) {
         var str1;
         var str2;
@@ -3268,7 +3267,8 @@ export default class Home extends React.Component {
         )
     }
 
-    // getUSDXForDeposit
+
+    // *** get USDx For my Deposit ***
     getUSDXForDeposit (tokenID, amount) {
         this.contractProtocolView.getUSDXForDeposit.call(tokenID, amount, (err, ret)=>{
             console.log(err, ret);
@@ -3280,7 +3280,9 @@ export default class Home extends React.Component {
             }
         })
     }
-    // deposit number check
+
+
+    // *** deposit ***
     depositNumChange (val) {
         if (val.length > 16) {
             return;
@@ -3401,7 +3403,6 @@ export default class Home extends React.Component {
             }
         }
     }
-    // depositOptChange
     depositOptChange(token) {
         this.setState({
             ...this.state,
@@ -3415,7 +3416,6 @@ export default class Home extends React.Component {
             this.depositNumChange(this.state.toDepositNum);
         }, 500);
     }
-    // deposit
     deposit () {
         if (!this.state.couldDeposit) {
             return;
@@ -3440,7 +3440,6 @@ export default class Home extends React.Component {
             this.depositUSDC(addr, num);
         }
     }
-    // deposit DAI
     depositDAI (addr, num) {
         if (!this.state.approvedDAI) {
             this.setState({
@@ -3588,7 +3587,6 @@ export default class Home extends React.Component {
             }
         )
     }
-    // deposit PAX
     depositPAX (addr, num) {
         if (!this.state.approvedPAX) {
             this.setState({
@@ -3735,7 +3733,6 @@ export default class Home extends React.Component {
             }
         )
     }
-    // deposit TUSD
     depositTUSD (addr, num) {
         if (!this.state.approvedTUSD) {
             this.setState({
@@ -3882,7 +3879,6 @@ export default class Home extends React.Component {
             }
         )
     }
-    // deposit USDC
     depositUSDC (addr, num) {
         if (!this.state.approvedUSDC) {
             this.setState({
@@ -4031,7 +4027,7 @@ export default class Home extends React.Component {
     }
 
 
-    // destroy number check
+    // *** destroy ***
     destroyNumChange (val) {
         if (val.length > 16) {
             return;
@@ -4096,7 +4092,6 @@ export default class Home extends React.Component {
             }
         }
     }
-    // destroy
     destroy () {
         if (!this.state.couldDestroy) {
             return;
@@ -4256,14 +4251,139 @@ export default class Home extends React.Component {
         )
     }
 
-    // claim
+
+    // *** toGenerateMax ***
+    toGenerateMax(BN){
+        // console.log(BN);
+        // console.log(BN.toString(10));
+
+        const id = Math.random();
+        const msg = 'Waiting for transaction signature...';
+        const tmepState = this.state;
+        tmepState.transcations[id] = {
+            id: id,
+            msg: msg,
+            class: 'inprocess',
+            title: 'Mintage ' + this.toThousands(BN.toString(10)) + ' USDx',
+        }
+        this.setState({tmepState});
+        // get Limit first
+        this.contractProtocol.oneClickMinting.estimateGas(
+            0,
+            BN.mul(this.Web3.toBigNumber(10 ** 18)),
+            {
+                from: this.state.accountAddress
+            },
+            (err, gasLimit) => {
+                this.contractProtocol.oneClickMinting.sendTransaction(
+                    0,
+                    BN.mul(this.Web3.toBigNumber(10 ** 18)),
+                    {
+                        from: this.state.accountAddress,
+                        gas: gasLimit,
+                        gasPrice: this.state.gasPrice
+                    },
+                    (err, ret) => {
+                        if (err) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        class: 'error',
+                                        msg: 'User reject transaction'
+                                    }
+                                    this.setState({tmepState});
+        
+                                    setTimeout(() => {
+                                        delete tmepState.transcations[key];
+                                        this.setState({tmepState});
+                                    }, 3000);
+                                };
+                                return false;
+                            });
+                        }
+                        if (ret) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+        
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key].txhash = ret;
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        msg: 'Waiting for confirmation...'
+                                    }
+                                    this.setState({tmepState});
+                                };
+                                return false;
+                            });
+        
+                            var timerOBJ = {};
+                            var tempRnum = Math.random();
+                            timerOBJ[tempRnum] = setInterval(() => {
+                                console.log('i am checking oneClickMinting... =>' + tempRnum);
+                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                    if (data && data.status === '0x1') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'success',
+                                                    msg: 'Transaction succeeded'
+                                                }
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                        setTimeout(() => {
+                                            this.getMyBalance();
+                                            this.getPoolBankTotalStatus();
+                                            this.getUserWithdrawBalance();
+                                        }, 3000)
+                                    } 
+                                    if (data && data.status === '0x0') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'error',
+                                                    msg: 'Transaction failed'
+                                                }
+                                                this.setState({tmepState});
+        
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({tmepState});
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                    }
+                                })
+                            }, 2000);
+                        }
+                    }
+                )
+            }
+        )
+    }
+
+
+    // *** claim ***
     claim () {
-        // const keys = Object.keys(this.state.transcations);
-        // for (var i = 0; i < keys.length; i++) {
-        //     if (this.state.transcations[keys[i]].title === 'CLAIM USDx') {
-        //         return;
-        //     }
-        // }
         const id = Math.random();
         const msg = 'Waiting for transaction signature...';
         const tmepState = this.state;
@@ -4386,137 +4506,8 @@ export default class Home extends React.Component {
         )
     }
 
-    // toGenerateMax
-    toGenerateMax(BN){
-        // console.log(BN);
-        // console.log(BN.toString(10));
 
-        const id = Math.random();
-        const msg = 'Waiting for transaction signature...';
-        const tmepState = this.state;
-        tmepState.transcations[id] = {
-            id: id,
-            msg: msg,
-            class: 'inprocess',
-            title: 'Mintage ' + this.toThousands(BN.toString(10)) + ' USDx',
-        }
-        this.setState({tmepState});
-        // get Limit first
-        this.contractProtocol.oneClickMinting.estimateGas(
-            0,
-            BN.mul(this.Web3.toBigNumber(10 ** 18)),
-            {
-                from: this.state.accountAddress
-            },
-            (err, gasLimit) => {
-                this.contractProtocol.oneClickMinting.sendTransaction(
-                    0,
-                    BN.mul(this.Web3.toBigNumber(10 ** 18)),
-                    {
-                        from: this.state.accountAddress,
-                        gas: gasLimit,
-                        gasPrice: this.state.gasPrice
-                    },
-                    (err, ret) => {
-                        if (err) {
-                            const keys = Object.keys(this.state.transcations);
-                            const tmepState = this.state;
-                            keys.map((key) => {
-                                if (tmepState.transcations[key].id === id) {
-                                    tmepState.transcations[key] = {
-                                        ...tmepState.transcations[key],
-                                        class: 'error',
-                                        msg: 'User reject transaction'
-                                    }
-                                    this.setState({tmepState});
-        
-                                    setTimeout(() => {
-                                        delete tmepState.transcations[key];
-                                        this.setState({tmepState});
-                                    }, 3000);
-                                };
-                                return false;
-                            });
-                        }
-                        if (ret) {
-                            const keys = Object.keys(this.state.transcations);
-                            const tmepState = this.state;
-        
-                            keys.map((key) => {
-                                if (tmepState.transcations[key].id === id) {
-                                    tmepState.transcations[key].txhash = ret;
-                                    tmepState.transcations[key] = {
-                                        ...tmepState.transcations[key],
-                                        msg: 'Waiting for confirmation...'
-                                    }
-                                    this.setState({tmepState});
-                                };
-                                return false;
-                            });
-        
-                            var timerOBJ = {};
-                            var tempRnum = Math.random();
-                            timerOBJ[tempRnum] = setInterval(() => {
-                                console.log('i am checking deposit DAI... =>' + tempRnum);
-                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
-                                    if (data && data.status === '0x1') {
-                                        clearInterval(timerOBJ[tempRnum]);
-                                        const keys = Object.keys(this.state.transcations);
-                                        const tmepState = this.state;
-                                        keys.map((key) => {
-                                            if (tmepState.transcations[key].txhash === ret) {
-                                                tmepState.transcations[key] = {
-                                                    ...tmepState.transcations[key],
-                                                    class: 'success',
-                                                    msg: 'Transaction succeeded'
-                                                }
-                                                this.setState({tmepState});
-        
-                                                setTimeout(() => {
-                                                    delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
-                                                }, 3000);
-                                            };
-                                            return false;
-                                        })
-                                        setTimeout(() => {
-                                            this.getMyBalance();
-                                            this.getPoolBankTotalStatus();
-                                            this.getUserWithdrawBalance();
-                                        }, 3000)
-                                    } 
-                                    if (data && data.status === '0x0') {
-                                        clearInterval(timerOBJ[tempRnum]);
-                                        const keys = Object.keys(this.state.transcations);
-                                        const tmepState = this.state;
-                                        keys.map((key) => {
-                                            if (tmepState.transcations[key].txhash === ret) {
-                                                tmepState.transcations[key] = {
-                                                    ...tmepState.transcations[key],
-                                                    class: 'error',
-                                                    msg: 'Transaction failed'
-                                                }
-                                                this.setState({tmepState});
-        
-                                                setTimeout(() => {
-                                                    delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
-                                                }, 3000);
-                                            };
-                                            return false;
-                                        })
-                                    }
-                                })
-                            }, 2000);
-                        }
-                    }
-                )
-            }
-        )
-    }
-
-
-    // faucet Token
+    // *** allocateTo ***
     allocateTo (token) {
         if (token === 'DAI') {
             this.allocateToDAI();
@@ -4534,8 +4525,6 @@ export default class Home extends React.Component {
             this.allocateToDF();
         }
     }
-
-    // allocateToDAI
     allocateToDAI () {
         const keys = Object.keys(this.state.transcations);
         for (var i = 0; i < keys.length; i++) {
@@ -4664,7 +4653,6 @@ export default class Home extends React.Component {
             }
         )
     }
-    // allocateToPAX
     allocateToPAX () {
         const keys = Object.keys(this.state.transcations);
         for (var i = 0; i < keys.length; i++) {
@@ -4794,7 +4782,6 @@ export default class Home extends React.Component {
             }
         )
     }
-    // allocateToTUSD
     allocateToTUSD () {
         const keys = Object.keys(this.state.transcations);
         for (var i = 0; i < keys.length; i++) {
@@ -4923,7 +4910,6 @@ export default class Home extends React.Component {
             }
         )
     }
-    // allocateToUSDC
     allocateToUSDC () {
         const keys = Object.keys(this.state.transcations);
         for (var i = 0; i < keys.length; i++) {
@@ -5052,7 +5038,6 @@ export default class Home extends React.Component {
             }
         )
     }
-    // allocateToDF
     allocateToDF () {
         const keys = Object.keys(this.state.transcations);
         for (var i = 0; i < keys.length; i++) {
@@ -5182,17 +5167,4 @@ export default class Home extends React.Component {
         )
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
