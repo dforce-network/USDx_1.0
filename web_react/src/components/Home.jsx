@@ -247,7 +247,7 @@ export default class Home extends React.Component {
                                     <div className="myBalanceOnPool myBalanceOnPoolMax">
                                         Max USDx available to aggregate:
                                         <span>
-                                            <i>{this.state.maxGenerateUSDx ? this.state.maxGenerateUSDx.split('.')[0] : '0'}</i>
+                                            <i>{this.state.maxGenerateUSDx ? this.toThousands(this.state.maxGenerateUSDx.split('.')[0]) : '0'}</i>
                                             {this.state.maxGenerateUSDx ? '.' + this.state.maxGenerateUSDx.split('.')[1] : '.00'}
                                         </span>
                                     </div>
@@ -2717,12 +2717,15 @@ export default class Home extends React.Component {
     }
     // withdrawDAI
     withdrawDAI (addr, num) {
-        // const keys = Object.keys(this.state.transcations);
-        // for (var i = 0; i < keys.length; i++) {
-        //     if (this.state.transcations[keys[i]].title === 'Withdraw DAI') {
-        //         return;
-        //     }
-        // }
+        var str1;
+        var str2;
+        if(num.div(10 ** this.state.decimalsDAI).toString(10).indexOf('.') > 0){
+            str1 = this.toThousands(num.div(10 ** this.state.decimalsDAI).toString(10).split('.')[0]);
+            str2 = '.' + num.div(10 ** this.state.decimalsDAI).toString(10).split('.')[1];
+        } else {
+            str1 = this.toThousands(num.div(10 ** this.state.decimalsDAI).toString(10));
+            str2 = '';
+        }
         const id = Math.random();
         const msg = 'Waiting for transaction signature...';
         const tmepState = this.state;
@@ -2730,7 +2733,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Withdraw ' + this.toThousands(num.div(10 ** this.state.decimalsDAI).toString(10)) + ' DAI',
+            title: 'Withdraw ' + str1 + str2 + ' DAI',
         }
         this.setState({tmepState});
         // get Limit first
@@ -2852,12 +2855,15 @@ export default class Home extends React.Component {
     }
     // withdrawPAX
     withdrawPAX (addr, num) {
-        // const keys = Object.keys(this.state.transcations);
-        // for (var i = 0; i < keys.length; i++) {
-        //     if (this.state.transcations[keys[i]].title === 'Withdraw PAX') {
-        //         return;
-        //     }
-        // }
+        var str1;
+        var str2;
+        if(num.div(10 ** this.state.decimalsPAX).toString(10).indexOf('.') > 0){
+            str1 = this.toThousands(num.div(10 ** this.state.decimalsPAX).toString(10).split('.')[0]);
+            str2 = '.' + num.div(10 ** this.state.decimalsPAX).toString(10).split('.')[1];
+        } else {
+            str1 = this.toThousands(num.div(10 ** this.state.decimalsPAX).toString(10));
+            str2 = '';
+        }
         const id = Math.random();
         const msg = 'Waiting for transaction signature...';
         const tmepState = this.state;
@@ -2865,7 +2871,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Withdraw ' + this.toThousands(num.div(10 ** this.state.decimalsPAX).toString(10)) + ' PAX',
+            title: 'Withdraw ' + str1 + str2 + ' PAX',
         }
         this.setState({tmepState});
         // get Limit first
@@ -2987,12 +2993,15 @@ export default class Home extends React.Component {
     }
     // withdrawTUSD
     withdrawTUSD (addr, num) {
-        // const keys = Object.keys(this.state.transcations);
-        // for (var i = 0; i < keys.length; i++) {
-        //     if (this.state.transcations[keys[i]].title === 'Withdraw TUSD') {
-        //         return;
-        //     }
-        // }
+        var str1;
+        var str2;
+        if(num.div(10 ** this.state.decimalsTUSD).toString(10).indexOf('.') > 0){
+            str1 = this.toThousands(num.div(10 ** this.state.decimalsTUSD).toString(10).split('.')[0]);
+            str2 = '.' + num.div(10 ** this.state.decimalsTUSD).toString(10).split('.')[1];
+        } else {
+            str1 = this.toThousands(num.div(10 ** this.state.decimalsTUSD).toString(10));
+            str2 = '';
+        }
         const id = Math.random();
         const msg = 'Waiting for transaction signature...';
         const tmepState = this.state;
@@ -3000,7 +3009,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Withdraw ' + this.toThousands(num.div(10 ** this.state.decimalsTUSD).toString(10)) + ' TUSD',
+            title: 'Withdraw ' + str1 + str2 + ' TUSD',
         }
         this.setState({tmepState});
         // get Limit first
@@ -3122,12 +3131,15 @@ export default class Home extends React.Component {
     }
     // withdrawUSDC
     withdrawUSDC (addr, num) {
-        // const keys = Object.keys(this.state.transcations);
-        // for (var i = 0; i < keys.length; i++) {
-        //     if (this.state.transcations[keys[i]].title === 'Withdraw USDC') {
-        //         return;
-        //     }
-        // }
+        var str1;
+        var str2;
+        if(num.div(10 ** this.state.decimalsUSDC).toString(10).indexOf('.') > 0){
+            str1 = this.toThousands(num.div(10 ** this.state.decimalsUSDC).toString(10).split('.')[0]);
+            str2 = '.' + num.div(10 ** this.state.decimalsUSDC).toString(10).split('.')[1];
+        } else {
+            str1 = this.toThousands(num.div(10 ** this.state.decimalsUSDC).toString(10));
+            str2 = '';
+        }
         const id = Math.random();
         const msg = 'Waiting for transaction signature...';
         const tmepState = this.state;
@@ -3135,7 +3147,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Withdraw ' + this.toThousands(num.div(10 ** this.state.decimalsUSDC).toString(10)) + ' USDC',
+            title: 'Withdraw ' + str1 + str2 + ' USDC',
         }
         this.setState({tmepState});
         // get Limit first
@@ -3286,12 +3298,14 @@ export default class Home extends React.Component {
                     errTips: false,
                     toDepositNum: val
                 })
+                this.getUSDXForDeposit(address, val * (10 ** tempUnits));
             } else if (val === '' || Number(val) === 0) {
                 this.setState({
                     ...this.state,
                     couldDeposit: false,
                     errTips: false,
-                    toDepositNum: val
+                    toDepositNum: val,
+                    maxGenerateUSDx: '0.00'
                 })
             } else {
                 this.setState({
@@ -3312,12 +3326,14 @@ export default class Home extends React.Component {
                     errTips: false,
                     toDepositNum: val
                 })
+                this.getUSDXForDeposit(address, val * (10 ** tempUnits));
             } else if (val === '' || Number(val) === 0) {
                 this.setState({
                     ...this.state,
                     couldDeposit: false,
                     errTips: false,
-                    toDepositNum: val
+                    toDepositNum: val,
+                    maxGenerateUSDx: '0.00'
                 })
             } else {
                 this.setState({
@@ -3338,12 +3354,14 @@ export default class Home extends React.Component {
                     errTips: false,
                     toDepositNum: val
                 })
+                this.getUSDXForDeposit(address, val * (10 ** tempUnits));
             } else if (val === '' || Number(val) === 0) {
                 this.setState({
                     ...this.state,
                     couldDeposit: false,
                     errTips: false,
-                    toDepositNum: val
+                    toDepositNum: val,
+                    maxGenerateUSDx: '0.00'
                 })
             } else {
                 this.setState({
@@ -3364,12 +3382,14 @@ export default class Home extends React.Component {
                     errTips: false,
                     toDepositNum: val
                 })
+                this.getUSDXForDeposit(address, val * (10 ** tempUnits));
             } else if (val === '' || Number(val) === 0) {
                 this.setState({
                     ...this.state,
                     couldDeposit: false,
                     errTips: false,
-                    toDepositNum: val
+                    toDepositNum: val,
+                    maxGenerateUSDx: '0.00'
                 })
             } else {
                 this.setState({
@@ -3380,9 +3400,6 @@ export default class Home extends React.Component {
                 })
             }
         }
-
-        this.getUSDXForDeposit(address, val * (10 ** tempUnits));
-
     }
     // depositOptChange
     depositOptChange(token) {
@@ -3433,12 +3450,15 @@ export default class Home extends React.Component {
             this.approve('DAI');
             return;
         }
-        // const keys = Object.keys(this.state.transcations);
-        // for (var i = 0; i < keys.length; i++) {
-        //     if (this.state.transcations[keys[i]].title === 'Deposit DAI') {
-        //         return;
-        //     }
-        // }
+        var str1;
+        var str2;
+        if(num.div(10 ** this.state.decimalsDAI).toString(10).indexOf('.') > 0){
+            str1 = this.toThousands(num.div(10 ** this.state.decimalsDAI).toString(10).split('.')[0]);
+            str2 = '.' + num.div(10 ** this.state.decimalsDAI).toString(10).split('.')[1];
+        } else {
+            str1 = this.toThousands(num.div(10 ** this.state.decimalsDAI).toString(10));
+            str2 = '';
+        }
         const id = Math.random();
         const msg = 'Waiting for transaction signature...';
         const tmepState = this.state;
@@ -3446,7 +3466,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Deposit ' + this.toThousands(num.div(10 ** this.state.decimalsDAI).toString(10)) + ' DAI',
+            title: 'Deposit ' + str1 + str2 + ' DAI',
         }
         this.setState({tmepState});
         // get Limit first
@@ -3578,12 +3598,15 @@ export default class Home extends React.Component {
             this.approve('PAX');
             return;
         }
-        // const keys = Object.keys(this.state.transcations);
-        // for (var i = 0; i < keys.length; i++) {
-        //     if (this.state.transcations[keys[i]].title === 'Deposit PAX') {
-        //         return;
-        //     }
-        // }
+        var str1;
+        var str2;
+        if(num.div(10 ** this.state.decimalsPAX).toString(10).indexOf('.') > 0){
+            str1 = this.toThousands(num.div(10 ** this.state.decimalsPAX).toString(10).split('.')[0]);
+            str2 = '.' + num.div(10 ** this.state.decimalsPAX).toString(10).split('.')[1];
+        } else {
+            str1 = this.toThousands(num.div(10 ** this.state.decimalsPAX).toString(10));
+            str2 = '';
+        }
         const id = Math.random();
         const msg = 'Waiting for transaction signature...';
         const tmepState = this.state;
@@ -3591,7 +3614,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Deposit ' + this.toThousands(num.div(10 ** this.state.decimalsPAX).toString(10)) + ' PAX',
+            title: 'Deposit ' + str1 + str2 + ' PAX',
         }
         this.setState({tmepState});
         // get Limit first
@@ -3722,12 +3745,15 @@ export default class Home extends React.Component {
             this.approve('TUSD');
             return;
         }
-        // const keys = Object.keys(this.state.transcations);
-        // for (var i = 0; i < keys.length; i++) {
-        //     if (this.state.transcations[keys[i]].title === 'Deposit TUSD') {
-        //         return;
-        //     }
-        // }
+        var str1;
+        var str2;
+        if(num.div(10 ** this.state.decimalsTUSD).toString(10).indexOf('.') > 0){
+            str1 = this.toThousands(num.div(10 ** this.state.decimalsTUSD).toString(10).split('.')[0]);
+            str2 = '.' + num.div(10 ** this.state.decimalsTUSD).toString(10).split('.')[1];
+        } else {
+            str1 = this.toThousands(num.div(10 ** this.state.decimalsTUSD).toString(10));
+            str2 = '';
+        }
         const id = Math.random();
         const msg = 'Waiting for transaction signature...';
         const tmepState = this.state;
@@ -3735,7 +3761,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Deposit ' + this.toThousands(num.div(10 ** this.state.decimalsTUSD).toString(10)) + ' TUSD',
+            title: 'Deposit ' + str1 + str2 + ' TUSD',
         }
         this.setState({tmepState});
         // get Limit first
@@ -3866,12 +3892,15 @@ export default class Home extends React.Component {
             this.approve('USDC');
             return;
         }
-        // const keys = Object.keys(this.state.transcations);
-        // for (var i = 0; i < keys.length; i++) {
-        //     if (this.state.transcations[keys[i]].title === 'Deposit USDC') {
-        //         return;
-        //     }
-        // }
+        var str1;
+        var str2;
+        if(num.div(10 ** this.state.decimalsTUSD).toString(10).indexOf('.') > 0){
+            str1 = this.toThousands(num.div(10 ** this.state.decimalsTUSD).toString(10).split('.')[0]);
+            str2 = '.' + num.div(10 ** this.state.decimalsTUSD).toString(10).split('.')[1];
+        } else {
+            str1 = this.toThousands(num.div(10 ** this.state.decimalsTUSD).toString(10));
+            str2 = '';
+        }
         const id = Math.random();
         const msg = 'Waiting for transaction signature...';
         const tmepState = this.state;
@@ -3879,7 +3908,7 @@ export default class Home extends React.Component {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Deposit ' + this.toThousands(num.div(10 ** this.state.decimalsUSDC).toString(10)) + ' USDC',
+            title: 'Deposit ' + str1 + str2 + ' USDC',
         }
         this.setState({tmepState});
         // get Limit first
@@ -4090,20 +4119,24 @@ export default class Home extends React.Component {
             this.approve('USDx');
             return;
         }
-        // const keys = Object.keys(this.state.transcations);
-        // for (var i = 0; i < keys.length; i++) {
-        //     if (this.state.transcations[keys[i]].title === 'Reconvert USDx') {
-        //         return;
-        //     }
-        // }
+        
         const id = Math.random();
         const msg = 'Waiting for transaction signature...';
         const tmepState = this.state;
+        var str1;
+        var str2;
+        if(this.state.toDestroyNum.indexOf('.') > 0){
+            str1 = this.toThousands(this.state.toDestroyNum.split('.')[0]);
+            str2 = '.' + this.state.toDestroyNum.split('.')[1];
+        } else {
+            str1 = this.toThousands(this.state.toDestroyNum);
+            str2 = '';
+        }
         tmepState.transcations[id] = {
             id: id,
             msg: msg,
             class: 'inprocess',
-            title: 'Reconvert ' + this.toThousands(this.state.toDestroyNum) + ' USDx',
+            title: 'Reconvert ' + str1 + str2 + ' USDx',
         }
         this.setState({tmepState});
         // get Limit first
