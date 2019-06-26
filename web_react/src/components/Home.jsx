@@ -32,7 +32,7 @@ import doubt from '../assets/img/doubt.png';
 import exchangeTo from '../assets/img/exchangeTo.png';
 import exchangeBack from '../assets/img/exchangeBack.png';
 import warningtips from '../assets/img/warningtips.png';
-
+import right_net from '../assets/img/right_net.png';
 
 
 export default class Home extends React.Component {
@@ -207,7 +207,10 @@ export default class Home extends React.Component {
                 <React.Fragment>
                     {/* <Welcome ifShow={this.state.isConnected} connectMetamask={()=>{this.connectMetamask()}}/> */}
                     <Notify transcations={this.state.transcations} netType={this.state.netType}/>
-                    {/* <div style={{height: '40px', background: 'rgba(249, 230, 198, 1)', textAlign: 'center', lineHeight: '40px', color: '#fff', fontSize: '24px', display: this.state.netType === 'Rinkeby'? 'none' : 'block'}}>pls switch to Rinkeby test net.</div> */}
+                    {/* <div className='topTips'>
+                        <img src={right_net} alt=""/>
+                        <span>Note: You are currently connected to the Rinkeby Testnet</span>
+                    </div> */}
                     <Header
                         status={this.state}
                         DisconnectMetamask={()=>{this.DisconnectMetamask()}}
