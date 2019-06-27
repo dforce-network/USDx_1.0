@@ -4160,8 +4160,6 @@ export default class Home extends React.Component {
             var USDxToTUSD = this.Web3.toBigNumber(val).mul(this.Web3.toBigNumber(this.state.sectionTUSDBurning).div(this.Web3.toBigNumber(this.state.tatolSectionBurning)));
             var USDxToUSDC = this.Web3.toBigNumber(val).mul(this.Web3.toBigNumber(this.state.sectionUSDCBurning).div(this.Web3.toBigNumber(this.state.tatolSectionBurning)));
 
-
-
             this.setState({
                 ...this.state,
                 errTipsDestroy: false,
@@ -4174,7 +4172,7 @@ export default class Home extends React.Component {
                 getDestroyThresholdBool: false
             })
 
-            if (Number(val) < Number(this.state.getDestroyThreshold) || Number(val * (1 / this.state.getDestroyThreshold)) % Number(this.state.getDestroyThreshold * (1 / this.state.getDestroyThreshold)) !== 0) {
+            if (Number(val) < Number(this.state.getDestroyThreshold) || this.Web3.toBigNumber(val).mod(this.Web3.toBigNumber(this.state.getDestroyThreshold)).toString(10) !== '0') {
                 this.setState({
                     ...this.state,
                     errTipsDestroy: true,
@@ -4256,17 +4254,16 @@ export default class Home extends React.Component {
             title: 'Reconvert ' + str1 + str2 + ' USDx',
         }
         this.setState({tmepState});
-        // get Limit first
         this.contractProtocol.destroy.estimateGas(
             0,
-            this.state.toDestroyNum * this.units,
+            this.Web3.toBigNumber(this.state.toDestroyNum).mul(this.Web3.toBigNumber(10 ** 18)),
             {
                 from: this.state.accountAddress
             },
             (err, gasLimit) => {
                 this.contractProtocol.destroy.sendTransaction(
                     0,
-                    this.state.toDestroyNum * this.units,
+                    this.Web3.toBigNumber(this.state.toDestroyNum).mul(this.Web3.toBigNumber(10 ** 18)),
                     {
                         from: this.state.accountAddress,
                         gas: gasLimit,
