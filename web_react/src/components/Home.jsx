@@ -79,7 +79,15 @@ export default class Home extends React.Component {
             tab1: true,
             netType: 'Main',
             myHistory: [],
-            gasPrice: 0
+            gasPrice: 0,
+            claimDAI: '0.00',
+            claimPAX: '0.00',
+            claimTUSD: '0.00',
+            claimUSDC: '0.00',
+            DAIonPool: '0.00',
+            PAXonPool: '0.00',
+            TUSDonPool: '0.00',
+            USDConPool: '0.00'
         }
         if (window.web3) {
             this.Web3 = window.web3;

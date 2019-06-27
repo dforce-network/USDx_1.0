@@ -48,7 +48,7 @@ export default class Header extends React.Component {
                     </div>
                     <div className="right">
                         <div className="section">
-                            <Tooltip title={'Claimable USDx: ' + this.props.data.claimDAI + ' / Pending DAI: ' + this.props.data.DAIonPool}>
+                            <Tooltip title={'Claimable USDx: ' + this.toThousands(this.props.data.claimDAI.split('.')[0]) + '.' + this.props.data.claimDAI.split('.')[1] + ' / Pending DAI: ' + this.toThousands(this.props.data.DAIonPool.split('.')[0]) + '.' + this.props.data.DAIonPool.split('.')[1]}>
                                 <Progress
                                     percent={100}
                                     successPercent={
@@ -87,7 +87,7 @@ export default class Header extends React.Component {
                     </div>
                     <div className="right">
                         <div className="section">
-                            <Tooltip title={'Claimable USDx: ' + this.props.data.claimPAX + ' / Pending PAX: ' + this.props.data.PAXonPool}>
+                            <Tooltip title={'Claimable USDx: ' + this.toThousands(this.props.data.claimPAX.split('.')[0]) + '.' + this.props.data.claimPAX.split('.')[1] + ' / Pending PAX: ' + this.toThousands(this.props.data.PAXonPool.split('.')[0]) + '.' + this.props.data.PAXonPool.split('.')[1]}>
                                 <Progress
                                     successPercent={
                                         (this.props.data.claimPAX && this.props.data.claimPAX > 0) ?
@@ -126,7 +126,7 @@ export default class Header extends React.Component {
                     </div>
                     <div className="right">
                         <div className="section">
-                            <Tooltip title={'Claimable USDx: ' + this.props.data.claimTUSD + ' / Pending TUSD: ' + this.props.data.TUSDonPool}>
+                            <Tooltip title={'Claimable USDx: ' + this.toThousands(this.props.data.claimTUSD.split('.')[0]) + '.' + this.props.data.claimTUSD.split('.')[1] + ' / Pending TUSD: ' + this.toThousands(this.props.data.TUSDonPool.split('.')[0]) + '.' + this.props.data.TUSDonPool.split('.')[1]}>
                                 <Progress
                                     successPercent={
                                         (this.props.data.claimTUSD && this.props.data.claimTUSD > 0) ?
@@ -165,7 +165,7 @@ export default class Header extends React.Component {
                     </div>
                     <div className="right">
                         <div className="section">
-                            <Tooltip title={'Claimable USDx: ' + this.props.data.claimUSDC + ' / Pending USDC: ' + this.props.data.USDConPool}>
+                            <Tooltip title={'Claimable USDx: ' + this.toThousands(this.props.data.claimUSDC.split('.')[0]) + '.' + this.props.data.claimUSDC.split('.')[1] + ' / Pending USDC: ' + this.toThousands(this.props.data.USDConPool.split('.')[0]) + '.' + this.props.data.USDConPool.split('.')[1]}>
                                 <Progress
                                     percent={100}
                                     showInfo={false}
