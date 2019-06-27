@@ -499,9 +499,9 @@ div.body {
 
                     // background: red;
                     @media screen and (min-width: 1501px) {
-                        width: 300px;
+                        width: 330px;
                         text-align: left;
-                        margin-left: 200px;
+                        margin-left: 170px;
                         // background: red;
                         float: left;
                     }
@@ -541,7 +541,7 @@ div.body {
                         display: inline-block;
                         // background: green;
                         margin-right: 25px;
-                        width: 100px;
+                        width: 120px;
                         font-weight: 500;
                         font-size: 14px;
                         font-weight: 200;
@@ -572,6 +572,7 @@ div.body {
 
 @media screen and (max-width: 1500px) {
     div.body {
+        min-width: 1260px;
 
         div.bodyleft {
             width: 220px;
@@ -904,7 +905,7 @@ div.body {
                             display: inline-block;
                             // background: green;
                             float: right;
-                            width: 70px;
+                            width: 85px;
                             font-weight: 200;
                             // color: #333;
                             margin-left: 7px;
@@ -970,7 +971,7 @@ div.body {
                             font-weight: 200;
                             // color: #333;
                             font-size: 10px;
-                            width: 70px;
+                            width: 92px;
 
                             i {
                                 font-size: 140%;
