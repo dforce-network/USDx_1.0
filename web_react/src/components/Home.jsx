@@ -333,7 +333,7 @@ export default class Home extends React.Component {
                                             </span>
                                         </p>
                                         <p className='partToken marginR marginl'>
-                                            <span>PAX</span>
+                                            <span className='exMargin'>PAX</span>
                                             <span className='right'>
                                                 {this.state.USDxToPAX ? this.toThousands(this.state.USDxToPAX.split('.')[0]) : '0'}
                                                 <i>{this.state.USDxToPAX ? this.state.USDxToPAX.split('.')[1]?'.' + this.state.USDxToPAX.split('.')[1]:'.00' : '.00'}</i>
@@ -347,7 +347,7 @@ export default class Home extends React.Component {
                                             </span>
                                         </p>
                                         <p className='partToken marginl'>
-                                            <span>USDC</span>
+                                            <span className='exMargin'>USDC</span>
                                             <span className='right'>
                                                 {this.state.USDxToUSDC ? this.toThousands(this.state.USDxToUSDC.split('.')[0]) : '0'}
                                                 <i>{this.state.USDxToUSDC ? this.state.USDxToUSDC.split('.')[1]?'.' + this.state.USDxToUSDC.split('.')[1]:'.00' : '.00'}</i>
@@ -400,7 +400,7 @@ export default class Home extends React.Component {
                                             </span>
                                         </p>
                                         <p className='partToken marginl'>
-                                            <span>PAX</span>
+                                            <span className='exMargin'>PAX</span>
                                             <span className='right' title={this.state.myPAXonPoolOrigin}>
                                                 {this.state.myPAXonPool ? this.toThousands(this.state.myPAXonPool.split('.')[0]) : '0'}
                                                 <i>{this.state.myPAXonPool ? '.' + this.state.myPAXonPool.split('.')[1] : '.00'}</i>
@@ -414,7 +414,7 @@ export default class Home extends React.Component {
                                             </span>
                                         </p>
                                         <p className='partToken marginl'>
-                                            <span>USDC</span>
+                                            <span className='exMargin'>USDC</span>
                                             <span className='right' title={this.state.myUSDConPoolOrigin}>
                                                 {this.state.myUSDConPool ? this.toThousands(this.state.myUSDConPool.split('.')[0]) : '0'}
                                                 <i>{this.state.myUSDConPool ? '.' + this.state.myUSDConPool.split('.')[1] : '.00'}</i>
