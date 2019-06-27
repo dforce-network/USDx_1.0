@@ -33,6 +33,7 @@ import exchangeTo from '../assets/img/exchangeTo.png';
 import exchangeBack from '../assets/img/exchangeBack.png';
 import warningtips from '../assets/img/warningtips.png';
 import right_net from '../assets/img/right_net.png';
+import error_net from '../assets/img/error_net.png';
 
 
 export default class Home extends React.Component {
@@ -215,10 +216,14 @@ export default class Home extends React.Component {
                 <React.Fragment>
                     {/* <Welcome ifShow={this.state.isConnected} connectMetamask={()=>{this.connectMetamask()}}/> */}
                     <Notify transcations={this.state.transcations} netType={this.state.netType}/>
-                    {/* <div className='topTips'>
+                    <div className='topTips' style={{display: this.state.isConnected && this.state.netType === 'Rinkeby' ? 'block':'none'}}>
                         <img src={right_net} alt=""/>
                         <span>Note: You are currently connected to the Rinkeby Testnet</span>
-                    </div> */}
+                    </div>
+                    <div className='topTips redBg' style={{display: this.state.isConnected && this.state.netType !== 'Rinkeby' && this.state.netType !== 'Main' ? 'block':'none'}}>
+                        <img src={error_net} alt=""/>
+                        <span>USDx is currently only available on Mainnet or the Rinkeby Testnet</span>
+                    </div>
                     <Header
                         status={this.state}
                         DisconnectMetamask={()=>{this.DisconnectMetamask()}}
