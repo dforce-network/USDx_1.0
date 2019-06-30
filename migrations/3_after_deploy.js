@@ -16,7 +16,7 @@ const xPAX = artifacts.require('DSWrappedToken.sol');
 const xTUSD = artifacts.require('DSWrappedToken.sol');
 const xUSDC = artifacts.require('DSWrappedToken.sol');
 // const DF = artifacts.require('DFToken.sol');
-const DF_Addr = "0x4AF82b7C2F049574C9fc742A896DAbEA379b7d51";
+const DF_Addr = "0xb7dd4a376d3c3680a939f6ec2c5b5a737a60710a";
 
 module.exports = async function (deployer, network, accounts) {
 
@@ -55,7 +55,7 @@ module.exports = async function (deployer, network, accounts) {
     }).catch(error => {
         perror("contractUSDx.setAuthority")
     })
-    
+
     // // DF
     // await contractDF.setAuthority.sendTransaction(contractEngine.address).then(result => {
     //     print("contractDF.setAuthority");
