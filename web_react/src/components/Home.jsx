@@ -224,6 +224,10 @@ export default class Home extends React.Component {
                         <img src={error_net} alt=""/>
                         <span>USDx is currently only available on Mainnet or the Rinkeby Testnet</span>
                     </div>
+                    <div className='topTips redBg' style={{display: !this.state.isConnected ? 'block':'none'}}>
+                        <img src={error_net} alt=""/>
+                        <span>Please enable MetaMask or visit this page in a Web3 browser to interact with the dForce protocol</span>
+                    </div>
                     <Header
                         status={this.state}
                         DisconnectMetamask={()=>{this.DisconnectMetamask()}}
