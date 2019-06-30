@@ -28,12 +28,16 @@ module.exports = async function (deployer, network, accounts) {
     // await deployer.deploy(DF, "0x6b6600000000000000000000000000");
     await deployer.deploy(Guard);
     await deployer.deploy(Protocol);
-    
-var xDAI  = await deployer.deploy(DSWrappedToken, '0xf494e07dfdbce883bf699cedf818fde2fa432db4', 18, "0x6b6b00000000000000000000000000");
-var xPAX  = await deployer.deploy(DSWrappedToken, '0x2901ea287e0299d595783faedae3ca0ab2bc4e53', 12, "0x6b6c00000000000000000000000000");
-var xTUSD = await deployer.deploy(DSWrappedToken, '0xfb010ff66700b6ace85fa68e2d98ab754b6f7af4', 8, "0x6b6a00000000000000000000000000"); 
-var xUSDC = await deployer.deploy(DSWrappedToken, '0x481f8ff13489695b2e1c81691a95a81f8cb96e32', 6, "0x6b6800000000000000000000000000"); 
-    
+
+    await deployer.deploy(DSWrappedToken, '0xf494e07dfdbce883bf699cedf818fde2fa432db4', 18, "0x6b6b00000000000000000000000000");
+    let xDAI = await DSWrappedToken.deployed();
+    await deployer.deploy(DSWrappedToken, '0x2901ea287e0299d595783faedae3ca0ab2bc4e53', 12, "0x6b6c00000000000000000000000000");
+    let xPAX = await DSWrappedToken.deployed();
+    await deployer.deploy(DSWrappedToken, '0xfb010ff66700b6ace85fa68e2d98ab754b6f7af4', 8, "0x6b6a00000000000000000000000000");
+    let xTUSD = await DSWrappedToken.deployed();
+    await deployer.deploy(DSWrappedToken, '0x481f8ff13489695b2e1c81691a95a81f8cb96e32', 6, "0x6b6800000000000000000000000000");
+    let xUSDC = await DSWrappedToken.deployed();
+
     console.log('----------------------------------\n');
     console.log('xDAI address : ' + xDAI.address);
     console.log('xPAX address : ' + xPAX.address);
