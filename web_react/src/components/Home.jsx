@@ -37,18 +37,18 @@ import error_net from '../assets/img/error_net.png';
 
 
 export default class Home extends React.Component {
-    addressDAI = '0xf494e07dfdbce883bf699cedf818fde2fa432db4'.toLowerCase();
-    addressPAX = '0x2901ea287e0299d595783faedae3ca0ab2bc4e53'.toLowerCase();
-    addressTUSD = '0xfb010ff66700b6ace85fa68e2d98ab754b6f7af4'.toLowerCase();
-    addressUSDC = '0x481f8ff13489695b2e1c81691a95a81f8cb96e32'.toLowerCase();
-    addressDF = '0x4AF82b7C2F049574C9fc742A896DAbEA379b7d51';
-    addressUSDx = '0x39b976BBA9acB620a98614ca80f5D4AF47FFAffa';
+    addressDAI = '0x506243424a778382f73bf6c24390d08fa9096092'.toLowerCase();
+    addressPAX = '0xd414e78d5db39e90c704070943e067ffc0eb3d86'.toLowerCase();
+    addressTUSD = '0xfeb2112e370091f25a2f96fb600484700a0ed603'.toLowerCase();
+    addressUSDC = '0x71abccd90dbb09c37686e4d5026c2d9597d469cb'.toLowerCase();
+    addressDF = '0xb7dd4a376d3c3680a939f6ec2c5b5a737a60710a';
+    addressUSDx = '0xD44c928EF6c2745526686D3347d30ACC87DC71C0';
 
-    addressProtocol = '0x14A196527D3BF75379730Bb59E223475Daa64b36';
-    addressProtocolView = '0x63e8de7fff70935b6e6a96620b549e806e752306';
-    addressCollateral = '0x301e0BeA94C5356fAB2ae2f4832586a66f413E4a';
-    addressEngine = '0xEdaE4362f7580ad763c87ef2e288dea6573603f5';
-    addressPool = '0x6E98C74D4B65cBaD652A3b6daA7a7Bd772cd1DC5';
+    addressProtocol = '0x218d981a80c094621f8081900b247757De74751b';
+    addressProtocolView = '0x4640C9f0492665Fc54ef8d41C6Af33Bc0923201A';
+    addressCollateral = '0xF268D24a155A61A1E9eaA68DaaE23d6f55cB3a50';
+    addressEngine = '0x7712B8f4732D514e73Be9891A4E24d47c317c3E0';
+    addressPool = '0x8783134AcF84a4A5A7670896A245FBA0AB4B60d9';
     units = 10 ** 18;
     tatolSection = 0;
     tatolSectionBurning = 0;
@@ -4202,7 +4202,6 @@ export default class Home extends React.Component {
                     getDestroyThresholdBool: true
                 })
             }
-
             if (this.Web3.toBigNumber(val * this.state.feeRate / this.state.dfPrice).sub(this.Web3.toBigNumber(this.state.myDF)) > 0) {
                 this.setState({
                     ...this.state,
@@ -4216,8 +4215,6 @@ export default class Home extends React.Component {
                     getDestroyThresholdBool: false
                 })
             }
-                
-            
         } else {
             this.setState({
                 ...this.state,
@@ -4243,19 +4240,6 @@ export default class Home extends React.Component {
                     getDestroyThresholdBool: false
                 })
             }
-            // if (this.Web3.toBigNumber(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice).sub(this.Web3.toBigNumber(this.state.myDF)) > 0) {
-            //     this.setState({
-            //         ...this.state,
-            //         errTipsDestroy: true,
-            //         couldDestroy: false,
-            //         toDestroyNum: val,
-            //         USDxToDAI: '',
-            //         USDxToPAX: '',
-            //         USDxToTUSD: '',
-            //         USDxToUSDC: '',
-            //         getDestroyThresholdBool: false
-            //     })
-            // }
         }
     }
     destroy () {
