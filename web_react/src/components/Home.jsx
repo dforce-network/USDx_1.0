@@ -338,7 +338,9 @@ export default class Home extends React.Component {
                                     <div className="errtips" style={{ display: this.state.errTipsDestroy ? 'block' : 'none' }}>
                                         {/* <div className="errtips"> */}
                                         <h4>Reminder</h4>
-                                        {this.state.getDestroyThresholdBool? 'minimal amount to unconvert is 0.01 USDx.':'Insufficient USDx.'}
+                                        <span style={{ display: this.state.errTipsDestroy && !this.state.getDestroyThresholdBool && Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) <= 0 ? 'block' : 'none' }}>Insufficient USDx.</span>
+                                        <span style={{ display: this.state.getDestroyThresholdBool ? 'block' : 'none' }}>The minimum accuracy to unconvert is no less than 0.01 USDx.</span>
+                                        <span style={{ display: Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) > 0 ? 'block' : 'none' }}>Insufficient DF Fee.</span>
                                     </div>
                                     <div className="myBalanceOnPoolSection">
                                         <div className="title">Constituents to be returned:</div>
@@ -4171,12 +4173,11 @@ export default class Home extends React.Component {
         if (val.length > 16) {
             return;
         }
-        if (Number(val) > 0 && Number(val) <= Number(this.state.myUSDx) ) {
+        if (Number(val) > 0 && this.Web3.toBigNumber(val).sub(this.Web3.toBigNumber(this.state.myUSDx)) <= 0) {
             var USDxToDAI = this.Web3.toBigNumber(val).mul(this.Web3.toBigNumber(this.state.sectionDAIBurning).div(this.Web3.toBigNumber(this.state.tatolSectionBurning)));
             var USDxToPAX = this.Web3.toBigNumber(val).mul(this.Web3.toBigNumber(this.state.sectionPAXBurning).div(this.Web3.toBigNumber(this.state.tatolSectionBurning)));
             var USDxToTUSD = this.Web3.toBigNumber(val).mul(this.Web3.toBigNumber(this.state.sectionTUSDBurning).div(this.Web3.toBigNumber(this.state.tatolSectionBurning)));
             var USDxToUSDC = this.Web3.toBigNumber(val).mul(this.Web3.toBigNumber(this.state.sectionUSDCBurning).div(this.Web3.toBigNumber(this.state.tatolSectionBurning)));
-
             this.setState({
                 ...this.state,
                 errTipsDestroy: false,
@@ -4188,8 +4189,7 @@ export default class Home extends React.Component {
                 USDxToUSDC: USDxToUSDC.toString(10),
                 getDestroyThresholdBool: false
             })
-
-            if (Number(val) < Number(this.state.getDestroyThreshold) || this.Web3.toBigNumber(val).mod(this.Web3.toBigNumber(this.state.getDestroyThreshold)).toString(10) !== '0') {
+            if (this.Web3.toBigNumber(val).mod(this.Web3.toBigNumber(this.state.getDestroyThreshold)).toString(10) !== '0') {
                 this.setState({
                     ...this.state,
                     errTipsDestroy: true,
@@ -4202,6 +4202,22 @@ export default class Home extends React.Component {
                     getDestroyThresholdBool: true
                 })
             }
+
+            if (this.Web3.toBigNumber(val * this.state.feeRate / this.state.dfPrice).sub(this.Web3.toBigNumber(this.state.myDF)) >= 0) {
+                this.setState({
+                    ...this.state,
+                    errTipsDestroy: true,
+                    couldDestroy: false,
+                    toDestroyNum: val,
+                    USDxToDAI: '',
+                    USDxToPAX: '',
+                    USDxToTUSD: '',
+                    USDxToUSDC: '',
+                    getDestroyThresholdBool: false
+                })
+            }
+                
+            
         } else {
             this.setState({
                 ...this.state,
@@ -4227,6 +4243,19 @@ export default class Home extends React.Component {
                     getDestroyThresholdBool: false
                 })
             }
+            // if (this.Web3.toBigNumber(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice).sub(this.Web3.toBigNumber(this.state.myDF)) > 0) {
+            //     this.setState({
+            //         ...this.state,
+            //         errTipsDestroy: true,
+            //         couldDestroy: false,
+            //         toDestroyNum: val,
+            //         USDxToDAI: '',
+            //         USDxToPAX: '',
+            //         USDxToTUSD: '',
+            //         USDxToUSDC: '',
+            //         getDestroyThresholdBool: false
+            //     })
+            // }
         }
     }
     destroy () {
