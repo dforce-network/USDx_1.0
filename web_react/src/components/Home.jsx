@@ -338,9 +338,9 @@ export default class Home extends React.Component {
                                     <div className="errtips" style={{ display: this.state.errTipsDestroy ? 'block' : 'none' }}>
                                         {/* <div className="errtips"> */}
                                         <h4>Reminder</h4>
-                                        <span style={{ display: this.state.errTipsDestroy && !this.state.getDestroyThresholdBool && Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) <= 0 ? 'block' : 'none' }}>Insufficient USDx.</span>
+                                        <span style={{ display: this.state.errTipsDestroy && !this.state.getDestroyThresholdBool && Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) < 0 ? 'block' : 'none' }}>Insufficient USDx.</span>
                                         <span style={{ display: this.state.getDestroyThresholdBool ? 'block' : 'none' }}>The minimum accuracy to unconvert is no less than 0.01 USDx.</span>
-                                        <span style={{ display: Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) > 0 ? 'block' : 'none' }}>Insufficient DF Fee.</span>
+                                        <span style={{ display: Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) > 0 ? 'block' : 'none' }}>Insufficient DF.</span>
                                     </div>
                                     <div className="myBalanceOnPoolSection">
                                         <div className="title">Constituents to be returned:</div>
@@ -4203,7 +4203,7 @@ export default class Home extends React.Component {
                 })
             }
 
-            if (this.Web3.toBigNumber(val * this.state.feeRate / this.state.dfPrice).sub(this.Web3.toBigNumber(this.state.myDF)) >= 0) {
+            if (this.Web3.toBigNumber(val * this.state.feeRate / this.state.dfPrice).sub(this.Web3.toBigNumber(this.state.myDF)) > 0) {
                 this.setState({
                     ...this.state,
                     errTipsDestroy: true,
