@@ -33,21 +33,22 @@ import exchangeTo from '../assets/img/exchangeTo.png';
 import exchangeBack from '../assets/img/exchangeBack.png';
 import warningtips from '../assets/img/warningtips.png';
 import right_net from '../assets/img/right_net.png';
+import error_net from '../assets/img/error_net.png';
 
 
 export default class Home extends React.Component {
-    addressDAI = '0xf494e07dfdbce883bf699cedf818fde2fa432db4'.toLowerCase();
-    addressPAX = '0x2901ea287e0299d595783faedae3ca0ab2bc4e53'.toLowerCase();
-    addressTUSD = '0xfb010ff66700b6ace85fa68e2d98ab754b6f7af4'.toLowerCase();
-    addressUSDC = '0x481f8ff13489695b2e1c81691a95a81f8cb96e32'.toLowerCase();
-    addressDF = '0x4AF82b7C2F049574C9fc742A896DAbEA379b7d51';
-    addressUSDx = '0x39b976BBA9acB620a98614ca80f5D4AF47FFAffa';
+    addressDAI = '0x506243424a778382f73bf6c24390d08fa9096092'.toLowerCase();
+    addressPAX = '0xd414e78d5db39e90c704070943e067ffc0eb3d86'.toLowerCase();
+    addressTUSD = '0xfeb2112e370091f25a2f96fb600484700a0ed603'.toLowerCase();
+    addressUSDC = '0x71abccd90dbb09c37686e4d5026c2d9597d469cb'.toLowerCase();
+    addressDF = '0xb7dd4a376d3c3680a939f6ec2c5b5a737a60710a';
+    addressUSDx = '0xD44c928EF6c2745526686D3347d30ACC87DC71C0';
 
-    addressProtocol = '0x14A196527D3BF75379730Bb59E223475Daa64b36';
-    addressProtocolView = '0x63e8de7fff70935b6e6a96620b549e806e752306';
-    addressCollateral = '0x301e0BeA94C5356fAB2ae2f4832586a66f413E4a';
-    addressEngine = '0xEdaE4362f7580ad763c87ef2e288dea6573603f5';
-    addressPool = '0x6E98C74D4B65cBaD652A3b6daA7a7Bd772cd1DC5';
+    addressProtocol = '0x218d981a80c094621f8081900b247757De74751b';
+    addressProtocolView = '0x4640C9f0492665Fc54ef8d41C6Af33Bc0923201A';
+    addressCollateral = '0xF268D24a155A61A1E9eaA68DaaE23d6f55cB3a50';
+    addressEngine = '0x7712B8f4732D514e73Be9891A4E24d47c317c3E0';
+    addressPool = '0x8783134AcF84a4A5A7670896A245FBA0AB4B60d9';
     units = 10 ** 18;
     tatolSection = 0;
     tatolSectionBurning = 0;
@@ -79,7 +80,15 @@ export default class Home extends React.Component {
             tab1: true,
             netType: 'Main',
             myHistory: [],
-            gasPrice: 0
+            gasPrice: 0,
+            claimDAI: '0.00',
+            claimPAX: '0.00',
+            claimTUSD: '0.00',
+            claimUSDC: '0.00',
+            DAIonPool: '0.00',
+            PAXonPool: '0.00',
+            TUSDonPool: '0.00',
+            USDConPool: '0.00'
         }
         if (window.web3) {
             this.Web3 = window.web3;
@@ -207,10 +216,18 @@ export default class Home extends React.Component {
                 <React.Fragment>
                     {/* <Welcome ifShow={this.state.isConnected} connectMetamask={()=>{this.connectMetamask()}}/> */}
                     <Notify transcations={this.state.transcations} netType={this.state.netType}/>
-                    {/* <div className='topTips'>
+                    <div className='topTips' style={{display: this.state.isConnected && this.state.netType === 'Rinkeby' ? 'block':'none'}}>
                         <img src={right_net} alt=""/>
                         <span>Note: You are currently connected to the Rinkeby Testnet</span>
-                    </div> */}
+                    </div>
+                    <div className='topTips redBg' style={{display: this.state.isConnected && this.state.netType !== 'Rinkeby' && this.state.netType !== 'Main' ? 'block':'none'}}>
+                        <img src={error_net} alt=""/>
+                        <span>USDx is currently only available on Mainnet or the Rinkeby Testnet</span>
+                    </div>
+                    <div className='topTips redBg' style={{display: !this.state.isConnected ? 'block':'none'}}>
+                        <img src={error_net} alt=""/>
+                        <span>Please enable MetaMask or visit this page in a Web3 browser to interact with the dForce protocol</span>
+                    </div>
                     <Header
                         status={this.state}
                         DisconnectMetamask={()=>{this.DisconnectMetamask()}}
@@ -321,7 +338,9 @@ export default class Home extends React.Component {
                                     <div className="errtips" style={{ display: this.state.errTipsDestroy ? 'block' : 'none' }}>
                                         {/* <div className="errtips"> */}
                                         <h4>Reminder</h4>
-                                        {this.state.getDestroyThresholdBool? 'minimal amount to unconvert is 0.01 USDx.':'Insufficient USDx.'}
+                                        <span style={{ display: this.state.errTipsDestroy && !this.state.getDestroyThresholdBool && Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) < 0 ? 'block' : 'none' }}>Insufficient USDx.</span>
+                                        <span style={{ display: this.state.getDestroyThresholdBool ? 'block' : 'none' }}>The minimum accuracy to unconvert is no less than 0.01 USDx.</span>
+                                        <span style={{ display: Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) > 0 ? 'block' : 'none' }}>Insufficient DF.</span>
                                     </div>
                                     <div className="myBalanceOnPoolSection">
                                         <div className="title">Constituents to be returned:</div>
@@ -333,7 +352,7 @@ export default class Home extends React.Component {
                                             </span>
                                         </p>
                                         <p className='partToken marginR marginl'>
-                                            <span>PAX</span>
+                                            <span className='exMargin'>PAX</span>
                                             <span className='right'>
                                                 {this.state.USDxToPAX ? this.toThousands(this.state.USDxToPAX.split('.')[0]) : '0'}
                                                 <i>{this.state.USDxToPAX ? this.state.USDxToPAX.split('.')[1]?'.' + this.state.USDxToPAX.split('.')[1]:'.00' : '.00'}</i>
@@ -347,7 +366,7 @@ export default class Home extends React.Component {
                                             </span>
                                         </p>
                                         <p className='partToken marginl'>
-                                            <span>USDC</span>
+                                            <span className='exMargin'>USDC</span>
                                             <span className='right'>
                                                 {this.state.USDxToUSDC ? this.toThousands(this.state.USDxToUSDC.split('.')[0]) : '0'}
                                                 <i>{this.state.USDxToUSDC ? this.state.USDxToUSDC.split('.')[1]?'.' + this.state.USDxToUSDC.split('.')[1]:'.00' : '.00'}</i>
@@ -400,7 +419,7 @@ export default class Home extends React.Component {
                                             </span>
                                         </p>
                                         <p className='partToken marginl'>
-                                            <span>PAX</span>
+                                            <span className='exMargin'>PAX</span>
                                             <span className='right' title={this.state.myPAXonPoolOrigin}>
                                                 {this.state.myPAXonPool ? this.toThousands(this.state.myPAXonPool.split('.')[0]) : '0'}
                                                 <i>{this.state.myPAXonPool ? '.' + this.state.myPAXonPool.split('.')[1] : '.00'}</i>
@@ -414,7 +433,7 @@ export default class Home extends React.Component {
                                             </span>
                                         </p>
                                         <p className='partToken marginl'>
-                                            <span>USDC</span>
+                                            <span className='exMargin'>USDC</span>
                                             <span className='right' title={this.state.myUSDConPoolOrigin}>
                                                 {this.state.myUSDConPool ? this.toThousands(this.state.myUSDConPool.split('.')[0]) : '0'}
                                                 <i>{this.state.myUSDConPool ? '.' + this.state.myUSDConPool.split('.')[1] : '.00'}</i>
@@ -4154,14 +4173,11 @@ export default class Home extends React.Component {
         if (val.length > 16) {
             return;
         }
-        if (Number(val) > 0 && Number(val) <= Number(this.state.myUSDx) ) {
+        if (Number(val) > 0 && this.Web3.toBigNumber(val).sub(this.Web3.toBigNumber(this.state.myUSDx)) <= 0) {
             var USDxToDAI = this.Web3.toBigNumber(val).mul(this.Web3.toBigNumber(this.state.sectionDAIBurning).div(this.Web3.toBigNumber(this.state.tatolSectionBurning)));
             var USDxToPAX = this.Web3.toBigNumber(val).mul(this.Web3.toBigNumber(this.state.sectionPAXBurning).div(this.Web3.toBigNumber(this.state.tatolSectionBurning)));
             var USDxToTUSD = this.Web3.toBigNumber(val).mul(this.Web3.toBigNumber(this.state.sectionTUSDBurning).div(this.Web3.toBigNumber(this.state.tatolSectionBurning)));
             var USDxToUSDC = this.Web3.toBigNumber(val).mul(this.Web3.toBigNumber(this.state.sectionUSDCBurning).div(this.Web3.toBigNumber(this.state.tatolSectionBurning)));
-
-
-
             this.setState({
                 ...this.state,
                 errTipsDestroy: false,
@@ -4173,8 +4189,7 @@ export default class Home extends React.Component {
                 USDxToUSDC: USDxToUSDC.toString(10),
                 getDestroyThresholdBool: false
             })
-
-            if (Number(val) < Number(this.state.getDestroyThreshold) || Number(val * (1 / this.state.getDestroyThreshold)) % Number(this.state.getDestroyThreshold * (1 / this.state.getDestroyThreshold)) !== 0) {
+            if (this.Web3.toBigNumber(val).mod(this.Web3.toBigNumber(this.state.getDestroyThreshold)).toString(10) !== '0') {
                 this.setState({
                     ...this.state,
                     errTipsDestroy: true,
@@ -4185,6 +4200,19 @@ export default class Home extends React.Component {
                     USDxToTUSD: '',
                     USDxToUSDC: '',
                     getDestroyThresholdBool: true
+                })
+            }
+            if (this.Web3.toBigNumber(val * this.state.feeRate / this.state.dfPrice).sub(this.Web3.toBigNumber(this.state.myDF)) > 0) {
+                this.setState({
+                    ...this.state,
+                    errTipsDestroy: true,
+                    couldDestroy: false,
+                    toDestroyNum: val,
+                    USDxToDAI: '',
+                    USDxToPAX: '',
+                    USDxToTUSD: '',
+                    USDxToUSDC: '',
+                    getDestroyThresholdBool: false
                 })
             }
         } else {
@@ -4256,17 +4284,16 @@ export default class Home extends React.Component {
             title: 'Reconvert ' + str1 + str2 + ' USDx',
         }
         this.setState({tmepState});
-        // get Limit first
         this.contractProtocol.destroy.estimateGas(
             0,
-            this.state.toDestroyNum * this.units,
+            this.Web3.toBigNumber(this.state.toDestroyNum).mul(this.Web3.toBigNumber(10 ** 18)),
             {
                 from: this.state.accountAddress
             },
             (err, gasLimit) => {
                 this.contractProtocol.destroy.sendTransaction(
                     0,
-                    this.state.toDestroyNum * this.units,
+                    this.Web3.toBigNumber(this.state.toDestroyNum).mul(this.Web3.toBigNumber(10 ** 18)),
                     {
                         from: this.state.accountAddress,
                         gas: gasLimit,

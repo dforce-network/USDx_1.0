@@ -106,3 +106,25 @@ div.history {
         }
     }
 }
+
+@media screen and (max-width: 1500px) {
+    div.history {
+        &::after {
+            content: '';
+            display: block;
+            position: absolute;
+            width: 4px;
+            height: 15px;
+            left: 20px;
+            top: 19px;
+        }
+
+        div.leftTitle {
+            font-size: 18px;
+            color: rgba(56, 132, 255, 1);
+            font-weight: 400;
+            padding-top: 14px;
+            padding-left: 35px;
+        }
+    }
+}

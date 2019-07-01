@@ -9,7 +9,7 @@ div.body {
     div.bodyleft {
         float: left;
         background: #fff;
-        width: 320px;
+        width: 360px;
         border: 1px solid rgba(230, 234, 238, 1);
         border-radius: 4px;
         box-shadow: 0px 0px 35px 0px rgba(0, 0, 0, 0.05);
@@ -28,7 +28,7 @@ div.body {
                 margin-right: 5px;
                 border-radius: 50%;
                 padding: 0;
-                margin-top: 2px;
+                margin-top: 0px;
                 border: none;
                 background: url(../assets/img/warningtips.png) no-repeat center center;
                 background-size: 80%;
@@ -39,7 +39,7 @@ div.body {
         div.pool {
             background: rgba(255, 245, 228, 1) url(../assets/img/daiBackgd.png) no-repeat 0 0;
             background-size: auto 100%;
-            width: 300px;
+            width: 340px;
             margin: 0 auto;
             border-radius: 4px;
             margin-top: 15px;
@@ -80,7 +80,7 @@ div.body {
 
             div.right {
                 // background: green;
-                width: 160px;
+                width: 200px;
                 height: 80px;
                 float: left;
 
@@ -191,7 +191,7 @@ div.body {
 
     div.bodyright {
         float: left;
-        width: calc(100% - 320px);
+        width: calc(100% - 360px);
         // background: goldenrod;
         padding-left: 30px;
 
@@ -458,13 +458,13 @@ div.body {
 
                     p.partToken {
                         float: left;
-                        // background: red;
+                        // background: pink;
                         font-size: 18px;
                         font-weight: 400;
                         width: 50%;
                         margin: 0;
                         line-height: 38px;
-                        padding-left: 20px;
+                        // padding-left: 20px;
 
                         span {
                             display: inline-block;
@@ -475,13 +475,17 @@ div.body {
                             // background: green;
                         }
 
+                        span.exMargin {
+                            margin-left: 62px;
+                        }
+
                         span.right {
                             display: inline-block;
                             // background: red;
-                            width: 140px;
+                            width: 120px;
                             // float: right;
                             text-align: right;
-                            padding-right: 70px;
+                            padding-right: 0px;
                             font-weight: 400;
                             color: #333;
 
@@ -575,7 +579,7 @@ div.body {
         min-width: 1260px;
 
         div.bodyleft {
-            width: 220px;
+            width: 270px;
             padding-top: 10px;
             padding-bottom: 10px;
 
@@ -584,12 +588,12 @@ div.body {
                 font-weight: 300;
 
                 button {
-                    margin-top: 0px;
+                    margin-top: -1px;
                 }
             }
 
             div.pool {
-                width: 200px;
+                width: 250px;
                 margin-top: 10px;
                 height: 60px;
 
@@ -622,7 +626,7 @@ div.body {
 
                 div.right {
                     // background: red;
-                    width: 100px;
+                    width: 150px;
                     height: 60px;
 
                     div.section {
@@ -684,7 +688,7 @@ div.body {
         }
 
         div.bodyright {
-            width: calc(100% - 220px);
+            width: calc(100% - 270px);
             padding-left: 30px;
 
             div.tab1 {
@@ -703,7 +707,7 @@ div.body {
                         width: 4px;
                         height: 15px;
                         left: 20px;
-                        top: 20px;
+                        top: 19px;
                         background: rgba(91, 152, 250, 1);
                     }
 
@@ -932,13 +936,13 @@ div.body {
                             // background: pink;
                             font-size: 16px;
                             font-weight: 400;
-                            width: 40%;
+                            width: 50%;
                             margin: 0;
                             line-height: 28px;
                             padding-left: 0px;
 
                             &.marginl {
-                                margin-left: 10%;
+                                // margin-left: 10%;
                             }
 
                             span {
@@ -950,11 +954,16 @@ div.body {
                                 // background: green;
                             }
 
+                            span.exMargin {
+                                margin-left: 36px;
+                            }
+
                             span.right {
                                 // background: red;
-                                width: 100px;
-                                padding-right: 20px;
-                                margin-right: 8px;
+                                width: 112px;
+                                padding-right: 0px;
+                                // margin-right: 8px;
+                                text-align: right;
                             }
                         }
                     }
