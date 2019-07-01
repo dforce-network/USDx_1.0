@@ -113,6 +113,14 @@ module.exports = async function (deployer, network, accounts) {
         perror("contractEngine.setAuthority")
     })
 
+    // Set guard => Setting
+    await contractSetting.setAuthority.sendTransaction(contractGuard.address).then(result => {
+        print("contractSetting.setAuthority");
+        printTx(result.tx);
+    }).catch(error => {
+        perror("contractSetting.setAuthority")
+    })
+
     // Store permit => Engine
     await contractGuard.permitx.sendTransaction(contractEngine.address, contractStore.address).then(result => {
         print("contractGuard.permitx Store Engine");
