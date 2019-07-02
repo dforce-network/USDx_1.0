@@ -60,7 +60,7 @@ module.exports = async function (deployer, network, accounts) {
     await deployer.deploy(Engine, USDx.address, Store.address, Pool.address, Collateral.address, Funds.address);
     await deployer.deploy(Setting, Store.address);
 
-    await deployer.deploy(ProtocolView, Store.address, Collateral.address, Funds.address);
+    await deployer.deploy(ProtocolView, Store.address, Collateral.address);
 
     let count = 0
 

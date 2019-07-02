@@ -296,7 +296,7 @@ contract('DFEngine', accounts => {
             dfSetting = await DFSetting.new(dfStore.address);
 
             dfProtocol = await DFProtocol.new();
-            dfProtocolView = await DFProtocolView.new(dfStore.address, dfCollateral.address, dfFunds.address);
+            dfProtocolView = await DFProtocolView.new(dfStore.address, dfCollateral.address);
 
             for (let index = 0; index < xCollateralAddress.length; index++){
 
