@@ -274,7 +274,7 @@ contract('DFEngine', accounts => {
             dfStore = await DFStore.new(xTokenAddressList, tokenWeightList);
             dfCollateral = await DFCollateral.new();
             dfPool = await DFPool.new(dfCollateral.address);
-            dfFunds = await DFFunds.new(dfToken.address);
+            dfFunds = await DFFunds.new();
             priceFeed = await PriceFeed.new();
             medianizer = await Medianizer.new();
             

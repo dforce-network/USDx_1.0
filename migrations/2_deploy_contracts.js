@@ -53,7 +53,7 @@ module.exports = async function (deployer, network, accounts) {
         ],
         [daiW, paxW, tusdW, usdcW]);
     let contractCollateral = await deployer.deploy(Collateral);
-    await deployer.deploy(Funds, DF_Addr);
+    await deployer.deploy(Funds);
     let contractPool = await deployer.deploy(Pool, Collateral.address);
     await deployer.deploy(Medianizer);
     await deployer.deploy(PriceFeed);
