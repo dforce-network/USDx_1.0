@@ -8,7 +8,6 @@ import "../utility/DSMath.sol";
 contract DFProtocolView is DSMath {
     IDFStore public dfStore;
     address public dfCol;
-    address public dfFunds;
 
     enum ProcessType {
         CT_DEPOSIT,
@@ -22,15 +21,11 @@ contract DFProtocolView is DSMath {
         TT_USDX
     }
 
-    constructor (
-        address _dfStore,
-        address _dfCol,
-        address _dfFunds)
+    constructor (address _dfStore, address _dfCol)
         public
     {
         dfStore = IDFStore(_dfStore);
         dfCol = _dfCol;
-        dfFunds = _dfFunds;
     }
 
     function getUSDXForDeposit(address _srcToken, uint _srcAmount) public view returns (uint) {
