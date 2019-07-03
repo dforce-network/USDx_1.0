@@ -889,7 +889,7 @@ export default class Home extends React.Component {
         this.Web3.eth.getBalance(this.state.accountAddress, (err, ret) => {
             this.setState({
                 ...this.state,
-                myETH: this.formatNumber(ret, 'USDx')
+                myETH: this.formatNumber(ret, 'ETH')
             });
         });
         this.contractDAI.balanceOf.call(this.state.accountAddress, (err, ret) => {
@@ -1102,7 +1102,12 @@ export default class Home extends React.Component {
                 return '0.00';
             }
             originStr = BNr.div(10 ** this.state.decimalsUSDx).toString(10);
-        } else if (token === 'DAI') {
+        } else if (token === 'ETH') {
+            if (BNr.toFixed() < (10 ** 15) && BNr.toFixed() > 0) {
+                return '0.00';
+            }
+            originStr = BNr.div(10 ** 18).toString(10);
+        }else if (token === 'DAI') {
             if (BNr.toFixed() < (10 ** (this.state.decimalsDAI - 3)) && BNr.toFixed() > 0) {
                 return '0.00';
             }
