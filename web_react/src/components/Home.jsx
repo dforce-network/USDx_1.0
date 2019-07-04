@@ -224,10 +224,10 @@ export default class Home extends React.Component {
                         <img src={error_net} alt=""/>
                         <span>USDx is currently only available on Mainnet or the Rinkeby Testnet</span>
                     </div>
-                    <div className='topTips redBg' style={{display: !this.state.isConnected ? 'block':'none'}}>
+                    {/* <div className='topTips redBg' style={{display: !this.state.isConnected ? 'block':'none'}}>
                         <img src={error_net} alt=""/>
                         <span>Please enable MetaMask or visit this page in a Web3 browser to interact with the dForce protocol</span>
-                    </div>
+                    </div> */}
                     <Header
                         status={this.state}
                         DisconnectMetamask={()=>{this.DisconnectMetamask()}}
@@ -330,9 +330,9 @@ export default class Home extends React.Component {
                                             <div className="detials">Please note that 0.1% of USDx equivalent of DF will be consumed for the reconversion of USDx.</div>
                                         </div>
                                         Fee in DF Token:
-                                        <span>
-                                            <i>{this.state.couldDestroy ? (this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice).toFixed(2).toString().split('.')[0] : '0'}</i>
-                                            {this.state.couldDestroy ? '.' + (this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice).toFixed(2).toString().split('.')[1] : '.00'}
+                                        <span style={{color: Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) > 0 ? '#fc5645' : '#9696a2'}}>
+                                            <i style={{color: Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) > 0 ? '#fc5645' : '#9696a2'}}>{(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice).toFixed(2).toString().split('.')[0]}</i>
+                                            {'.' + (this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice).toFixed(2).toString().split('.')[1]}
                                         </span>
                                     </div>
                                     <div className="errtips" style={{ display: this.state.errTipsDestroy ? 'block' : 'none' }}>
@@ -2831,14 +2831,19 @@ export default class Home extends React.Component {
         this.setState({
             ...this.state,
             toWithdraw: token
-        })
-        
-        setTimeout(() => {
+        }, ()=>{
             if (!this.state.toWithdrawNum) {
                 return;
             }
             this.withdrawNumChange(this.state.toWithdrawNum);
-        }, 500);
+        })
+
+        // setTimeout(() => {
+        //     if (!this.state.toWithdrawNum) {
+        //         return;
+        //     }
+        //     this.withdrawNumChange(this.state.toWithdrawNum);
+        // }, 0);
     }
     withdraw () {
         if (!this.state.couldWithdraw) {
@@ -3445,8 +3450,9 @@ export default class Home extends React.Component {
                     couldDeposit: true,
                     errTips: false,
                     toDepositNum: val
+                }, ()=>{
+                    this.getUSDXForDeposit(address, val * (10 ** tempUnits));
                 })
-                this.getUSDXForDeposit(address, val * (10 ** tempUnits));
             } else if (val === '' || Number(val) === 0) {
                 this.setState({
                     ...this.state,
@@ -3473,8 +3479,9 @@ export default class Home extends React.Component {
                     couldDeposit: true,
                     errTips: false,
                     toDepositNum: val
+                }, ()=>{
+                    this.getUSDXForDeposit(address, val * (10 ** tempUnits));
                 })
-                this.getUSDXForDeposit(address, val * (10 ** tempUnits));
             } else if (val === '' || Number(val) === 0) {
                 this.setState({
                     ...this.state,
@@ -3501,8 +3508,9 @@ export default class Home extends React.Component {
                     couldDeposit: true,
                     errTips: false,
                     toDepositNum: val
+                }, ()=>{
+                    this.getUSDXForDeposit(address, val * (10 ** tempUnits));
                 })
-                this.getUSDXForDeposit(address, val * (10 ** tempUnits));
             } else if (val === '' || Number(val) === 0) {
                 this.setState({
                     ...this.state,
@@ -3529,8 +3537,9 @@ export default class Home extends React.Component {
                     couldDeposit: true,
                     errTips: false,
                     toDepositNum: val
+                }, ()=>{
+                    this.getUSDXForDeposit(address, val * (10 ** tempUnits));
                 })
-                this.getUSDXForDeposit(address, val * (10 ** tempUnits));
             } else if (val === '' || Number(val) === 0) {
                 this.setState({
                     ...this.state,
@@ -3553,14 +3562,19 @@ export default class Home extends React.Component {
         this.setState({
             ...this.state,
             toDeposit: token
-        })
-        
-        setTimeout(() => {
+        }, ()=>{
             if (!this.state.toDepositNum) {
                 return;
             }
             this.depositNumChange(this.state.toDepositNum);
-        }, 500);
+        })
+
+        // setTimeout(() => {
+        //     if (!this.state.toDepositNum) {
+        //         return;
+        //     }
+        //     this.depositNumChange(this.state.toDepositNum);
+        // }, 0);
     }
     deposit () {
         if (!this.state.couldDeposit) {
