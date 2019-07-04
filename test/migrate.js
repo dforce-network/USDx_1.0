@@ -2860,65 +2860,67 @@ contract('USDx', accounts => {
 
                 
 
-                var wrapTokenList = [];
-                for (let systemIndex = 0; systemIndex < dfProtocol.length; systemIndex++) {
-                    
-                    console.log('system : ' + (systemIndex + 1) + ' data!!!');
-                    var wrapTokenList = await dfStore[systemIndex].getMintedTokenList.call();
-                    console.log('wrapTokenList\n');
-                    console.log(wrapTokenList);
-                    console.log('\n');
-                    var srcToken;    
-                    for (let index = 0; index < wrapTokenList.length; index++) {
+                if(runConfig[configIndex]['data'][dfEngineIndex].hasOwnProperty('verify') && runConfig[configIndex]['data'][dfEngineIndex]['verify']){
 
-                        console.log('wrap token---------------------------------');
-                        console.log(wrapTokenList[index]);
-                        console.log('\n');
+                    var wrapTokenList = [];
+                    for (let systemIndex = 0; systemIndex < dfProtocol.length; systemIndex++) {
                         
-                        srcToken = await wrapTokenContract[systemIndex][wrapTokenList[index]].getSrcERC20.call();
-                        balanceOfTokens = await srcTokenContract[srcToken].balanceOf.call(dfPool[systemIndex].address);
-
-                        console.log('src token : ' + srcToken);
-                        console.log('dfpool src token balance : ' + balanceOfTokens);
-                        assert.equal(balanceOfTokens.toString(), '0');
-
-                        console.log('wrap token : ' + wrapTokenList[index]);
-
-                        balanceOfTokens = await wrapTokenContract[systemIndex][wrapTokenList[index]].balanceOf.call(dfPool[systemIndex].address);
-                        console.log('dfpool wrap token balance : ' + balanceOfTokens);
-                        assert.equal(balanceOfTokens.toString(), '0');
-                        balanceOfTokens = await wrapTokenContract[systemIndex][wrapTokenList[index]].balanceOf.call(dfCollateral[systemIndex].address);
-                        console.log('dfCollateral wrap token balance : ' + balanceOfTokens);
-                        assert.equal(balanceOfTokens.toString(), '0');
-
-                        dfTokenBalance = await dfStore[systemIndex].getTokenBalance.call(wrapTokenList[index]);
-                        console.log('dfStore poolBalance : ' + dfTokenBalance);
-                        assert.equal(dfTokenBalance.toString(), '0');
-
-                        dfTokenBalance = await dfStore[systemIndex].getResUSDXBalance.call(wrapTokenList[index]);
-                        console.log('dfStore resUSDXBalance : ' + dfTokenBalance);
-                        assert.equal(dfTokenBalance.toString(), '0');
-
+                        console.log('system : ' + (systemIndex + 1) + ' data!!!');
+                        var wrapTokenList = await dfStore[systemIndex].getMintedTokenList.call();
+                        console.log('wrapTokenList\n');
+                        console.log(wrapTokenList);
                         console.log('\n');
+                        var srcToken;    
+                        for (let index = 0; index < wrapTokenList.length; index++) {
 
-                        console.log('accounts--------------------\n');
-                        for (let i = 0; i < accounts.length; i++) {
+                            console.log('wrap token---------------------------------');
+                            console.log(wrapTokenList[index]);
+                            console.log('\n');
                             
-                            dfTokenBalance = await dfStore[systemIndex].getDepositorBalance.call(accounts[i], wrapTokenList[index]);
-                            console.log('account : ' + i);
-                            console.log('dfStore depositorsBalance : ' + dfTokenBalance);
+                            srcToken = await wrapTokenContract[systemIndex][wrapTokenList[index]].getSrcERC20.call();
+                            balanceOfTokens = await srcTokenContract[srcToken].balanceOf.call(dfPool[systemIndex].address);
+
+                            console.log('src token : ' + srcToken);
+                            console.log('dfpool src token balance : ' + balanceOfTokens);
+                            assert.equal(balanceOfTokens.toString(), '0');
+
+                            console.log('wrap token : ' + wrapTokenList[index]);
+
+                            balanceOfTokens = await wrapTokenContract[systemIndex][wrapTokenList[index]].balanceOf.call(dfPool[systemIndex].address);
+                            console.log('dfpool wrap token balance : ' + balanceOfTokens);
+                            assert.equal(balanceOfTokens.toString(), '0');
+                            balanceOfTokens = await wrapTokenContract[systemIndex][wrapTokenList[index]].balanceOf.call(dfCollateral[systemIndex].address);
+                            console.log('dfCollateral wrap token balance : ' + balanceOfTokens);
+                            assert.equal(balanceOfTokens.toString(), '0');
+
+                            dfTokenBalance = await dfStore[systemIndex].getTokenBalance.call(wrapTokenList[index]);
+                            console.log('dfStore poolBalance : ' + dfTokenBalance);
                             assert.equal(dfTokenBalance.toString(), '0');
+
+                            dfTokenBalance = await dfStore[systemIndex].getResUSDXBalance.call(wrapTokenList[index]);
+                            console.log('dfStore resUSDXBalance : ' + dfTokenBalance);
+                            assert.equal(dfTokenBalance.toString(), '0');
+
+                            console.log('\n');
+
+                            console.log('accounts--------------------\n');
+                            for (let i = 0; i < accounts.length; i++) {
+                                
+                                dfTokenBalance = await dfStore[systemIndex].getDepositorBalance.call(accounts[i], wrapTokenList[index]);
+                                console.log('account : ' + i);
+                                console.log('dfStore depositorsBalance : ' + dfTokenBalance);
+                                assert.equal(dfTokenBalance.toString(), '0');
+                            }
                         }
+
+                        console.log('------------------------------\n');
+                        
                     }
-
-                    console.log('------------------------------\n');
                     
+                    console.log('usdx totalSupply : ');
+                    console.log((await usdxToken.totalSupply.call()).toString());
+                    assert.equal((await usdxToken.totalSupply.call()).toString(), '0');
                 }
-
-                
-                console.log('usdx totalSupply : ');
-                console.log((await usdxToken.totalSupply.call()).toString());
-                assert.equal((await usdxToken.totalSupply.call()).toString(), '0');
 
                 console.log(JSON.stringify(runConfig));
                 console.log(JSON.stringify(runDataList));

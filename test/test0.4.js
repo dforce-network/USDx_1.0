@@ -1470,6 +1470,7 @@ runConfig = [
 
             {
                 'type':'destroy',
+                // 'verify':true,
                 'sys':2,
                 'data':[
                     {
