@@ -202,6 +202,9 @@ contract DFEngine is DSMath, DSAuth {
                 dfStore.burnSectionMoveon();
             }
 
+            if (_burnedAmount == 0)
+                continue;
+
             for (uint i = 0; i < _tokens.length; i++) {
 
                 _tokenAmount = div(mul(_burnedAmount, _burnCW[i]), _sumBurnCW);
