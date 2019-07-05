@@ -3424,6 +3424,10 @@ export default class Home extends React.Component {
         this.contractProtocolView.getUSDXForDeposit.call(tokenID, amount, (err, ret)=>{
             console.log(err, ret);
             if (ret) {
+                if (this.state.toDepositNum === '' || Number(this.state.toDepositNum) === 0) {
+                    return;
+                }
+
                 this.setState({
                     ...this.state,
                     maxGenerateUSDx: this.formatNumber(ret, 'USDx')
@@ -3435,6 +3439,17 @@ export default class Home extends React.Component {
 
     // *** deposit ***
     depositNumChange (val) {
+        if (val === '' || Number(val) === 0) {
+            this.setState({
+                ...this.state,
+                couldDeposit: false,
+                errTips: false,
+                toDepositNum: val,
+                maxGenerateUSDx: '0.00'
+            })
+            return;
+        }
+
         if (val.length > 16) {
             return;
         }
@@ -3452,14 +3467,6 @@ export default class Home extends React.Component {
                     toDepositNum: val
                 }, ()=>{
                     this.getUSDXForDeposit(address, val * (10 ** tempUnits));
-                })
-            } else if (val === '' || Number(val) === 0) {
-                this.setState({
-                    ...this.state,
-                    couldDeposit: false,
-                    errTips: false,
-                    toDepositNum: val,
-                    maxGenerateUSDx: '0.00'
                 })
             } else {
                 this.setState({
@@ -3482,14 +3489,6 @@ export default class Home extends React.Component {
                 }, ()=>{
                     this.getUSDXForDeposit(address, val * (10 ** tempUnits));
                 })
-            } else if (val === '' || Number(val) === 0) {
-                this.setState({
-                    ...this.state,
-                    couldDeposit: false,
-                    errTips: false,
-                    toDepositNum: val,
-                    maxGenerateUSDx: '0.00'
-                })
             } else {
                 this.setState({
                     ...this.state,
@@ -3511,14 +3510,6 @@ export default class Home extends React.Component {
                 }, ()=>{
                     this.getUSDXForDeposit(address, val * (10 ** tempUnits));
                 })
-            } else if (val === '' || Number(val) === 0) {
-                this.setState({
-                    ...this.state,
-                    couldDeposit: false,
-                    errTips: false,
-                    toDepositNum: val,
-                    maxGenerateUSDx: '0.00'
-                })
             } else {
                 this.setState({
                     ...this.state,
@@ -3539,14 +3530,6 @@ export default class Home extends React.Component {
                     toDepositNum: val
                 }, ()=>{
                     this.getUSDXForDeposit(address, val * (10 ** tempUnits));
-                })
-            } else if (val === '' || Number(val) === 0) {
-                this.setState({
-                    ...this.state,
-                    couldDeposit: false,
-                    errTips: false,
-                    toDepositNum: val,
-                    maxGenerateUSDx: '0.00'
                 })
             } else {
                 this.setState({
