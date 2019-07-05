@@ -1281,6 +1281,8 @@ export default class Home extends React.Component {
             return;
         }
 
+        Cookie.save('curAccount', this.state.accountAddress, { path: '/' });
+
         const keys = Object.keys(this.state.transcations);
         for (var i = 0; i < keys.length; i++) {
             if (this.state.transcations[keys[i]].title === 'Approve ' + token) {
@@ -1358,10 +1360,12 @@ export default class Home extends React.Component {
                                     this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
                                         if (data && data.status === '0x1') {
                                             clearInterval(approveDAItimer);
-                                            this.setState({
-                                                ...this.state,
-                                                approvedDAI: true
-                                            });
+                                            if (Cookie.load('curAccount') === this.state.accountAddress) {
+                                                this.setState({
+                                                    ...this.state,
+                                                    approvedDAI: true
+                                                });
+                                            }
                                             const keys = Object.keys(this.state.transcations);
                                             const tmepState = this.state;
                                             keys.map((key) => {
@@ -1381,13 +1385,17 @@ export default class Home extends React.Component {
                                                 return false;
                                             })
                                             if (this.state.fromDepositDAI) {
-                                                this.setState({
-                                                    ...this.state,
-                                                    fromDepositDAI: false
-                                                });
-                                                setTimeout(() => {
-                                                    this.deposit();
-                                                }, 4000)
+                                                if (Cookie.load('curAccount') === this.state.accountAddress) {
+                                                    this.setState({
+                                                        ...this.state,
+                                                        fromDepositDAI: false
+                                                    });
+                                                    setTimeout(() => {
+                                                        this.deposit();
+                                                    }, 4000)
+                                                } else {
+                                                    return false;
+                                                }
                                             }
                                         } 
                                         if (data && data.status === '0x0') {
@@ -1476,10 +1484,12 @@ export default class Home extends React.Component {
                                     this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
                                         if (data && data.status === '0x1') {
                                             clearInterval(approvePAXtimer);
-                                            this.setState({
-                                                ...this.state,
-                                                approvedPAX: true
-                                            });
+                                            if (Cookie.load('curAccount') === this.state.accountAddress) {
+                                                this.setState({
+                                                    ...this.state,
+                                                    approvedPAX: true
+                                                });
+                                            }
                                             const keys = Object.keys(this.state.transcations);
                                             const tmepState = this.state;
                                             keys.map((key) => {
@@ -1499,13 +1509,17 @@ export default class Home extends React.Component {
                                                 return false;
                                             })
                                             if (this.state.fromDepositPAX) {
-                                                this.setState({
-                                                    ...this.state,
-                                                    fromDepositPAX: false
-                                                });
-                                                setTimeout(() => {
-                                                    this.deposit();
-                                                }, 4000)
+                                                if (Cookie.load('curAccount') === this.state.accountAddress) {
+                                                    this.setState({
+                                                        ...this.state,
+                                                        fromDepositPAX: false
+                                                    });
+                                                    setTimeout(() => {
+                                                        this.deposit();
+                                                    }, 4000)
+                                                } else {
+                                                    return false;
+                                                }
                                             }
                                         } 
                                         if (data && data.status === '0x0') {
@@ -1594,10 +1608,12 @@ export default class Home extends React.Component {
                                     this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
                                         if (data && data.status === '0x1') {
                                             clearInterval(approveTUSDtimer);
-                                            this.setState({
-                                                ...this.state,
-                                                approvedTUSD: true
-                                            });
+                                            if (Cookie.load('curAccount') === this.state.accountAddress) {
+                                                this.setState({
+                                                    ...this.state,
+                                                    approvedTUSD: true
+                                                });
+                                            }
                                             const keys = Object.keys(this.state.transcations);
                                             const tmepState = this.state;
                                             keys.map((key) => {
@@ -1617,13 +1633,17 @@ export default class Home extends React.Component {
                                                 return false;
                                             })
                                             if (this.state.fromDepositTUSD) {
-                                                this.setState({
-                                                    ...this.state,
-                                                    fromDepositTUSD: false
-                                                });
-                                                setTimeout(() => {
-                                                    this.deposit();
-                                                }, 4000)
+                                                if (Cookie.load('curAccount') === this.state.accountAddress) {
+                                                    this.setState({
+                                                        ...this.state,
+                                                        fromDepositTUSD: false
+                                                    });
+                                                    setTimeout(() => {
+                                                        this.deposit();
+                                                    }, 4000)
+                                                } else {
+                                                    return false;
+                                                }
                                             }
                                         } 
                                         if (data && data.status === '0x0') {
@@ -1712,10 +1732,12 @@ export default class Home extends React.Component {
                                     this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
                                         if (data && data.status === '0x1') {
                                             clearInterval(approveUSDCtimer);
-                                            this.setState({
-                                                ...this.state,
-                                                approvedUSDC: true
-                                            });
+                                            if (Cookie.load('curAccount') === this.state.accountAddress) {
+                                                this.setState({
+                                                    ...this.state,
+                                                    approvedUSDC: true
+                                                });
+                                            }
                                             const keys = Object.keys(this.state.transcations);
                                             const tmepState = this.state;
                                             keys.map((key) => {
@@ -1735,13 +1757,17 @@ export default class Home extends React.Component {
                                                 return false;
                                             })
                                             if (this.state.fromDepositUSDC) {
-                                                this.setState({
-                                                    ...this.state,
-                                                    fromDepositUSDC: false
-                                                });
-                                                setTimeout(() => {
-                                                    this.deposit();
-                                                }, 4000)
+                                                if (Cookie.load('curAccount') === this.state.accountAddress) {
+                                                    this.setState({
+                                                        ...this.state,
+                                                        fromDepositUSDC: false
+                                                    });
+                                                    setTimeout(() => {
+                                                        this.deposit();
+                                                    }, 4000)
+                                                } else {
+                                                    return false;
+                                                }
                                             }
                                         } 
                                         if (data && data.status === '0x0') {
@@ -1830,10 +1856,12 @@ export default class Home extends React.Component {
                                     this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
                                         if (data && data.status === '0x1') {
                                             clearInterval(approveDFtimer);
-                                            this.setState({
-                                                ...this.state,
-                                                approvedDF: true
-                                            });
+                                            if (Cookie.load('curAccount') === this.state.accountAddress) {
+                                                this.setState({
+                                                    ...this.state,
+                                                    approvedDF: true
+                                                });
+                                            }
                                             const keys = Object.keys(this.state.transcations);
                                             const tmepState = this.state;
                                             keys.map((key) => {
@@ -1853,13 +1881,17 @@ export default class Home extends React.Component {
                                                 return false;
                                             })
                                             if (this.state.fromDestroy1) {
-                                                this.setState({
-                                                    ...this.state,
-                                                    fromDestroy1: false
-                                                });
-                                                setTimeout(() => {
-                                                    this.destroy();
-                                                }, 4000)
+                                                if (Cookie.load('curAccount') === this.state.accountAddress) {
+                                                    this.setState({
+                                                        ...this.state,
+                                                        fromDestroy1: false
+                                                    });
+                                                    setTimeout(() => {
+                                                        this.destroy();
+                                                    }, 4000)
+                                                } else {
+                                                    return false;
+                                                }
                                             }
                                         }
                                         if (data && data.status === '0x0') {
@@ -1948,10 +1980,12 @@ export default class Home extends React.Component {
                                     this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
                                         if (data && data.status === '0x1') {
                                             clearInterval(approveUSDxtimer);
-                                            this.setState({
-                                                ...this.state,
-                                                approvedUSDx: true
-                                            });
+                                            if (Cookie.load('curAccount') === this.state.accountAddress) {
+                                                this.setState({
+                                                    ...this.state,
+                                                    approvedUSDx: true
+                                                });
+                                            }
                                             const keys = Object.keys(this.state.transcations);
                                             const tmepState = this.state;
                                             keys.map((key) => {
@@ -1971,13 +2005,17 @@ export default class Home extends React.Component {
                                                 return false;
                                             })
                                             if (this.state.fromDestroy2) {
-                                                this.setState({
-                                                    ...this.state,
-                                                    fromDestroy2: false
-                                                });
-                                                setTimeout(() => {
-                                                    this.destroy();
-                                                }, 4000)
+                                                if (Cookie.load('curAccount') === this.state.accountAddress) {
+                                                    this.setState({
+                                                        ...this.state,
+                                                        fromDestroy2: false
+                                                    });
+                                                    setTimeout(() => {
+                                                        this.destroy();
+                                                    }, 4000)
+                                                } else {
+                                                    return false;
+                                                }
                                             }
                                         } 
                                         if (data && data.status === '0x0') {
