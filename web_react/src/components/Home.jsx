@@ -133,10 +133,11 @@ export default class Home extends React.Component {
 
         setInterval(() => {
             if (!this.Web3.eth.coinbase) {
+                console.log('metamask not log in');
                 return;
             }
             if (Cookie.load('isLogin') === 'false') {
-                console.log('i am out')
+                console.log('i am out ( -i clicked log out- )');
                 return;
             }
             if (this.state.accountAddress !== this.Web3.eth.coinbase) {
