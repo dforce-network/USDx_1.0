@@ -46,7 +46,7 @@ export default class Home extends React.Component {
 
     addressProtocol = '0x218d981a80c094621f8081900b247757De74751b';
     addressProtocolView = '0x4640C9f0492665Fc54ef8d41C6Af33Bc0923201A';
-    addressCollateral = '0xF268D24a155A61A1E9eaA68DaaE23d6f55cB3a50';
+    // addressCollateral = '0xF268D24a155A61A1E9eaA68DaaE23d6f55cB3a50';
     addressEngine = '0x7712B8f4732D514e73Be9891A4E24d47c317c3E0';
     addressPool = '0x8783134AcF84a4A5A7670896A245FBA0AB4B60d9';
     units = 10 ** 18;
@@ -213,7 +213,7 @@ export default class Home extends React.Component {
     componentDidMount () {}
     render () {
         return (
-            <DocuentTitle title='USDx portal'>
+            <DocuentTitle title='USDx'>
                 <React.Fragment>
                     {/* <Welcome ifShow={this.state.isConnected} connectMetamask={()=>{this.connectMetamask()}}/> */}
                     <Notify transcations={this.state.transcations} netType={this.state.netType}/>
