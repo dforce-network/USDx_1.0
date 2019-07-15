@@ -9,18 +9,6 @@ contract DFProtocolView is DSMath {
     IDFStore public dfStore;
     address public dfCol;
 
-    enum ProcessType {
-        CT_DEPOSIT,
-        CT_DESTROY,
-        CT_CLAIM,
-        CT_WITHDRAW
-    }
-
-    enum TokenType {
-        TT_DF,
-        TT_USDX
-    }
-
     constructor (address _dfStore, address _dfCol)
         public
     {
