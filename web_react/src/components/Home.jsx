@@ -20,6 +20,9 @@ import abiUSDx from '../abi/abiUSDx';
 import abiProtocol from '../abi/abiProtocol';
 import abiProtocolView from '../abi/abiProtocolView';
 
+// address map
+import addressMap from '../abi/addressMap'
+
 // components
 import Notify from './Notify';
 import Header from './Header';
@@ -37,18 +40,6 @@ import error_net from '../assets/img/error_net.png';
 
 
 export default class Home extends React.Component {
-    addressDAI = '0x506243424a778382f73bf6c24390d08fa9096092'.toLowerCase();
-    addressPAX = '0xd414e78d5db39e90c704070943e067ffc0eb3d86'.toLowerCase();
-    addressTUSD = '0xfeb2112e370091f25a2f96fb600484700a0ed603'.toLowerCase();
-    addressUSDC = '0x71abccd90dbb09c37686e4d5026c2d9597d469cb'.toLowerCase();
-    addressDF = '0xb7dd4a376d3c3680a939f6ec2c5b5a737a60710a';
-    addressUSDx = '0xD44c928EF6c2745526686D3347d30ACC87DC71C0';
-
-    addressProtocol = '0x218d981a80c094621f8081900b247757De74751b';
-    addressProtocolView = '0x4640C9f0492665Fc54ef8d41C6Af33Bc0923201A';
-    // addressCollateral = '0xF268D24a155A61A1E9eaA68DaaE23d6f55cB3a50';
-    addressEngine = '0x7712B8f4732D514e73Be9891A4E24d47c317c3E0';
-    addressPool = '0x8783134AcF84a4A5A7670896A245FBA0AB4B60d9';
     units = 10 ** 18;
     tatolSection = 0;
     tatolSectionBurning = 0;
@@ -64,9 +55,6 @@ export default class Home extends React.Component {
             useNextVariants: true,
         },
     });
-
-
-
 
     constructor(props) {
         super(props);
@@ -92,44 +80,59 @@ export default class Home extends React.Component {
         }
         if (window.web3) {
             this.Web3 = window.web3;
-            this.contractDAI = this.Web3.eth.contract(abiTokens).at(this.addressDAI);
-            this.contractPAX = this.Web3.eth.contract(abiTokens).at(this.addressPAX);
-            this.contractTUSD = this.Web3.eth.contract(abiTokens).at(this.addressTUSD);
-            this.contractUSDC = this.Web3.eth.contract(abiTokens).at(this.addressUSDC);
 
-            this.contractDF = this.Web3.eth.contract(abiTokens).at(this.addressDF);
+            this.Web3.version.getNetwork((err, net) => {
+                console.log(net);
+                this.addressDAI = addressMap[net]['addressDAI'];
+                this.addressPAX = addressMap[net]['addressPAX'];
+                this.addressTUSD = addressMap[net]['addressTUSD'];
+                this.addressUSDC = addressMap[net]['addressUSDC'];
+                this.addressDF = addressMap[net]['addressDF'];
+                this.addressUSDx = addressMap[net]['addressUSDx'];
+                this.addressProtocol = addressMap[net]['addressProtocol'];
+                this.addressProtocolView = addressMap[net]['addressProtocolView'];
+                this.addressEngine = addressMap[net]['addressEngine'];
+                this.addressPool = addressMap[net]['addressPool'];
 
-            this.contractUSDx = this.Web3.eth.contract(abiUSDx).at(this.addressUSDx);
-            this.contractProtocol = this.Web3.eth.contract(abiProtocol).at(this.addressProtocol);
-            this.contractProtocolView = this.Web3.eth.contract(abiProtocolView).at(this.addressProtocolView);
+
+                this.contractDAI = this.Web3.eth.contract(abiTokens).at(this.addressDAI);
+                this.contractPAX = this.Web3.eth.contract(abiTokens).at(this.addressPAX);
+                this.contractTUSD = this.Web3.eth.contract(abiTokens).at(this.addressTUSD);
+                this.contractUSDC = this.Web3.eth.contract(abiTokens).at(this.addressUSDC);
+
+                this.contractDF = this.Web3.eth.contract(abiTokens).at(this.addressDF);
+
+                this.contractUSDx = this.Web3.eth.contract(abiUSDx).at(this.addressUSDx);
+                this.contractProtocol = this.Web3.eth.contract(abiProtocol).at(this.addressProtocol);
+                this.contractProtocolView = this.Web3.eth.contract(abiProtocolView).at(this.addressProtocolView);
+
+                this.contractProtocol.allEvents({ toBlock: 'latest' }).watch((error, result) => {
+                    console.log(error, result);
+                    if (result && result.args._sender === this.state.accountAddress) {
+                        var itemHistory = result;
+                        itemHistory.timeStamp = new Date().getTime();
+
+                        var tmphistory = this.state.myHistory;
+                        tmphistory.unshift(itemHistory);
+
+                        this.setState({
+                            ...this.state,
+                            myHistory: tmphistory
+                        })
+
+                        var localHistory = JSON.parse(localStorage.getItem(this.state.accountAddress));
+                        console.log(localHistory);
+                        console.log(this.state.netType);
+                        console.log(localHistory[this.state.netType]);
+
+                        localHistory[this.state.netType].history.unshift(itemHistory);
+                        localStorage.setItem(this.state.accountAddress, JSON.stringify(localHistory));
+                    }
+                });
+            })
         } else {
-            alert ('pls install metamask first.');
+            alert('pls install metamask first.');
         }
-
-        this.contractProtocol.allEvents({ toBlock: 'latest' }).watch((error, result) => {
-            console.log(error, result);
-
-            if (result && result.args._sender === this.state.accountAddress) {
-                var itemHistory = result;
-                itemHistory.timeStamp = new Date().getTime();
-
-                var tmphistory = this.state.myHistory;
-                tmphistory.unshift(itemHistory);
-
-                this.setState({
-                    ...this.state,
-                    myHistory: tmphistory
-                })
-
-                var localHistory = JSON.parse(localStorage.getItem(this.state.accountAddress));
-                console.log(localHistory);
-                console.log(this.state.netType);
-                console.log(localHistory[this.state.netType]);
-
-                localHistory[this.state.netType].history.unshift(itemHistory);
-                localStorage.setItem(this.state.accountAddress, JSON.stringify(localHistory));
-            }
-        });
 
         setInterval(() => {
             if (!this.Web3.eth.coinbase) {
@@ -202,27 +205,27 @@ export default class Home extends React.Component {
                 this.getUserWithdrawBalance();
                 // this.isSyncing();
                 this.getGasPrice();
-            }else {
+            } else {
                 console.log('not connected...');
                 return;
             }
         }, 1000 * 15)
     }
 
-    componentWillMount () {}
-    componentDidMount () {}
-    render () {
+    componentWillMount() { }
+    componentDidMount() { }
+    render() {
         return (
             <DocuentTitle title='USDx'>
                 <React.Fragment>
                     {/* <Welcome ifShow={this.state.isConnected} connectMetamask={()=>{this.connectMetamask()}}/> */}
-                    <Notify transcations={this.state.transcations} netType={this.state.netType}/>
-                    <div className='topTips' style={{display: this.state.isConnected && this.state.netType === 'Rinkeby' ? 'block':'none'}}>
-                        <img src={right_net} alt=""/>
+                    <Notify transcations={this.state.transcations} netType={this.state.netType} />
+                    <div className='topTips' style={{ display: this.state.isConnected && this.state.netType === 'Rinkeby' ? 'block' : 'none' }}>
+                        <img src={right_net} alt="" />
                         <span>Note: You are currently connected to the Rinkeby Testnet</span>
                     </div>
-                    <div className='topTips redBg' style={{display: this.state.isConnected && this.state.netType !== 'Rinkeby' && this.state.netType !== 'Main' ? 'block':'none'}}>
-                        <img src={error_net} alt=""/>
+                    <div className='topTips redBg' style={{ display: this.state.isConnected && this.state.netType !== 'Rinkeby' && this.state.netType !== 'Main' ? 'block' : 'none' }}>
+                        <img src={error_net} alt="" />
                         <span>USDx is currently only available on Mainnet or the Rinkeby Testnet</span>
                     </div>
                     {/* <div className='topTips redBg' style={{display: !this.state.isConnected ? 'block':'none'}}>
@@ -231,232 +234,232 @@ export default class Home extends React.Component {
                     </div> */}
                     <Header
                         status={this.state}
-                        DisconnectMetamask={()=>{this.DisconnectMetamask()}}
-                        connectMetamask={()=>{this.connectMetamask()}}
-                        approve={(v)=>{this.approve(v)}}
-                        lock={(v)=>{this.lock(v)}}
-                        allocateTo={(v)=>{this.allocateTo(v)}}
-                        getMaxNumToGenerateOnestep={()=>{this.getMaxNumToGenerateOnestep()}}
-                        toGenerateMax={(BN)=>{this.toGenerateMax(BN)}}
+                        DisconnectMetamask={() => { this.DisconnectMetamask() }}
+                        connectMetamask={() => { this.connectMetamask() }}
+                        approve={(v) => { this.approve(v) }}
+                        lock={(v) => { this.lock(v) }}
+                        allocateTo={(v) => { this.allocateTo(v) }}
+                        getMaxNumToGenerateOnestep={() => { this.getMaxNumToGenerateOnestep() }}
+                        toGenerateMax={(BN) => { this.toGenerateMax(BN) }}
                     />
                     <MuiThemeProvider theme={this.theme}>
-                    <div className="body">
-                        <BodyLeft data={this.state}/>
-                        <div className="bodyright">
-                            <div className="tab1">
-                                <div className="titleInTab">
-                                    <div className="leftTitle">EXCHANGE</div>
-                                    <div className="rightIcon">
-                                        <IconButton color="inherit" onClick={()=>{this.handleChange1()}}>
-                                            <img src={exchangeTo} alt="" style={{display: this.state.tab1? 'block' : 'none'}}/>
-                                            <img src={exchangeBack} alt="" style={{display: !this.state.tab1? 'block' : 'none'}}/>
-                                        </IconButton>
-                                    </div>
-                                    <div className="clear"></div>
-                                </div>
-                                <div style={{ display: this.state.tab1? 'block' : 'none' }} className="generate">
-                                    <p className="details">Select which constituent you would like to deposit:</p>
-                                    <div className="input">
-                                        <input type="number" onChange={(val) => { this.depositNumChange(val.target.value) }} value={this.state.toDepositNum} />
-                                        <Select className="mySelect" defaultValue="DAI" onChange={(val)=>{this.depositOptChange(val)}}>
-                                            <Select.Option value="DAI">DAI</Select.Option>
-                                            <Select.Option value="PAX">PAX</Select.Option>
-                                            <Select.Option value="TUSD">TUSD</Select.Option>
-                                            <Select.Option value="USDC">USDC</Select.Option>
-                                        </Select>
-                                    </div>
-                                    <div className="myBalanceOnPool myBalanceOnPoolMax">
-                                        Max USDx available to aggregate:
-                                        <span>
-                                            <i>{this.state.maxGenerateUSDx ? this.toThousands(this.state.maxGenerateUSDx.split('.')[0]) : '0'}</i>
-                                            {this.state.maxGenerateUSDx ? '.' + this.state.maxGenerateUSDx.split('.')[1] : '.00'}
-                                        </span>
-                                    </div>
-                                    <div className="ButtonWrap">
-                                        <Button
-                                            onClick={() => { this.deposit() }}
-                                            variant="contained"
-                                            color="secondary"
-                                            disabled={this.state.couldDeposit ? false : true}
-                                            fullWidth={true}
-                                        >
-                                            GENERATE
-                                        </Button>
-                                    </div>
-                                    <div className="diverLine"></div>
-                                    <div className="claim">
-                                        Max USDx to claim:
-                                        <span>
-                                            <i>{this.state.userMaxToClaim? this.toThousands(this.state.userMaxToClaim.split('.')[0]) : '0'}</i>
-                                            {this.state.userMaxToClaim? '.' + this.state.userMaxToClaim.split('.')[1] : '.00'}
-                                        </span>
-                                    </div>
-                                    <div className="ButtonWrap marginTop10 marginMax">
-                                        <Button
-                                            onClick={() => { this.claim() }}
-                                            variant="contained"
-                                            color="secondary"
-                                            disabled={this.state.couldClaim ? false : true}
-                                            fullWidth={true}
-                                        >
-                                            CLAIM
-                                        </Button>
-                                    </div>
-                                    <div className="errtips" style={{ display: this.state.errTips ? 'block' : 'none' }}>
-                                        <h4>Reminder</h4>
-                                        Insufficient {this.state.toDeposit}
-                                    </div>
-                                </div>
-                                
-                                <div style={{ display: !this.state.tab1 ? 'block' : 'none' }} className="generate">
-                                    <p className="details">How much USDx you would like to reconvert into constituents:</p>
-                                    <div className="input">
-                                        <input type="number" onChange={(val) => { this.destroyNumChange(val.target.value) }} value={this.state.toDestroyNum} />
-                                        <Select className="mySelect" defaultValue="USDx" disabled></Select>
-                                    </div>
-                                    <div className="clear"></div>
-                                    <div className="ButtonWrap ButtonWrapWithdraw">
-                                        <Button
-                                            onClick={() => { this.destroy() }}
-                                            variant="contained"
-                                            color="secondary"
-                                            disabled={this.state.couldDestroy ? false : true}
-                                            fullWidth={true}
-                                        >CONVERT
-                                        </Button>
-                                    </div>
-                                    <div className="tips tipsMax">
-                                        <div className="imgWrap">
-                                            <img src={warningtips} alt="" />
-                                            <div className="detials">Please note that 0.1% of USDx equivalent of DF will be consumed for the reconversion of USDx.</div>
+                        <div className="body">
+                            <BodyLeft data={this.state} />
+                            <div className="bodyright">
+                                <div className="tab1">
+                                    <div className="titleInTab">
+                                        <div className="leftTitle">EXCHANGE</div>
+                                        <div className="rightIcon">
+                                            <IconButton color="inherit" onClick={() => { this.handleChange1() }}>
+                                                <img src={exchangeTo} alt="" style={{ display: this.state.tab1 ? 'block' : 'none' }} />
+                                                <img src={exchangeBack} alt="" style={{ display: !this.state.tab1 ? 'block' : 'none' }} />
+                                            </IconButton>
                                         </div>
-                                        Fee in DF Token:
-                                        <span style={{color: Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) > 0 ? '#fc5645' : '#9696a2'}}>
-                                            <i style={{color: Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) > 0 ? '#fc5645' : '#9696a2'}}>{(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice).toFixed(2).toString().split('.')[0]}</i>
-                                            {'.' + (this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice).toFixed(2).toString().split('.')[1]}
-                                        </span>
-                                    </div>
-                                    <div className="errtips" style={{ display: this.state.errTipsDestroy ? 'block' : 'none' }}>
-                                        {/* <div className="errtips"> */}
-                                        <h4>Reminder</h4>
-                                        <span style={{ display: this.state.errTipsDestroy && !this.state.getDestroyThresholdBool && Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) < 0 ? 'block' : 'none' }}>Insufficient USDx.</span>
-                                        <span style={{ display: this.state.getDestroyThresholdBool ? 'block' : 'none' }}>The minimum accuracy to unconvert is no less than 0.01 USDx.</span>
-                                        <span style={{ display: Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) > 0 ? 'block' : 'none' }}>Insufficient DF.</span>
-                                    </div>
-                                    <div className="myBalanceOnPoolSection">
-                                        <div className="title">Constituents to be returned:</div>
-                                        <p className='partToken'>
-                                            <span>DAI</span>
-                                            <span className='right'>
-                                                {this.state.USDxToDAI ? this.toThousands(this.state.USDxToDAI.split('.')[0]) : '0'}
-                                                <i>{this.state.USDxToDAI ? this.state.USDxToDAI.split('.')[1]? '.' + this.state.USDxToDAI.split('.')[1]:'.00' : '.00'}</i>
-                                            </span>
-                                        </p>
-                                        <p className='partToken marginR marginl'>
-                                            <span className='exMargin'>PAX</span>
-                                            <span className='right'>
-                                                {this.state.USDxToPAX ? this.toThousands(this.state.USDxToPAX.split('.')[0]) : '0'}
-                                                <i>{this.state.USDxToPAX ? this.state.USDxToPAX.split('.')[1]?'.' + this.state.USDxToPAX.split('.')[1]:'.00' : '.00'}</i>
-                                            </span>
-                                        </p>
-                                        <p className='partToken'>
-                                            <span>TUSD</span>
-                                            <span className='right'>
-                                                {this.state.USDxToTUSD ? this.toThousands(this.state.USDxToTUSD.split('.')[0]) : '0'}
-                                                <i>{this.state.USDxToTUSD ? this.state.USDxToTUSD.split('.')[1]?'.' + this.state.USDxToTUSD.split('.')[1]:'.00' : '.00'}</i>
-                                            </span>
-                                        </p>
-                                        <p className='partToken marginl'>
-                                            <span className='exMargin'>USDC</span>
-                                            <span className='right'>
-                                                {this.state.USDxToUSDC ? this.toThousands(this.state.USDxToUSDC.split('.')[0]) : '0'}
-                                                <i>{this.state.USDxToUSDC ? this.state.USDxToUSDC.split('.')[1]?'.' + this.state.USDxToUSDC.split('.')[1]:'.00' : '.00'}</i>
-                                            </span>
-                                        </p>
                                         <div className="clear"></div>
                                     </div>
-                                </div>
-                            </div>
-                            
-                            <div className="tab1 noRightMargin">
-                                <div className="titleInTab">
-                                    <div className="leftTitle">WITHDRAW</div>
-                                    <div className="clear"></div>
-                                </div>
-                                <div className="generate nomargin">
-                                    <p className="details">Select which constituent you would like to withdraw:</p>
-                                    <div className="input">
-                                        <div className="maxNum" onClick={() => {this.adjustMaxToWithdraw()}}>MAX</div>
-                                        <input type="number" onChange={(val) => { this.withdrawNumChange(val.target.value) }} value={this.state.toWithdrawNum} />
-                                        <Select className="mySelect" defaultValue="DAI" onChange={(val)=>{this.withdrawOptChange(val)}}>
-                                            <Select.Option value="DAI">DAI</Select.Option>
-                                            <Select.Option value="PAX">PAX</Select.Option>
-                                            <Select.Option value="TUSD">TUSD</Select.Option>
-                                            <Select.Option value="USDC">USDC</Select.Option>
-                                        </Select>
-                                    </div>
-                                    <div className="clear"></div>
-                                    <div className="ButtonWrap ButtonWrapWithdraw">
-                                        <Button
-                                            onClick={() => { this.withdraw() }}
-                                            variant="contained"
-                                            color="secondary"
-                                            disabled={this.state.couldWithdraw ? false : true}
-                                            fullWidth={true}
-                                        >WITHDRAW
+                                    <div style={{ display: this.state.tab1 ? 'block' : 'none' }} className="generate">
+                                        <p className="details">Select which constituent you would like to deposit:</p>
+                                        <div className="input">
+                                            <input type="number" onChange={(val) => { this.depositNumChange(val.target.value) }} value={this.state.toDepositNum} />
+                                            <Select className="mySelect" defaultValue="DAI" onChange={(val) => { this.depositOptChange(val) }}>
+                                                <Select.Option value="DAI">DAI</Select.Option>
+                                                <Select.Option value="PAX">PAX</Select.Option>
+                                                <Select.Option value="TUSD">TUSD</Select.Option>
+                                                <Select.Option value="USDC">USDC</Select.Option>
+                                            </Select>
+                                        </div>
+                                        <div className="myBalanceOnPool myBalanceOnPoolMax">
+                                            Max USDx available to aggregate:
+                                        <span>
+                                                <i>{this.state.maxGenerateUSDx ? this.toThousands(this.state.maxGenerateUSDx.split('.')[0]) : '0'}</i>
+                                                {this.state.maxGenerateUSDx ? '.' + this.state.maxGenerateUSDx.split('.')[1] : '.00'}
+                                            </span>
+                                        </div>
+                                        <div className="ButtonWrap">
+                                            <Button
+                                                onClick={() => { this.deposit() }}
+                                                variant="contained"
+                                                color="secondary"
+                                                disabled={this.state.couldDeposit ? false : true}
+                                                fullWidth={true}
+                                            >
+                                                GENERATE
                                         </Button>
+                                        </div>
+                                        <div className="diverLine"></div>
+                                        <div className="claim">
+                                            Max USDx to claim:
+                                        <span>
+                                                <i>{this.state.userMaxToClaim ? this.toThousands(this.state.userMaxToClaim.split('.')[0]) : '0'}</i>
+                                                {this.state.userMaxToClaim ? '.' + this.state.userMaxToClaim.split('.')[1] : '.00'}
+                                            </span>
+                                        </div>
+                                        <div className="ButtonWrap marginTop10 marginMax">
+                                            <Button
+                                                onClick={() => { this.claim() }}
+                                                variant="contained"
+                                                color="secondary"
+                                                disabled={this.state.couldClaim ? false : true}
+                                                fullWidth={true}
+                                            >
+                                                CLAIM
+                                        </Button>
+                                        </div>
+                                        <div className="errtips" style={{ display: this.state.errTips ? 'block' : 'none' }}>
+                                            <h4>Reminder</h4>
+                                            Insufficient {this.state.toDeposit}
+                                        </div>
                                     </div>
-                                    <div className="errtips" style={{ display: this.state.errTipsWithdraw ? 'block' : 'none' }}>
-                                        <h4>Reminder</h4>
-                                        Insufficient {this.state.toWithdraw}.
-                                            </div>
-                                    <div className="myBalanceOnPoolSection">
-                                        <div className="title">Constituent balance:</div>
-                                        <p className='partToken'>
-                                            <span>DAI</span>
-                                            <span className='right' title={this.state.myDAIonPoolOrigin}>
-                                                {this.state.myDAIonPool ? this.toThousands(this.state.myDAIonPool.split('.')[0]) : '0'}
-                                                <i>{this.state.myDAIonPool ? '.' + this.state.myDAIonPool.split('.')[1] : '.00'}</i>
-                                            </span>
-                                        </p>
-                                        <p className='partToken marginl'>
-                                            <span className='exMargin'>PAX</span>
-                                            <span className='right' title={this.state.myPAXonPoolOrigin}>
-                                                {this.state.myPAXonPool ? this.toThousands(this.state.myPAXonPool.split('.')[0]) : '0'}
-                                                <i>{this.state.myPAXonPool ? '.' + this.state.myPAXonPool.split('.')[1] : '.00'}</i>
-                                            </span>
-                                        </p>
-                                        <p className='partToken'>
-                                            <span>TUSD</span>
-                                            <span className='right' title={this.state.myTUSDonPoolOrigin}>
-                                                {this.state.myTUSDonPool ? this.toThousands(this.state.myTUSDonPool.split('.')[0]) : '0'}
-                                                <i>{this.state.myTUSDonPool ? '.' + this.state.myTUSDonPool.split('.')[1] : '.00'}</i>
-                                            </span>
-                                        </p>
-                                        <p className='partToken marginl'>
-                                            <span className='exMargin'>USDC</span>
-                                            <span className='right' title={this.state.myUSDConPoolOrigin}>
-                                                {this.state.myUSDConPool ? this.toThousands(this.state.myUSDConPool.split('.')[0]) : '0'}
-                                                <i>{this.state.myUSDConPool ? '.' + this.state.myUSDConPool.split('.')[1] : '.00'}</i>
-                                            </span>
-                                        </p>
+
+                                    <div style={{ display: !this.state.tab1 ? 'block' : 'none' }} className="generate">
+                                        <p className="details">How much USDx you would like to reconvert into constituents:</p>
+                                        <div className="input">
+                                            <input type="number" onChange={(val) => { this.destroyNumChange(val.target.value) }} value={this.state.toDestroyNum} />
+                                            <Select className="mySelect" defaultValue="USDx" disabled></Select>
+                                        </div>
                                         <div className="clear"></div>
+                                        <div className="ButtonWrap ButtonWrapWithdraw">
+                                            <Button
+                                                onClick={() => { this.destroy() }}
+                                                variant="contained"
+                                                color="secondary"
+                                                disabled={this.state.couldDestroy ? false : true}
+                                                fullWidth={true}
+                                            >CONVERT
+                                        </Button>
+                                        </div>
+                                        <div className="tips tipsMax">
+                                            <div className="imgWrap">
+                                                <img src={warningtips} alt="" />
+                                                <div className="detials">Please note that 0.1% of USDx equivalent of DF will be consumed for the reconversion of USDx.</div>
+                                            </div>
+                                            Fee in DF Token:
+                                        <span style={{ color: Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) > 0 ? '#fc5645' : '#9696a2' }}>
+                                                <i style={{ color: Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) > 0 ? '#fc5645' : '#9696a2' }}>{(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice).toFixed(2).toString().split('.')[0]}</i>
+                                                {'.' + (this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice).toFixed(2).toString().split('.')[1]}
+                                            </span>
+                                        </div>
+                                        <div className="errtips" style={{ display: this.state.errTipsDestroy ? 'block' : 'none' }}>
+                                            {/* <div className="errtips"> */}
+                                            <h4>Reminder</h4>
+                                            <span style={{ display: this.state.errTipsDestroy && !this.state.getDestroyThresholdBool && Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) < 0 ? 'block' : 'none' }}>Insufficient USDx.</span>
+                                            <span style={{ display: this.state.getDestroyThresholdBool ? 'block' : 'none' }}>The minimum accuracy to unconvert is no less than 0.01 USDx.</span>
+                                            <span style={{ display: Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) > 0 ? 'block' : 'none' }}>Insufficient DF.</span>
+                                        </div>
+                                        <div className="myBalanceOnPoolSection">
+                                            <div className="title">Constituents to be returned:</div>
+                                            <p className='partToken'>
+                                                <span>DAI</span>
+                                                <span className='right'>
+                                                    {this.state.USDxToDAI ? this.toThousands(this.state.USDxToDAI.split('.')[0]) : '0'}
+                                                    <i>{this.state.USDxToDAI ? this.state.USDxToDAI.split('.')[1] ? '.' + this.state.USDxToDAI.split('.')[1] : '.00' : '.00'}</i>
+                                                </span>
+                                            </p>
+                                            <p className='partToken marginR marginl'>
+                                                <span className='exMargin'>PAX</span>
+                                                <span className='right'>
+                                                    {this.state.USDxToPAX ? this.toThousands(this.state.USDxToPAX.split('.')[0]) : '0'}
+                                                    <i>{this.state.USDxToPAX ? this.state.USDxToPAX.split('.')[1] ? '.' + this.state.USDxToPAX.split('.')[1] : '.00' : '.00'}</i>
+                                                </span>
+                                            </p>
+                                            <p className='partToken'>
+                                                <span>TUSD</span>
+                                                <span className='right'>
+                                                    {this.state.USDxToTUSD ? this.toThousands(this.state.USDxToTUSD.split('.')[0]) : '0'}
+                                                    <i>{this.state.USDxToTUSD ? this.state.USDxToTUSD.split('.')[1] ? '.' + this.state.USDxToTUSD.split('.')[1] : '.00' : '.00'}</i>
+                                                </span>
+                                            </p>
+                                            <p className='partToken marginl'>
+                                                <span className='exMargin'>USDC</span>
+                                                <span className='right'>
+                                                    {this.state.USDxToUSDC ? this.toThousands(this.state.USDxToUSDC.split('.')[0]) : '0'}
+                                                    <i>{this.state.USDxToUSDC ? this.state.USDxToUSDC.split('.')[1] ? '.' + this.state.USDxToUSDC.split('.')[1] : '.00' : '.00'}</i>
+                                                </span>
+                                            </p>
+                                            <div className="clear"></div>
+                                        </div>
                                     </div>
                                 </div>
+
+                                <div className="tab1 noRightMargin">
+                                    <div className="titleInTab">
+                                        <div className="leftTitle">WITHDRAW</div>
+                                        <div className="clear"></div>
+                                    </div>
+                                    <div className="generate nomargin">
+                                        <p className="details">Select which constituent you would like to withdraw:</p>
+                                        <div className="input">
+                                            <div className="maxNum" onClick={() => { this.adjustMaxToWithdraw() }}>MAX</div>
+                                            <input type="number" onChange={(val) => { this.withdrawNumChange(val.target.value) }} value={this.state.toWithdrawNum} />
+                                            <Select className="mySelect" defaultValue="DAI" onChange={(val) => { this.withdrawOptChange(val) }}>
+                                                <Select.Option value="DAI">DAI</Select.Option>
+                                                <Select.Option value="PAX">PAX</Select.Option>
+                                                <Select.Option value="TUSD">TUSD</Select.Option>
+                                                <Select.Option value="USDC">USDC</Select.Option>
+                                            </Select>
+                                        </div>
+                                        <div className="clear"></div>
+                                        <div className="ButtonWrap ButtonWrapWithdraw">
+                                            <Button
+                                                onClick={() => { this.withdraw() }}
+                                                variant="contained"
+                                                color="secondary"
+                                                disabled={this.state.couldWithdraw ? false : true}
+                                                fullWidth={true}
+                                            >WITHDRAW
+                                        </Button>
+                                        </div>
+                                        <div className="errtips" style={{ display: this.state.errTipsWithdraw ? 'block' : 'none' }}>
+                                            <h4>Reminder</h4>
+                                            Insufficient {this.state.toWithdraw}.
+                                            </div>
+                                        <div className="myBalanceOnPoolSection">
+                                            <div className="title">Constituent balance:</div>
+                                            <p className='partToken'>
+                                                <span>DAI</span>
+                                                <span className='right' title={this.state.myDAIonPoolOrigin}>
+                                                    {this.state.myDAIonPool ? this.toThousands(this.state.myDAIonPool.split('.')[0]) : '0'}
+                                                    <i>{this.state.myDAIonPool ? '.' + this.state.myDAIonPool.split('.')[1] : '.00'}</i>
+                                                </span>
+                                            </p>
+                                            <p className='partToken marginl'>
+                                                <span className='exMargin'>PAX</span>
+                                                <span className='right' title={this.state.myPAXonPoolOrigin}>
+                                                    {this.state.myPAXonPool ? this.toThousands(this.state.myPAXonPool.split('.')[0]) : '0'}
+                                                    <i>{this.state.myPAXonPool ? '.' + this.state.myPAXonPool.split('.')[1] : '.00'}</i>
+                                                </span>
+                                            </p>
+                                            <p className='partToken'>
+                                                <span>TUSD</span>
+                                                <span className='right' title={this.state.myTUSDonPoolOrigin}>
+                                                    {this.state.myTUSDonPool ? this.toThousands(this.state.myTUSDonPool.split('.')[0]) : '0'}
+                                                    <i>{this.state.myTUSDonPool ? '.' + this.state.myTUSDonPool.split('.')[1] : '.00'}</i>
+                                                </span>
+                                            </p>
+                                            <p className='partToken marginl'>
+                                                <span className='exMargin'>USDC</span>
+                                                <span className='right' title={this.state.myUSDConPoolOrigin}>
+                                                    {this.state.myUSDConPool ? this.toThousands(this.state.myUSDConPool.split('.')[0]) : '0'}
+                                                    <i>{this.state.myUSDConPool ? '.' + this.state.myUSDConPool.split('.')[1] : '.00'}</i>
+                                                </span>
+                                            </p>
+                                            <div className="clear"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="clear"></div>
+                                <History
+                                    data={this.state}
+                                    addressDAI={this.addressDAI}
+                                    addressPAX={this.addressPAX}
+                                    addressTUSD={this.addressTUSD}
+                                    addressUSDC={this.addressUSDC}
+                                    web3={this.Web3}
+                                />
+                                {/* <div className="history"></div> */}
                             </div>
                             <div className="clear"></div>
-                            <History 
-                                data={this.state}
-                                addressDAI={this.addressDAI}
-                                addressPAX={this.addressPAX}
-                                addressTUSD={this.addressTUSD}
-                                addressUSDC={this.addressUSDC}
-                                web3={this.Web3}
-                            />
-                            {/* <div className="history"></div> */}
-                            </div>
-                        <div className="clear"></div>
-                    </div>
+                        </div>
                     </MuiThemeProvider>
                 </React.Fragment>
             </DocuentTitle>
@@ -472,7 +475,7 @@ export default class Home extends React.Component {
     }
 
     // connectMetamask
-    DisconnectMetamask () {
+    DisconnectMetamask() {
         this.setState({
             isConnected: false,
             accountAddress: ''
@@ -482,7 +485,7 @@ export default class Home extends React.Component {
         return;
     }
     // connectMetamask
-    connectMetamask () {
+    connectMetamask() {
         this.Web3.currentProvider.enable().then(
             res => {
                 console.log('you connected.');
@@ -521,7 +524,7 @@ export default class Home extends React.Component {
         var re = /\d{3}$/;
         var result = '';
 
-        while ( re.test(num) ) {
+        while (re.test(num)) {
             result = RegExp.lastMatch + result;
             if (num !== RegExp.lastMatch) {
                 result = ',' + result;
@@ -536,7 +539,7 @@ export default class Home extends React.Component {
     }
 
     // getNetType
-    getNetType () {
+    getNetType() {
         this.Web3.version.getNetwork((err, net) => {
             switch (net) {
                 case '1':
@@ -545,28 +548,28 @@ export default class Home extends React.Component {
                         netTypeColor: '#1abc9c',
                         netType: 'Main'
                     });
-                break;
+                    break;
                 case '3':
                     this.setState({
                         ...this.state,
                         netTypeColor: '#FC4E8E',
                         netType: 'Ropsten'
                     });
-                break;
+                    break;
                 case '4':
                     this.setState({
                         ...this.state,
                         netTypeColor: '#F5C250',
                         netType: 'Rinkeby'
                     });
-                break;
+                    break;
                 case '42':
                     this.setState({
                         ...this.state,
                         netTypeColor: '#715EFB',
                         netType: 'Kovan'
                     });
-                break;
+                    break;
                 default:
                     this.setState({
                         ...this.state,
@@ -655,7 +658,7 @@ export default class Home extends React.Component {
 
 
     // get the Token section
-    getTokenSection () {
+    getTokenSection() {
         this.tatolSection = 0;
         this.contractProtocolView.getMintingSection.call((err, ret) => {
             // console.log(ret[0])
@@ -706,7 +709,7 @@ export default class Home extends React.Component {
         })
     }
     // get the Token Burning section
-    getTokenBurningSection () {
+    getTokenBurningSection() {
         this.tatolSectionBurning = 0;
         this.contractProtocolView.getBurningSection.call((err, ret) => {
             // console.log(err, ret);
@@ -756,10 +759,10 @@ export default class Home extends React.Component {
         })
     }
     // getMaxNumToGenerateOnestep
-    getMaxNumToGenerateOnestep(){
+    getMaxNumToGenerateOnestep() {
         this.contractProtocolView.calcMaxMinting.call((err, ret) => {
             // console.log(err, ret);
-            if(ret){
+            if (ret) {
                 this.setState({
                     ...this.state,
                     calcMaxMinting: ret
@@ -769,7 +772,7 @@ export default class Home extends React.Component {
     }
 
     // getDestroyThreshold
-    getDestroyThreshold () {
+    getDestroyThreshold() {
         this.contractProtocolView.getDestroyThreshold.call((err, ret) => {
             this.setState({
                 ...this.state,
@@ -778,8 +781,8 @@ export default class Home extends React.Component {
         })
     }
     // getUserMaxToClaim
-    getUserMaxToClaim () {
-        this.contractProtocolView.getUserMaxToClaim.call((err, ret)=>{
+    getUserMaxToClaim() {
+        this.contractProtocolView.getUserMaxToClaim.call((err, ret) => {
             // console.log(err, ret);
             if (ret && ret.c[0] > 0) {
                 this.setState({
@@ -787,7 +790,7 @@ export default class Home extends React.Component {
                     userMaxToClaim: this.formatNumber(ret, 'USDx'),
                     couldClaim: true
                 })
-            }else {
+            } else {
                 this.setState({
                     ...this.state,
                     userMaxToClaim: '0.00',
@@ -797,8 +800,8 @@ export default class Home extends React.Component {
         })
     }
     // getPrice
-    getPrice () {
-        this.contractProtocolView.getPrice.call(0, (err, ret)=>{
+    getPrice() {
+        this.contractProtocolView.getPrice.call(0, (err, ret) => {
             // console.log(err, ret);
             if (ret) {
                 this.setState({
@@ -809,20 +812,20 @@ export default class Home extends React.Component {
         })
     }
     // getFeeRate
-    getFeeRate () {
-        this.contractProtocolView.getFeeRate.call(1, (err, ret)=>{
+    getFeeRate() {
+        this.contractProtocolView.getFeeRate.call(1, (err, ret) => {
             // console.log(err, ret);
             if (ret) {
                 this.setState({
                     ...this.state,
-                    feeRate: ret/10000
+                    feeRate: ret / 10000
                 })
             }
         })
     }
     // getColMaxClaim
-    getColMaxClaim () {
-        this.contractProtocolView.getColMaxClaim.call((err, ret)=>{
+    getColMaxClaim() {
+        this.contractProtocolView.getColMaxClaim.call((err, ret) => {
             // console.log(err, ret);
             if (ret) {
                 var claimAddress = ret[0];
@@ -862,7 +865,7 @@ export default class Home extends React.Component {
     // *** isSyncing ***
     isSyncing() {
         this.Web3.eth.isSyncing((res) => {
-            if(res){
+            if (res) {
                 console.log(res);
             }
         })
@@ -886,7 +889,7 @@ export default class Home extends React.Component {
 
 
     // *** get My Balance ***
-    getMyBalance () {
+    getMyBalance() {
         this.Web3.eth.getBalance(this.state.accountAddress, (err, ret) => {
             this.setState({
                 ...this.state,
@@ -937,7 +940,7 @@ export default class Home extends React.Component {
 
 
     // *** get Pool_Bank_Total Status ***
-    getPoolBankTotalStatus () {
+    getPoolBankTotalStatus() {
         this.contractUSDx.totalSupply.call((err, ret) => {
             this.setState({
                 ...this.state,
@@ -945,7 +948,7 @@ export default class Home extends React.Component {
             });
         });
 
-        this.contractProtocolView.getPoolStatus.call((err, ret)=>{
+        this.contractProtocolView.getPoolStatus.call((err, ret) => {
             // console.log(err, ret);
             if (ret) {
                 var addressIDs = ret[0];
@@ -980,7 +983,7 @@ export default class Home extends React.Component {
             }
         })
 
-        this.contractProtocolView.getColStatus.call((err, ret)=>{
+        this.contractProtocolView.getColStatus.call((err, ret) => {
             // console.log(err, ret);
             if (ret) {
                 var addressIDs = ret[0];
@@ -1018,8 +1021,8 @@ export default class Home extends React.Component {
 
 
     // *** get User Withdraw Balance ***
-    getUserWithdrawBalance () {
-        this.contractProtocolView.getUserWithdrawBalance.call((err, ret)=>{
+    getUserWithdrawBalance() {
+        this.contractProtocolView.getUserWithdrawBalance.call((err, ret) => {
             // console.log(err, ret);
             if (ret) {
                 var addressIDs = ret[0];
@@ -1059,35 +1062,35 @@ export default class Home extends React.Component {
         })
     }
     handleMaxWithdraw(NumStr, token) {
-        if(token === 'DAI') {
+        if (token === 'DAI') {
             if (NumStr.length < 18) {
                 NumStr = '00000000000000000' + NumStr;
                 return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - this.state.decimalsDAI) + '.' + NumStr.substring(NumStr.length - this.state.decimalsDAI)).toString(10);
-            }else {
+            } else {
                 return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - this.state.decimalsDAI) + '.' + NumStr.substring(NumStr.length - this.state.decimalsDAI)).toString(10);
             }
         }
-        if(token === 'PAX') {
+        if (token === 'PAX') {
             if (NumStr.length < 18) {
                 NumStr = '00000000000000000' + NumStr;
                 return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - this.state.decimalsPAX) + '.' + NumStr.substring(NumStr.length - this.state.decimalsPAX)).toString(10);
-            }else {
+            } else {
                 return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - this.state.decimalsPAX) + '.' + NumStr.substring(NumStr.length - this.state.decimalsPAX)).toString(10);
             }
         }
-        if(token === 'TUSD') {
+        if (token === 'TUSD') {
             if (NumStr.length < 18) {
                 NumStr = '00000000000000000' + NumStr;
                 return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - this.state.decimalsTUSD) + '.' + NumStr.substring(NumStr.length - this.state.decimalsTUSD)).toString(10);
-            }else {
+            } else {
                 return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - this.state.decimalsTUSD) + '.' + NumStr.substring(NumStr.length - this.state.decimalsTUSD)).toString(10);
             }
         }
-        if(token === 'USDC') {
+        if (token === 'USDC') {
             if (NumStr.length < 18) {
                 NumStr = '00000000000000000' + NumStr;
                 return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - this.state.decimalsUSDC) + '.' + NumStr.substring(NumStr.length - this.state.decimalsUSDC)).toString(10);
-            }else {
+            } else {
                 return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - this.state.decimalsUSDC) + '.' + NumStr.substring(NumStr.length - this.state.decimalsUSDC)).toString(10);
             }
         }
@@ -1108,7 +1111,7 @@ export default class Home extends React.Component {
                 return '0.00';
             }
             originStr = BNr.div(10 ** 18).toString(10);
-        }else if (token === 'DAI') {
+        } else if (token === 'DAI') {
             if (BNr.toFixed() < (10 ** (this.state.decimalsDAI - 3)) && BNr.toFixed() > 0) {
                 return '0.00';
             }
@@ -1141,14 +1144,14 @@ export default class Home extends React.Component {
         }
 
 
-        if ( originStr.indexOf('.') > 0 ) {
+        if (originStr.indexOf('.') > 0) {
             originStr = originStr.substr(0, originStr.indexOf('.') + 3);
             if (originStr.length >= 12) {
                 return originStr = originStr.substr(0, 11);
             } else {
                 return originStr;
             }
-        }else if (isNaN(originStr)){
+        } else if (isNaN(originStr)) {
             return '0.00'
         } else {
             return originStr + '.00';
@@ -1157,7 +1160,7 @@ export default class Home extends React.Component {
 
 
     // *** check if approve ***
-    checkApprove () {
+    checkApprove() {
         this.contractDAI.allowance.call(this.state.accountAddress, this.addressPool, (err, ret) => {
             if (err) {
                 this.setState({
@@ -1170,7 +1173,7 @@ export default class Home extends React.Component {
                     ...this.state,
                     approvedDAI: true
                 });
-            }else {
+            } else {
                 this.setState({
                     ...this.state,
                     approvedDAI: false
@@ -1189,7 +1192,7 @@ export default class Home extends React.Component {
                     ...this.state,
                     approvedPAX: true
                 });
-            }else {
+            } else {
                 this.setState({
                     ...this.state,
                     approvedPAX: false
@@ -1208,7 +1211,7 @@ export default class Home extends React.Component {
                     ...this.state,
                     approvedTUSD: true
                 });
-            }else {
+            } else {
                 this.setState({
                     ...this.state,
                     approvedTUSD: false
@@ -1227,7 +1230,7 @@ export default class Home extends React.Component {
                     ...this.state,
                     approvedUSDC: true
                 });
-            }else {
+            } else {
                 this.setState({
                     ...this.state,
                     approvedUSDC: false
@@ -1246,7 +1249,7 @@ export default class Home extends React.Component {
                     ...this.state,
                     approvedDF: true
                 });
-            }else {
+            } else {
                 this.setState({
                     ...this.state,
                     approvedDF: false
@@ -1265,7 +1268,7 @@ export default class Home extends React.Component {
                     ...this.state,
                     approvedUSDx: true
                 });
-            }else {
+            } else {
                 this.setState({
                     ...this.state,
                     approvedUSDx: false
@@ -1276,7 +1279,7 @@ export default class Home extends React.Component {
 
 
     // *** Approve ***
-    approve (token) {
+    approve(token) {
         if (!this.state.isConnected) {
             return;
         }
@@ -1299,7 +1302,7 @@ export default class Home extends React.Component {
             class: 'inprocess',
             title: 'Approve ' + token
         }
-        this.setState({tmepState});
+        this.setState({ tmepState });
 
         // witch token to be approved
         if (token === 'DAI') {
@@ -1329,11 +1332,11 @@ export default class Home extends React.Component {
                                             class: 'error',
                                             msg: 'User reject transaction'
                                         }
-                                        this.setState({tmepState});
-        
+                                        this.setState({ tmepState });
+
                                         setTimeout(() => {
                                             delete tmepState.transcations[key];
-                                            this.setState({tmepState});
+                                            this.setState({ tmepState });
                                         }, 3000);
                                     };
                                     return false;
@@ -1342,7 +1345,7 @@ export default class Home extends React.Component {
                             if (ret) {
                                 const keys = Object.keys(this.state.transcations);
                                 const tmepState = this.state;
-        
+
                                 keys.map((key) => {
                                     if (tmepState.transcations[key].title === 'Approve ' + token) {
                                         tmepState.transcations[key].txhash = ret;
@@ -1350,11 +1353,11 @@ export default class Home extends React.Component {
                                             ...tmepState.transcations[key],
                                             msg: 'Waiting for confirmation...'
                                         }
-                                        this.setState({tmepState});
+                                        this.setState({ tmepState });
                                     };
                                     return false;
                                 });
-        
+
                                 var approveDAItimer = setInterval(() => {
                                     console.log('i am checking approve DAI...');
                                     this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
@@ -1375,11 +1378,11 @@ export default class Home extends React.Component {
                                                         class: 'success',
                                                         msg: 'Transaction succeeded'
                                                     }
-                                                    this.setState({tmepState});
-        
+                                                    this.setState({ tmepState });
+
                                                     setTimeout(() => {
                                                         delete tmepState.transcations[key];
-                                                        this.setState({tmepState});
+                                                        this.setState({ tmepState });
                                                     }, 3000);
                                                 };
                                                 return false;
@@ -1397,7 +1400,7 @@ export default class Home extends React.Component {
                                                     return false;
                                                 }
                                             }
-                                        } 
+                                        }
                                         if (data && data.status === '0x0') {
                                             clearInterval(approveDAItimer);
                                             const keys = Object.keys(this.state.transcations);
@@ -1409,11 +1412,11 @@ export default class Home extends React.Component {
                                                         class: 'error',
                                                         msg: 'Transaction failed'
                                                     }
-                                                    this.setState({tmepState});
-        
+                                                    this.setState({ tmepState });
+
                                                     setTimeout(() => {
                                                         delete tmepState.transcations[key];
-                                                        this.setState({tmepState});
+                                                        this.setState({ tmepState });
                                                     }, 3000);
                                                 };
                                                 return false;
@@ -1453,11 +1456,11 @@ export default class Home extends React.Component {
                                             class: 'error',
                                             msg: 'User reject transaction'
                                         }
-                                        this.setState({tmepState});
-        
+                                        this.setState({ tmepState });
+
                                         setTimeout(() => {
                                             delete tmepState.transcations[key];
-                                            this.setState({tmepState});
+                                            this.setState({ tmepState });
                                         }, 3000);
                                     };
                                     return false;
@@ -1466,7 +1469,7 @@ export default class Home extends React.Component {
                             if (ret) {
                                 const keys = Object.keys(this.state.transcations);
                                 const tmepState = this.state;
-        
+
                                 keys.map((key) => {
                                     if (tmepState.transcations[key].title === 'Approve ' + token) {
                                         tmepState.transcations[key].txhash = ret;
@@ -1474,11 +1477,11 @@ export default class Home extends React.Component {
                                             ...tmepState.transcations[key],
                                             msg: 'Waiting for confirmation...'
                                         }
-                                        this.setState({tmepState});
+                                        this.setState({ tmepState });
                                     };
                                     return false;
                                 });
-        
+
                                 var approvePAXtimer = setInterval(() => {
                                     console.log('i am checking approve PAX...');
                                     this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
@@ -1499,11 +1502,11 @@ export default class Home extends React.Component {
                                                         class: 'success',
                                                         msg: 'Transaction succeeded'
                                                     }
-                                                    this.setState({tmepState});
-        
+                                                    this.setState({ tmepState });
+
                                                     setTimeout(() => {
                                                         delete tmepState.transcations[key];
-                                                        this.setState({tmepState});
+                                                        this.setState({ tmepState });
                                                     }, 3000);
                                                 };
                                                 return false;
@@ -1521,7 +1524,7 @@ export default class Home extends React.Component {
                                                     return false;
                                                 }
                                             }
-                                        } 
+                                        }
                                         if (data && data.status === '0x0') {
                                             clearInterval(approvePAXtimer);
                                             const keys = Object.keys(this.state.transcations);
@@ -1533,11 +1536,11 @@ export default class Home extends React.Component {
                                                         class: 'error',
                                                         msg: 'Transaction failed'
                                                     }
-                                                    this.setState({tmepState});
-        
+                                                    this.setState({ tmepState });
+
                                                     setTimeout(() => {
                                                         delete tmepState.transcations[key];
-                                                        this.setState({tmepState});
+                                                        this.setState({ tmepState });
                                                     }, 3000);
                                                 };
                                                 return false;
@@ -1577,11 +1580,11 @@ export default class Home extends React.Component {
                                             class: 'error',
                                             msg: 'User reject transaction'
                                         }
-                                        this.setState({tmepState});
-        
+                                        this.setState({ tmepState });
+
                                         setTimeout(() => {
                                             delete tmepState.transcations[key];
-                                            this.setState({tmepState});
+                                            this.setState({ tmepState });
                                         }, 3000);
                                     };
                                     return false;
@@ -1590,7 +1593,7 @@ export default class Home extends React.Component {
                             if (ret) {
                                 const keys = Object.keys(this.state.transcations);
                                 const tmepState = this.state;
-        
+
                                 keys.map((key) => {
                                     if (tmepState.transcations[key].title === 'Approve ' + token) {
                                         tmepState.transcations[key].txhash = ret;
@@ -1598,11 +1601,11 @@ export default class Home extends React.Component {
                                             ...tmepState.transcations[key],
                                             msg: 'Waiting for confirmation...'
                                         }
-                                        this.setState({tmepState});
+                                        this.setState({ tmepState });
                                     };
                                     return false;
                                 });
-        
+
                                 var approveTUSDtimer = setInterval(() => {
                                     console.log('i am checking approve TUSD...');
                                     this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
@@ -1623,11 +1626,11 @@ export default class Home extends React.Component {
                                                         class: 'success',
                                                         msg: 'Transaction succeeded'
                                                     }
-                                                    this.setState({tmepState});
-        
+                                                    this.setState({ tmepState });
+
                                                     setTimeout(() => {
                                                         delete tmepState.transcations[key];
-                                                        this.setState({tmepState});
+                                                        this.setState({ tmepState });
                                                     }, 3000);
                                                 };
                                                 return false;
@@ -1645,7 +1648,7 @@ export default class Home extends React.Component {
                                                     return false;
                                                 }
                                             }
-                                        } 
+                                        }
                                         if (data && data.status === '0x0') {
                                             clearInterval(approveTUSDtimer);
                                             const keys = Object.keys(this.state.transcations);
@@ -1657,11 +1660,11 @@ export default class Home extends React.Component {
                                                         class: 'error',
                                                         msg: 'Transaction failed'
                                                     }
-                                                    this.setState({tmepState});
-        
+                                                    this.setState({ tmepState });
+
                                                     setTimeout(() => {
                                                         delete tmepState.transcations[key];
-                                                        this.setState({tmepState});
+                                                        this.setState({ tmepState });
                                                     }, 3000);
                                                 };
                                                 return false;
@@ -1701,11 +1704,11 @@ export default class Home extends React.Component {
                                             class: 'error',
                                             msg: 'User reject transaction'
                                         }
-                                        this.setState({tmepState});
-        
+                                        this.setState({ tmepState });
+
                                         setTimeout(() => {
                                             delete tmepState.transcations[key];
-                                            this.setState({tmepState});
+                                            this.setState({ tmepState });
                                         }, 3000);
                                     };
                                     return false;
@@ -1714,7 +1717,7 @@ export default class Home extends React.Component {
                             if (ret) {
                                 const keys = Object.keys(this.state.transcations);
                                 const tmepState = this.state;
-        
+
                                 keys.map((key) => {
                                     if (tmepState.transcations[key].title === 'Approve ' + token) {
                                         tmepState.transcations[key].txhash = ret;
@@ -1722,11 +1725,11 @@ export default class Home extends React.Component {
                                             ...tmepState.transcations[key],
                                             msg: 'Waiting for confirmation...'
                                         }
-                                        this.setState({tmepState});
+                                        this.setState({ tmepState });
                                     };
                                     return false;
                                 });
-        
+
                                 var approveUSDCtimer = setInterval(() => {
                                     console.log('i am checking approve USDC...');
                                     this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
@@ -1747,11 +1750,11 @@ export default class Home extends React.Component {
                                                         class: 'success',
                                                         msg: 'Transaction succeeded'
                                                     }
-                                                    this.setState({tmepState});
-        
+                                                    this.setState({ tmepState });
+
                                                     setTimeout(() => {
                                                         delete tmepState.transcations[key];
-                                                        this.setState({tmepState});
+                                                        this.setState({ tmepState });
                                                     }, 3000);
                                                 };
                                                 return false;
@@ -1769,7 +1772,7 @@ export default class Home extends React.Component {
                                                     return false;
                                                 }
                                             }
-                                        } 
+                                        }
                                         if (data && data.status === '0x0') {
                                             clearInterval(approveUSDCtimer);
                                             const keys = Object.keys(this.state.transcations);
@@ -1781,11 +1784,11 @@ export default class Home extends React.Component {
                                                         class: 'error',
                                                         msg: 'Transaction failed'
                                                     }
-                                                    this.setState({tmepState});
-        
+                                                    this.setState({ tmepState });
+
                                                     setTimeout(() => {
                                                         delete tmepState.transcations[key];
-                                                        this.setState({tmepState});
+                                                        this.setState({ tmepState });
                                                     }, 3000);
                                                 };
                                                 return false;
@@ -1825,11 +1828,11 @@ export default class Home extends React.Component {
                                             class: 'error',
                                             msg: 'User reject transaction'
                                         }
-                                        this.setState({tmepState});
-        
+                                        this.setState({ tmepState });
+
                                         setTimeout(() => {
                                             delete tmepState.transcations[key];
-                                            this.setState({tmepState});
+                                            this.setState({ tmepState });
                                         }, 3000);
                                     };
                                     return false;
@@ -1838,7 +1841,7 @@ export default class Home extends React.Component {
                             if (ret) {
                                 const keys = Object.keys(this.state.transcations);
                                 const tmepState = this.state;
-        
+
                                 keys.map((key) => {
                                     if (tmepState.transcations[key].title === 'Approve ' + token) {
                                         tmepState.transcations[key].txhash = ret;
@@ -1846,11 +1849,11 @@ export default class Home extends React.Component {
                                             ...tmepState.transcations[key],
                                             msg: 'Waiting for confirmation...'
                                         }
-                                        this.setState({tmepState});
+                                        this.setState({ tmepState });
                                     };
                                     return false;
                                 });
-        
+
                                 var approveDFtimer = setInterval(() => {
                                     console.log('i am checking approve DF...');
                                     this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
@@ -1871,11 +1874,11 @@ export default class Home extends React.Component {
                                                         class: 'success',
                                                         msg: 'Transaction succeeded'
                                                     }
-                                                    this.setState({tmepState});
-        
+                                                    this.setState({ tmepState });
+
                                                     setTimeout(() => {
                                                         delete tmepState.transcations[key];
-                                                        this.setState({tmepState});
+                                                        this.setState({ tmepState });
                                                     }, 3000);
                                                 };
                                                 return false;
@@ -1905,11 +1908,11 @@ export default class Home extends React.Component {
                                                         class: 'error',
                                                         msg: 'Transaction failed'
                                                     }
-                                                    this.setState({tmepState});
-        
+                                                    this.setState({ tmepState });
+
                                                     setTimeout(() => {
                                                         delete tmepState.transcations[key];
-                                                        this.setState({tmepState});
+                                                        this.setState({ tmepState });
                                                     }, 3000);
                                                 };
                                                 return false;
@@ -1949,11 +1952,11 @@ export default class Home extends React.Component {
                                             class: 'error',
                                             msg: 'User reject transaction'
                                         }
-                                        this.setState({tmepState});
-        
+                                        this.setState({ tmepState });
+
                                         setTimeout(() => {
                                             delete tmepState.transcations[key];
-                                            this.setState({tmepState});
+                                            this.setState({ tmepState });
                                         }, 3000);
                                     };
                                     return false;
@@ -1962,7 +1965,7 @@ export default class Home extends React.Component {
                             if (ret) {
                                 const keys = Object.keys(this.state.transcations);
                                 const tmepState = this.state;
-        
+
                                 keys.map((key) => {
                                     if (tmepState.transcations[key].title === 'Approve ' + token) {
                                         tmepState.transcations[key].txhash = ret;
@@ -1970,11 +1973,11 @@ export default class Home extends React.Component {
                                             ...tmepState.transcations[key],
                                             msg: 'Waiting for confirmation...'
                                         }
-                                        this.setState({tmepState});
+                                        this.setState({ tmepState });
                                     };
                                     return false;
                                 });
-        
+
                                 var approveUSDxtimer = setInterval(() => {
                                     console.log('i am checking approve USDx...');
                                     this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
@@ -1995,11 +1998,11 @@ export default class Home extends React.Component {
                                                         class: 'success',
                                                         msg: 'Transaction succeeded'
                                                     }
-                                                    this.setState({tmepState});
-        
+                                                    this.setState({ tmepState });
+
                                                     setTimeout(() => {
                                                         delete tmepState.transcations[key];
-                                                        this.setState({tmepState});
+                                                        this.setState({ tmepState });
                                                     }, 3000);
                                                 };
                                                 return false;
@@ -2017,7 +2020,7 @@ export default class Home extends React.Component {
                                                     return false;
                                                 }
                                             }
-                                        } 
+                                        }
                                         if (data && data.status === '0x0') {
                                             clearInterval(approveUSDxtimer);
                                             const keys = Object.keys(this.state.transcations);
@@ -2029,11 +2032,11 @@ export default class Home extends React.Component {
                                                         class: 'error',
                                                         msg: 'Transaction failed'
                                                     }
-                                                    this.setState({tmepState});
-        
+                                                    this.setState({ tmepState });
+
                                                     setTimeout(() => {
                                                         delete tmepState.transcations[key];
-                                                        this.setState({tmepState});
+                                                        this.setState({ tmepState });
                                                     }, 3000);
                                                 };
                                                 return false;
@@ -2051,7 +2054,7 @@ export default class Home extends React.Component {
 
 
     // *** Lock ***
-    lock (token) {
+    lock(token) {
         const keys = Object.keys(this.state.transcations);
         for (var i = 0; i < keys.length; i++) {
             if (this.state.transcations[keys[i]].title === 'Lock ' + token) {
@@ -2068,7 +2071,7 @@ export default class Home extends React.Component {
             class: 'inprocess',
             title: 'Lock ' + token,
         }
-        this.setState({tmepState});
+        this.setState({ tmepState });
 
         // witch token to be locked
         if (token === 'DAI') {
@@ -2098,11 +2101,11 @@ export default class Home extends React.Component {
                                             class: 'error',
                                             msg: 'User reject transaction'
                                         }
-                                        this.setState({tmepState});
-        
+                                        this.setState({ tmepState });
+
                                         setTimeout(() => {
                                             delete tmepState.transcations[key];
-                                            this.setState({tmepState});
+                                            this.setState({ tmepState });
                                         }, 3000);
                                     };
                                     return false;
@@ -2111,7 +2114,7 @@ export default class Home extends React.Component {
                             if (ret) {
                                 const keys = Object.keys(this.state.transcations);
                                 const tmepState = this.state;
-        
+
                                 keys.map((key) => {
                                     if (tmepState.transcations[key].title === 'Lock ' + token) {
                                         tmepState.transcations[key].txhash = ret;
@@ -2119,11 +2122,11 @@ export default class Home extends React.Component {
                                             ...tmepState.transcations[key],
                                             msg: 'Waiting for confirmation...'
                                         }
-                                        this.setState({tmepState});
+                                        this.setState({ tmepState });
                                     };
                                     return false;
                                 });
-        
+
                                 var lockDAItimer = setInterval(() => {
                                     console.log('i am checking lock DAI...');
                                     this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
@@ -2142,16 +2145,16 @@ export default class Home extends React.Component {
                                                         class: 'success',
                                                         msg: 'Transaction succeeded'
                                                     }
-                                                    this.setState({tmepState});
-        
+                                                    this.setState({ tmepState });
+
                                                     setTimeout(() => {
                                                         delete tmepState.transcations[key];
-                                                        this.setState({tmepState});
+                                                        this.setState({ tmepState });
                                                     }, 3000);
                                                 };
                                                 return false;
                                             })
-                                        } 
+                                        }
                                         if (data && data.status === '0x0') {
                                             clearInterval(lockDAItimer);
                                             const keys = Object.keys(this.state.transcations);
@@ -2163,11 +2166,11 @@ export default class Home extends React.Component {
                                                         class: 'error',
                                                         msg: 'Transaction failed'
                                                     }
-                                                    this.setState({tmepState});
-        
+                                                    this.setState({ tmepState });
+
                                                     setTimeout(() => {
                                                         delete tmepState.transcations[key];
-                                                        this.setState({tmepState});
+                                                        this.setState({ tmepState });
                                                     }, 3000);
                                                 };
                                                 return false;
@@ -2207,11 +2210,11 @@ export default class Home extends React.Component {
                                             class: 'error',
                                             msg: 'User reject transaction'
                                         }
-                                        this.setState({tmepState});
-        
+                                        this.setState({ tmepState });
+
                                         setTimeout(() => {
                                             delete tmepState.transcations[key];
-                                            this.setState({tmepState});
+                                            this.setState({ tmepState });
                                         }, 3000);
                                     };
                                     return false;
@@ -2220,7 +2223,7 @@ export default class Home extends React.Component {
                             if (ret) {
                                 const keys = Object.keys(this.state.transcations);
                                 const tmepState = this.state;
-        
+
                                 keys.map((key) => {
                                     if (tmepState.transcations[key].title === 'Lock ' + token) {
                                         tmepState.transcations[key].txhash = ret;
@@ -2228,11 +2231,11 @@ export default class Home extends React.Component {
                                             ...tmepState.transcations[key],
                                             msg: 'Waiting for confirmation...'
                                         }
-                                        this.setState({tmepState});
+                                        this.setState({ tmepState });
                                     };
                                     return false;
                                 });
-        
+
                                 var lockPAXtimer = setInterval(() => {
                                     console.log('i am checking lock PAX...');
                                     this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
@@ -2251,16 +2254,16 @@ export default class Home extends React.Component {
                                                         class: 'success',
                                                         msg: 'Transaction succeeded'
                                                     }
-                                                    this.setState({tmepState});
-        
+                                                    this.setState({ tmepState });
+
                                                     setTimeout(() => {
                                                         delete tmepState.transcations[key];
-                                                        this.setState({tmepState});
+                                                        this.setState({ tmepState });
                                                     }, 3000);
                                                 };
                                                 return false;
                                             })
-                                        } 
+                                        }
                                         if (data && data.status === '0x0') {
                                             clearInterval(lockPAXtimer);
                                             const keys = Object.keys(this.state.transcations);
@@ -2272,11 +2275,11 @@ export default class Home extends React.Component {
                                                         class: 'error',
                                                         msg: 'Transaction failed'
                                                     }
-                                                    this.setState({tmepState});
-        
+                                                    this.setState({ tmepState });
+
                                                     setTimeout(() => {
                                                         delete tmepState.transcations[key];
-                                                        this.setState({tmepState});
+                                                        this.setState({ tmepState });
                                                     }, 3000);
                                                 };
                                                 return false;
@@ -2316,11 +2319,11 @@ export default class Home extends React.Component {
                                             class: 'error',
                                             msg: 'User reject transaction'
                                         }
-                                        this.setState({tmepState});
-        
+                                        this.setState({ tmepState });
+
                                         setTimeout(() => {
                                             delete tmepState.transcations[key];
-                                            this.setState({tmepState});
+                                            this.setState({ tmepState });
                                         }, 3000);
                                     };
                                     return false;
@@ -2329,7 +2332,7 @@ export default class Home extends React.Component {
                             if (ret) {
                                 const keys = Object.keys(this.state.transcations);
                                 const tmepState = this.state;
-        
+
                                 keys.map((key) => {
                                     if (tmepState.transcations[key].title === 'Lock ' + token) {
                                         tmepState.transcations[key].txhash = ret;
@@ -2337,11 +2340,11 @@ export default class Home extends React.Component {
                                             ...tmepState.transcations[key],
                                             msg: 'Waiting for confirmation...'
                                         }
-                                        this.setState({tmepState});
+                                        this.setState({ tmepState });
                                     };
                                     return false;
                                 });
-        
+
                                 var lockTUSDtimer = setInterval(() => {
                                     console.log('i am checking lock TUSD...');
                                     this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
@@ -2360,16 +2363,16 @@ export default class Home extends React.Component {
                                                         class: 'success',
                                                         msg: 'Transaction succeeded'
                                                     }
-                                                    this.setState({tmepState});
-        
+                                                    this.setState({ tmepState });
+
                                                     setTimeout(() => {
                                                         delete tmepState.transcations[key];
-                                                        this.setState({tmepState});
+                                                        this.setState({ tmepState });
                                                     }, 3000);
                                                 };
                                                 return false;
                                             })
-                                        } 
+                                        }
                                         if (data && data.status === '0x0') {
                                             clearInterval(lockTUSDtimer);
                                             const keys = Object.keys(this.state.transcations);
@@ -2381,11 +2384,11 @@ export default class Home extends React.Component {
                                                         class: 'error',
                                                         msg: 'Transaction failed'
                                                     }
-                                                    this.setState({tmepState});
-        
+                                                    this.setState({ tmepState });
+
                                                     setTimeout(() => {
                                                         delete tmepState.transcations[key];
-                                                        this.setState({tmepState});
+                                                        this.setState({ tmepState });
                                                     }, 3000);
                                                 };
                                                 return false;
@@ -2425,11 +2428,11 @@ export default class Home extends React.Component {
                                             class: 'error',
                                             msg: 'User reject transaction'
                                         }
-                                        this.setState({tmepState});
-        
+                                        this.setState({ tmepState });
+
                                         setTimeout(() => {
                                             delete tmepState.transcations[key];
-                                            this.setState({tmepState});
+                                            this.setState({ tmepState });
                                         }, 3000);
                                     };
                                     return false;
@@ -2438,7 +2441,7 @@ export default class Home extends React.Component {
                             if (ret) {
                                 const keys = Object.keys(this.state.transcations);
                                 const tmepState = this.state;
-        
+
                                 keys.map((key) => {
                                     if (tmepState.transcations[key].title === 'Lock ' + token) {
                                         tmepState.transcations[key].txhash = ret;
@@ -2446,11 +2449,11 @@ export default class Home extends React.Component {
                                             ...tmepState.transcations[key],
                                             msg: 'Waiting for confirmation...'
                                         }
-                                        this.setState({tmepState});
+                                        this.setState({ tmepState });
                                     };
                                     return false;
                                 });
-        
+
                                 var lockUSDCtimer = setInterval(() => {
                                     console.log('i am checking lock USDC...');
                                     this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
@@ -2469,16 +2472,16 @@ export default class Home extends React.Component {
                                                         class: 'success',
                                                         msg: 'Transaction succeeded'
                                                     }
-                                                    this.setState({tmepState});
-        
+                                                    this.setState({ tmepState });
+
                                                     setTimeout(() => {
                                                         delete tmepState.transcations[key];
-                                                        this.setState({tmepState});
+                                                        this.setState({ tmepState });
                                                     }, 3000);
                                                 };
                                                 return false;
                                             })
-                                        } 
+                                        }
                                         if (data && data.status === '0x0') {
                                             clearInterval(lockUSDCtimer);
                                             const keys = Object.keys(this.state.transcations);
@@ -2490,11 +2493,11 @@ export default class Home extends React.Component {
                                                         class: 'error',
                                                         msg: 'Transaction failed'
                                                     }
-                                                    this.setState({tmepState});
-        
+                                                    this.setState({ tmepState });
+
                                                     setTimeout(() => {
                                                         delete tmepState.transcations[key];
-                                                        this.setState({tmepState});
+                                                        this.setState({ tmepState });
                                                     }, 3000);
                                                 };
                                                 return false;
@@ -2513,7 +2516,7 @@ export default class Home extends React.Component {
                 0,
                 {
                     from: this.state.accountAddress
-                }, 
+                },
                 (err, gasLimit) => {
                     this.contractDF.approve.sendTransaction(
                         this.addressEngine,
@@ -2534,11 +2537,11 @@ export default class Home extends React.Component {
                                             class: 'error',
                                             msg: 'User reject transaction'
                                         }
-                                        this.setState({tmepState});
-        
+                                        this.setState({ tmepState });
+
                                         setTimeout(() => {
                                             delete tmepState.transcations[key];
-                                            this.setState({tmepState});
+                                            this.setState({ tmepState });
                                         }, 3000);
                                     };
                                     return false;
@@ -2547,7 +2550,7 @@ export default class Home extends React.Component {
                             if (ret) {
                                 const keys = Object.keys(this.state.transcations);
                                 const tmepState = this.state;
-        
+
                                 keys.map((key) => {
                                     if (tmepState.transcations[key].title === 'Lock ' + token) {
                                         tmepState.transcations[key].txhash = ret;
@@ -2555,11 +2558,11 @@ export default class Home extends React.Component {
                                             ...tmepState.transcations[key],
                                             msg: 'Waiting for confirmation...'
                                         }
-                                        this.setState({tmepState});
+                                        this.setState({ tmepState });
                                     };
                                     return false;
                                 });
-        
+
                                 var lockDFtimer = setInterval(() => {
                                     console.log('i am checking lock DF...');
                                     this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
@@ -2578,16 +2581,16 @@ export default class Home extends React.Component {
                                                         class: 'success',
                                                         msg: 'Transaction succeeded'
                                                     }
-                                                    this.setState({tmepState});
-        
+                                                    this.setState({ tmepState });
+
                                                     setTimeout(() => {
                                                         delete tmepState.transcations[key];
-                                                        this.setState({tmepState});
+                                                        this.setState({ tmepState });
                                                     }, 3000);
                                                 };
                                                 return false;
                                             })
-                                        } 
+                                        }
                                         if (data && data.status === '0x0') {
                                             clearInterval(lockDFtimer);
                                             const keys = Object.keys(this.state.transcations);
@@ -2599,11 +2602,11 @@ export default class Home extends React.Component {
                                                         class: 'error',
                                                         msg: 'Transaction failed'
                                                     }
-                                                    this.setState({tmepState});
-        
+                                                    this.setState({ tmepState });
+
                                                     setTimeout(() => {
                                                         delete tmepState.transcations[key];
-                                                        this.setState({tmepState});
+                                                        this.setState({ tmepState });
                                                     }, 3000);
                                                 };
                                                 return false;
@@ -2643,11 +2646,11 @@ export default class Home extends React.Component {
                                             class: 'error',
                                             msg: 'User reject transaction'
                                         }
-                                        this.setState({tmepState});
-        
+                                        this.setState({ tmepState });
+
                                         setTimeout(() => {
                                             delete tmepState.transcations[key];
-                                            this.setState({tmepState});
+                                            this.setState({ tmepState });
                                         }, 3000);
                                     };
                                     return false;
@@ -2656,7 +2659,7 @@ export default class Home extends React.Component {
                             if (ret) {
                                 const keys = Object.keys(this.state.transcations);
                                 const tmepState = this.state;
-        
+
                                 keys.map((key) => {
                                     if (tmepState.transcations[key].title === 'Lock ' + token) {
                                         tmepState.transcations[key].txhash = ret;
@@ -2664,11 +2667,11 @@ export default class Home extends React.Component {
                                             ...tmepState.transcations[key],
                                             msg: 'Waiting for confirmation...'
                                         }
-                                        this.setState({tmepState});
+                                        this.setState({ tmepState });
                                     };
                                     return false;
                                 });
-        
+
                                 var lockUSDxtimer = setInterval(() => {
                                     console.log('i am checking lock USDx...');
                                     this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
@@ -2687,16 +2690,16 @@ export default class Home extends React.Component {
                                                         class: 'success',
                                                         msg: 'Transaction succeeded'
                                                     }
-                                                    this.setState({tmepState});
-        
+                                                    this.setState({ tmepState });
+
                                                     setTimeout(() => {
                                                         delete tmepState.transcations[key];
-                                                        this.setState({tmepState});
+                                                        this.setState({ tmepState });
                                                     }, 3000);
                                                 };
                                                 return false;
                                             })
-                                        } 
+                                        }
                                         if (data && data.status === '0x0') {
                                             clearInterval(lockUSDxtimer);
                                             const keys = Object.keys(this.state.transcations);
@@ -2708,11 +2711,11 @@ export default class Home extends React.Component {
                                                         class: 'error',
                                                         msg: 'Transaction failed'
                                                     }
-                                                    this.setState({tmepState});
-        
+                                                    this.setState({ tmepState });
+
                                                     setTimeout(() => {
                                                         delete tmepState.transcations[key];
-                                                        this.setState({tmepState});
+                                                        this.setState({ tmepState });
                                                     }, 3000);
                                                 };
                                                 return false;
@@ -2730,7 +2733,7 @@ export default class Home extends React.Component {
 
 
     // *** adjust Max To Withdraw ***
-    adjustMaxToWithdraw () {
+    adjustMaxToWithdraw() {
         if (this.state.toWithdraw === 'DAI') {
             this.setState({
                 ...this.state,
@@ -2761,7 +2764,7 @@ export default class Home extends React.Component {
         }, 500)
     }
     // *** withdraw ***
-    withdrawNumChange (val) {
+    withdrawNumChange(val) {
         if (val.length > 20) {
             return;
         }
@@ -2870,7 +2873,7 @@ export default class Home extends React.Component {
         this.setState({
             ...this.state,
             toWithdraw: token
-        }, ()=>{
+        }, () => {
             if (!this.state.toWithdrawNum) {
                 return;
             }
@@ -2884,7 +2887,7 @@ export default class Home extends React.Component {
         //     this.withdrawNumChange(this.state.toWithdrawNum);
         // }, 0);
     }
-    withdraw () {
+    withdraw() {
         if (!this.state.couldWithdraw) {
             return;
         }
@@ -2908,10 +2911,10 @@ export default class Home extends React.Component {
             this.withdrawUSDC(addr, num);
         }
     }
-    withdrawDAI (addr, num) {
+    withdrawDAI(addr, num) {
         var str1;
         var str2;
-        if(num.div(10 ** this.state.decimalsDAI).toString(10).indexOf('.') > 0){
+        if (num.div(10 ** this.state.decimalsDAI).toString(10).indexOf('.') > 0) {
             str1 = this.toThousands(num.div(10 ** this.state.decimalsDAI).toString(10).split('.')[0]);
             str2 = '.' + num.div(10 ** this.state.decimalsDAI).toString(10).split('.')[1];
         } else {
@@ -2927,7 +2930,7 @@ export default class Home extends React.Component {
             class: 'inprocess',
             title: 'Withdraw ' + str1 + str2 + ' DAI',
         }
-        this.setState({tmepState});
+        this.setState({ tmepState });
         // get Limit first
         this.contractProtocol.withdraw.estimateGas(
             addr,
@@ -2957,11 +2960,11 @@ export default class Home extends React.Component {
                                         class: 'error',
                                         msg: 'User reject transaction'
                                     }
-                                    this.setState({tmepState});
-        
+                                    this.setState({ tmepState });
+
                                     setTimeout(() => {
                                         delete tmepState.transcations[key];
-                                        this.setState({tmepState});
+                                        this.setState({ tmepState });
                                     }, 3000);
                                 };
                                 return false;
@@ -2970,7 +2973,7 @@ export default class Home extends React.Component {
                         if (ret) {
                             const keys = Object.keys(this.state.transcations);
                             const tmepState = this.state;
-        
+
                             keys.map((key) => {
                                 if (tmepState.transcations[key].id === id) {
                                     tmepState.transcations[key].txhash = ret;
@@ -2978,11 +2981,11 @@ export default class Home extends React.Component {
                                         ...tmepState.transcations[key],
                                         msg: 'Waiting for confirmation...'
                                     }
-                                    this.setState({tmepState});
+                                    this.setState({ tmepState });
                                 };
                                 return false;
                             });
-        
+
                             var timerOBJ = {};
                             var tempRnum = Math.random();
                             timerOBJ[tempRnum] = setInterval(() => {
@@ -3001,11 +3004,11 @@ export default class Home extends React.Component {
                                                 }
                                                 tmepState.toWithdrawNum = '';
                                                 tmepState.couldWithdraw = false;
-                                                this.setState({tmepState});
-        
+                                                this.setState({ tmepState });
+
                                                 setTimeout(() => {
                                                     delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
+                                                    this.setState({ tmepState });
                                                 }, 3000);
                                             };
                                             return false;
@@ -3015,7 +3018,7 @@ export default class Home extends React.Component {
                                             this.getPoolBankTotalStatus();
                                             this.getUserWithdrawBalance();
                                         }, 3000)
-                                    } 
+                                    }
                                     if (data && data.status === '0x0') {
                                         clearInterval(timerOBJ[tempRnum]);
                                         const keys = Object.keys(this.state.transcations);
@@ -3027,11 +3030,11 @@ export default class Home extends React.Component {
                                                     class: 'error',
                                                     msg: 'Transaction failed'
                                                 }
-                                                this.setState({tmepState});
-        
+                                                this.setState({ tmepState });
+
                                                 setTimeout(() => {
                                                     delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
+                                                    this.setState({ tmepState });
                                                 }, 3000);
                                             };
                                             return false;
@@ -3045,10 +3048,10 @@ export default class Home extends React.Component {
             }
         )
     }
-    withdrawPAX (addr, num) {
+    withdrawPAX(addr, num) {
         var str1;
         var str2;
-        if(num.div(10 ** this.state.decimalsPAX).toString(10).indexOf('.') > 0){
+        if (num.div(10 ** this.state.decimalsPAX).toString(10).indexOf('.') > 0) {
             str1 = this.toThousands(num.div(10 ** this.state.decimalsPAX).toString(10).split('.')[0]);
             str2 = '.' + num.div(10 ** this.state.decimalsPAX).toString(10).split('.')[1];
         } else {
@@ -3064,7 +3067,7 @@ export default class Home extends React.Component {
             class: 'inprocess',
             title: 'Withdraw ' + str1 + str2 + ' PAX',
         }
-        this.setState({tmepState});
+        this.setState({ tmepState });
         // get Limit first
         this.contractProtocol.withdraw.estimateGas(
             addr,
@@ -3094,11 +3097,11 @@ export default class Home extends React.Component {
                                         class: 'error',
                                         msg: 'User reject transaction'
                                     }
-                                    this.setState({tmepState});
-        
+                                    this.setState({ tmepState });
+
                                     setTimeout(() => {
                                         delete tmepState.transcations[key];
-                                        this.setState({tmepState});
+                                        this.setState({ tmepState });
                                     }, 3000);
                                 };
                                 return false;
@@ -3107,7 +3110,7 @@ export default class Home extends React.Component {
                         if (ret) {
                             const keys = Object.keys(this.state.transcations);
                             const tmepState = this.state;
-        
+
                             keys.map((key) => {
                                 if (tmepState.transcations[key].id === id) {
                                     tmepState.transcations[key].txhash = ret;
@@ -3115,11 +3118,11 @@ export default class Home extends React.Component {
                                         ...tmepState.transcations[key],
                                         msg: 'Waiting for confirmation...'
                                     }
-                                    this.setState({tmepState});
+                                    this.setState({ tmepState });
                                 };
                                 return false;
                             });
-        
+
                             var timerOBJ = {};
                             var tempRnum = Math.random();
                             timerOBJ[tempRnum] = setInterval(() => {
@@ -3138,11 +3141,11 @@ export default class Home extends React.Component {
                                                 }
                                                 tmepState.toWithdrawNum = '';
                                                 tmepState.couldWithdraw = false;
-                                                this.setState({tmepState});
-        
+                                                this.setState({ tmepState });
+
                                                 setTimeout(() => {
                                                     delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
+                                                    this.setState({ tmepState });
                                                 }, 3000);
                                             };
                                             return false;
@@ -3152,7 +3155,7 @@ export default class Home extends React.Component {
                                             this.getPoolBankTotalStatus();
                                             this.getUserWithdrawBalance();
                                         }, 3000)
-                                    } 
+                                    }
                                     if (data && data.status === '0x0') {
                                         clearInterval(timerOBJ[tempRnum]);
                                         const keys = Object.keys(this.state.transcations);
@@ -3164,11 +3167,11 @@ export default class Home extends React.Component {
                                                     class: 'error',
                                                     msg: 'Transaction failed'
                                                 }
-                                                this.setState({tmepState});
-        
+                                                this.setState({ tmepState });
+
                                                 setTimeout(() => {
                                                     delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
+                                                    this.setState({ tmepState });
                                                 }, 3000);
                                             };
                                             return false;
@@ -3182,10 +3185,10 @@ export default class Home extends React.Component {
             }
         )
     }
-    withdrawTUSD (addr, num) {
+    withdrawTUSD(addr, num) {
         var str1;
         var str2;
-        if(num.div(10 ** this.state.decimalsTUSD).toString(10).indexOf('.') > 0){
+        if (num.div(10 ** this.state.decimalsTUSD).toString(10).indexOf('.') > 0) {
             str1 = this.toThousands(num.div(10 ** this.state.decimalsTUSD).toString(10).split('.')[0]);
             str2 = '.' + num.div(10 ** this.state.decimalsTUSD).toString(10).split('.')[1];
         } else {
@@ -3201,7 +3204,7 @@ export default class Home extends React.Component {
             class: 'inprocess',
             title: 'Withdraw ' + str1 + str2 + ' TUSD',
         }
-        this.setState({tmepState});
+        this.setState({ tmepState });
         // get Limit first
         this.contractProtocol.withdraw.estimateGas(
             addr,
@@ -3231,11 +3234,11 @@ export default class Home extends React.Component {
                                         class: 'error',
                                         msg: 'User reject transaction'
                                     }
-                                    this.setState({tmepState});
-        
+                                    this.setState({ tmepState });
+
                                     setTimeout(() => {
                                         delete tmepState.transcations[key];
-                                        this.setState({tmepState});
+                                        this.setState({ tmepState });
                                     }, 3000);
                                 };
                                 return false;
@@ -3244,7 +3247,7 @@ export default class Home extends React.Component {
                         if (ret) {
                             const keys = Object.keys(this.state.transcations);
                             const tmepState = this.state;
-        
+
                             keys.map((key) => {
                                 if (tmepState.transcations[key].id === id) {
                                     tmepState.transcations[key].txhash = ret;
@@ -3252,11 +3255,11 @@ export default class Home extends React.Component {
                                         ...tmepState.transcations[key],
                                         msg: 'Waiting for confirmation...'
                                     }
-                                    this.setState({tmepState});
+                                    this.setState({ tmepState });
                                 };
                                 return false;
                             });
-        
+
                             var timerOBJ = {};
                             var tempRnum = Math.random();
                             timerOBJ[tempRnum] = setInterval(() => {
@@ -3275,11 +3278,11 @@ export default class Home extends React.Component {
                                                 }
                                                 tmepState.toWithdrawNum = '';
                                                 tmepState.couldWithdraw = false;
-                                                this.setState({tmepState});
-        
+                                                this.setState({ tmepState });
+
                                                 setTimeout(() => {
                                                     delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
+                                                    this.setState({ tmepState });
                                                 }, 3000);
                                             };
                                             return false;
@@ -3289,7 +3292,7 @@ export default class Home extends React.Component {
                                             this.getPoolBankTotalStatus();
                                             this.getUserWithdrawBalance();
                                         }, 3000)
-                                    } 
+                                    }
                                     if (data && data.status === '0x0') {
                                         clearInterval(timerOBJ[tempRnum]);
                                         const keys = Object.keys(this.state.transcations);
@@ -3301,11 +3304,11 @@ export default class Home extends React.Component {
                                                     class: 'error',
                                                     msg: 'Transaction failed'
                                                 }
-                                                this.setState({tmepState});
-        
+                                                this.setState({ tmepState });
+
                                                 setTimeout(() => {
                                                     delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
+                                                    this.setState({ tmepState });
                                                 }, 3000);
                                             };
                                             return false;
@@ -3319,10 +3322,10 @@ export default class Home extends React.Component {
             }
         )
     }
-    withdrawUSDC (addr, num) {
+    withdrawUSDC(addr, num) {
         var str1;
         var str2;
-        if(num.div(10 ** this.state.decimalsUSDC).toString(10).indexOf('.') > 0){
+        if (num.div(10 ** this.state.decimalsUSDC).toString(10).indexOf('.') > 0) {
             str1 = this.toThousands(num.div(10 ** this.state.decimalsUSDC).toString(10).split('.')[0]);
             str2 = '.' + num.div(10 ** this.state.decimalsUSDC).toString(10).split('.')[1];
         } else {
@@ -3338,7 +3341,7 @@ export default class Home extends React.Component {
             class: 'inprocess',
             title: 'Withdraw ' + str1 + str2 + ' USDC',
         }
-        this.setState({tmepState});
+        this.setState({ tmepState });
         // get Limit first
         this.contractProtocol.withdraw.estimateGas(
             addr,
@@ -3368,11 +3371,11 @@ export default class Home extends React.Component {
                                         class: 'error',
                                         msg: 'User reject transaction'
                                     }
-                                    this.setState({tmepState});
-        
+                                    this.setState({ tmepState });
+
                                     setTimeout(() => {
                                         delete tmepState.transcations[key];
-                                        this.setState({tmepState});
+                                        this.setState({ tmepState });
                                     }, 3000);
                                 };
                                 return false;
@@ -3381,7 +3384,7 @@ export default class Home extends React.Component {
                         if (ret) {
                             const keys = Object.keys(this.state.transcations);
                             const tmepState = this.state;
-        
+
                             keys.map((key) => {
                                 if (tmepState.transcations[key].id === id) {
                                     tmepState.transcations[key].txhash = ret;
@@ -3389,11 +3392,11 @@ export default class Home extends React.Component {
                                         ...tmepState.transcations[key],
                                         msg: 'Waiting for confirmation...'
                                     }
-                                    this.setState({tmepState});
+                                    this.setState({ tmepState });
                                 };
                                 return false;
                             });
-        
+
                             var timerOBJ = {};
                             var tempRnum = Math.random();
                             timerOBJ[tempRnum] = setInterval(() => {
@@ -3412,11 +3415,11 @@ export default class Home extends React.Component {
                                                 }
                                                 tmepState.toWithdrawNum = '';
                                                 tmepState.couldWithdraw = false;
-                                                this.setState({tmepState});
-        
+                                                this.setState({ tmepState });
+
                                                 setTimeout(() => {
                                                     delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
+                                                    this.setState({ tmepState });
                                                 }, 3000);
                                             };
                                             return false;
@@ -3426,7 +3429,7 @@ export default class Home extends React.Component {
                                             this.getPoolBankTotalStatus();
                                             this.getUserWithdrawBalance();
                                         }, 3000)
-                                    } 
+                                    }
                                     if (data && data.status === '0x0') {
                                         clearInterval(timerOBJ[tempRnum]);
                                         const keys = Object.keys(this.state.transcations);
@@ -3438,11 +3441,11 @@ export default class Home extends React.Component {
                                                     class: 'error',
                                                     msg: 'Transaction failed'
                                                 }
-                                                this.setState({tmepState});
-        
+                                                this.setState({ tmepState });
+
                                                 setTimeout(() => {
                                                     delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
+                                                    this.setState({ tmepState });
                                                 }, 3000);
                                             };
                                             return false;
@@ -3459,8 +3462,8 @@ export default class Home extends React.Component {
 
 
     // *** get USDx For my Deposit ***
-    getUSDXForDeposit (tokenID, amount) {
-        this.contractProtocolView.getUSDXForDeposit.call(tokenID, amount, (err, ret)=>{
+    getUSDXForDeposit(tokenID, amount) {
+        this.contractProtocolView.getUSDXForDeposit.call(tokenID, amount, (err, ret) => {
             console.log(err, ret);
             if (ret) {
                 if (this.state.toDepositNum === '' || Number(this.state.toDepositNum) === 0) {
@@ -3477,7 +3480,7 @@ export default class Home extends React.Component {
 
 
     // *** deposit ***
-    depositNumChange (val) {
+    depositNumChange(val) {
         if (val === '' || Number(val) === 0) {
             this.setState({
                 ...this.state,
@@ -3504,7 +3507,7 @@ export default class Home extends React.Component {
                     couldDeposit: true,
                     errTips: false,
                     toDepositNum: val
-                }, ()=>{
+                }, () => {
                     this.getUSDXForDeposit(address, val * (10 ** tempUnits));
                 })
             } else {
@@ -3525,7 +3528,7 @@ export default class Home extends React.Component {
                     couldDeposit: true,
                     errTips: false,
                     toDepositNum: val
-                }, ()=>{
+                }, () => {
                     this.getUSDXForDeposit(address, val * (10 ** tempUnits));
                 })
             } else {
@@ -3546,7 +3549,7 @@ export default class Home extends React.Component {
                     couldDeposit: true,
                     errTips: false,
                     toDepositNum: val
-                }, ()=>{
+                }, () => {
                     this.getUSDXForDeposit(address, val * (10 ** tempUnits));
                 })
             } else {
@@ -3567,7 +3570,7 @@ export default class Home extends React.Component {
                     couldDeposit: true,
                     errTips: false,
                     toDepositNum: val
-                }, ()=>{
+                }, () => {
                     this.getUSDXForDeposit(address, val * (10 ** tempUnits));
                 })
             } else {
@@ -3584,7 +3587,7 @@ export default class Home extends React.Component {
         this.setState({
             ...this.state,
             toDeposit: token
-        }, ()=>{
+        }, () => {
             if (!this.state.toDepositNum) {
                 return;
             }
@@ -3598,7 +3601,7 @@ export default class Home extends React.Component {
         //     this.depositNumChange(this.state.toDepositNum);
         // }, 0);
     }
-    deposit () {
+    deposit() {
         if (!this.state.couldDeposit) {
             return;
         }
@@ -3622,7 +3625,7 @@ export default class Home extends React.Component {
             this.depositUSDC(addr, num);
         }
     }
-    depositDAI (addr, num) {
+    depositDAI(addr, num) {
         if (!this.state.approvedDAI) {
             this.setState({
                 ...this.state,
@@ -3633,7 +3636,7 @@ export default class Home extends React.Component {
         }
         var str1;
         var str2;
-        if(num.div(10 ** this.state.decimalsDAI).toString(10).indexOf('.') > 0){
+        if (num.div(10 ** this.state.decimalsDAI).toString(10).indexOf('.') > 0) {
             str1 = this.toThousands(num.div(10 ** this.state.decimalsDAI).toString(10).split('.')[0]);
             str2 = '.' + num.div(10 ** this.state.decimalsDAI).toString(10).split('.')[1];
         } else {
@@ -3649,7 +3652,7 @@ export default class Home extends React.Component {
             class: 'inprocess',
             title: 'Deposit ' + str1 + str2 + ' DAI',
         }
-        this.setState({tmepState});
+        this.setState({ tmepState });
         // get Limit first
         this.contractProtocol.deposit.estimateGas(
             addr,
@@ -3680,11 +3683,11 @@ export default class Home extends React.Component {
                                         class: 'error',
                                         msg: 'User reject transaction'
                                     }
-                                    this.setState({tmepState});
-        
+                                    this.setState({ tmepState });
+
                                     setTimeout(() => {
                                         delete tmepState.transcations[key];
-                                        this.setState({tmepState});
+                                        this.setState({ tmepState });
                                     }, 3000);
                                 };
                                 return false;
@@ -3693,7 +3696,7 @@ export default class Home extends React.Component {
                         if (ret) {
                             const keys = Object.keys(this.state.transcations);
                             const tmepState = this.state;
-        
+
                             keys.map((key) => {
                                 if (tmepState.transcations[key].id === id) {
                                     tmepState.transcations[key].txhash = ret;
@@ -3701,11 +3704,11 @@ export default class Home extends React.Component {
                                         ...tmepState.transcations[key],
                                         msg: 'Waiting for confirmation...'
                                     }
-                                    this.setState({tmepState});
+                                    this.setState({ tmepState });
                                 };
                                 return false;
                             });
-        
+
                             var timerOBJ = {};
                             var tempRnum = Math.random();
                             timerOBJ[tempRnum] = setInterval(() => {
@@ -3725,11 +3728,11 @@ export default class Home extends React.Component {
                                                 tmepState.toDepositNum = '';
                                                 tmepState.couldDeposit = false;
                                                 tmepState.maxGenerateUSDx = '';
-                                                this.setState({tmepState});
-        
+                                                this.setState({ tmepState });
+
                                                 setTimeout(() => {
                                                     delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
+                                                    this.setState({ tmepState });
                                                 }, 3000);
                                             };
                                             return false;
@@ -3739,7 +3742,7 @@ export default class Home extends React.Component {
                                             this.getPoolBankTotalStatus();
                                             this.getUserWithdrawBalance();
                                         }, 3000)
-                                    } 
+                                    }
                                     if (data && data.status === '0x0') {
                                         clearInterval(timerOBJ[tempRnum]);
                                         const keys = Object.keys(this.state.transcations);
@@ -3751,11 +3754,11 @@ export default class Home extends React.Component {
                                                     class: 'error',
                                                     msg: 'Transaction failed'
                                                 }
-                                                this.setState({tmepState});
-        
+                                                this.setState({ tmepState });
+
                                                 setTimeout(() => {
                                                     delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
+                                                    this.setState({ tmepState });
                                                 }, 3000);
                                             };
                                             return false;
@@ -3769,7 +3772,7 @@ export default class Home extends React.Component {
             }
         )
     }
-    depositPAX (addr, num) {
+    depositPAX(addr, num) {
         if (!this.state.approvedPAX) {
             this.setState({
                 ...this.state,
@@ -3780,7 +3783,7 @@ export default class Home extends React.Component {
         }
         var str1;
         var str2;
-        if(num.div(10 ** this.state.decimalsPAX).toString(10).indexOf('.') > 0){
+        if (num.div(10 ** this.state.decimalsPAX).toString(10).indexOf('.') > 0) {
             str1 = this.toThousands(num.div(10 ** this.state.decimalsPAX).toString(10).split('.')[0]);
             str2 = '.' + num.div(10 ** this.state.decimalsPAX).toString(10).split('.')[1];
         } else {
@@ -3796,7 +3799,7 @@ export default class Home extends React.Component {
             class: 'inprocess',
             title: 'Deposit ' + str1 + str2 + ' PAX',
         }
-        this.setState({tmepState});
+        this.setState({ tmepState });
         // get Limit first
         this.contractProtocol.deposit.estimateGas(
             addr,
@@ -3826,11 +3829,11 @@ export default class Home extends React.Component {
                                         class: 'error',
                                         msg: 'User reject transaction'
                                     }
-                                    this.setState({tmepState});
-        
+                                    this.setState({ tmepState });
+
                                     setTimeout(() => {
                                         delete tmepState.transcations[key];
-                                        this.setState({tmepState});
+                                        this.setState({ tmepState });
                                     }, 3000);
                                 };
                                 return false;
@@ -3839,7 +3842,7 @@ export default class Home extends React.Component {
                         if (ret) {
                             const keys = Object.keys(this.state.transcations);
                             const tmepState = this.state;
-        
+
                             keys.map((key) => {
                                 if (tmepState.transcations[key].id === id) {
                                     tmepState.transcations[key].txhash = ret;
@@ -3847,11 +3850,11 @@ export default class Home extends React.Component {
                                         ...tmepState.transcations[key],
                                         msg: 'Waiting for confirmation...'
                                     }
-                                    this.setState({tmepState});
+                                    this.setState({ tmepState });
                                 };
                                 return false;
                             });
-        
+
                             var timerOBJ = {};
                             var tempRnum = Math.random();
                             timerOBJ[tempRnum] = setInterval(() => {
@@ -3871,11 +3874,11 @@ export default class Home extends React.Component {
                                                 tmepState.toDepositNum = '';
                                                 tmepState.couldDeposit = false;
                                                 tmepState.maxGenerateUSDx = '';
-                                                this.setState({tmepState});
-        
+                                                this.setState({ tmepState });
+
                                                 setTimeout(() => {
                                                     delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
+                                                    this.setState({ tmepState });
                                                 }, 3000);
                                             };
                                             return false;
@@ -3885,7 +3888,7 @@ export default class Home extends React.Component {
                                             this.getPoolBankTotalStatus();
                                             this.getUserWithdrawBalance();
                                         }, 3000)
-                                    } 
+                                    }
                                     if (data && data.status === '0x0') {
                                         clearInterval(timerOBJ[tempRnum]);
                                         const keys = Object.keys(this.state.transcations);
@@ -3897,11 +3900,11 @@ export default class Home extends React.Component {
                                                     class: 'error',
                                                     msg: 'Transaction failed'
                                                 }
-                                                this.setState({tmepState});
-        
+                                                this.setState({ tmepState });
+
                                                 setTimeout(() => {
                                                     delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
+                                                    this.setState({ tmepState });
                                                 }, 3000);
                                             };
                                             return false;
@@ -3915,7 +3918,7 @@ export default class Home extends React.Component {
             }
         )
     }
-    depositTUSD (addr, num) {
+    depositTUSD(addr, num) {
         if (!this.state.approvedTUSD) {
             this.setState({
                 ...this.state,
@@ -3926,7 +3929,7 @@ export default class Home extends React.Component {
         }
         var str1;
         var str2;
-        if(num.div(10 ** this.state.decimalsTUSD).toString(10).indexOf('.') > 0){
+        if (num.div(10 ** this.state.decimalsTUSD).toString(10).indexOf('.') > 0) {
             str1 = this.toThousands(num.div(10 ** this.state.decimalsTUSD).toString(10).split('.')[0]);
             str2 = '.' + num.div(10 ** this.state.decimalsTUSD).toString(10).split('.')[1];
         } else {
@@ -3942,7 +3945,7 @@ export default class Home extends React.Component {
             class: 'inprocess',
             title: 'Deposit ' + str1 + str2 + ' TUSD',
         }
-        this.setState({tmepState});
+        this.setState({ tmepState });
         // get Limit first
         this.contractProtocol.deposit.estimateGas(
             addr,
@@ -3972,11 +3975,11 @@ export default class Home extends React.Component {
                                         class: 'error',
                                         msg: 'User reject transaction'
                                     }
-                                    this.setState({tmepState});
-        
+                                    this.setState({ tmepState });
+
                                     setTimeout(() => {
                                         delete tmepState.transcations[key];
-                                        this.setState({tmepState});
+                                        this.setState({ tmepState });
                                     }, 3000);
                                 };
                                 return false;
@@ -3985,7 +3988,7 @@ export default class Home extends React.Component {
                         if (ret) {
                             const keys = Object.keys(this.state.transcations);
                             const tmepState = this.state;
-        
+
                             keys.map((key) => {
                                 if (tmepState.transcations[key].id === id) {
                                     tmepState.transcations[key].txhash = ret;
@@ -3993,11 +3996,11 @@ export default class Home extends React.Component {
                                         ...tmepState.transcations[key],
                                         msg: 'Waiting for confirmation...'
                                     }
-                                    this.setState({tmepState});
+                                    this.setState({ tmepState });
                                 };
                                 return false;
                             });
-        
+
                             var timerOBJ = {};
                             var tempRnum = Math.random();
                             timerOBJ[tempRnum] = setInterval(() => {
@@ -4017,11 +4020,11 @@ export default class Home extends React.Component {
                                                 tmepState.toDepositNum = '';
                                                 tmepState.couldDeposit = false;
                                                 tmepState.maxGenerateUSDx = '';
-                                                this.setState({tmepState});
-        
+                                                this.setState({ tmepState });
+
                                                 setTimeout(() => {
                                                     delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
+                                                    this.setState({ tmepState });
                                                 }, 3000);
                                             };
                                             return false;
@@ -4031,7 +4034,7 @@ export default class Home extends React.Component {
                                             this.getPoolBankTotalStatus();
                                             this.getUserWithdrawBalance();
                                         }, 3000)
-                                    } 
+                                    }
                                     if (data && data.status === '0x0') {
                                         clearInterval(timerOBJ[tempRnum]);
                                         const keys = Object.keys(this.state.transcations);
@@ -4043,11 +4046,11 @@ export default class Home extends React.Component {
                                                     class: 'error',
                                                     msg: 'Transaction failed'
                                                 }
-                                                this.setState({tmepState});
-        
+                                                this.setState({ tmepState });
+
                                                 setTimeout(() => {
                                                     delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
+                                                    this.setState({ tmepState });
                                                 }, 3000);
                                             };
                                             return false;
@@ -4061,7 +4064,7 @@ export default class Home extends React.Component {
             }
         )
     }
-    depositUSDC (addr, num) {
+    depositUSDC(addr, num) {
         if (!this.state.approvedUSDC) {
             this.setState({
                 ...this.state,
@@ -4072,7 +4075,7 @@ export default class Home extends React.Component {
         }
         var str1;
         var str2;
-        if(num.div(10 ** this.state.decimalsUSDC).toString(10).indexOf('.') > 0){
+        if (num.div(10 ** this.state.decimalsUSDC).toString(10).indexOf('.') > 0) {
             str1 = this.toThousands(num.div(10 ** this.state.decimalsUSDC).toString(10).split('.')[0]);
             str2 = '.' + num.div(10 ** this.state.decimalsUSDC).toString(10).split('.')[1];
         } else {
@@ -4088,7 +4091,7 @@ export default class Home extends React.Component {
             class: 'inprocess',
             title: 'Deposit ' + str1 + str2 + ' USDC',
         }
-        this.setState({tmepState});
+        this.setState({ tmepState });
         // get Limit first
         this.contractProtocol.deposit.estimateGas(
             addr,
@@ -4118,11 +4121,11 @@ export default class Home extends React.Component {
                                         class: 'error',
                                         msg: 'User reject transaction'
                                     }
-                                    this.setState({tmepState});
-        
+                                    this.setState({ tmepState });
+
                                     setTimeout(() => {
                                         delete tmepState.transcations[key];
-                                        this.setState({tmepState});
+                                        this.setState({ tmepState });
                                     }, 3000);
                                 };
                                 return false;
@@ -4131,7 +4134,7 @@ export default class Home extends React.Component {
                         if (ret) {
                             const keys = Object.keys(this.state.transcations);
                             const tmepState = this.state;
-        
+
                             keys.map((key) => {
                                 if (tmepState.transcations[key].id === id) {
                                     tmepState.transcations[key].txhash = ret;
@@ -4139,11 +4142,11 @@ export default class Home extends React.Component {
                                         ...tmepState.transcations[key],
                                         msg: 'Waiting for confirmation...'
                                     }
-                                    this.setState({tmepState});
+                                    this.setState({ tmepState });
                                 };
                                 return false;
                             });
-        
+
                             var timerOBJ = {};
                             var tempRnum = Math.random();
                             timerOBJ[tempRnum] = setInterval(() => {
@@ -4163,11 +4166,11 @@ export default class Home extends React.Component {
                                                 tmepState.toDepositNum = '';
                                                 tmepState.couldDeposit = false;
                                                 tmepState.maxGenerateUSDx = '';
-                                                this.setState({tmepState});
-        
+                                                this.setState({ tmepState });
+
                                                 setTimeout(() => {
                                                     delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
+                                                    this.setState({ tmepState });
                                                 }, 3000);
                                             };
                                             return false;
@@ -4177,7 +4180,7 @@ export default class Home extends React.Component {
                                             this.getPoolBankTotalStatus();
                                             this.getUserWithdrawBalance();
                                         }, 3000)
-                                    } 
+                                    }
                                     if (data && data.status === '0x0') {
                                         clearInterval(timerOBJ[tempRnum]);
                                         const keys = Object.keys(this.state.transcations);
@@ -4189,11 +4192,11 @@ export default class Home extends React.Component {
                                                     class: 'error',
                                                     msg: 'Transaction failed'
                                                 }
-                                                this.setState({tmepState});
-        
+                                                this.setState({ tmepState });
+
                                                 setTimeout(() => {
                                                     delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
+                                                    this.setState({ tmepState });
                                                 }, 3000);
                                             };
                                             return false;
@@ -4210,7 +4213,7 @@ export default class Home extends React.Component {
 
 
     // *** destroy ***
-    destroyNumChange (val) {
+    destroyNumChange(val) {
         if (val.length > 16) {
             return;
         }
@@ -4283,7 +4286,7 @@ export default class Home extends React.Component {
             }
         }
     }
-    destroy () {
+    destroy() {
         if (!this.state.couldDestroy) {
             return;
         }
@@ -4305,13 +4308,13 @@ export default class Home extends React.Component {
             this.approve('USDx');
             return;
         }
-        
+
         const id = Math.random();
         const msg = 'Waiting for transaction signature...';
         const tmepState = this.state;
         var str1;
         var str2;
-        if(this.state.toDestroyNum.indexOf('.') > 0){
+        if (this.state.toDestroyNum.indexOf('.') > 0) {
             str1 = this.toThousands(this.state.toDestroyNum.split('.')[0]);
             str2 = '.' + this.state.toDestroyNum.split('.')[1];
         } else {
@@ -4324,7 +4327,7 @@ export default class Home extends React.Component {
             class: 'inprocess',
             title: 'Reconvert ' + str1 + str2 + ' USDx',
         }
-        this.setState({tmepState});
+        this.setState({ tmepState });
         this.contractProtocol.destroy.estimateGas(
             0,
             this.Web3.toBigNumber(this.state.toDestroyNum).mul(this.Web3.toBigNumber(10 ** 18)),
@@ -4351,11 +4354,11 @@ export default class Home extends React.Component {
                                         class: 'error',
                                         msg: 'User reject transaction'
                                     }
-                                    this.setState({tmepState});
-        
+                                    this.setState({ tmepState });
+
                                     setTimeout(() => {
                                         delete tmepState.transcations[key];
-                                        this.setState({tmepState});
+                                        this.setState({ tmepState });
                                     }, 3000);
                                 };
                                 return false;
@@ -4364,7 +4367,7 @@ export default class Home extends React.Component {
                         if (ret) {
                             const keys = Object.keys(this.state.transcations);
                             const tmepState = this.state;
-        
+
                             keys.map((key) => {
                                 if (tmepState.transcations[key].id === id) {
                                     tmepState.transcations[key].txhash = ret;
@@ -4372,11 +4375,11 @@ export default class Home extends React.Component {
                                         ...tmepState.transcations[key],
                                         msg: 'Waiting for confirmation...'
                                     }
-                                    this.setState({tmepState});
+                                    this.setState({ tmepState });
                                 };
                                 return false;
                             });
-        
+
                             var timerOBJ = {};
                             var tempRnum = Math.random();
                             timerOBJ[tempRnum] = setInterval(() => {
@@ -4396,11 +4399,11 @@ export default class Home extends React.Component {
                                                 tmepState.toDestroyNum = '';
                                                 tmepState.couldDestroy = false;
                                                 tmepState.USDxToDAI = tmepState.USDxToPAX = tmepState.USDxToTUSD = tmepState.USDxToUSDC = '';
-                                                this.setState({tmepState});
-        
+                                                this.setState({ tmepState });
+
                                                 setTimeout(() => {
                                                     delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
+                                                    this.setState({ tmepState });
                                                 }, 3000);
                                             };
                                             return false;
@@ -4410,7 +4413,7 @@ export default class Home extends React.Component {
                                             this.getPoolBankTotalStatus();
                                             this.getUserWithdrawBalance();
                                         }, 3000)
-                                    } 
+                                    }
                                     if (data && data.status === '0x0') {
                                         clearInterval(timerOBJ[tempRnum]);
                                         const keys = Object.keys(this.state.transcations);
@@ -4422,11 +4425,11 @@ export default class Home extends React.Component {
                                                     class: 'error',
                                                     msg: 'Transaction failed'
                                                 }
-                                                this.setState({tmepState});
-        
+                                                this.setState({ tmepState });
+
                                                 setTimeout(() => {
                                                     delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
+                                                    this.setState({ tmepState });
                                                 }, 3000);
                                             };
                                             return false;
@@ -4443,7 +4446,7 @@ export default class Home extends React.Component {
 
 
     // *** toGenerateMax ***
-    toGenerateMax(BN){
+    toGenerateMax(BN) {
         // console.log(BN);
         // console.log(BN.toString(10));
 
@@ -4456,7 +4459,7 @@ export default class Home extends React.Component {
             class: 'inprocess',
             title: 'Mintage ' + this.toThousands(BN.toString(10)) + ' USDx',
         }
-        this.setState({tmepState});
+        this.setState({ tmepState });
         // get Limit first
         this.contractProtocol.oneClickMinting.estimateGas(
             0,
@@ -4484,11 +4487,11 @@ export default class Home extends React.Component {
                                         class: 'error',
                                         msg: 'User reject transaction'
                                     }
-                                    this.setState({tmepState});
-        
+                                    this.setState({ tmepState });
+
                                     setTimeout(() => {
                                         delete tmepState.transcations[key];
-                                        this.setState({tmepState});
+                                        this.setState({ tmepState });
                                     }, 3000);
                                 };
                                 return false;
@@ -4497,7 +4500,7 @@ export default class Home extends React.Component {
                         if (ret) {
                             const keys = Object.keys(this.state.transcations);
                             const tmepState = this.state;
-        
+
                             keys.map((key) => {
                                 if (tmepState.transcations[key].id === id) {
                                     tmepState.transcations[key].txhash = ret;
@@ -4505,11 +4508,11 @@ export default class Home extends React.Component {
                                         ...tmepState.transcations[key],
                                         msg: 'Waiting for confirmation...'
                                     }
-                                    this.setState({tmepState});
+                                    this.setState({ tmepState });
                                 };
                                 return false;
                             });
-        
+
                             var timerOBJ = {};
                             var tempRnum = Math.random();
                             timerOBJ[tempRnum] = setInterval(() => {
@@ -4526,11 +4529,11 @@ export default class Home extends React.Component {
                                                     class: 'success',
                                                     msg: 'Transaction succeeded'
                                                 }
-                                                this.setState({tmepState});
-        
+                                                this.setState({ tmepState });
+
                                                 setTimeout(() => {
                                                     delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
+                                                    this.setState({ tmepState });
                                                 }, 3000);
                                             };
                                             return false;
@@ -4540,7 +4543,7 @@ export default class Home extends React.Component {
                                             this.getPoolBankTotalStatus();
                                             this.getUserWithdrawBalance();
                                         }, 3000)
-                                    } 
+                                    }
                                     if (data && data.status === '0x0') {
                                         clearInterval(timerOBJ[tempRnum]);
                                         const keys = Object.keys(this.state.transcations);
@@ -4552,11 +4555,11 @@ export default class Home extends React.Component {
                                                     class: 'error',
                                                     msg: 'Transaction failed'
                                                 }
-                                                this.setState({tmepState});
-        
+                                                this.setState({ tmepState });
+
                                                 setTimeout(() => {
                                                     delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
+                                                    this.setState({ tmepState });
                                                 }, 3000);
                                             };
                                             return false;
@@ -4573,7 +4576,7 @@ export default class Home extends React.Component {
 
 
     // *** claim ***
-    claim () {
+    claim() {
         const id = Math.random();
         const msg = 'Waiting for transaction signature...';
         const tmepState = this.state;
@@ -4583,7 +4586,7 @@ export default class Home extends React.Component {
             class: 'inprocess',
             title: 'CLAIM USDx',
         }
-        this.setState({tmepState});
+        this.setState({ tmepState });
         // get Limit first
         this.contractProtocol.claim.estimateGas(
             0,
@@ -4609,11 +4612,11 @@ export default class Home extends React.Component {
                                         class: 'error',
                                         msg: 'User reject transaction'
                                     }
-                                    this.setState({tmepState});
-        
+                                    this.setState({ tmepState });
+
                                     setTimeout(() => {
                                         delete tmepState.transcations[key];
-                                        this.setState({tmepState});
+                                        this.setState({ tmepState });
                                     }, 3000);
                                 };
                                 return false;
@@ -4622,7 +4625,7 @@ export default class Home extends React.Component {
                         if (ret) {
                             const keys = Object.keys(this.state.transcations);
                             const tmepState = this.state;
-        
+
                             keys.map((key) => {
                                 if (tmepState.transcations[key].id === id) {
                                     tmepState.transcations[key].txhash = ret;
@@ -4630,11 +4633,11 @@ export default class Home extends React.Component {
                                         ...tmepState.transcations[key],
                                         msg: 'Waiting for confirmation...'
                                     }
-                                    this.setState({tmepState});
+                                    this.setState({ tmepState });
                                 };
                                 return false;
                             });
-        
+
                             var timerOBJ = {};
                             var tempRnum = Math.random();
                             timerOBJ[tempRnum] = setInterval(() => {
@@ -4651,11 +4654,11 @@ export default class Home extends React.Component {
                                                     class: 'success',
                                                     msg: 'Transaction succeeded'
                                                 }
-                                                this.setState({tmepState});
-        
+                                                this.setState({ tmepState });
+
                                                 setTimeout(() => {
                                                     delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
+                                                    this.setState({ tmepState });
                                                 }, 3000);
                                             };
                                             return false;
@@ -4677,11 +4680,11 @@ export default class Home extends React.Component {
                                                     class: 'error',
                                                     msg: 'Transaction failed'
                                                 }
-                                                this.setState({tmepState});
-        
+                                                this.setState({ tmepState });
+
                                                 setTimeout(() => {
                                                     delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
+                                                    this.setState({ tmepState });
                                                 }, 3000);
                                             };
                                             return false;
@@ -4698,7 +4701,7 @@ export default class Home extends React.Component {
 
 
     // *** allocateTo ***
-    allocateTo (token) {
+    allocateTo(token) {
         if (token === 'DAI') {
             this.allocateToDAI();
         }
@@ -4715,7 +4718,7 @@ export default class Home extends React.Component {
             this.allocateToDF();
         }
     }
-    allocateToDAI () {
+    allocateToDAI() {
         const keys = Object.keys(this.state.transcations);
         for (var i = 0; i < keys.length; i++) {
             if (this.state.transcations[keys[i]].title === 'Allocate DAI') {
@@ -4731,7 +4734,7 @@ export default class Home extends React.Component {
             class: 'inprocess',
             title: 'Allocate DAI',
         }
-        this.setState({tmepState});
+        this.setState({ tmepState });
         // get Limit first
         this.contractDAI.allocateTo.estimateGas(
             this.state.accountAddress,
@@ -4759,11 +4762,11 @@ export default class Home extends React.Component {
                                         class: 'error',
                                         msg: 'User reject transaction'
                                     }
-                                    this.setState({tmepState});
-        
+                                    this.setState({ tmepState });
+
                                     setTimeout(() => {
                                         delete tmepState.transcations[key];
-                                        this.setState({tmepState});
+                                        this.setState({ tmepState });
                                     }, 3000);
                                 };
                                 return false;
@@ -4772,7 +4775,7 @@ export default class Home extends React.Component {
                         if (ret) {
                             const keys = Object.keys(this.state.transcations);
                             const tmepState = this.state;
-        
+
                             keys.map((key) => {
                                 if (tmepState.transcations[key].title === 'Allocate DAI') {
                                     tmepState.transcations[key].txhash = ret;
@@ -4780,11 +4783,11 @@ export default class Home extends React.Component {
                                         ...tmepState.transcations[key],
                                         msg: 'Waiting for confirmation...'
                                     }
-                                    this.setState({tmepState});
+                                    this.setState({ tmepState });
                                 };
                                 return false;
                             });
-        
+
                             var allocateDAItimer = setInterval(() => {
                                 console.log('i am checking Allocate DAI...');
                                 this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
@@ -4799,11 +4802,11 @@ export default class Home extends React.Component {
                                                     class: 'success',
                                                     msg: 'Transaction succeeded'
                                                 }
-                                                this.setState({tmepState});
-        
+                                                this.setState({ tmepState });
+
                                                 setTimeout(() => {
                                                     delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
+                                                    this.setState({ tmepState });
                                                 }, 3000);
                                             };
                                             return false;
@@ -4825,11 +4828,11 @@ export default class Home extends React.Component {
                                                     class: 'error',
                                                     msg: 'Transaction failed'
                                                 }
-                                                this.setState({tmepState});
-        
+                                                this.setState({ tmepState });
+
                                                 setTimeout(() => {
                                                     delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
+                                                    this.setState({ tmepState });
                                                 }, 3000);
                                             };
                                             return false;
@@ -4843,7 +4846,7 @@ export default class Home extends React.Component {
             }
         )
     }
-    allocateToPAX () {
+    allocateToPAX() {
         const keys = Object.keys(this.state.transcations);
         for (var i = 0; i < keys.length; i++) {
             if (this.state.transcations[keys[i]].title === 'Allocate PAX') {
@@ -4859,7 +4862,7 @@ export default class Home extends React.Component {
             class: 'inprocess',
             title: 'Allocate PAX',
         }
-        this.setState({tmepState});
+        this.setState({ tmepState });
         // get Limit first
         this.contractPAX.allocateTo.estimateGas(
             this.state.accountAddress,
@@ -4888,11 +4891,11 @@ export default class Home extends React.Component {
                                         class: 'error',
                                         msg: 'User reject transaction'
                                     }
-                                    this.setState({tmepState});
-        
+                                    this.setState({ tmepState });
+
                                     setTimeout(() => {
                                         delete tmepState.transcations[key];
-                                        this.setState({tmepState});
+                                        this.setState({ tmepState });
                                     }, 3000);
                                 };
                                 return false;
@@ -4901,7 +4904,7 @@ export default class Home extends React.Component {
                         if (ret) {
                             const keys = Object.keys(this.state.transcations);
                             const tmepState = this.state;
-        
+
                             keys.map((key) => {
                                 if (tmepState.transcations[key].title === 'Allocate PAX') {
                                     tmepState.transcations[key].txhash = ret;
@@ -4909,11 +4912,11 @@ export default class Home extends React.Component {
                                         ...tmepState.transcations[key],
                                         msg: 'Waiting for confirmation...'
                                     }
-                                    this.setState({tmepState});
+                                    this.setState({ tmepState });
                                 };
                                 return false;
                             });
-        
+
                             var allocatePAXtimer = setInterval(() => {
                                 console.log('i am checking Allocate PAX...');
                                 this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
@@ -4928,11 +4931,11 @@ export default class Home extends React.Component {
                                                     class: 'success',
                                                     msg: 'Transaction succeeded'
                                                 }
-                                                this.setState({tmepState});
-        
+                                                this.setState({ tmepState });
+
                                                 setTimeout(() => {
                                                     delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
+                                                    this.setState({ tmepState });
                                                 }, 3000);
                                             };
                                             return false;
@@ -4954,11 +4957,11 @@ export default class Home extends React.Component {
                                                     class: 'error',
                                                     msg: 'Transaction failed'
                                                 }
-                                                this.setState({tmepState});
-        
+                                                this.setState({ tmepState });
+
                                                 setTimeout(() => {
                                                     delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
+                                                    this.setState({ tmepState });
                                                 }, 3000);
                                             };
                                             return false;
@@ -4972,7 +4975,7 @@ export default class Home extends React.Component {
             }
         )
     }
-    allocateToTUSD () {
+    allocateToTUSD() {
         const keys = Object.keys(this.state.transcations);
         for (var i = 0; i < keys.length; i++) {
             if (this.state.transcations[keys[i]].title === 'Allocate TUSD') {
@@ -4988,7 +4991,7 @@ export default class Home extends React.Component {
             class: 'inprocess',
             title: 'Allocate TUSD',
         }
-        this.setState({tmepState});
+        this.setState({ tmepState });
         // get Limit first
         this.contractTUSD.allocateTo.estimateGas(
             this.state.accountAddress,
@@ -5016,11 +5019,11 @@ export default class Home extends React.Component {
                                         class: 'error',
                                         msg: 'User reject transaction'
                                     }
-                                    this.setState({tmepState});
-        
+                                    this.setState({ tmepState });
+
                                     setTimeout(() => {
                                         delete tmepState.transcations[key];
-                                        this.setState({tmepState});
+                                        this.setState({ tmepState });
                                     }, 3000);
                                 };
                                 return false;
@@ -5029,7 +5032,7 @@ export default class Home extends React.Component {
                         if (ret) {
                             const keys = Object.keys(this.state.transcations);
                             const tmepState = this.state;
-        
+
                             keys.map((key) => {
                                 if (tmepState.transcations[key].title === 'Allocate TUSD') {
                                     tmepState.transcations[key].txhash = ret;
@@ -5037,11 +5040,11 @@ export default class Home extends React.Component {
                                         ...tmepState.transcations[key],
                                         msg: 'Waiting for confirmation...'
                                     }
-                                    this.setState({tmepState});
+                                    this.setState({ tmepState });
                                 };
                                 return false;
                             });
-        
+
                             var allocateTUSDtimer = setInterval(() => {
                                 console.log('i am checking Allocate TUSD...');
                                 this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
@@ -5056,11 +5059,11 @@ export default class Home extends React.Component {
                                                     class: 'success',
                                                     msg: 'Transaction succeeded'
                                                 }
-                                                this.setState({tmepState});
-        
+                                                this.setState({ tmepState });
+
                                                 setTimeout(() => {
                                                     delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
+                                                    this.setState({ tmepState });
                                                 }, 3000);
                                             };
                                             return false;
@@ -5082,11 +5085,11 @@ export default class Home extends React.Component {
                                                     class: 'error',
                                                     msg: 'Transaction failed'
                                                 }
-                                                this.setState({tmepState});
-        
+                                                this.setState({ tmepState });
+
                                                 setTimeout(() => {
                                                     delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
+                                                    this.setState({ tmepState });
                                                 }, 3000);
                                             };
                                             return false;
@@ -5100,7 +5103,7 @@ export default class Home extends React.Component {
             }
         )
     }
-    allocateToUSDC () {
+    allocateToUSDC() {
         const keys = Object.keys(this.state.transcations);
         for (var i = 0; i < keys.length; i++) {
             if (this.state.transcations[keys[i]].title === 'Allocate USDC') {
@@ -5116,7 +5119,7 @@ export default class Home extends React.Component {
             class: 'inprocess',
             title: 'Allocate USDC',
         }
-        this.setState({tmepState});
+        this.setState({ tmepState });
         // get Limit first
         this.contractUSDC.allocateTo.estimateGas(
             this.state.accountAddress,
@@ -5144,11 +5147,11 @@ export default class Home extends React.Component {
                                         class: 'error',
                                         msg: 'User reject transaction'
                                     }
-                                    this.setState({tmepState});
-        
+                                    this.setState({ tmepState });
+
                                     setTimeout(() => {
                                         delete tmepState.transcations[key];
-                                        this.setState({tmepState});
+                                        this.setState({ tmepState });
                                     }, 3000);
                                 };
                                 return false;
@@ -5157,7 +5160,7 @@ export default class Home extends React.Component {
                         if (ret) {
                             const keys = Object.keys(this.state.transcations);
                             const tmepState = this.state;
-        
+
                             keys.map((key) => {
                                 if (tmepState.transcations[key].title === 'Allocate USDC') {
                                     tmepState.transcations[key].txhash = ret;
@@ -5165,11 +5168,11 @@ export default class Home extends React.Component {
                                         ...tmepState.transcations[key],
                                         msg: 'Waiting for confirmation...'
                                     }
-                                    this.setState({tmepState});
+                                    this.setState({ tmepState });
                                 };
                                 return false;
                             });
-        
+
                             var allocateUSDCtimer = setInterval(() => {
                                 console.log('i am checking Allocate USDC...');
                                 this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
@@ -5184,11 +5187,11 @@ export default class Home extends React.Component {
                                                     class: 'success',
                                                     msg: 'Transaction succeeded'
                                                 }
-                                                this.setState({tmepState});
-        
+                                                this.setState({ tmepState });
+
                                                 setTimeout(() => {
                                                     delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
+                                                    this.setState({ tmepState });
                                                 }, 3000);
                                             };
                                             return false;
@@ -5210,11 +5213,11 @@ export default class Home extends React.Component {
                                                     class: 'error',
                                                     msg: 'Transaction failed'
                                                 }
-                                                this.setState({tmepState});
-        
+                                                this.setState({ tmepState });
+
                                                 setTimeout(() => {
                                                     delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
+                                                    this.setState({ tmepState });
                                                 }, 3000);
                                             };
                                             return false;
@@ -5228,7 +5231,7 @@ export default class Home extends React.Component {
             }
         )
     }
-    allocateToDF () {
+    allocateToDF() {
         const keys = Object.keys(this.state.transcations);
         for (var i = 0; i < keys.length; i++) {
             if (this.state.transcations[keys[i]].title === 'Allocate DF') {
@@ -5244,7 +5247,7 @@ export default class Home extends React.Component {
             class: 'inprocess',
             title: 'Allocate DF',
         }
-        this.setState({tmepState});
+        this.setState({ tmepState });
         // get Limit first
         this.contractDF.allocateTo.estimateGas(
             this.state.accountAddress,
@@ -5272,11 +5275,11 @@ export default class Home extends React.Component {
                                         class: 'error',
                                         msg: 'User reject transaction'
                                     }
-                                    this.setState({tmepState});
-        
+                                    this.setState({ tmepState });
+
                                     setTimeout(() => {
                                         delete tmepState.transcations[key];
-                                        this.setState({tmepState});
+                                        this.setState({ tmepState });
                                     }, 3000);
                                 };
                                 return false;
@@ -5285,7 +5288,7 @@ export default class Home extends React.Component {
                         if (ret) {
                             const keys = Object.keys(this.state.transcations);
                             const tmepState = this.state;
-        
+
                             keys.map((key) => {
                                 if (tmepState.transcations[key].title === 'Allocate DF') {
                                     tmepState.transcations[key].txhash = ret;
@@ -5293,11 +5296,11 @@ export default class Home extends React.Component {
                                         ...tmepState.transcations[key],
                                         msg: 'Waiting for confirmation...'
                                     }
-                                    this.setState({tmepState});
+                                    this.setState({ tmepState });
                                 };
                                 return false;
                             });
-        
+
                             var allocateDFtimer = setInterval(() => {
                                 console.log('i am checking Allocate DF...');
                                 this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
@@ -5312,11 +5315,11 @@ export default class Home extends React.Component {
                                                     class: 'success',
                                                     msg: 'Transaction succeeded'
                                                 }
-                                                this.setState({tmepState});
-        
+                                                this.setState({ tmepState });
+
                                                 setTimeout(() => {
                                                     delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
+                                                    this.setState({ tmepState });
                                                 }, 3000);
                                             };
                                             return false;
@@ -5338,11 +5341,11 @@ export default class Home extends React.Component {
                                                     class: 'error',
                                                     msg: 'Transaction failed'
                                                 }
-                                                this.setState({tmepState});
-        
+                                                this.setState({ tmepState });
+
                                                 setTimeout(() => {
                                                     delete tmepState.transcations[key];
-                                                    this.setState({tmepState});
+                                                    this.setState({ tmepState });
                                                 }, 3000);
                                             };
                                             return false;
