@@ -9,8 +9,29 @@ import tusd from '../assets/img/tusd.png';
 import usdc from '../assets/img/usdc.png';
 
 
-export default class Header extends React.Component {
-    toThousands(str) {
+export default class bodyleft extends React.Component {
+
+    state = { visible: false, placement: 'left' };
+
+    showDrawer = () => {
+        this.setState({
+            visible: true,
+        });
+    };
+
+    onClose = () => {
+        this.setState({
+            visible: false,
+        });
+    };
+
+    onChange = e => {
+        this.setState({
+            placement: e.target.value,
+        });
+    };
+
+    toThousandsbodyleft(str) {
         var num = str;
         var re = /\d{3}$/;
         var result = '';
@@ -31,7 +52,22 @@ export default class Header extends React.Component {
 
     render() {
         return (
-            <div className="bodyleft">
+            <div className="bodyleft bodyleftOrigin">
+                {/* <Button type="primary" onClick={this.showDrawer}>
+                    Open
+                </Button>
+                <Drawer
+                    placement={this.state.placement}
+                    closable={false}
+                    onClose={this.onClose}
+                    visible={this.state.visible}
+                >
+                    <p>Some contents...</p>
+                    <p>Some contents...</p>
+                    <p>Some contents...</p>
+                </Drawer> */}
+
+
                 <div className="title">
                     <Tooltip placement="bottomLeft" title='Outstanding constituents pending for conversion due to inventory shortage and allocated USDx to be claimed by contributors of each constituent.'>
                         <Button></Button>
@@ -48,7 +84,7 @@ export default class Header extends React.Component {
                     </div>
                     <div className="right">
                         <div className="section">
-                            <Tooltip title={'Claimable USDx: ' + this.toThousands(this.props.data.claimDAI.split('.')[0]) + '.' + this.props.data.claimDAI.split('.')[1] + ' / Pending DAI: ' + this.toThousands(this.props.data.DAIonPool.split('.')[0]) + '.' + this.props.data.DAIonPool.split('.')[1]}>
+                            <Tooltip title={'Claimable USDx: ' + this.toThousandsbodyleft(this.props.data.claimDAI.split('.')[0]) + '.' + this.props.data.claimDAI.split('.')[1] + ' / Pending DAI: ' + this.toThousandsbodyleft(this.props.data.DAIonPool.split('.')[0]) + '.' + this.props.data.DAIonPool.split('.')[1]}>
                                 <Progress
                                     percent={100}
                                     successPercent={
@@ -71,7 +107,7 @@ export default class Header extends React.Component {
                             </Tooltip>
                         </div>
                         <p className="sectionNum">
-                            <span>{this.props.data.DAIonPool ? this.toThousands(this.props.data.DAIonPool.split('.')[0]) : '0'}</span>
+                            <span>{this.props.data.DAIonPool ? this.toThousandsbodyleft(this.props.data.DAIonPool.split('.')[0]) : '0'}</span>
                             <span className="sectionDot">{this.props.data.DAIonPool ? '.' + this.props.data.DAIonPool.split('.')[1] : '.00'}</span>
                         </p>
                     </div>
@@ -87,7 +123,7 @@ export default class Header extends React.Component {
                     </div>
                     <div className="right">
                         <div className="section">
-                            <Tooltip title={'Claimable USDx: ' + this.toThousands(this.props.data.claimPAX.split('.')[0]) + '.' + this.props.data.claimPAX.split('.')[1] + ' / Pending PAX: ' + this.toThousands(this.props.data.PAXonPool.split('.')[0]) + '.' + this.props.data.PAXonPool.split('.')[1]}>
+                            <Tooltip title={'Claimable USDx: ' + this.toThousandsbodyleft(this.props.data.claimPAX.split('.')[0]) + '.' + this.props.data.claimPAX.split('.')[1] + ' / Pending PAX: ' + this.toThousandsbodyleft(this.props.data.PAXonPool.split('.')[0]) + '.' + this.props.data.PAXonPool.split('.')[1]}>
                                 <Progress
                                     successPercent={
                                         (this.props.data.claimPAX && this.props.data.claimPAX > 0) ?
@@ -110,7 +146,7 @@ export default class Header extends React.Component {
                             </Tooltip>
                         </div>
                         <p className="sectionNum">
-                            <span>{this.props.data.PAXonPool ? this.toThousands(this.props.data.PAXonPool.split('.')[0]) : '0'}</span>
+                            <span>{this.props.data.PAXonPool ? this.toThousandsbodyleft(this.props.data.PAXonPool.split('.')[0]) : '0'}</span>
                             <span className="sectionDot">{this.props.data.PAXonPool ? '.' + this.props.data.PAXonPool.split('.')[1] : '.00'}</span>
                         </p>
                     </div>
@@ -126,7 +162,7 @@ export default class Header extends React.Component {
                     </div>
                     <div className="right">
                         <div className="section">
-                            <Tooltip title={'Claimable USDx: ' + this.toThousands(this.props.data.claimTUSD.split('.')[0]) + '.' + this.props.data.claimTUSD.split('.')[1] + ' / Pending TUSD: ' + this.toThousands(this.props.data.TUSDonPool.split('.')[0]) + '.' + this.props.data.TUSDonPool.split('.')[1]}>
+                            <Tooltip title={'Claimable USDx: ' + this.toThousandsbodyleft(this.props.data.claimTUSD.split('.')[0]) + '.' + this.props.data.claimTUSD.split('.')[1] + ' / Pending TUSD: ' + this.toThousandsbodyleft(this.props.data.TUSDonPool.split('.')[0]) + '.' + this.props.data.TUSDonPool.split('.')[1]}>
                                 <Progress
                                     successPercent={
                                         (this.props.data.claimTUSD && this.props.data.claimTUSD > 0) ?
@@ -149,7 +185,7 @@ export default class Header extends React.Component {
                             </Tooltip>
                         </div>
                         <p className="sectionNum">
-                            <span>{this.props.data.TUSDonPool ? this.toThousands(this.props.data.TUSDonPool.split('.')[0]) : '0'}</span>
+                            <span>{this.props.data.TUSDonPool ? this.toThousandsbodyleft(this.props.data.TUSDonPool.split('.')[0]) : '0'}</span>
                             <span className="sectionDot">{this.props.data.TUSDonPool ? '.' + this.props.data.TUSDonPool.split('.')[1] : '.00'}</span>
                         </p>
                     </div>
@@ -165,7 +201,7 @@ export default class Header extends React.Component {
                     </div>
                     <div className="right">
                         <div className="section">
-                            <Tooltip title={'Claimable USDx: ' + this.toThousands(this.props.data.claimUSDC.split('.')[0]) + '.' + this.props.data.claimUSDC.split('.')[1] + ' / Pending USDC: ' + this.toThousands(this.props.data.USDConPool.split('.')[0]) + '.' + this.props.data.USDConPool.split('.')[1]}>
+                            <Tooltip title={'Claimable USDx: ' + this.toThousandsbodyleft(this.props.data.claimUSDC.split('.')[0]) + '.' + this.props.data.claimUSDC.split('.')[1] + ' / Pending USDC: ' + this.toThousandsbodyleft(this.props.data.USDConPool.split('.')[0]) + '.' + this.props.data.USDConPool.split('.')[1]}>
                                 <Progress
                                     percent={100}
                                     showInfo={false}
@@ -188,7 +224,7 @@ export default class Header extends React.Component {
                             </Tooltip>
                         </div>
                         <p className="sectionNum">
-                            <span>{this.props.data.USDConPool ? this.toThousands(this.props.data.USDConPool.split('.')[0]) : '0'}</span>
+                            <span>{this.props.data.USDConPool ? this.toThousandsbodyleft(this.props.data.USDConPool.split('.')[0]) : '0'}</span>
                             <span className="sectionDot">{this.props.data.USDConPool ? '.' + this.props.data.USDConPool.split('.')[1] : '.00'}</span>
                         </p>
                     </div>
@@ -203,7 +239,7 @@ export default class Header extends React.Component {
                         Total USDx Outstanding:
                     </div>
                     <div className="usdxNum">
-                        <span>{this.props.data.totalSupplyUSDx ? this.toThousands(this.props.data.totalSupplyUSDx.split('.')[0]) : '0'}</span>
+                        <span>{this.props.data.totalSupplyUSDx ? this.toThousandsbodyleft(this.props.data.totalSupplyUSDx.split('.')[0]) : '0'}</span>
                         <span className="sectionDot">{this.props.data.totalSupplyUSDx ? '.' + this.props.data.totalSupplyUSDx.split('.')[1] : '.00'}</span>
                     </div>
                 </div>
@@ -218,28 +254,28 @@ export default class Header extends React.Component {
                     <div className="sectionToken">
                         <span className="token">DAI</span>
                         <span className="tokenNum">
-                            {this.props.data.DAIonBank ? this.toThousands(this.props.data.DAIonBank.split('.')[0]) : '0'}
+                            {this.props.data.DAIonBank ? this.toThousandsbodyleft(this.props.data.DAIonBank.split('.')[0]) : '0'}
                             <i>{this.props.data.DAIonBank ? '.' + this.props.data.DAIonBank.split('.')[1] : '.00'}</i>
                         </span>
                     </div>
                     <div className="sectionToken">
                         <span className="token">PAX</span>
                         <span className="tokenNum">
-                            {this.props.data.PAXonBank ? this.toThousands(this.props.data.PAXonBank.split('.')[0]) : '0'}
+                            {this.props.data.PAXonBank ? this.toThousandsbodyleft(this.props.data.PAXonBank.split('.')[0]) : '0'}
                             <i>{this.props.data.PAXonBank ? '.' + this.props.data.PAXonBank.split('.')[1] : '.00'}</i>
                         </span>
                     </div>
                     <div className="sectionToken">
                         <span className="token">TUSD</span>
                         <span className="tokenNum">
-                            {this.props.data.TUSDonBank ? this.toThousands(this.props.data.TUSDonBank.split('.')[0]) : '0'}
+                            {this.props.data.TUSDonBank ? this.toThousandsbodyleft(this.props.data.TUSDonBank.split('.')[0]) : '0'}
                             <i>{this.props.data.TUSDonBank ? '.' + this.props.data.TUSDonBank.split('.')[1] : '.00'}</i>
                         </span>
                     </div>
                     <div className="sectionToken">
                         <span className="token">USDC</span>
                         <span className="tokenNum">
-                            {this.props.data.USDConBank ? this.toThousands(this.props.data.USDConBank.split('.')[0]) : '0'}
+                            {this.props.data.USDConBank ? this.toThousandsbodyleft(this.props.data.USDConBank.split('.')[0]) : '0'}
                             <i>{this.props.data.USDConBank ? '.' + this.props.data.USDConBank.split('.')[1] : '.00'}</i>
                         </span>
                     </div>

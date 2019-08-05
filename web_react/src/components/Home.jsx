@@ -7,7 +7,7 @@ import IconButton from '@material-ui/core/IconButton';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import 'antd/dist/antd.css';
 // import { Spin } from 'antd';
-import { Select } from 'antd';
+import { Tooltip, Progress, Select, Drawer } from 'antd';
 
 // abi
 import abiTokens from '../abi/abiTokens';
@@ -37,6 +37,14 @@ import exchangeBack from '../assets/img/exchangeBack.png';
 import warningtips from '../assets/img/warningtips.png';
 import right_net from '../assets/img/right_net.png';
 import error_net from '../assets/img/error_net.png';
+import dai from '../assets/img/dai.png';
+import pax from '../assets/img/pax.png';
+import tusd from '../assets/img/tusd.png';
+import usdc from '../assets/img/usdc.png';
+import meun from '../assets/img/meun.png';
+import close_mobile from '../assets/img/close_mobile.png';
+
+import daiBackgd from '../assets/img/daiBackgd.png';
 
 
 export default class Home extends React.Component {
@@ -55,6 +63,37 @@ export default class Home extends React.Component {
             useNextVariants: true,
         },
     });
+
+    showDrawer = () => {
+        this.setState({
+            visible: !this.state.visible,
+        });
+    };
+
+    onClose = () => {
+        this.setState({
+            visible: false,
+        });
+    };
+
+    toThousandsbodyleft(str) {
+        var num = str;
+        var re = /\d{3}$/;
+        var result = '';
+
+        while (re.test(num)) {
+            result = RegExp.lastMatch + result;
+            if (num !== RegExp.lastMatch) {
+                result = ',' + result;
+                num = RegExp.leftContext;
+            } else {
+                num = '';
+                break;
+            }
+        }
+        if (num) { result = num + result; }
+        return result;
+    }
 
     constructor(props) {
         super(props);
@@ -245,7 +284,237 @@ export default class Home extends React.Component {
                     <MuiThemeProvider theme={this.theme}>
                         <div className="body">
                             <BodyLeft data={this.state} />
+                            <Drawer
+                                placement={'left'}
+                                closable={false}
+                                onClose={this.onClose}
+                                visible={this.state.visible}
+                                width='300px'
+                            >
+
+                                <div className="openMeun" onClick={this.showDrawer} style={{ background: 'rgba(34, 44, 60, 1)', position: 'fixed', left: '300px', top: '96px', zIndex: '999', height: '30px', width: '38px', lineHeight: '30px', paddingLeft: '8px', borderRadius: '0 15px 15px 0' }}>
+                                    <img src={this.state.visible? close_mobile:meun} alt="" style={{ width: '16px' }} />
+                                </div>
+                                <div className="bodyleftHome" style={{ }}>
+                                    <div className="title" style={{ fontSize: '14px', fontWeight: 300 }}>
+                                        {/* <Tooltip placement="bottomLeft" title='Outstanding constituents pending for conversion due to inventory shortage and allocated USDx to be claimed by contributors of each constituent.'>
+                                            <Button></Button>
+                                        </Tooltip> */}
+                                        Constituents Pending Pool:
+                                    </div>
+                                    <div className="pool" style={{ width: '260px', marginTop: '10px', height: '60px', background: 'rgba(255, 245, 228, 1)', marginLeft: '-5px', borderRadius: '5px' }}>
+                                        <div className="leftSection" style={{ float: 'left', width: '40px', textAlign: 'center', height: '60px', lineHeight: '60px', fontSize: '14px' }}>
+                                            {this.state.sectionDAI ? (this.state.sectionDAI * 100 / this.state.tatolSection).toFixed() : '-'}%
+                                        </div>
+                                        <div className="left" style={{ width: '60px', height: '60px', paddingTop: '8px', paddingBottom: '3px', paddingLeft: '8px', float: 'left' }}>
+                                            <img src={dai} alt="" style={{ width: '28px' }} />
+                                            <p className="token" style={{ fontSize: '12px' }}>DAI</p>
+                                        </div>
+                                        <div className="right" style={{ width: '150px', height: '60px', float: 'left' }}>
+                                            <div className="section" style={{ fontSize: '14px', fontWeight: 300, paddingTop: '8px' }}>
+                                                <Tooltip title={'Claimable USDx: ' + this.toThousandsbodyleft(this.state.claimDAI.split('.')[0]) + '.' + this.state.claimDAI.split('.')[1] + ' / Pending DAI: ' + this.toThousandsbodyleft(this.state.DAIonPool.split('.')[0]) + '.' + this.state.DAIonPool.split('.')[1]}>
+                                                    <Progress
+                                                        percent={100}
+                                                        successPercent={
+                                                            (this.state.claimDAI && this.state.claimDAI > 0) ?
+                                                                ((this.state.claimDAI / (Number(this.state.DAIonPool) + Number(this.state.claimDAI))).toFixed(2) * 100) < 5 ?
+                                                                    '5'
+                                                                    :
+                                                                    Number(this.state.DAIonPool) === 0 ?
+                                                                        '100'
+                                                                        :
+                                                                        (this.state.claimDAI / (Number(this.state.DAIonPool) + Number(this.state.claimDAI))).toFixed(2) * 100 >= 95 ?
+                                                                            '95'
+                                                                            :
+                                                                            (this.state.claimDAI / (Number(this.state.DAIonPool) + Number(this.state.claimDAI))).toFixed(2) * 100
+                                                                :
+                                                                '0'
+                                                        }
+                                                        showInfo={false}
+                                                    />
+                                                </Tooltip>
+                                            </div>
+                                            <p className="sectionNum" style={{ fontSize: '16px', fontWeight: 400, marginTop: '3px', textAlign: 'right' }}>
+                                                <span>{this.state.DAIonPool ? this.toThousandsbodyleft(this.state.DAIonPool.split('.')[0]) : '0'}</span>
+                                                <span className="sectionDot" style={{ fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>{this.state.DAIonPool ? '.' + this.state.DAIonPool.split('.')[1] : '.00'}</span>
+                                            </p>
+                                        </div>
+                                        <div className="clear"></div>
+                                    </div>
+                                    <div className="pool poolColor2" style={{ width: '260px', marginTop: '10px', height: '60px', marginLeft: '-5px', borderRadius: '5px', background: 'rgba(219, 255, 249, 1)', backgroundSize: 'auto 100%' }}>
+                                        <div className="leftSection" style={{ float: 'left', width: '40px', textAlign: 'center', height: '60px', lineHeight: '60px', fontSize: '14px' }}>
+                                            {this.state.sectionPAX ? (this.state.sectionPAX * 100 / this.state.tatolSection).toFixed() : '-'}%
+                                        </div>
+                                        <div className="left" style={{ width: '60px', height: '60px', paddingTop: '8px', paddingBottom: '3px', paddingLeft: '8px', float: 'left' }}>
+                                            <img src={pax} alt=""  style={{ width: '28px' }}/>
+                                            <p className="token" style={{ fontSize: '12px' }}>PAX</p>
+                                        </div>
+                                        <div className="right" style={{ width: '150px', height: '60px', float: 'left' }}>
+                                            <div className="section" style={{ fontSize: '14px', fontWeight: 300, paddingTop: '8px' }}>
+                                                <Tooltip title={'Claimable USDx: ' + this.toThousandsbodyleft(this.state.claimPAX.split('.')[0]) + '.' + this.state.claimPAX.split('.')[1] + ' / Pending PAX: ' + this.toThousandsbodyleft(this.state.PAXonPool.split('.')[0]) + '.' + this.state.PAXonPool.split('.')[1]}>
+                                                    <Progress
+                                                        successPercent={
+                                                            (this.state.claimPAX && this.state.claimPAX > 0) ?
+                                                                ((this.state.claimPAX / (Number(this.state.PAXonPool) + Number(this.state.claimPAX))).toFixed(2) * 100) < 5 ?
+                                                                    '5'
+                                                                    :
+                                                                    Number(this.state.PAXonPool) === 0 ?
+                                                                        '100'
+                                                                        :
+                                                                        (this.state.claimPAX / (Number(this.state.PAXonPool) + Number(this.state.claimPAX))).toFixed(2) * 100 >= 95 ?
+                                                                            '95'
+                                                                            :
+                                                                            (this.state.claimPAX / (Number(this.state.PAXonPool) + Number(this.state.claimPAX))).toFixed(2) * 100
+                                                                :
+                                                                '0'
+                                                        }
+                                                        percent={100}
+                                                        showInfo={false}
+                                                    />
+                                                </Tooltip>
+                                            </div>
+                                            <p className="sectionNum" style={{ fontSize: '16px', fontWeight: 400, marginTop: '3px', textAlign: 'right' }}>
+                                                <span>{this.state.PAXonPool ? this.toThousandsbodyleft(this.state.PAXonPool.split('.')[0]) : '0'}</span>
+                                                <span className="sectionDot" style={{ fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>{this.state.PAXonPool ? '.' + this.state.PAXonPool.split('.')[1] : '.00'}</span>
+                                            </p>
+                                        </div>
+                                        <div className="clear"></div>
+                                    </div>
+                                    <div className="pool poolColor4" style={{ width: '260px', marginTop: '10px', height: '60px', marginLeft: '-5px', borderRadius: '5px', background: 'rgba(255, 236, 236, 1)' }}>
+                                        <div className="leftSection" style={{ float: 'left', width: '40px', textAlign: 'center', height: '60px', lineHeight: '60px', fontSize: '14px' }}>
+                                            {this.state.sectionTUSD ? (this.state.sectionTUSD * 100 / this.state.tatolSection).toFixed() : '-'}%
+                                        </div>
+                                        <div className="left" style={{ width: '60px', height: '60px', paddingTop: '8px', paddingBottom: '3px', paddingLeft: '8px', float: 'left' }}>
+                                            <img src={tusd} alt=""  style={{ width: '28px' }}/>
+                                            <p className="token" style={{ fontSize: '12px' }}>TUSD</p>
+                                        </div>
+                                        <div className="right" style={{ width: '150px', height: '60px', float: 'left' }}>
+                                            <div className="section" style={{ fontSize: '14px', fontWeight: 300, paddingTop: '8px' }}>
+                                                <Tooltip title={'Claimable USDx: ' + this.toThousandsbodyleft(this.state.claimTUSD.split('.')[0]) + '.' + this.state.claimTUSD.split('.')[1] + ' / Pending TUSD: ' + this.toThousandsbodyleft(this.state.TUSDonPool.split('.')[0]) + '.' + this.state.TUSDonPool.split('.')[1]}>
+                                                    <Progress
+                                                        successPercent={
+                                                            (this.state.claimTUSD && this.state.claimTUSD > 0) ?
+                                                                ((this.state.claimTUSD / (Number(this.state.TUSDonPool) + Number(this.state.claimTUSD))).toFixed(2) * 100) < 5 ?
+                                                                    '5'
+                                                                    :
+                                                                    Number(this.state.TUSDonPool) === 0 ?
+                                                                        '100'
+                                                                        :
+                                                                        (this.state.claimTUSD / (Number(this.state.TUSDonPool) + Number(this.state.claimTUSD))).toFixed(2) * 100 >= 95 ?
+                                                                            '95'
+                                                                            :
+                                                                            (this.state.claimTUSD / (Number(this.state.TUSDonPool) + Number(this.state.claimTUSD))).toFixed(2) * 100
+                                                                :
+                                                                '0'
+                                                        }
+                                                        percent={100}
+                                                        showInfo={false}
+                                                    />
+                                                </Tooltip>
+                                            </div>
+                                            <p className="sectionNum" style={{ fontSize: '16px', fontWeight: 400, marginTop: '3px', textAlign: 'right' }}>
+                                                <span>{this.state.TUSDonPool ? this.toThousandsbodyleft(this.state.TUSDonPool.split('.')[0]) : '0'}</span>
+                                                <span className="sectionDot" style={{ fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>{this.state.TUSDonPool ? '.' + this.state.TUSDonPool.split('.')[1] : '.00'}</span>
+                                            </p>
+                                        </div>
+                                        <div className="clear"></div>
+                                    </div>
+                                    <div className="pool poolColor3" style={{ width: '260px', marginTop: '10px', height: '60px', marginLeft: '-5px', borderRadius: '5px', background: 'rgba(226, 244, 255, 1)' }}>
+                                        <div className="leftSection" style={{ float: 'left', width: '40px', textAlign: 'center', height: '60px', lineHeight: '60px', fontSize: '14px' }}>
+                                            {this.state.sectionUSDC ? (this.state.sectionUSDC * 100 / this.state.tatolSection).toFixed() : '-'}%
+                                        </div>
+                                        <div className="left" style={{ width: '60px', height: '60px', paddingTop: '8px', paddingBottom: '3px', paddingLeft: '8px', float: 'left' }}>
+                                            <img src={usdc} alt=""  style={{ width: '28px' }}/>
+                                            <p className="token" style={{ fontSize: '12px' }}>USDC</p>
+                                        </div>
+                                        <div className="right" style={{ width: '150px', height: '60px', float: 'left' }}>
+                                            <div className="section" style={{ fontSize: '14px', fontWeight: 300, paddingTop: '8px' }}>
+                                                <Tooltip title={'Claimable USDx: ' + this.toThousandsbodyleft(this.state.claimUSDC.split('.')[0]) + '.' + this.state.claimUSDC.split('.')[1] + ' / Pending USDC: ' + this.toThousandsbodyleft(this.state.USDConPool.split('.')[0]) + '.' + this.state.USDConPool.split('.')[1]}>
+                                                    <Progress
+                                                        percent={100}
+                                                        showInfo={false}
+                                                        successPercent={
+                                                            (this.state.claimUSDC && this.state.claimUSDC > 0) ?
+                                                                ((this.state.claimUSDC / (Number(this.state.USDConPool) + Number(this.state.claimUSDC))).toFixed(2) * 100) < 5 ?
+                                                                    '5'
+                                                                    :
+                                                                    Number(this.state.USDConPool) === 0 ?
+                                                                        '100'
+                                                                        :
+                                                                        (this.state.claimUSDC / (Number(this.state.USDConPool) + Number(this.state.claimUSDC))).toFixed(2) * 100 >= 95 ?
+                                                                            '95'
+                                                                            :
+                                                                            (this.state.claimUSDC / (Number(this.state.USDConPool) + Number(this.state.claimUSDC))).toFixed(2) * 100
+                                                                :
+                                                                '0'
+                                                        }
+                                                    />
+                                                </Tooltip>
+                                            </div>
+                                            <p className="sectionNum" style={{ fontSize: '16px', fontWeight: 400, marginTop: '3px', textAlign: 'right' }}>
+                                                <span>{this.state.USDConPool ? this.toThousandsbodyleft(this.state.USDConPool.split('.')[0]) : '0'}</span>
+                                                <span className="sectionDot" style={{ fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>{this.state.USDConPool ? '.' + this.state.USDConPool.split('.')[1] : '.00'}</span>
+                                            </p>
+                                        </div>
+                                        <div className="clear"></div>
+                                    </div>
+
+                                    <div className="totalUSDx" style={{marginTop: '40px'}}>
+                                        <div className="title">
+                                            {/* <Tooltip placement="bottomLeft" title='Total USDx minted (always identical to the sum total of collaterals)'>
+                                                <Button></Button>
+                                            </Tooltip> */}
+                                            Total USDx Outstanding:
+                                        </div>
+                                        <div className="usdxNum" style={{margin: 0, marginTop: '4px', fontSize: '16px', fontWeight: 400, textAlign: 'right', paddingRight: '5px'}}>
+                                            <span>{this.state.totalSupplyUSDx ? this.toThousandsbodyleft(this.state.totalSupplyUSDx.split('.')[0]) : '0'}</span>
+                                            <span className="sectionDot" style={{fontSize: '80%', opacity: 0.7, fontWeight: 200}}>{this.state.totalSupplyUSDx ? '.' + this.state.totalSupplyUSDx.split('.')[1] : '.00'}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="globalpool" style={{paddingTop: '30px'}}>
+                                        <div className="title">
+                                            {/* <Tooltip placement="bottomLeft" title='Constituents locked as collaterals (the sum total is always idential to the amount of outstanding USDx)'>
+                                                <Button></Button>
+                                            </Tooltip> */}
+                                            Global Collateral Pool:
+                                        </div>
+                                        <div className="sectionToken" style={{marginTop: '10px'}}>
+                                            <span className="token" style={{fontSize: '14px', width: '60px', lineHeight: '30px'}}>DAI</span>
+                                            <span className="tokenNum" style={{fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px'}}>
+                                                {this.state.DAIonBank ? this.toThousandsbodyleft(this.state.DAIonBank.split('.')[0]) : '0'}
+                                                <i style={{fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>{this.state.DAIonBank ? '.' + this.state.DAIonBank.split('.')[1] : '.00'}</i>
+                                            </span>
+                                        </div>
+                                        <div className="sectionToken">
+                                            <span className="token" style={{fontSize: '14px', width: '60px', lineHeight: '30px'}}>PAX</span>
+                                            <span className="tokenNum" style={{fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px'}}>
+                                                {this.state.PAXonBank ? this.toThousandsbodyleft(this.state.PAXonBank.split('.')[0]) : '0'}
+                                                <i style={{fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>{this.state.PAXonBank ? '.' + this.state.PAXonBank.split('.')[1] : '.00'}</i>
+                                            </span>
+                                        </div>
+                                        <div className="sectionToken">
+                                            <span className="token" style={{fontSize: '14px', width: '60px', lineHeight: '30px'}}>TUSD</span>
+                                            <span className="tokenNum" style={{fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px'}}>
+                                                {this.state.TUSDonBank ? this.toThousandsbodyleft(this.state.TUSDonBank.split('.')[0]) : '0'}
+                                                <i style={{fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>{this.state.TUSDonBank ? '.' + this.state.TUSDonBank.split('.')[1] : '.00'}</i>
+                                            </span>
+                                        </div>
+                                        <div className="sectionToken">
+                                            <span className="token" style={{fontSize: '14px', width: '60px', lineHeight: '30px'}}>USDC</span>
+                                            <span className="tokenNum" style={{fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px'}}>
+                                                {this.state.USDConBank ? this.toThousandsbodyleft(this.state.USDConBank.split('.')[0]) : '0'}
+                                                <i style={{fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>{this.state.USDConBank ? '.' + this.state.USDConBank.split('.')[1] : '.00'}</i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </Drawer>
+
                             <div className="bodyright">
+                                <div className="openMeun" style={{ background: 'rgba(34, 44, 60, 1)', position: 'fixed', left: '0', top: '96px', zIndex: '999', height: '30px', width: '38px', lineHeight: '30px', paddingLeft: '8px', borderRadius: '0 15px 15px 0' }} onClick={this.showDrawer}>
+                                    <img src={meun} alt="" style={{ width: '16px' }} />
+                                </div>
                                 <div className="tab1">
                                     <div className="titleInTab">
                                         <div className="leftTitle">EXCHANGE</div>

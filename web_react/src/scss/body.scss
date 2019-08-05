@@ -7,6 +7,10 @@ div.body {
     padding-top: 30px;
     // background: red;
 
+    div.openMeun {
+        display: none;
+    }
+
     div.bodyleft {
         float: left;
         background: #fff;
@@ -576,10 +580,13 @@ div.body {
 
 }
 
-
-@media screen and (max-width: 1500px) {
+@media screen and (max-width: 1500px) and (min-width: 901px) {
     div.body {
         min-width: 1260px;
+
+        div.openMeun {
+            display: none;
+        }
 
         div.bodyleft {
             width: 270px;
@@ -749,7 +756,7 @@ div.body {
                         font-size: 14px;
                         // background: red;
                         overflow: hidden;
-                        text-overflow:ellipsis;
+                        text-overflow: ellipsis;
                         white-space: nowrap;
                     }
 
@@ -959,6 +966,335 @@ div.body {
 
                             span.exMargin {
                                 margin-left: 36px;
+                            }
+
+                            span.right {
+                                // background: red;
+                                width: 112px;
+                                padding-right: 0px;
+                                // margin-right: 8px;
+                                text-align: right;
+                            }
+                        }
+                    }
+
+                    div.claim {
+                        font-size: 12px;
+                        font-weight: 200;
+                        margin-top: 20px;
+                        padding-left: 20px;
+                        color: rgba(150, 150, 162, 1);
+
+                        span {
+                            margin-right: 20px;
+                            font-weight: 200;
+                            // color: #333;
+                            font-size: 10px;
+                            width: 92px;
+
+                            i {
+                                font-size: 140%;
+                            }
+                        }
+                    }
+                }
+            }
+
+            div.noRightMargin {
+                margin-right: 0;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 900px) {
+    div.body {
+        padding: 10px;
+        width: 100%;
+        min-width: 100%;
+        // background: red;
+
+        div.openMeun {
+            display: block;
+        }
+
+        div.bodyleftOrigin {
+            display: none;
+        }
+
+        div.bodyright {
+            width: 100%;
+            padding-left: 0px;
+
+            div.tab1 {
+                width: 100%;
+                max-width: 100%;
+                ;
+                margin-right: 0px;
+                // margin: 0 auto;
+                margin-bottom: 40px;
+
+                div.titleInTab {
+                    // background: red;
+                    height: 50px;
+                    position: relative;
+
+                    &::after {
+                        content: '';
+                        display: block;
+                        position: absolute;
+                        width: 4px;
+                        height: 15px;
+                        left: 20px;
+                        top: 19px;
+                        background: rgba(91, 152, 250, 1);
+                    }
+
+                    div.leftTitle {
+                        float: left;
+                        font-size: 18px;
+                        color: rgba(56, 132, 255, 1);
+                        font-weight: 400;
+                        padding-top: 14px;
+                        padding-left: 35px;
+                    }
+
+                    div.rightIcon {
+                        // background: green;
+                        float: right;
+                        padding-top: 6px;
+                        margin-right: 20px;
+
+                        img {
+                            width: 16px;
+                            height: 16px;
+                        }
+                    }
+                }
+
+                button {
+                    font-size: 14px;
+                }
+
+                div.generate {
+                    min-height: 316px;
+
+                    p.details {
+                        margin-top: 20px;
+                        padding-left: 20px;
+                        font-size: 14px;
+                        // background: red;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                    }
+
+                    div.input {
+                        margin-top: 30px;
+                        // background: red;
+                        padding-left: 20px;
+                        padding-right: 20px;
+                        display: flex;
+
+                        div.maxNum {
+                            position: absolute;
+                            // background: green;
+                            // left: 68%;
+                            right: 120px;
+                            top: 8px;
+                            cursor: pointer;
+                        }
+
+                        input {
+                            height: 35px;
+                            padding-left: 10px;
+                            flex: 1;
+                            margin-left: 0;
+                        }
+                    }
+
+                    div.ButtonWrap {
+                        // background: red;
+                        margin-left: 0;
+                        width: 100%;
+                        height: 35px;
+                        padding-left: 20px;
+                        padding-right: 20px;
+                        margin-top: 25px;
+
+                        button {
+                            height: 35px;
+                            line-height: 26px;
+                        }
+                    }
+
+                    div.marginTop10 {
+                        margin-top: 15px;
+                        // margin-bottom: 15px;
+                    }
+
+                    div.ButtonWrapWithdraw {
+                        margin-top: 51px;
+                    }
+
+                    div.diverLine {
+                        width: 100%;
+                        height: 1px;
+                        background: rgba(230, 234, 238, 1);
+                        margin-top: 30px;
+                    }
+
+                    div.errtips {
+                        width: calc(100% - 40px);
+                        left: 20px;
+                        top: 123px;
+                    }
+
+                    div.tips {
+                        transition: 0.3s;
+                        text-align: right;
+                        // background: red;
+                        padding-left: 20px;
+                        top: 91px;
+                        right: 20px;
+                        width: 100%;
+                        font-weight: 200;
+                        font-size: 12px;
+
+                        span {
+                            display: inline-block;
+                            // background: green;
+                            margin-left: 7px;
+                            width: 70px;
+                            // color: #333;
+                        }
+
+                        div.imgWrap {
+                            // background: green;
+
+                            img {
+                                width: 16px;
+                                position: absolute;
+                                right: 168px;
+                                // opacity: 0.4;
+                                margin-top: 2px;
+                                margin-right: 7px;
+                                cursor: pointer;
+                            }
+
+                            div.detials {
+                                display: none;
+                                text-align: left;
+                                box-sizing: border-box;
+                                background: #fff;
+                                position: absolute;
+                                top: -52px;
+                                left: 40px;
+                                width: calc(100% - 40px);
+                                font-size: 12px;
+                                font-weight: 200;
+                                border-radius: 3px;
+                                border: 1px solid rgba(221, 221, 230, 1);
+                                box-shadow: 0px 0px 15px 0px rgba(116, 116, 116, 0.2);
+                                padding: 4px 7px;
+
+                                &::after {
+                                    content: '';
+                                    display: block;
+                                    width: 0;
+                                    height: 0;
+                                    border: 5px solid transparent;
+                                    border-top: 5px solid #fff;
+                                    top: 43px;
+                                    right: 177px;
+                                    position: absolute;
+                                }
+
+                                &::before {
+                                    content: '';
+                                    display: block;
+                                    width: 0;
+                                    height: 0;
+                                    border: 6px solid transparent;
+                                    border-top: 6px solid rgba(221, 221, 230, 1);
+                                    top: 44px;
+                                    right: 176px;
+                                    position: absolute;
+                                }
+                            }
+
+                            &:hover {
+                                div.detials {
+                                    display: block;
+                                }
+
+                                img {
+                                    opacity: 1;
+                                }
+                            }
+                        }
+                    }
+
+                    div.myBalanceOnPool {
+                        // background: red;
+                        margin-top: 8px;
+                        padding-right: 20px;
+                        text-align: right;
+                        font-weight: 200;
+                        font-size: 12px;
+                        color: rgba(150, 150, 162, 1);
+
+                        span {
+                            display: inline-block;
+                            // background: green;
+                            float: right;
+                            width: 85px;
+                            font-weight: 200;
+                            // color: #333;
+                            margin-left: 7px;
+                            margin-top: -3px;
+                        }
+                    }
+
+                    div.myBalanceOnPoolSection {
+                        // background: pink;
+                        padding-top: 20px;
+                        padding-left: 20px;
+                        padding-right: 20px;
+
+                        div.title {
+                            font-size: 14px;
+                            font-weight: 200;
+                            margin-top: 20px;
+                            color: rgba(150, 150, 162, 1);
+                            margin-bottom: 10px;
+                        }
+
+                        p.partToken {
+                            float: left;
+                            // background: pink;
+                            font-size: 16px;
+                            font-weight: 400;
+                            width: 100%;
+                            margin: 0;
+                            line-height: 28px;
+                            padding-left: 0px;
+
+                            &.marginl {
+                                // margin-left: 10%;
+                            }
+
+                            span {
+                                display: inline-block;
+                                width: 40px;
+                                font-size: 14px;
+                                color: rgba(150, 150, 162, 1);
+                                font-weight: 200;
+                                // background: green;
+                            }
+
+                            span.exMargin {
+                                margin-left: 0px;
                             }
 
                             span.right {
