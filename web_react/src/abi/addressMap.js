@@ -16,12 +16,12 @@ const addressMap = {
         'addressPAX': '0xd414e78d5db39e90c704070943e067ffc0eb3d86'.toLowerCase(),
         'addressTUSD': '0xfeb2112e370091f25a2f96fb600484700a0ed603'.toLowerCase(),
         'addressUSDC': '0x71abccd90dbb09c37686e4d5026c2d9597d469cb'.toLowerCase(),
-        'addressDF': '0xb7dd4a376d3c3680a939f6ec2c5b5a737a60710a'.toLowerCase(),
-        'addressUSDx': '0xD44c928EF6c2745526686D3347d30ACC87DC71C0'.toLowerCase(),
-        'addressProtocol': '0x218d981a80c094621f8081900b247757De74751b'.toLowerCase(),
-        'addressProtocolView': '0x4640C9f0492665Fc54ef8d41C6Af33Bc0923201A'.toLowerCase(),
-        'addressEngine': '0x7712B8f4732D514e73Be9891A4E24d47c317c3E0'.toLowerCase(),
-        'addressPool': '0x8783134AcF84a4A5A7670896A245FBA0AB4B60d9'.toLowerCase(),
+        'addressDF': '0x5d378961e9d31c0ee394d34741fa1a18144f6fb5'.toLowerCase(),
+        'addressUSDx': '0xdbcfff49d5f48ddf6e6df1f2c9b96e1fc0f31371'.toLowerCase(),
+        'addressProtocol': '0x7ca26e42bba5543cf5a06a0d554a0fc607f3d4ac'.toLowerCase(),
+        'addressProtocolView': '0xaf47a307ea7d5dc7133b309c1a76c6a3f4ae1618'.toLowerCase(),
+        'addressEngine': '0x03463c0ac738a370e0cd8c4e70a9be183255f25d'.toLowerCase(),
+        'addressPool': '0xccf31dc9dcb6cb788d3c6b64f73efedfb7e9f20b'.toLowerCase(),
     }
 };
 
