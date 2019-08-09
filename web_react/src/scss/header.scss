@@ -228,6 +228,10 @@ div.headerWrap {
 
 @media screen and (max-width: 900px) {
     div.topTips {
+        display: none!important;
+    }
+
+    div.topTips {
         min-width: 100%;
         // background: red;
         height: 60px;
