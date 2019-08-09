@@ -334,14 +334,23 @@ div.headerWrap {
             }
 
             div.dfPrice {
-                float: right;
-                // background: red;
+                // float: right;
+                // // background: red;
+                // margin-top: 17px;
+                // border-right: 1px solid rgba(255, 255, 255, 0.1);
+                // padding-right: 13px;
+                // margin-right: 13px;
+                // height: 53px;
+                // line-height: 53px;
+                float: left;
                 margin-top: 17px;
-                border-right: 1px solid rgba(255, 255, 255, 0.1);
-                padding-right: 13px;
+                border-left: 1px solid rgba(255, 255, 255, 0.1);
+                border-right: 1px solid #222c3c;
+                padding-left: 13px;
                 margin-right: 13px;
                 height: 53px;
                 line-height: 53px;
+
 
                 span.dftoken {
                     font-size: 12px;
@@ -358,10 +367,11 @@ div.headerWrap {
             }
 
             div.status {
-                float: right;
-                // background: green;
-                width: 180px;
-                padding-top: 20px;
+                display: none;
+                // float: right;
+                // // background: green;
+                // width: 180px;
+                // padding-top: 20px;
 
                 p.title {
                     margin-bottom: 5px;
