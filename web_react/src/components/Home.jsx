@@ -1587,7 +1587,7 @@ export default class Home extends React.Component {
                         -1,
                         {
                             from: this.state.accountAddress,
-                            gas: gasLimit,
+                            gas: gasLimit * 1.4,
                             gasPrice: this.state.gasPrice
                         },
                         (err, ret) => {
@@ -1711,7 +1711,7 @@ export default class Home extends React.Component {
                         -1,
                         {
                             from: this.state.accountAddress,
-                            gas: gasLimit,
+                            gas: gasLimit * 1.4,
                             gasPrice: this.state.gasPrice
                         },
                         (err, ret) => {
@@ -1835,7 +1835,7 @@ export default class Home extends React.Component {
                         -1,
                         {
                             from: this.state.accountAddress,
-                            gas: gasLimit,
+                            gas: gasLimit * 1.4,
                             gasPrice: this.state.gasPrice
                         },
                         (err, ret) => {
@@ -1959,7 +1959,7 @@ export default class Home extends React.Component {
                         -1,
                         {
                             from: this.state.accountAddress,
-                            gas: gasLimit,
+                            gas: gasLimit * 1.4,
                             gasPrice: this.state.gasPrice
                         },
                         (err, ret) => {
@@ -2083,7 +2083,7 @@ export default class Home extends React.Component {
                         -1,
                         {
                             from: this.state.accountAddress,
-                            gas: gasLimit,
+                            gas: gasLimit * 1.4,
                             gasPrice: this.state.gasPrice
                         },
                         (err, ret) => {
@@ -2207,7 +2207,7 @@ export default class Home extends React.Component {
                         -1,
                         {
                             from: this.state.accountAddress,
-                            gas: gasLimit,
+                            gas: gasLimit * 1.4,
                             gasPrice: this.state.gasPrice
                         },
                         (err, ret) => {
@@ -2356,7 +2356,7 @@ export default class Home extends React.Component {
                         0,
                         {
                             from: this.state.accountAddress,
-                            gas: gasLimit,
+                            gas: gasLimit * 1.4,
                             gasPrice: this.state.gasPrice
                         },
                         (err, ret) => {
@@ -2465,7 +2465,7 @@ export default class Home extends React.Component {
                         0,
                         {
                             from: this.state.accountAddress,
-                            gas: gasLimit,
+                            gas: gasLimit * 1.4,
                             gasPrice: this.state.gasPrice
                         },
                         (err, ret) => {
@@ -2574,7 +2574,7 @@ export default class Home extends React.Component {
                         0,
                         {
                             from: this.state.accountAddress,
-                            gas: gasLimit,
+                            gas: gasLimit * 1.4,
                             gasPrice: this.state.gasPrice
                         },
                         (err, ret) => {
@@ -2683,7 +2683,7 @@ export default class Home extends React.Component {
                         0,
                         {
                             from: this.state.accountAddress,
-                            gas: gasLimit,
+                            gas: gasLimit * 1.4,
                             gasPrice: this.state.gasPrice
                         },
                         (err, ret) => {
@@ -2792,7 +2792,7 @@ export default class Home extends React.Component {
                         0,
                         {
                             from: this.state.accountAddress,
-                            gas: gasLimit,
+                            gas: gasLimit * 1.4,
                             gasPrice: this.state.gasPrice
                         },
                         (err, ret) => {
@@ -2901,7 +2901,7 @@ export default class Home extends React.Component {
                         0,
                         {
                             from: this.state.accountAddress,
-                            gas: gasLimit,
+                            gas: gasLimit * 1.4,
                             gasPrice: this.state.gasPrice
                         },
                         (err, ret) => {
@@ -3215,7 +3215,7 @@ export default class Home extends React.Component {
                     num,
                     {
                         from: this.state.accountAddress,
-                        gas: gasLimit,
+                        gas: gasLimit * 1.4,
                         gasPrice: this.state.gasPrice
                     },
                     (err, ret) => {
@@ -3352,7 +3352,7 @@ export default class Home extends React.Component {
                     num,
                     {
                         from: this.state.accountAddress,
-                        gas: gasLimit,
+                        gas: gasLimit * 1.4,
                         gasPrice: this.state.gasPrice
                     },
                     (err, ret) => {
@@ -3489,7 +3489,7 @@ export default class Home extends React.Component {
                     num,
                     {
                         from: this.state.accountAddress,
-                        gas: gasLimit,
+                        gas: gasLimit * 1.4,
                         gasPrice: this.state.gasPrice
                     },
                     (err, ret) => {
@@ -3626,7 +3626,7 @@ export default class Home extends React.Component {
                     num,
                     {
                         from: this.state.accountAddress,
-                        gas: gasLimit,
+                        gas: gasLimit * 1.4,
                         gasPrice: this.state.gasPrice
                     },
                     (err, ret) => {
@@ -3938,7 +3938,7 @@ export default class Home extends React.Component {
                     num,
                     {
                         from: this.state.accountAddress,
-                        gas: gasLimit,
+                        gas: 900000,
                         gasPrice: this.state.gasPrice
                     },
                     (err, ret) => {
@@ -4084,7 +4084,7 @@ export default class Home extends React.Component {
                     num,
                     {
                         from: this.state.accountAddress,
-                        gas: gasLimit,
+                        gas: 900000,
                         gasPrice: this.state.gasPrice
                     },
                     (err, ret) => {
@@ -4230,7 +4230,7 @@ export default class Home extends React.Component {
                     num,
                     {
                         from: this.state.accountAddress,
-                        gas: gasLimit,
+                        gas: 900000,
                         gasPrice: this.state.gasPrice
                     },
                     (err, ret) => {
@@ -4376,7 +4376,7 @@ export default class Home extends React.Component {
                     num,
                     {
                         from: this.state.accountAddress,
-                        gas: gasLimit,
+                        gas: 900000,
                         gasPrice: this.state.gasPrice
                     },
                     (err, ret) => {
@@ -4609,7 +4609,7 @@ export default class Home extends React.Component {
                     this.Web3.toBigNumber(this.state.toDestroyNum).mul(this.Web3.toBigNumber(10 ** 18)),
                     {
                         from: this.state.accountAddress,
-                        gas: gasLimit,
+                        gas: gasLimit * 1.4,
                         gasPrice: this.state.gasPrice
                     },
                     (err, ret) => {
@@ -4742,7 +4742,7 @@ export default class Home extends React.Component {
                     BN.mul(this.Web3.toBigNumber(10 ** 18)),
                     {
                         from: this.state.accountAddress,
-                        gas: gasLimit,
+                        gas: gasLimit * 1.4,
                         gasPrice: this.state.gasPrice
                     },
                     (err, ret) => {
@@ -4867,7 +4867,7 @@ export default class Home extends React.Component {
                     0,
                     {
                         from: this.state.accountAddress,
-                        gas: gasLimit,
+                        gas: gasLimit * 1.4,
                         gasPrice: this.state.gasPrice
                     },
                     (err, ret) => {
@@ -5017,7 +5017,7 @@ export default class Home extends React.Component {
                     this.faucetNum * (10 ** this.state.decimalsDAI),
                     {
                         from: this.state.accountAddress,
-                        gas: gasLimit,
+                        gas: gasLimit * 1.4,
                         gasPrice: this.state.gasPrice
                     },
                     (err, ret) => {
@@ -5146,7 +5146,7 @@ export default class Home extends React.Component {
                     this.faucetNum * (10 ** this.state.decimalsPAX),
                     {
                         from: this.state.accountAddress,
-                        gas: gasLimit,
+                        gas: gasLimit * 1.4,
                         gasPrice: this.state.gasPrice
                     },
                     (err, ret) => {
@@ -5274,7 +5274,7 @@ export default class Home extends React.Component {
                     this.faucetNum * (10 ** this.state.decimalsTUSD),
                     {
                         from: this.state.accountAddress,
-                        gas: gasLimit,
+                        gas: gasLimit * 1.4,
                         gasPrice: this.state.gasPrice
                     },
                     (err, ret) => {
@@ -5402,7 +5402,7 @@ export default class Home extends React.Component {
                     this.faucetNum * (10 ** this.state.decimalsUSDC),
                     {
                         from: this.state.accountAddress,
-                        gas: gasLimit,
+                        gas: gasLimit * 1.4,
                         gasPrice: this.state.gasPrice
                     },
                     (err, ret) => {
@@ -5530,7 +5530,7 @@ export default class Home extends React.Component {
                     this.faucetNum * (10 ** this.state.decimalsDF),
                     {
                         from: this.state.accountAddress,
-                        gas: gasLimit,
+                        gas: gasLimit * 1.4,
                         gasPrice: this.state.gasPrice
                     },
                     (err, ret) => {
