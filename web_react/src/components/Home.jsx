@@ -168,6 +168,13 @@ export default class Home extends React.Component {
                         localStorage.setItem(this.state.accountAddress, JSON.stringify(localHistory));
                     }
                 });
+
+                if (document.body.clientWidth <= 900) {
+                    console.log(document.body.clientWidth);
+                    setTimeout(() => {
+                        this.connectMetamask();
+                    }, 1500)
+                }
             })
         } else {
             alert('pls install metamask first.');
