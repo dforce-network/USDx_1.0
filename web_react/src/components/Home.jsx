@@ -148,7 +148,7 @@ export default class Home extends React.Component {
 
                 this.contractProtocol.allEvents({ toBlock: 'latest' }).watch((error, result) => {
                     console.log(error, result);
-                    if (result && result.args._sender === this.state.accountAddress) {
+                    if (result && result.args._sender.toLowerCase() === this.state.accountAddress.toLowerCase()) {
                         var itemHistory = result;
                         itemHistory.timeStamp = new Date().getTime();
 
