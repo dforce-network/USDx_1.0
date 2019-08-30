@@ -26,7 +26,6 @@ import addressMap from '../abi/addressMap'
 // components
 import Notify from './Notify';
 import Header from './Header';
-import Welcome from './Welcome';
 import BodyLeft from './BodyLeft';
 import History from './History';
 
@@ -43,9 +42,6 @@ import tusd from '../assets/img/tusd.png';
 import usdc from '../assets/img/usdc.png';
 import meun from '../assets/img/meun.png';
 import close_mobile from '../assets/img/close_mobile.png';
-
-import daiBackgd from '../assets/img/daiBackgd.png';
-
 
 export default class Home extends React.Component {
     units = 10 ** 18;
@@ -118,6 +114,7 @@ export default class Home extends React.Component {
             TUSDonPool: '0.00',
             USDConPool: '0.00'
         }
+        this.isToken = window.ethereum.isImToken;
         if (window.web3) {
             this.Web3 = window.web3;
 
@@ -288,6 +285,8 @@ export default class Home extends React.Component {
                         allocateTo={(v) => { this.allocateTo(v) }}
                         getMaxNumToGenerateOnestep={() => { this.getMaxNumToGenerateOnestep() }}
                         toGenerateMax={(BN) => { this.toGenerateMax(BN) }}
+                        showOnestwpFn={() => {this.showOnestwpFn()}}
+                        closeOnestwpFn={() => {this.closeOnestwpFn()}}
                     />
                     <MuiThemeProvider theme={this.theme}>
                         <div className="body">
@@ -301,9 +300,9 @@ export default class Home extends React.Component {
                             >
 
                                 <div className="openMeun" onClick={this.showDrawer} style={{ background: 'rgba(34, 44, 60, 1)', position: 'fixed', left: '300px', top: '96px', zIndex: '999', height: '30px', width: '38px', lineHeight: '30px', paddingLeft: '8px', borderRadius: '0 15px 15px 0' }}>
-                                    <img src={this.state.visible? close_mobile:meun} alt="" style={{ width: '16px' }} />
+                                    <img src={this.state.visible ? close_mobile : meun} alt="" style={{ width: '16px' }} />
                                 </div>
-                                <div className="bodyleftHome" style={{ }}>
+                                <div className="bodyleftHome" style={{}}>
                                     <div className="title" style={{ fontSize: '14px', fontWeight: 300 }}>
                                         {/* <Tooltip placement="bottomLeft" title='Outstanding constituents pending for conversion due to inventory shortage and allocated USDx to be claimed by contributors of each constituent.'>
                                             <Button></Button>
@@ -354,7 +353,7 @@ export default class Home extends React.Component {
                                             {this.state.sectionPAX ? (this.state.sectionPAX * 100 / this.state.tatolSection).toFixed() : '-'}%
                                         </div>
                                         <div className="left" style={{ width: '60px', height: '60px', paddingTop: '8px', paddingBottom: '3px', paddingLeft: '8px', float: 'left' }}>
-                                            <img src={pax} alt=""  style={{ width: '28px' }}/>
+                                            <img src={pax} alt="" style={{ width: '28px' }} />
                                             <p className="token" style={{ fontSize: '12px' }}>PAX</p>
                                         </div>
                                         <div className="right" style={{ width: '150px', height: '60px', float: 'left' }}>
@@ -393,7 +392,7 @@ export default class Home extends React.Component {
                                             {this.state.sectionTUSD ? (this.state.sectionTUSD * 100 / this.state.tatolSection).toFixed() : '-'}%
                                         </div>
                                         <div className="left" style={{ width: '60px', height: '60px', paddingTop: '8px', paddingBottom: '3px', paddingLeft: '8px', float: 'left' }}>
-                                            <img src={tusd} alt=""  style={{ width: '28px' }}/>
+                                            <img src={tusd} alt="" style={{ width: '28px' }} />
                                             <p className="token" style={{ fontSize: '12px' }}>TUSD</p>
                                         </div>
                                         <div className="right" style={{ width: '150px', height: '60px', float: 'left' }}>
@@ -432,7 +431,7 @@ export default class Home extends React.Component {
                                             {this.state.sectionUSDC ? (this.state.sectionUSDC * 100 / this.state.tatolSection).toFixed() : '-'}%
                                         </div>
                                         <div className="left" style={{ width: '60px', height: '60px', paddingTop: '8px', paddingBottom: '3px', paddingLeft: '8px', float: 'left' }}>
-                                            <img src={usdc} alt=""  style={{ width: '28px' }}/>
+                                            <img src={usdc} alt="" style={{ width: '28px' }} />
                                             <p className="token" style={{ fontSize: '12px' }}>USDC</p>
                                         </div>
                                         <div className="right" style={{ width: '150px', height: '60px', float: 'left' }}>
@@ -467,52 +466,52 @@ export default class Home extends React.Component {
                                         <div className="clear"></div>
                                     </div>
 
-                                    <div className="totalUSDx" style={{marginTop: '40px'}}>
+                                    <div className="totalUSDx" style={{ marginTop: '40px' }}>
                                         <div className="title">
                                             {/* <Tooltip placement="bottomLeft" title='Total USDx minted (always identical to the sum total of collaterals)'>
                                                 <Button></Button>
                                             </Tooltip> */}
                                             Total USDx Outstanding:
                                         </div>
-                                        <div className="usdxNum" style={{margin: 0, marginTop: '4px', fontSize: '16px', fontWeight: 400, textAlign: 'right', paddingRight: '5px'}}>
+                                        <div className="usdxNum" style={{ margin: 0, marginTop: '4px', fontSize: '16px', fontWeight: 400, textAlign: 'right', paddingRight: '5px' }}>
                                             <span>{this.state.totalSupplyUSDx ? this.toThousandsbodyleft(this.state.totalSupplyUSDx.split('.')[0]) : '0'}</span>
-                                            <span className="sectionDot" style={{fontSize: '80%', opacity: 0.7, fontWeight: 200}}>{this.state.totalSupplyUSDx ? '.' + this.state.totalSupplyUSDx.split('.')[1] : '.00'}</span>
+                                            <span className="sectionDot" style={{ fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>{this.state.totalSupplyUSDx ? '.' + this.state.totalSupplyUSDx.split('.')[1] : '.00'}</span>
                                         </div>
                                     </div>
 
-                                    <div className="globalpool" style={{paddingTop: '30px'}}>
+                                    <div className="globalpool" style={{ paddingTop: '30px' }}>
                                         <div className="title">
                                             {/* <Tooltip placement="bottomLeft" title='Constituents locked as collaterals (the sum total is always idential to the amount of outstanding USDx)'>
                                                 <Button></Button>
                                             </Tooltip> */}
                                             Global Collateral Pool:
                                         </div>
-                                        <div className="sectionToken" style={{marginTop: '10px'}}>
-                                            <span className="token" style={{fontSize: '14px', width: '60px', lineHeight: '30px'}}>DAI</span>
-                                            <span className="tokenNum" style={{fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px'}}>
+                                        <div className="sectionToken" style={{ marginTop: '10px' }}>
+                                            <span className="token" style={{ fontSize: '14px', width: '60px', lineHeight: '30px' }}>DAI</span>
+                                            <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
                                                 {this.state.DAIonBank ? this.toThousandsbodyleft(this.state.DAIonBank.split('.')[0]) : '0'}
-                                                <i style={{fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>{this.state.DAIonBank ? '.' + this.state.DAIonBank.split('.')[1] : '.00'}</i>
+                                                <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>{this.state.DAIonBank ? '.' + this.state.DAIonBank.split('.')[1] : '.00'}</i>
                                             </span>
                                         </div>
                                         <div className="sectionToken">
-                                            <span className="token" style={{fontSize: '14px', width: '60px', lineHeight: '30px'}}>PAX</span>
-                                            <span className="tokenNum" style={{fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px'}}>
+                                            <span className="token" style={{ fontSize: '14px', width: '60px', lineHeight: '30px' }}>PAX</span>
+                                            <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
                                                 {this.state.PAXonBank ? this.toThousandsbodyleft(this.state.PAXonBank.split('.')[0]) : '0'}
-                                                <i style={{fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>{this.state.PAXonBank ? '.' + this.state.PAXonBank.split('.')[1] : '.00'}</i>
+                                                <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>{this.state.PAXonBank ? '.' + this.state.PAXonBank.split('.')[1] : '.00'}</i>
                                             </span>
                                         </div>
                                         <div className="sectionToken">
-                                            <span className="token" style={{fontSize: '14px', width: '60px', lineHeight: '30px'}}>TUSD</span>
-                                            <span className="tokenNum" style={{fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px'}}>
+                                            <span className="token" style={{ fontSize: '14px', width: '60px', lineHeight: '30px' }}>TUSD</span>
+                                            <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
                                                 {this.state.TUSDonBank ? this.toThousandsbodyleft(this.state.TUSDonBank.split('.')[0]) : '0'}
-                                                <i style={{fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>{this.state.TUSDonBank ? '.' + this.state.TUSDonBank.split('.')[1] : '.00'}</i>
+                                                <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>{this.state.TUSDonBank ? '.' + this.state.TUSDonBank.split('.')[1] : '.00'}</i>
                                             </span>
                                         </div>
                                         <div className="sectionToken">
-                                            <span className="token" style={{fontSize: '14px', width: '60px', lineHeight: '30px'}}>USDC</span>
-                                            <span className="tokenNum" style={{fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px'}}>
+                                            <span className="token" style={{ fontSize: '14px', width: '60px', lineHeight: '30px' }}>USDC</span>
+                                            <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
                                                 {this.state.USDConBank ? this.toThousandsbodyleft(this.state.USDConBank.split('.')[0]) : '0'}
-                                                <i style={{fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>{this.state.USDConBank ? '.' + this.state.USDConBank.split('.')[1] : '.00'}</i>
+                                                <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>{this.state.USDConBank ? '.' + this.state.USDConBank.split('.')[1] : '.00'}</i>
                                             </span>
                                         </div>
                                     </div>
@@ -1677,6 +1676,19 @@ export default class Home extends React.Component {
                                                     return false;
                                                 }
                                             }
+                                            if (this.state.fromGenerateMax) {
+                                                if (Cookie.load('curAccount') === this.state.accountAddress) {
+                                                    this.setState({
+                                                        ...this.state,
+                                                        fromGenerateMax: false
+                                                    });
+                                                    setTimeout(() => {
+                                                        this.toGenerateMax(this.state.toGenerateMaxNum);
+                                                    }, 4000)
+                                                } else {
+                                                    return false;
+                                                }
+                                            }
                                         }
                                         if (data && data.status === '0x0') {
                                             clearInterval(approveDAItimer);
@@ -1796,6 +1808,19 @@ export default class Home extends React.Component {
                                                     });
                                                     setTimeout(() => {
                                                         this.deposit();
+                                                    }, 4000)
+                                                } else {
+                                                    return false;
+                                                }
+                                            }
+                                            if (this.state.fromGenerateMax) {
+                                                if (Cookie.load('curAccount') === this.state.accountAddress) {
+                                                    this.setState({
+                                                        ...this.state,
+                                                        fromGenerateMax: false
+                                                    });
+                                                    setTimeout(() => {
+                                                        this.toGenerateMax(this.state.toGenerateMaxNum);
                                                     }, 4000)
                                                 } else {
                                                     return false;
@@ -1925,6 +1950,19 @@ export default class Home extends React.Component {
                                                     return false;
                                                 }
                                             }
+                                            if (this.state.fromGenerateMax) {
+                                                if (Cookie.load('curAccount') === this.state.accountAddress) {
+                                                    this.setState({
+                                                        ...this.state,
+                                                        fromGenerateMax: false
+                                                    });
+                                                    setTimeout(() => {
+                                                        this.toGenerateMax(this.state.toGenerateMaxNum);
+                                                    }, 4000)
+                                                } else {
+                                                    return false;
+                                                }
+                                            }
                                         }
                                         if (data && data.status === '0x0') {
                                             clearInterval(approveTUSDtimer);
@@ -2044,6 +2082,19 @@ export default class Home extends React.Component {
                                                     });
                                                     setTimeout(() => {
                                                         this.deposit();
+                                                    }, 4000)
+                                                } else {
+                                                    return false;
+                                                }
+                                            }
+                                            if (this.state.fromGenerateMax) {
+                                                if (Cookie.load('curAccount') === this.state.accountAddress) {
+                                                    this.setState({
+                                                        ...this.state,
+                                                        fromGenerateMax: false
+                                                    });
+                                                    setTimeout(() => {
+                                                        this.toGenerateMax(this.state.toGenerateMaxNum);
                                                     }, 4000)
                                                 } else {
                                                     return false;
@@ -4724,8 +4775,43 @@ export default class Home extends React.Component {
 
     // *** toGenerateMax ***
     toGenerateMax(BN) {
-        // console.log(BN);
-        // console.log(BN.toString(10));
+        this.setState({
+            ...this.state,
+            toGenerateMaxNum: BN
+        });
+
+        if (!this.state.approvedDAI) {
+            this.setState({
+                ...this.state,
+                fromGenerateMax: true
+            });
+            this.approve('DAI');
+            return;
+        }
+        if (!this.state.approvedPAX) {
+            this.setState({
+                ...this.state,
+                fromGenerateMax: true
+            });
+            this.approve('PAX');
+            return;
+        }
+        if (!this.state.approvedTUSD) {
+            this.setState({
+                ...this.state,
+                fromGenerateMax: true
+            });
+            this.approve('TUSD');
+            return;
+        }
+        if (!this.state.approvedUSDC) {
+            this.setState({
+                ...this.state,
+                fromGenerateMax: true
+            });
+            this.approve('USDC');
+            return;
+        }
 
         const id = Math.random();
         const msg = 'Waiting for transaction signature...';
@@ -4745,6 +4831,7 @@ export default class Home extends React.Component {
                 from: this.state.accountAddress
             },
             (err, gasLimit) => {
+                // console.log('0000000000000000',err,  BN.mul(this.Web3.toBigNumber(10 ** 18)), gasLimit, this.state.gasPrice)
                 this.contractProtocol.oneClickMinting.sendTransaction(
                     0,
                     BN.mul(this.Web3.toBigNumber(10 ** 18)),
@@ -4815,10 +4902,15 @@ export default class Home extends React.Component {
                                             };
                                             return false;
                                         })
+                                        this.setState({
+                                            ...this.state,
+                                            showOnestep: false
+                                        });
                                         setTimeout(() => {
                                             this.getMyBalance();
                                             this.getPoolBankTotalStatus();
                                             this.getUserWithdrawBalance();
+                                            this.getMaxNumToGenerateOnestep();
                                         }, 3000)
                                     }
                                     if (data && data.status === '0x0') {
@@ -4849,6 +4941,18 @@ export default class Home extends React.Component {
                 )
             }
         )
+    }
+    showOnestwpFn(){
+        this.setState({
+            ...this.state,
+            showOnestep: !this.state.showOnestep
+        })
+    }
+    closeOnestwpFn(){
+        this.setState({
+            ...this.state,
+            showOnestep: !this.state.showOnestep
+        })
     }
 
 

@@ -1,9 +1,79 @@
-// .ant-drawer-content-wrapper {
-//     width: 500px !important;
-//     top: 45px;
-//     margin-left: calc(50% - 250px);
-//     height: auto !important;
-//     // margin-top: 20px;
+div.oneStep {
+    margin-left: 20px;
+    font-size: 16px;
+    color: rgba(1, 234, 160, 1);
+    // background: red;
+    cursor: pointer;
 
-//     // transform: translateY(-150%) !important;
-// }
+    img.onepic {
+        width: 20px !important;
+        margin-right: 9px;
+    }
+}
+
+div.flexBox {
+    display: flex;
+
+    input.headerInput {
+        height: 35px;
+        flex: 1;
+        margin-left: 0;
+        padding: 0px;
+        border: 1px solid rgba(221, 221, 230, 1);
+        border-radius: 4px;
+        font-size: 16px;
+        width: 350px;
+        padding-left: 10px;
+
+        &:focus {
+            outline: 1px solid #40a9ff;
+        }
+    }
+
+    div.maxBtn {
+        height: 35px;
+        width: 90px;
+        cursor: pointer;
+        text-align: center;
+        line-height: 33px;
+        border: 1px solid rgba(221, 221, 230, 1);
+        border-radius: 4px;
+        color: #40a9ff;
+    }
+}
+
+div.geneBtn {
+    margin-top: 25px;
+}
+
+p.usedTitle {
+    margin-top: 40px;
+}
+
+div.usedSection {
+    p.usedP {
+        // background: red;
+        width: 35%;
+        float: left;
+        margin-right: 30%;
+
+        span {
+            // background: green;
+            display: inline-block;
+            width: 75%;
+            float: right;
+            padding-right: 50px;
+            text-align: right;
+        }
+    }
+
+    p.noRightM {
+        margin-right: 0;
+    }
+}
+
+@media screen and (max-width: 900px) {
+    div.oneStep {
+        // display: none;
+    }
+}

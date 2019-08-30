@@ -18,10 +18,6 @@ class Help extends React.Component {
                                         <h2 className="typo-h2 ">FAQ</h2>
                                         <h3 className="typo-h3 typo-white">First steps</h3>
                                         <ul className="typo-cl bullets">
-                                            <li>How do I get MKR tokens?</li>
-                                            <li>How do I get MKR tokens?</li>
-                                            <li>How do I get MKR tokens?</li>
-                                            <li>How do I get MKR tokens?</li>
                                         </ul>
                                     </div>
                                     <div className="col col-2 col-extra-padding" style={{ paddingLeft: "2.5em" }}>

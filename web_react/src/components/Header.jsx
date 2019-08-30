@@ -1,12 +1,13 @@
 // Libraries
 import React from "react";
-import { Drawer } from 'antd';
+import { Modal } from 'antd';
 import Button from '@material-ui/core/Button';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 // images
 import logo from '../assets/img/logo.svg';
 import lock from '../assets/img/lock.png';
 import unlock from '../assets/img/unlock.png';
+import onestep from '../assets/img/onestep.png';
 
 
 export default class Header extends React.Component {
@@ -24,7 +25,7 @@ export default class Header extends React.Component {
         super(props);
         this.Web3 = window.web3;
         this.state = {
-            showMintage: false,
+            showMintage: this.props.status.showOnestep,
             maxInputNum: ''
         };
     }
@@ -32,16 +33,21 @@ export default class Header extends React.Component {
 
     exMintage() {
         this.getMaxNumToGenerateOnestep();
-        this.setState({
-            ...this.state,
-            showMintage: !this.state.showMintage
-        })
+        this.props.showOnestwpFn();
+        this.state = {
+            maxInputNum: ''
+        };
+        // this.setState({
+        //     ...this.state,
+        //     showMintage: !this.state.showMintage
+        // })
     }
     onClose = () => {
-        this.setState({
-            ...this.state,
-            showMintage: false
-        });
+        this.props.closeOnestwpFn();
+        // this.setState({
+        //     ...this.state,
+        //     showMintage: !this.state.showMintage
+        // });
     };
 
     DisconnectMetamask() {
@@ -223,59 +229,59 @@ export default class Header extends React.Component {
                                         </span>
                                     </td>
 
-                                    {/* <td className='noborder'>
-                                        <p className="oneStep" style={{ background: 'red' }} onClick={() => { this.exMintage() }}>Mintage</p>
-                                        <Drawer
-                                            placement='top'
-                                            closable={false}
-                                            onClose={this.onClose}
-                                            visible={this.state.showMintage}
-                                            height={253}
-                                            // style={{top: this.state.showMintage? '85px' : '0px'}}
-                                            bodyStyle={{ background: 'red' }}
-                                            keyboard={true}
+                                    <td className='noborder'>
+                                        <div className="oneStep" onClick={() => { this.exMintage() }}>
+                                            <img className='onepic' src={onestep} alt="" />
+                                            Mintage
+                                        </div>
+                                        <Modal
+                                            closable={true}
+                                            onCancel={this.onClose}
+                                            visible={this.props.status.showOnestep}
+                                            footer={null}
                                         >
                                             <div>
                                                 <p>Max USDx available to generate: <span>{this.props.status.calcMaxMinting ? this.props.status.calcMaxMinting.div(10 ** 18).toString() : '0.00'}</span></p>
-                                                <div>
-                                                    <input type="text" onChange={(val) => { this.oneStepMintage(val.target.value) }} value={this.state.maxInputNum} />
-                                                    <div>
-                                                        <Button
-                                                            onClick={() => { this.toGenerateMax() }}
-                                                            variant="contained"
-                                                            color="secondary"
-                                                            disabled={!this.state.toUsedDAIError && !this.state.toUsedPAXError && !this.state.toUsedTUSDError && !this.state.toUsedUSDCError && Number(this.state.maxInputNum) > 0 ? false : true}
-                                                            fullWidth={true}
-                                                        >
-                                                            GENERATE
-                                                    </Button>
-                                                    </div>
-                                                    <a onClick={() => { this.oneStepMintageMax() }}>Max</a>
+                                                <div className='flexBox'>
+                                                    <input className='headerInput' type="number" onChange={(val) => { this.oneStepMintage(val.target.value) }} value={this.state.maxInputNum} />
+                                                    <div className='maxBtn' onClick={() => { this.oneStepMintageMax() }}>Max</div>
                                                 </div>
-                                                <p>Constituents to be used:</p>
-                                                <div>
-                                                    <p>
+                                                <div className='geneBtn'>
+                                                    <Button
+                                                        onClick={() => { this.toGenerateMax() }}
+                                                        variant="contained"
+                                                        color="secondary"
+                                                        disabled={!this.state.toUsedDAIError && !this.state.toUsedPAXError && !this.state.toUsedTUSDError && !this.state.toUsedUSDCError && Number(this.state.maxInputNum) > 0 ? false : true}
+                                                        fullWidth={true}
+                                                    >
+                                                        GENERATE
+                                                    </Button>
+                                                </div>
+                                                <p className='usedTitle'>Constituents to be used:</p>
+                                                <div className='usedSection'>
+                                                    <p className='usedP'>
                                                         DAI
                                                     <span style={{ color: this.state.toUsedDAIError ? 'red' : '#9696a2' }}>{this.state.toUsedDAI ? this.state.toUsedDAI : '0.00'}</span>
                                                     </p>
-                                                    <p>
+                                                    <p className='usedP noRightM'>
                                                         PAX
                                                     <span style={{ color: this.state.toUsedPAXError ? 'red' : '#9696a2' }}>{this.state.toUsedPAX ? this.state.toUsedPAX : '0.00'}</span>
                                                     </p>
                                                 </div>
-                                                <div>
-                                                    <p>
+                                                <div className='usedSection'>
+                                                    <p className='usedP'>
                                                         TUSD
                                                     <span style={{ color: this.state.toUsedTUSDError ? 'red' : '#9696a2' }}>{this.state.toUsedTUSD ? this.state.toUsedTUSD : '0.00'}</span>
                                                     </p>
-                                                    <p>
+                                                    <p className='usedP noRightM'>
                                                         USDC
                                                     <span style={{ color: this.state.toUsedUSDCError ? 'red' : '#9696a2' }}>{this.state.toUsedUSDC ? this.state.toUsedUSDC : '0.00'}</span>
                                                     </p>
                                                 </div>
+                                                <div className="clear"></div>
                                             </div>
-                                        </Drawer>
-                                    </td> */}
+                                        </Modal>
+                                    </td>
 
                                 </tr>
                             </tbody>
