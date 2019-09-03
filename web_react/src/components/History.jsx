@@ -27,22 +27,6 @@ export default class History extends React.Component {
 
     // format number
     formatNumber(val, token) {
-        // if (val.toFixed() < (10 ** 15) && val.toFixed() > 0) {
-        //     return '0.00';
-        // }
-
-        // let originStr = (val / (10 ** 10) / (10 ** 8)).toString();
-
-        // if (originStr.indexOf('.') > 0) {
-        //     originStr = originStr.substr(0, originStr.indexOf('.') + 3);
-        //     if (originStr.length >= 12) {
-        //         return originStr = originStr.substr(0, 11);
-        //     } else {
-        //         return originStr;
-        //     }
-        // } else {
-        //     return originStr + '.00';
-        // }
         var originStr = '';
 
         if (token === 'USDx') {
@@ -103,6 +87,11 @@ export default class History extends React.Component {
                     {
                         this.props.data.myHistory.map(
                             (item, index) => {
+                                if (window.ethereum.isImToken) {
+                                    return false;
+                                }
+
+
                                 if (item.event === 'Deposit') {
                                     var token = '';
                                     if (item.args._tokenID === this.props.addressDAI) {
@@ -208,7 +197,95 @@ export default class History extends React.Component {
                                             <span className='span1'>{(new Date(item.timeStamp - this.timeZoom).toGMTString()).replace(/GMT/g, '')}</span>
                                             <span className='span2' onClick={() => { this.openOnnewTab(item.transactionHash) }}>
                                                 <i>{item.transactionHash.substring(0, 6) + '...' + item.transactionHash.substring(item.transactionHash.length - 4)}</i></span> </p>
-                                        <p className="event">{item.event} {this.toThousands(temNum5.split('.')[0]) + '.' + temNum5.split('.')[1]} USDx.</p>
+                                        <p className="event">Mint {this.toThousands(temNum5.split('.')[0]) + '.' + temNum5.split('.')[1]} USDx.</p>
+                                    </li>
+                                }
+                            }
+                        )
+                    }
+                </ul>
+
+                <ul style={{ display: window.ethereum.isImToken ? 'block' : 'none' }}>
+                    <li>history...</li>
+                    {
+                        this.props.data.myHistory.map(
+                            (item, index) => {
+                                if (item.event === 'Deposit') {
+                                    return <li key={index}>
+                                        <img src={deposit} alt='' />
+                                        <p className="time">
+                                            <span className='span1'>{(new Date(item.timeStamp - this.timeZoom).toGMTString()).replace(/GMT/g, '')}</span>
+                                            <span className='span2' onClick={() => { this.openOnnewTab(item.transactionHash) }}>
+                                                <i>{item.transactionHash.substring(0, 6) + '...' + item.transactionHash.substring(item.transactionHash.length - 4)}</i>
+                                            </span>
+                                        </p>
+                                        <p className="event">{item.title}</p>
+                                    </li>
+                                }
+
+
+                                if (item.event === 'Destroy') {
+                                    return <li key={index}>
+                                        <img src={destroy} alt='' />
+                                        <p className="time">
+                                            <span className='span1'>{(new Date(item.timeStamp - this.timeZoom).toGMTString()).replace(/GMT/g, '')}</span>
+                                            <span className='span2' onClick={() => { this.openOnnewTab(item.transactionHash) }}>
+                                                <i>{item.transactionHash.substring(0, 6) + '...' + item.transactionHash.substring(item.transactionHash.length - 4)}</i>
+                                            </span>
+                                        </p>
+                                        <p className="event">{item.title}</p>
+                                    </li>
+                                }
+
+
+                                if (item.event === 'Claim') {
+                                    if (item.args._balance === '0') {
+                                        return false;
+                                    } else {
+                                        return <li key={index}>
+                                            <img src={claim} alt='' />
+                                            <p className="time">
+                                                <span className='span1'>{(new Date(item.timeStamp - this.timeZoom).toGMTString()).replace(/GMT/g, '')}</span>
+                                                <span className='span2' onClick={() => { this.openOnnewTab(item.transactionHash) }}>
+                                                    <i>{item.transactionHash.substring(0, 6) + '...' + item.transactionHash.substring(item.transactionHash.length - 4)}</i>
+                                                </span>
+                                            </p>
+                                            <p className="event">{item.title}</p>
+                                        </li>
+                                    }
+                                }
+
+
+                                if (item.event === 'Withdraw') {
+                                    if (item.args._amount === '0') {
+                                        return;
+                                    }
+                                    return <li key={index}>
+                                        <img src={withdraw} alt='' />
+                                        <p className="time">
+                                            <span className='span1'>{(new Date(item.timeStamp - this.timeZoom).toGMTString()).replace(/GMT/g, '')}</span>
+                                            <span className='span2' onClick={() => { this.openOnnewTab(item.transactionHash) }}>
+                                                <i>{item.transactionHash.substring(0, 6) + '...' + item.transactionHash.substring(item.transactionHash.length - 4)}</i>
+                                            </span>
+                                        </p>
+                                        <p className="event">{item.title}</p>
+                                    </li>
+                                }
+
+
+                                if (item.event === 'OneClickMinting') {
+                                    if (item.args._amount === '0') {
+                                        return;
+                                    }
+                                    return <li key={index}>
+                                        <img src={mintage} alt='' />
+                                        <p className="time">
+                                            <span className='span1'>{(new Date(item.timeStamp - this.timeZoom).toGMTString()).replace(/GMT/g, '')}</span>
+                                            <span className='span2' onClick={() => { this.openOnnewTab(item.transactionHash) }}>
+                                                <i>{item.transactionHash.substring(0, 6) + '...' + item.transactionHash.substring(item.transactionHash.length - 4)}</i>
+                                            </span>
+                                        </p>
+                                        <p className="event">{item.title}</p>
                                     </li>
                                 }
                             }

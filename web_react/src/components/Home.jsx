@@ -6,16 +6,10 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import 'antd/dist/antd.css';
-// import { Spin } from 'antd';
 import { Tooltip, Progress, Select, Drawer } from 'antd';
 
-// abi
+// abis
 import abiTokens from '../abi/abiTokens';
-// import abiDAI from '../abi/abiDAI';
-// import abiPAX from '../abi/abiPAX';
-// import abiTUSD from '../abi/abiTUSD';
-// import abiUSDC from '../abi/abiUSDC';
-// import abiDF from '../abi/abiDF';
 import abiUSDx from '../abi/abiUSDx';
 import abiProtocol from '../abi/abiProtocol';
 import abiProtocolView from '../abi/abiProtocolView';
@@ -114,7 +108,6 @@ export default class Home extends React.Component {
             TUSDonPool: '0.00',
             USDConPool: '0.00'
         }
-        this.isToken = window.ethereum.isImToken;
         if (window.web3) {
             this.Web3 = window.web3;
 
@@ -3346,6 +3339,24 @@ export default class Home extends React.Component {
                                             this.getPoolBankTotalStatus();
                                             this.getUserWithdrawBalance();
                                         }, 3000)
+                                        // !!window.ethereum.isImToken
+                                        if (!!window.ethereum.isImToken) {
+                                            var itemHistory = {
+                                                event: 'Withdraw',
+                                                title: 'Withdraw ' + str1 + str2 + ' DAI',
+                                                transactionHash: ret,
+                                                timeStamp: new Date().getTime()
+                                            };
+                                            var tmphistory = this.state.myHistory;
+                                            tmphistory.unshift(itemHistory);
+                                            this.setState({
+                                                ...this.state,
+                                                myHistory: tmphistory
+                                            })
+                                            var localHistory = JSON.parse(localStorage.getItem(this.state.accountAddress));
+                                            localHistory[this.state.netType].history.unshift(itemHistory);
+                                            localStorage.setItem(this.state.accountAddress, JSON.stringify(localHistory));
+                                        }
                                     }
                                     if (data && data.status === '0x0') {
                                         clearInterval(timerOBJ[tempRnum]);
@@ -3483,6 +3494,24 @@ export default class Home extends React.Component {
                                             this.getPoolBankTotalStatus();
                                             this.getUserWithdrawBalance();
                                         }, 3000)
+                                        // !!window.ethereum.isImToken
+                                        if (!!window.ethereum.isImToken) {
+                                            var itemHistory = {
+                                                event: 'Withdraw',
+                                                title: 'Withdraw ' + str1 + str2 + ' PAX',
+                                                transactionHash: ret,
+                                                timeStamp: new Date().getTime()
+                                            };
+                                            var tmphistory = this.state.myHistory;
+                                            tmphistory.unshift(itemHistory);
+                                            this.setState({
+                                                ...this.state,
+                                                myHistory: tmphistory
+                                            })
+                                            var localHistory = JSON.parse(localStorage.getItem(this.state.accountAddress));
+                                            localHistory[this.state.netType].history.unshift(itemHistory);
+                                            localStorage.setItem(this.state.accountAddress, JSON.stringify(localHistory));
+                                        }
                                     }
                                     if (data && data.status === '0x0') {
                                         clearInterval(timerOBJ[tempRnum]);
@@ -3620,6 +3649,24 @@ export default class Home extends React.Component {
                                             this.getPoolBankTotalStatus();
                                             this.getUserWithdrawBalance();
                                         }, 3000)
+                                        // !!window.ethereum.isImToken
+                                        if (!!window.ethereum.isImToken) {
+                                            var itemHistory = {
+                                                event: 'Withdraw',
+                                                title: 'Withdraw ' + str1 + str2 + ' TUSD',
+                                                transactionHash: ret,
+                                                timeStamp: new Date().getTime()
+                                            };
+                                            var tmphistory = this.state.myHistory;
+                                            tmphistory.unshift(itemHistory);
+                                            this.setState({
+                                                ...this.state,
+                                                myHistory: tmphistory
+                                            })
+                                            var localHistory = JSON.parse(localStorage.getItem(this.state.accountAddress));
+                                            localHistory[this.state.netType].history.unshift(itemHistory);
+                                            localStorage.setItem(this.state.accountAddress, JSON.stringify(localHistory));
+                                        }
                                     }
                                     if (data && data.status === '0x0') {
                                         clearInterval(timerOBJ[tempRnum]);
@@ -3757,6 +3804,24 @@ export default class Home extends React.Component {
                                             this.getPoolBankTotalStatus();
                                             this.getUserWithdrawBalance();
                                         }, 3000)
+                                        // !!window.ethereum.isImToken
+                                        if (!!window.ethereum.isImToken) {
+                                            var itemHistory = {
+                                                event: 'Withdraw',
+                                                title: 'Withdraw ' + str1 + str2 + ' USDC',
+                                                transactionHash: ret,
+                                                timeStamp: new Date().getTime()
+                                            };
+                                            var tmphistory = this.state.myHistory;
+                                            tmphistory.unshift(itemHistory);
+                                            this.setState({
+                                                ...this.state,
+                                                myHistory: tmphistory
+                                            })
+                                            var localHistory = JSON.parse(localStorage.getItem(this.state.accountAddress));
+                                            localHistory[this.state.netType].history.unshift(itemHistory);
+                                            localStorage.setItem(this.state.accountAddress, JSON.stringify(localHistory));
+                                        }
                                     }
                                     if (data && data.status === '0x0') {
                                         clearInterval(timerOBJ[tempRnum]);
@@ -4070,6 +4135,26 @@ export default class Home extends React.Component {
                                             this.getPoolBankTotalStatus();
                                             this.getUserWithdrawBalance();
                                         }, 3000)
+
+                                        // !!window.ethereum.isImToken
+                                        if (!!window.ethereum.isImToken) {
+                                            var itemHistory = {
+                                                event: 'Deposit',
+                                                title: 'Deposit ' + str1 + str2 + ' DAI',
+                                                transactionHash: ret,
+                                                timeStamp: new Date().getTime()
+                                            };
+                                            var tmphistory = this.state.myHistory;
+                                            tmphistory.unshift(itemHistory);
+                                            this.setState({
+                                                ...this.state,
+                                                myHistory: tmphistory
+                                            })
+                                            var localHistory = JSON.parse(localStorage.getItem(this.state.accountAddress));
+                                            localHistory[this.state.netType].history.unshift(itemHistory);
+                                            localStorage.setItem(this.state.accountAddress, JSON.stringify(localHistory));
+                                        }
+
                                     }
                                     if (data && data.status === '0x0') {
                                         clearInterval(timerOBJ[tempRnum]);
@@ -4216,6 +4301,24 @@ export default class Home extends React.Component {
                                             this.getPoolBankTotalStatus();
                                             this.getUserWithdrawBalance();
                                         }, 3000)
+                                        // !!window.ethereum.isImToken
+                                        if (!!window.ethereum.isImToken) {
+                                            var itemHistory = {
+                                                event: 'Deposit',
+                                                title: 'Deposit ' + str1 + str2 + ' PAX',
+                                                transactionHash: ret,
+                                                timeStamp: new Date().getTime()
+                                            };
+                                            var tmphistory = this.state.myHistory;
+                                            tmphistory.unshift(itemHistory);
+                                            this.setState({
+                                                ...this.state,
+                                                myHistory: tmphistory
+                                            })
+                                            var localHistory = JSON.parse(localStorage.getItem(this.state.accountAddress));
+                                            localHistory[this.state.netType].history.unshift(itemHistory);
+                                            localStorage.setItem(this.state.accountAddress, JSON.stringify(localHistory));
+                                        }
                                     }
                                     if (data && data.status === '0x0') {
                                         clearInterval(timerOBJ[tempRnum]);
@@ -4362,6 +4465,24 @@ export default class Home extends React.Component {
                                             this.getPoolBankTotalStatus();
                                             this.getUserWithdrawBalance();
                                         }, 3000)
+                                        // !!window.ethereum.isImToken
+                                        if (!!window.ethereum.isImToken) {
+                                            var itemHistory = {
+                                                event: 'Deposit',
+                                                title: 'Deposit ' + str1 + str2 + ' TUSD',
+                                                transactionHash: ret,
+                                                timeStamp: new Date().getTime()
+                                            };
+                                            var tmphistory = this.state.myHistory;
+                                            tmphistory.unshift(itemHistory);
+                                            this.setState({
+                                                ...this.state,
+                                                myHistory: tmphistory
+                                            })
+                                            var localHistory = JSON.parse(localStorage.getItem(this.state.accountAddress));
+                                            localHistory[this.state.netType].history.unshift(itemHistory);
+                                            localStorage.setItem(this.state.accountAddress, JSON.stringify(localHistory));
+                                        }
                                     }
                                     if (data && data.status === '0x0') {
                                         clearInterval(timerOBJ[tempRnum]);
@@ -4508,6 +4629,24 @@ export default class Home extends React.Component {
                                             this.getPoolBankTotalStatus();
                                             this.getUserWithdrawBalance();
                                         }, 3000)
+                                        // !!window.ethereum.isImToken
+                                        if (!!window.ethereum.isImToken) {
+                                            var itemHistory = {
+                                                event: 'Deposit',
+                                                title: 'Deposit ' + str1 + str2 + ' USDC',
+                                                transactionHash: ret,
+                                                timeStamp: new Date().getTime()
+                                            };
+                                            var tmphistory = this.state.myHistory;
+                                            tmphistory.unshift(itemHistory);
+                                            this.setState({
+                                                ...this.state,
+                                                myHistory: tmphistory
+                                            })
+                                            var localHistory = JSON.parse(localStorage.getItem(this.state.accountAddress));
+                                            localHistory[this.state.netType].history.unshift(itemHistory);
+                                            localStorage.setItem(this.state.accountAddress, JSON.stringify(localHistory));
+                                        }
                                     }
                                     if (data && data.status === '0x0') {
                                         clearInterval(timerOBJ[tempRnum]);
@@ -4741,6 +4880,24 @@ export default class Home extends React.Component {
                                             this.getPoolBankTotalStatus();
                                             this.getUserWithdrawBalance();
                                         }, 3000)
+                                        // !!window.ethereum.isImToken
+                                        if (!!window.ethereum.isImToken) {
+                                            var itemHistory = {
+                                                event: 'Destroy',
+                                                title: 'Destroy ' + str1 + str2 + ' USDx',
+                                                transactionHash: ret,
+                                                timeStamp: new Date().getTime()
+                                            };
+                                            var tmphistory = this.state.myHistory;
+                                            tmphistory.unshift(itemHistory);
+                                            this.setState({
+                                                ...this.state,
+                                                myHistory: tmphistory
+                                            })
+                                            var localHistory = JSON.parse(localStorage.getItem(this.state.accountAddress));
+                                            localHistory[this.state.netType].history.unshift(itemHistory);
+                                            localStorage.setItem(this.state.accountAddress, JSON.stringify(localHistory));
+                                        }
                                     }
                                     if (data && data.status === '0x0') {
                                         clearInterval(timerOBJ[tempRnum]);
@@ -4912,6 +5069,24 @@ export default class Home extends React.Component {
                                             this.getUserWithdrawBalance();
                                             this.getMaxNumToGenerateOnestep();
                                         }, 3000)
+                                        // !!window.ethereum.isImToken
+                                        if (!!window.ethereum.isImToken) {
+                                            var itemHistory = {
+                                                event: 'OneClickMinting',
+                                                title: 'Mint ' + this.toThousands(BN.toString(10)) + ' USDx',
+                                                transactionHash: ret,
+                                                timeStamp: new Date().getTime()
+                                            };
+                                            var tmphistory = this.state.myHistory;
+                                            tmphistory.unshift(itemHistory);
+                                            this.setState({
+                                                ...this.state,
+                                                myHistory: tmphistory
+                                            })
+                                            var localHistory = JSON.parse(localStorage.getItem(this.state.accountAddress));
+                                            localHistory[this.state.netType].history.unshift(itemHistory);
+                                            localStorage.setItem(this.state.accountAddress, JSON.stringify(localHistory));
+                                        }
                                     }
                                     if (data && data.status === '0x0') {
                                         clearInterval(timerOBJ[tempRnum]);
@@ -5049,6 +5224,24 @@ export default class Home extends React.Component {
                                             this.getPoolBankTotalStatus();
                                             this.getUserWithdrawBalance();
                                         }, 3000)
+                                        // !!window.ethereum.isImToken
+                                        if (!!window.ethereum.isImToken) {
+                                            var itemHistory = {
+                                                event: 'Claim',
+                                                title: 'Claim USDx',
+                                                transactionHash: ret,
+                                                timeStamp: new Date().getTime()
+                                            };
+                                            var tmphistory = this.state.myHistory;
+                                            tmphistory.unshift(itemHistory);
+                                            this.setState({
+                                                ...this.state,
+                                                myHistory: tmphistory
+                                            })
+                                            var localHistory = JSON.parse(localStorage.getItem(this.state.accountAddress));
+                                            localHistory[this.state.netType].history.unshift(itemHistory);
+                                            localStorage.setItem(this.state.accountAddress, JSON.stringify(localHistory));
+                                        }
                                     }
                                     if (data && data.status === '0x0') {
                                         clearInterval(timerOBJ[tempRnum]);
