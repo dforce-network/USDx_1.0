@@ -4934,7 +4934,8 @@ export default class Home extends React.Component {
     toGenerateMax(BN) {
         this.setState({
             ...this.state,
-            toGenerateMaxNum: BN
+            toGenerateMaxNum: BN,
+            isMintting: true
         });
 
         if (!this.state.approvedDAI) {
@@ -5061,7 +5062,8 @@ export default class Home extends React.Component {
                                         })
                                         this.setState({
                                             ...this.state,
-                                            showOnestep: false
+                                            showOnestep: false,
+                                            isMintting: false
                                         });
                                         setTimeout(() => {
                                             this.getMyBalance();

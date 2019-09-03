@@ -41,9 +41,14 @@ export default class Header extends React.Component {
     exMintage() {
         this.getMaxNumToGenerateOnestep();
         this.props.showOnestwpFn();
-        this.state = {
-            maxInputNum: ''
-        };
+        this.setState({
+            maxInputNum: '',
+            toUsedDAI: '',
+            toUsedPAX: '',
+            toUsedTUSD: '',
+            toUsedUSDC: '',
+        });
+        // this.oneStepMintage('');
         // this.setState({
         //     ...this.state,
         //     showMintage: !this.state.showMintage
@@ -109,35 +114,34 @@ export default class Header extends React.Component {
             toUsedUSDCError: false
         })
 
-
-        if (this.Web3.toBigNumber(toUsedDAI).sub(this.Web3.toBigNumber(this.props.status.myDAI)) > 0) {
-            this.setState({
-                ...this.state,
-                maxInputNum: val,
-                toUsedDAIError: true
-            })
-        }
-        if (this.Web3.toBigNumber(toUsedPAX).sub(this.Web3.toBigNumber(this.props.status.myPAX)) > 0) {
-            this.setState({
-                ...this.state,
-                maxInputNum: val,
-                toUsedPAXError: true
-            })
-        }
-        if (this.Web3.toBigNumber(toUsedTUSD).sub(this.Web3.toBigNumber(this.props.status.myTUSD)) > 0) {
-            this.setState({
-                ...this.state,
-                maxInputNum: val,
-                toUsedTUSDError: true
-            })
-        }
-        if (this.Web3.toBigNumber(toUsedUSDC).sub(this.Web3.toBigNumber(this.props.status.myUSDC)) > 0) {
-            this.setState({
-                ...this.state,
-                maxInputNum: val,
-                toUsedUSDCError: true
-            })
-        }
+        // if (this.Web3.toBigNumber(toUsedDAI).sub(this.Web3.toBigNumber(this.props.status.myDAI)) > 0) {
+        //     this.setState({
+        //         ...this.state,
+        //         maxInputNum: val,
+        //         toUsedDAIError: true
+        //     })
+        // }
+        // if (this.Web3.toBigNumber(toUsedPAX).sub(this.Web3.toBigNumber(this.props.status.myPAX)) > 0) {
+        //     this.setState({
+        //         ...this.state,
+        //         maxInputNum: val,
+        //         toUsedPAXError: true
+        //     })
+        // }
+        // if (this.Web3.toBigNumber(toUsedTUSD).sub(this.Web3.toBigNumber(this.props.status.myTUSD)) > 0) {
+        //     this.setState({
+        //         ...this.state,
+        //         maxInputNum: val,
+        //         toUsedTUSDError: true
+        //     })
+        // }
+        // if (this.Web3.toBigNumber(toUsedUSDC).sub(this.Web3.toBigNumber(this.props.status.myUSDC)) > 0) {
+        //     this.setState({
+        //         ...this.state,
+        //         maxInputNum: val,
+        //         toUsedUSDCError: true
+        //     })
+        // }
     }
 
     toThousands(str) {
@@ -243,6 +247,7 @@ export default class Header extends React.Component {
                                         </div>
                                         <Modal
                                             closable={true}
+                                            maskClosable={false}
                                             onCancel={this.onClose}
                                             visible={this.props.status.showOnestep}
                                             footer={null}
@@ -258,7 +263,8 @@ export default class Header extends React.Component {
                                                         onClick={() => { this.toGenerateMax() }}
                                                         variant="contained"
                                                         color="secondary"
-                                                        disabled={!this.state.toUsedDAIError && !this.state.toUsedPAXError && !this.state.toUsedTUSDError && !this.state.toUsedUSDCError && Number(this.state.maxInputNum) > 0 ? false : true}
+                                                        // disabled={!this.state.toUsedDAIError && !this.state.toUsedPAXError && !this.state.toUsedTUSDError && !this.state.toUsedUSDCError && Number(this.state.maxInputNum) > 0 ? false : true}
+                                                        disabled={Number(this.state.maxInputNum) > 0 && (this.props.status.calcMaxMinting.div(10 ** 18)).sub(Number(this.state.maxInputNum)) >= 0 && !this.props.status.isMintting ? false : true}
                                                         fullWidth={true}
                                                     >
                                                         GENERATE
@@ -268,21 +274,21 @@ export default class Header extends React.Component {
                                                 <div className='usedSection'>
                                                     <p className='usedP'>
                                                         DAI
-                                                    <span style={{ color: this.state.toUsedDAIError ? 'red' : '#9696a2' }}>{this.state.toUsedDAI ? this.state.toUsedDAI : '0.00'}</span>
+                                                    <span style={{ color: this.state.toUsedDAI ? this.Web3.toBigNumber(this.state.maxInputNum).mul(this.Web3.toBigNumber(this.props.status.sectionDAI)).div(this.props.status.tatolSection).sub(this.Web3.toBigNumber(this.props.status.myDAI)) > 0 ? 'red' : '#9696a2' : '#9696a2' }}>{this.state.toUsedDAI ? this.state.toUsedDAI : '0.00'}</span>
                                                     </p>
                                                     <p className='usedP noRightM'>
                                                         PAX
-                                                    <span style={{ color: this.state.toUsedPAXError ? 'red' : '#9696a2' }}>{this.state.toUsedPAX ? this.state.toUsedPAX : '0.00'}</span>
+                                                    <span style={{ color: this.state.toUsedPAX ? this.Web3.toBigNumber(this.state.maxInputNum).mul(this.Web3.toBigNumber(this.props.status.sectionPAX)).div(this.props.status.tatolSection).sub(this.Web3.toBigNumber(this.props.status.myPAX)) > 0 ? 'red' : '#9696a2' : '#9696a2' }}>{this.state.toUsedPAX ? this.state.toUsedPAX : '0.00'}</span>
                                                     </p>
                                                 </div>
                                                 <div className='usedSection'>
                                                     <p className='usedP'>
                                                         TUSD
-                                                    <span style={{ color: this.state.toUsedTUSDError ? 'red' : '#9696a2' }}>{this.state.toUsedTUSD ? this.state.toUsedTUSD : '0.00'}</span>
+                                                    <span style={{ color: this.state.toUsedTUSD ? this.Web3.toBigNumber(this.state.maxInputNum).mul(this.Web3.toBigNumber(this.props.status.sectionTUSD)).div(this.props.status.tatolSection).sub(this.Web3.toBigNumber(this.props.status.myTUSD)) > 0 ? 'red' : '#9696a2' : '#9696a2' }}>{this.state.toUsedTUSD ? this.state.toUsedTUSD : '0.00'}</span>
                                                     </p>
                                                     <p className='usedP noRightM'>
                                                         USDC
-                                                    <span style={{ color: this.state.toUsedUSDCError ? 'red' : '#9696a2' }}>{this.state.toUsedUSDC ? this.state.toUsedUSDC : '0.00'}</span>
+                                                    <span style={{ color: this.state.toUsedUSDC ? this.Web3.toBigNumber(this.state.maxInputNum).mul(this.Web3.toBigNumber(this.props.status.sectionUSDC)).div(this.props.status.tatolSection).sub(this.Web3.toBigNumber(this.props.status.myUSDC)) > 0 ? 'red' : '#9696a2' : '#9696a2' }}>{this.state.toUsedUSDC ? this.state.toUsedUSDC : '0.00'}</span>
                                                     </p>
                                                 </div>
                                                 <div className="clear"></div>

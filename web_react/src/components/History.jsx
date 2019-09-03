@@ -206,7 +206,6 @@ export default class History extends React.Component {
                 </ul>
 
                 <ul style={{ display: window.ethereum.isImToken ? 'block' : 'none' }}>
-                    <li>history...</li>
                     {
                         this.props.data.myHistory.map(
                             (item, index) => {
@@ -239,27 +238,20 @@ export default class History extends React.Component {
 
 
                                 if (item.event === 'Claim') {
-                                    if (item.args._balance === '0') {
-                                        return false;
-                                    } else {
-                                        return <li key={index}>
-                                            <img src={claim} alt='' />
-                                            <p className="time">
-                                                <span className='span1'>{(new Date(item.timeStamp - this.timeZoom).toGMTString()).replace(/GMT/g, '')}</span>
-                                                <span className='span2' onClick={() => { this.openOnnewTab(item.transactionHash) }}>
-                                                    <i>{item.transactionHash.substring(0, 6) + '...' + item.transactionHash.substring(item.transactionHash.length - 4)}</i>
-                                                </span>
-                                            </p>
-                                            <p className="event">{item.title}</p>
-                                        </li>
-                                    }
+                                    return <li key={index}>
+                                        <img src={claim} alt='' />
+                                        <p className="time">
+                                            <span className='span1'>{(new Date(item.timeStamp - this.timeZoom).toGMTString()).replace(/GMT/g, '')}</span>
+                                            <span className='span2' onClick={() => { this.openOnnewTab(item.transactionHash) }}>
+                                                <i>{item.transactionHash.substring(0, 6) + '...' + item.transactionHash.substring(item.transactionHash.length - 4)}</i>
+                                            </span>
+                                        </p>
+                                        <p className="event">{item.title}</p>
+                                    </li>
                                 }
 
 
                                 if (item.event === 'Withdraw') {
-                                    if (item.args._amount === '0') {
-                                        return;
-                                    }
                                     return <li key={index}>
                                         <img src={withdraw} alt='' />
                                         <p className="time">
@@ -274,9 +266,6 @@ export default class History extends React.Component {
 
 
                                 if (item.event === 'OneClickMinting') {
-                                    if (item.args._amount === '0') {
-                                        return;
-                                    }
                                     return <li key={index}>
                                         <img src={mintage} alt='' />
                                         <p className="time">

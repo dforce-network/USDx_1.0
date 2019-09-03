@@ -62,7 +62,7 @@ div.usedSection {
             display: inline-block;
             width: 75%;
             float: right;
-            padding-right: 50px;
+            padding-right: 40px;
             text-align: right;
         }
     }
@@ -76,4 +76,27 @@ div.usedSection {
     div.oneStep {
         // display: none;
     }
+
+    div.usedSection {
+        p.usedP {
+            // background: red;
+            width: 100%;
+            // float: left;
+            margin-right: 0%;
+
+            span {
+                // background: green;
+                display: inline-block;
+                width: 85%;
+                float: right;
+                padding-right: 65%;
+                text-align: right;
+            }
+        }
+
+        p.noRightM {
+            margin-right: 0;
+        }
+    }
+
 }
