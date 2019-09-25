@@ -39,6 +39,9 @@ export default class Header extends React.Component {
 
 
     exMintage() {
+        if (!this.props.status.isConnected) {
+            return false;
+        }
         this.getMaxNumToGenerateOnestep();
         this.props.showOnestwpFn();
         this.setState({
@@ -96,6 +99,9 @@ export default class Header extends React.Component {
         this.oneStepMintage(this.Web3.toBigNumber(this.props.status.calcMaxMinting).div(10 ** 18));
     }
     oneStepMintage(val) {
+        if (val.length > 15) {
+            return;
+        }
         var toUsedDAI = this.Web3.toBigNumber(val).mul(this.Web3.toBigNumber(this.props.status.sectionDAI)).div(this.props.status.tatolSection).toString(10);
         var toUsedPAX = this.Web3.toBigNumber(val).mul(this.Web3.toBigNumber(this.props.status.sectionPAX)).div(this.props.status.tatolSection).toString(10);
         var toUsedTUSD = this.Web3.toBigNumber(val).mul(this.Web3.toBigNumber(this.props.status.sectionTUSD)).div(this.props.status.tatolSection).toString(10);
@@ -241,7 +247,7 @@ export default class Header extends React.Component {
                                     </td>
 
                                     <td className='noborder'>
-                                        <div className="oneStep" onClick={() => { this.exMintage() }}>
+                                        <div className="oneStep" onClick={() => { this.exMintage() }} style={{ color: this.props.status.isConnected ? 'rgba(1, 234, 160, 1)' : '#8b8f95' }}>
                                             <img className='onepic' src={onestep} alt="" />
                                             Mintage
                                         </div>
