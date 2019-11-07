@@ -504,6 +504,35 @@ div.body {
                             }
                         }
                     }
+
+                    p.partSec_new {
+                        display: block;
+                        font-size: 18px;
+                        font-weight: 400;
+                        margin: 0;
+                        line-height: 38px;
+
+                        span.exMargin_new{
+                            font-size: 16px;
+                            color: rgba(150, 150, 162, 1);
+                            font-weight: 200;
+                            float: left;
+                        }
+                        span.right_new {
+                            float: right;
+                            text-align: right;
+                            padding-right: 0px;
+                            font-weight: 400;
+                            color: #333;
+
+                            i {
+                                font-style: normal;
+                                font-size: 80%;
+                                color: rgba(150, 150, 162, 1);
+                                font-weight: 200;
+                            }
+                        }
+                    }
                 }
 
                 div.myBalanceOnPoolMax {
@@ -797,6 +826,10 @@ div.body {
                             height: 35px;
                             line-height: 26px;
                         }
+                    }
+
+                    div.ButtonWrap_new{
+                        padding-bottom: 101px;
                     }
 
                     div.marginTop10 {

@@ -74,7 +74,7 @@ export default class bodyleft extends React.Component {
                     </Tooltip>
                     Constituents Pending Pool:
                 </div>
-                <div className="pool">
+                {/* <div className="pool">
                     <div className="leftSection">
                         {this.props.data.sectionDAI ? (this.props.data.sectionDAI * 100 / this.props.data.tatolSection).toFixed() : '-'}%
                     </div>
@@ -112,7 +112,7 @@ export default class bodyleft extends React.Component {
                         </p>
                     </div>
                     <div className="clear"></div>
-                </div>
+                </div> */}
                 <div className="pool poolColor2">
                     <div className="leftSection">
                         {this.props.data.sectionPAX ? (this.props.data.sectionPAX * 100 / this.props.data.tatolSection).toFixed() : '-'}%
@@ -251,13 +251,13 @@ export default class bodyleft extends React.Component {
                         </Tooltip>
                         Global Collateral Pool:
                     </div>
-                    <div className="sectionToken">
+                    {/* <div className="sectionToken">
                         <span className="token">DAI</span>
                         <span className="tokenNum">
                             {this.props.data.DAIonBank ? this.toThousandsbodyleft(this.props.data.DAIonBank.split('.')[0]) : '0'}
                             <i>{this.props.data.DAIonBank ? '.' + this.props.data.DAIonBank.split('.')[1] : '.00'}</i>
                         </span>
-                    </div>
+                    </div> */}
                     <div className="sectionToken">
                         <span className="token">PAX</span>
                         <span className="tokenNum">

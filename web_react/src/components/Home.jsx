@@ -90,9 +90,9 @@ export default class Home extends React.Component {
         super(props);
         this.state = {
             transcations: {},
-            toDeposit: 'DAI',
+            toDeposit: 'PAX',
             toDepositNum: '',
-            toWithdraw: 'DAI',
+            toWithdraw: 'PAX',
             toWithdrawNum: '',
             toDestroyNum: '',
             tab1: true,
@@ -278,8 +278,8 @@ export default class Home extends React.Component {
                         allocateTo={(v) => { this.allocateTo(v) }}
                         getMaxNumToGenerateOnestep={() => { this.getMaxNumToGenerateOnestep() }}
                         toGenerateMax={(BN) => { this.toGenerateMax(BN) }}
-                        showOnestwpFn={() => {this.showOnestwpFn()}}
-                        closeOnestwpFn={() => {this.closeOnestwpFn()}}
+                        showOnestwpFn={() => { this.showOnestwpFn() }}
+                        closeOnestwpFn={() => { this.closeOnestwpFn() }}
                     />
                     <MuiThemeProvider theme={this.theme}>
                         <div className="body">
@@ -302,7 +302,7 @@ export default class Home extends React.Component {
                                         </Tooltip> */}
                                         Constituents Pending Pool:
                                     </div>
-                                    <div className="pool" style={{ width: '260px', marginTop: '10px', height: '60px', background: 'rgba(255, 245, 228, 1)', marginLeft: '-5px', borderRadius: '5px' }}>
+                                    {/* <div className="pool" style={{ width: '260px', marginTop: '10px', height: '60px', background: 'rgba(255, 245, 228, 1)', marginLeft: '-5px', borderRadius: '5px' }}>
                                         <div className="leftSection" style={{ float: 'left', width: '40px', textAlign: 'center', height: '60px', lineHeight: '60px', fontSize: '14px' }}>
                                             {this.state.sectionDAI ? (this.state.sectionDAI * 100 / this.state.tatolSection).toFixed() : '-'}%
                                         </div>
@@ -340,7 +340,7 @@ export default class Home extends React.Component {
                                             </p>
                                         </div>
                                         <div className="clear"></div>
-                                    </div>
+                                    </div> */}
                                     <div className="pool poolColor2" style={{ width: '260px', marginTop: '10px', height: '60px', marginLeft: '-5px', borderRadius: '5px', background: 'rgba(219, 255, 249, 1)', backgroundSize: 'auto 100%' }}>
                                         <div className="leftSection" style={{ float: 'left', width: '40px', textAlign: 'center', height: '60px', lineHeight: '60px', fontSize: '14px' }}>
                                             {this.state.sectionPAX ? (this.state.sectionPAX * 100 / this.state.tatolSection).toFixed() : '-'}%
@@ -479,13 +479,13 @@ export default class Home extends React.Component {
                                             </Tooltip> */}
                                             Global Collateral Pool:
                                         </div>
-                                        <div className="sectionToken" style={{ marginTop: '10px' }}>
+                                        {/* <div className="sectionToken" style={{ marginTop: '10px' }}>
                                             <span className="token" style={{ fontSize: '14px', width: '60px', lineHeight: '30px' }}>DAI</span>
                                             <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
                                                 {this.state.DAIonBank ? this.toThousandsbodyleft(this.state.DAIonBank.split('.')[0]) : '0'}
                                                 <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>{this.state.DAIonBank ? '.' + this.state.DAIonBank.split('.')[1] : '.00'}</i>
                                             </span>
-                                        </div>
+                                        </div> */}
                                         <div className="sectionToken">
                                             <span className="token" style={{ fontSize: '14px', width: '60px', lineHeight: '30px' }}>PAX</span>
                                             <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
@@ -530,8 +530,8 @@ export default class Home extends React.Component {
                                         <p className="details">Select which constituent you would like to deposit:</p>
                                         <div className="input">
                                             <input type="number" onChange={(val) => { this.depositNumChange(val.target.value) }} value={this.state.toDepositNum} />
-                                            <Select className="mySelect" defaultValue="DAI" onChange={(val) => { this.depositOptChange(val) }}>
-                                                <Select.Option value="DAI">DAI</Select.Option>
+                                            <Select className="mySelect" defaultValue="PAX" onChange={(val) => { this.depositOptChange(val) }}>
+                                                {/* <Select.Option value="DAI">DAI</Select.Option> */}
                                                 <Select.Option value="PAX">PAX</Select.Option>
                                                 <Select.Option value="TUSD">TUSD</Select.Option>
                                                 <Select.Option value="USDC">USDC</Select.Option>
@@ -563,7 +563,7 @@ export default class Home extends React.Component {
                                                 {this.state.userMaxToClaim ? '.' + this.state.userMaxToClaim.split('.')[1] : '.00'}
                                             </span>
                                         </div>
-                                        <div className="ButtonWrap marginTop10 marginMax">
+                                        <div className="ButtonWrap marginTop10 marginMax ButtonWrap_new">
                                             <Button
                                                 onClick={() => { this.claim() }}
                                                 variant="contained"
@@ -617,30 +617,32 @@ export default class Home extends React.Component {
                                         </div>
                                         <div className="myBalanceOnPoolSection">
                                             <div className="title">Constituents to be returned:</div>
-                                            <p className='partToken'>
+                                            {/* <p className='partToken'>
                                                 <span>DAI</span>
                                                 <span className='right'>
                                                     {this.state.USDxToDAI ? this.toThousands(this.state.USDxToDAI.split('.')[0]) : '0'}
                                                     <i>{this.state.USDxToDAI ? this.state.USDxToDAI.split('.')[1] ? '.' + this.state.USDxToDAI.split('.')[1] : '.00' : '.00'}</i>
                                                 </span>
-                                            </p>
-                                            <p className='partToken marginR marginl'>
-                                                <span className='exMargin'>PAX</span>
-                                                <span className='right'>
+                                            </p> */}
+                                            <p className='partSec_new'>
+                                                <span className='exMargin_new'>PAX</span>
+                                                <span className='right_new'>
                                                     {this.state.USDxToPAX ? this.toThousands(this.state.USDxToPAX.split('.')[0]) : '0'}
                                                     <i>{this.state.USDxToPAX ? this.state.USDxToPAX.split('.')[1] ? '.' + this.state.USDxToPAX.split('.')[1] : '.00' : '.00'}</i>
                                                 </span>
                                             </p>
-                                            <p className='partToken'>
-                                                <span>TUSD</span>
-                                                <span className='right'>
+                                            <div className="clear"></div>
+                                            <p className='partSec_new'>
+                                                <span className='exMargin_new'>TUSD</span>
+                                                <span className='right_new'>
                                                     {this.state.USDxToTUSD ? this.toThousands(this.state.USDxToTUSD.split('.')[0]) : '0'}
                                                     <i>{this.state.USDxToTUSD ? this.state.USDxToTUSD.split('.')[1] ? '.' + this.state.USDxToTUSD.split('.')[1] : '.00' : '.00'}</i>
                                                 </span>
                                             </p>
-                                            <p className='partToken marginl'>
-                                                <span className='exMargin'>USDC</span>
-                                                <span className='right'>
+                                            <div className="clear"></div>
+                                            <p className='partSec_new'>
+                                                <span className='exMargin_new'>USDC</span>
+                                                <span className='right_new'>
                                                     {this.state.USDxToUSDC ? this.toThousands(this.state.USDxToUSDC.split('.')[0]) : '0'}
                                                     <i>{this.state.USDxToUSDC ? this.state.USDxToUSDC.split('.')[1] ? '.' + this.state.USDxToUSDC.split('.')[1] : '.00' : '.00'}</i>
                                                 </span>
@@ -660,8 +662,8 @@ export default class Home extends React.Component {
                                         <div className="input">
                                             <div className="maxNum" onClick={() => { this.adjustMaxToWithdraw() }}>MAX</div>
                                             <input type="number" onChange={(val) => { this.withdrawNumChange(val.target.value) }} value={this.state.toWithdrawNum} />
-                                            <Select className="mySelect" defaultValue="DAI" onChange={(val) => { this.withdrawOptChange(val) }}>
-                                                <Select.Option value="DAI">DAI</Select.Option>
+                                            <Select className="mySelect" defaultValue="PAX" onChange={(val) => { this.withdrawOptChange(val) }}>
+                                                {/* <Select.Option value="DAI">DAI</Select.Option> */}
                                                 <Select.Option value="PAX">PAX</Select.Option>
                                                 <Select.Option value="TUSD">TUSD</Select.Option>
                                                 <Select.Option value="USDC">USDC</Select.Option>
@@ -684,30 +686,32 @@ export default class Home extends React.Component {
                                             </div>
                                         <div className="myBalanceOnPoolSection">
                                             <div className="title">Constituent balance:</div>
-                                            <p className='partToken'>
+                                            {/* <p className='partToken'>
                                                 <span>DAI</span>
                                                 <span className='right' title={this.state.myDAIonPoolOrigin}>
                                                     {this.state.myDAIonPool ? this.toThousands(this.state.myDAIonPool.split('.')[0]) : '0'}
                                                     <i>{this.state.myDAIonPool ? '.' + this.state.myDAIonPool.split('.')[1] : '.00'}</i>
                                                 </span>
-                                            </p>
-                                            <p className='partToken marginl'>
-                                                <span className='exMargin'>PAX</span>
-                                                <span className='right' title={this.state.myPAXonPoolOrigin}>
+                                            </p> */}
+                                            <p className='partSec_new'>
+                                                <span className='exMargin_new'>PAX</span>
+                                                <span className='right_new' title={this.state.myPAXonPoolOrigin}>
                                                     {this.state.myPAXonPool ? this.toThousands(this.state.myPAXonPool.split('.')[0]) : '0'}
                                                     <i>{this.state.myPAXonPool ? '.' + this.state.myPAXonPool.split('.')[1] : '.00'}</i>
                                                 </span>
                                             </p>
-                                            <p className='partToken'>
-                                                <span>TUSD</span>
-                                                <span className='right' title={this.state.myTUSDonPoolOrigin}>
+                                            <div className="clear"></div>
+                                            <p className='partSec_new'>
+                                                <span className='exMargin_new'>TUSD</span>
+                                                <span className='right_new' title={this.state.myTUSDonPoolOrigin}>
                                                     {this.state.myTUSDonPool ? this.toThousands(this.state.myTUSDonPool.split('.')[0]) : '0'}
                                                     <i>{this.state.myTUSDonPool ? '.' + this.state.myTUSDonPool.split('.')[1] : '.00'}</i>
                                                 </span>
                                             </p>
-                                            <p className='partToken marginl'>
-                                                <span className='exMargin'>USDC</span>
-                                                <span className='right' title={this.state.myUSDConPoolOrigin}>
+                                            <div className="clear"></div>
+                                            <p className='partSec_new'>
+                                                <span className='exMargin_new'>USDC</span>
+                                                <span className='right_new' title={this.state.myUSDConPoolOrigin}>
                                                     {this.state.myUSDConPool ? this.toThousands(this.state.myUSDConPool.split('.')[0]) : '0'}
                                                     <i>{this.state.myUSDConPool ? '.' + this.state.myUSDConPool.split('.')[1] : '.00'}</i>
                                                 </span>
@@ -5119,13 +5123,13 @@ export default class Home extends React.Component {
             }
         )
     }
-    showOnestwpFn(){
+    showOnestwpFn() {
         this.setState({
             ...this.state,
             showOnestep: !this.state.showOnestep
         })
     }
-    closeOnestwpFn(){
+    closeOnestwpFn() {
         this.setState({
             ...this.state,
             showOnestep: !this.state.showOnestep

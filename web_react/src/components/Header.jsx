@@ -205,7 +205,7 @@ export default class Header extends React.Component {
                                             <i>{this.props.status.myUSDx ? '.' + this.props.status.myUSDx.split('.')[1] : '.00'}</i>
                                         </span>
                                     </td>
-                                    <td>
+                                    {/* <td>
                                         <span className="token">DAI</span>
                                         <img style={{ display: this.props.status.approvedDAI ? 'none' : 'inline-block' }} src={lock} alt="" onClick={() => { this.approve('DAI') }} />
                                         <img style={{ display: this.props.status.approvedDAI ? 'inline-block' : 'none' }} src={unlock} alt="" onClick={() => { this.lock('DAI') }} />
@@ -214,7 +214,7 @@ export default class Header extends React.Component {
                                             {this.props.status.myDAI ? this.toThousands(this.props.status.myDAI.split('.')[0]) : '0'}
                                             <i>{this.props.status.myDAI ? this.props.status.myDAI.split('.')[1] ? '.' + this.props.status.myDAI.split('.')[1] : '.00' : '.00'}</i>
                                         </span>
-                                    </td>
+                                    </td> */}
                                     <td>
                                         <span className="token">PAX</span>
                                         <img style={{ display: this.props.status.approvedPAX ? 'none' : 'inline-block' }} src={lock} alt="" onClick={() => { this.approve('PAX') }} />
@@ -246,7 +246,7 @@ export default class Header extends React.Component {
                                         </span>
                                     </td>
 
-                                    <td className='noborder'>
+                                    {/* <td className='noborder'>
                                         <div className="oneStep" onClick={() => { this.exMintage() }} style={{ color: this.props.status.isConnected ? 'rgba(1, 234, 160, 1)' : '#8b8f95' }}>
                                             <img className='onepic' src={onestep} alt="" />
                                             Mintage
@@ -300,7 +300,7 @@ export default class Header extends React.Component {
                                                 <div className="clear"></div>
                                             </div>
                                         </Modal>
-                                    </td>
+                                    </td> */}
 
                                 </tr>
                             </tbody>
