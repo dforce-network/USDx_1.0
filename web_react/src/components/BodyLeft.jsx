@@ -251,13 +251,15 @@ export default class bodyleft extends React.Component {
                         </Tooltip>
                         Global Collateral Pool:
                     </div>
-                    {/* <div className="sectionToken">
-                        <span className="token">DAI</span>
-                        <span className="tokenNum">
-                            {this.props.data.DAIonBank ? this.toThousandsbodyleft(this.props.data.DAIonBank.split('.')[0]) : '0'}
-                            <i>{this.props.data.DAIonBank ? '.' + this.props.data.DAIonBank.split('.')[1] : '.00'}</i>
-                        </span>
-                    </div> */}
+                    {
+                        /* <div className="sectionToken">
+                            <span className="token">DAI</span>
+                            <span className="tokenNum">
+                                {this.props.data.DAIonBank ? this.toThousandsbodyleft(this.props.data.DAIonBank.split('.')[0]) : '0'}
+                                <i>{this.props.data.DAIonBank ? '.' + this.props.data.DAIonBank.split('.')[1] : '.00'}</i>
+                            </span>
+                        </div> */
+                    }
                     <div className="sectionToken">
                         <span className="token">PAX</span>
                         <span className="tokenNum">

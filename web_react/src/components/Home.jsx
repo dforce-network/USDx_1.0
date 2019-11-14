@@ -932,13 +932,14 @@ export default class Home extends React.Component {
 
     // get the Token section
     getTokenSection() {
-        this.tatolSection = 0;
+        // this.tatolSection = 0;
         this.contractProtocolView.getMintingSection.call((err, ret) => {
             // console.log(ret[0])
             // console.log(ret[1])
             if (ret) {
                 var addressArry = ret[0];
                 var secArry = ret[1];
+                this.tatolSection = 0;
 
                 for (let i = 0; i < addressArry.length; i++) {
                     if (addressArry[i].toLowerCase() === this.addressDAI) {
