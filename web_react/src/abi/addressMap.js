@@ -43,7 +43,7 @@ const addressMap = {
         'addressDAI': '0x506243424a778382f73bf6c24390d08fa9096092'.toLowerCase(),
         'addressPAX': '0x722E6238335d89393A42e2cA316A5fb1b8B2EB55'.toLowerCase(),
         'addressTUSD': '0xe72a3181f69Eb21A19bd4Ce19Eb68FDb333d74c6'.toLowerCase(),
-        'addressUSDC': '0x84e96bb630a711d66789AcaBc237c087D8B371D3'.toLowerCase(),
+        'addressUSDC': '0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b'.toLowerCase(),
         'addressDF': '0x5d378961e9d31c0ee394d34741fa1a18144f6fb5'.toLowerCase(),
         'addressUSDx': '0xdbcfff49d5f48ddf6e6df1f2c9b96e1fc0f31371'.toLowerCase(),
         'addressProtocol': '0x7ca26e42bba5543cf5a06a0d554a0fc607f3d4ac'.toLowerCase(),
