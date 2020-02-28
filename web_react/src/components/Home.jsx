@@ -7,6 +7,7 @@ import IconButton from '@material-ui/core/IconButton';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import 'antd/dist/antd.css';
 import { Tooltip, Progress, Select, Drawer } from 'antd';
+import './home.scss';
 
 // abis
 import abiTokens from '../abi/abiTokens';
@@ -45,6 +46,7 @@ export default class Home extends React.Component {
     gasFee = 3000000;
     faucetNum = 10000;
     gasRatio = 1.3;
+    adjustedRate = 1;
 
     theme = createMuiTheme({
         palette: {
@@ -107,10 +109,20 @@ export default class Home extends React.Component {
             DAIonPool: '0.00',
             PAXonPool: '0.00',
             TUSDonPool: '0.00',
-            USDConPool: '0.00'
+            USDConPool: '0.00',
+
+            USDC_Reserve_lower: 0,
+            TUSD_Reserve_lower: 0,
+            PAX_Reserve_lower: 0,
+
+            need_pull: false,
+            TUSD_Reserve_ratio: 0,
+            USDC_Reserve_ratio: 0,
+            PAX_Reserve_ratio: 0
         }
         if (window.web3) {
             this.Web3 = window.web3;
+            this.bignumber = this.Web3.toBigNumber;
 
             this.Web3.version.getNetwork((err, net) => {
                 console.log(net);
@@ -252,6 +264,7 @@ export default class Home extends React.Component {
                 // this.isSyncing();
                 this.getGasPrice();
                 this.get_3_dispatcher_status();
+                this.check_if_need_pull();
             } else {
                 console.log('not connected...');
                 return;
@@ -336,6 +349,75 @@ export default class Home extends React.Component {
             this.setState({
                 TUSD_Reserve_lower: ret.toString()
             })
+        })
+    }
+
+    check_if_need_pull = () => {
+        if (
+            Number(this.state.TUSD_Reserve_ratio) + Number(this.adjustedRate) < Number(this.state.TUSD_Reserve_lower) ||
+            Number(this.state.PAX_Reserve_ratio) + Number(this.adjustedRate) < Number(this.state.PAX_Reserve_lower) ||
+            Number(this.state.USDC_Reserve_ratio) + Number(this.adjustedRate) < Number(this.state.USDC_Reserve_lower)
+        ) {
+            this.setState({ need_pull: true })
+            if (Number(this.state.TUSD_Reserve_ratio) + Number(this.adjustedRate) < Number(this.state.TUSD_Reserve_lower)) {
+                var TUSD_need = this.state.TUSDonBank * this.state.TUSD_Reserve_lower / 1000 - this.state.TUSD_Reserve;
+                this.setState({ TUSD_need: TUSD_need });
+            }
+            if (Number(this.state.PAX_Reserve_ratio) + Number(this.adjustedRate) < Number(this.state.PAX_Reserve_lower)) {
+                var PAX_need = this.state.PAXonBank * this.state.PAX_Reserve_lower / 1000 - this.state.PAX_Reserve;
+                this.setState({ PAX_need: PAX_need });
+            }
+            if (Number(this.state.USDC_Reserve_ratio) + Number(this.adjustedRate) < Number(this.state.USDC_Reserve_lower)) {
+                var USDC_need = this.state.USDConBank * this.state.USDC_Reserve_lower / 1000 - this.state.USDC_Reserve;
+                this.setState({ USDC_need: USDC_need });
+            }
+        } else {
+            this.setState({
+                need_pull: false
+            })
+        }
+    }
+
+    pull_click = (token) => {
+        console.log(token);
+        var DisPatcher;
+        if (token === 'PAX') {
+            DisPatcher = this.dispatcher_PAX;
+        } else if (token === 'TUSD') {
+            DisPatcher = this.dispatcher_TUSD;
+        } else if (token === 'USDC') {
+            DisPatcher = this.dispatcher_USDC;
+        }
+
+        // DisPatcher.trigger.sendTransaction  estimateGas
+        DisPatcher.trigger.estimateGas({ from: this.state.accountAddress }, (err, gasLimit) => {
+            DisPatcher.trigger.sendTransaction(
+                {
+                    from: this.state.accountAddress,
+                    gas: Math.ceil(gasLimit * this.gasRatio),
+                    gasPrice: this.state.gasPrice
+                },
+                (err, ret) => {
+                    if (err) {
+                        console.log('cancel the trigger');
+                    }
+                    if (ret) {
+                        var timer_trigger = setInterval(() => {
+                            console.log('i am checking trigger...');
+                            this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                if (data && data.status === '0x1') {
+                                    clearInterval(timer_trigger);
+                                    this.get_3_dispatcher_status();
+                                    this.check_if_need_pull();
+                                }
+                                if (data && data.status === '0x0') {
+                                    clearInterval(timer_trigger);
+                                }
+                            })
+                        }, 2000);
+                    }
+                }
+            )
         })
     }
 
@@ -767,7 +849,11 @@ export default class Home extends React.Component {
                                     <div style={{ display: !this.state.tab1 ? 'block' : 'none' }} className="generate">
                                         <p className="details">How much USDx you would like to reconvert into constituents:</p>
                                         <div className="input">
-                                            <input type="number" onChange={(val) => { this.destroyNumChange(val.target.value) }} value={this.state.toDestroyNum} />
+                                            <input
+                                                type="number"
+                                                onChange={(val) => { this.destroyNumChange(val.target.value) }}
+                                                value={this.state.toDestroyNum}
+                                            />
                                             <Select className="mySelect" defaultValue="USDx" disabled></Select>
                                         </div>
                                         <div className="clear"></div>
@@ -778,8 +864,9 @@ export default class Home extends React.Component {
                                                 color="secondary"
                                                 disabled={this.state.couldDestroy ? false : true}
                                                 fullWidth={true}
-                                            >CONVERT
-                                        </Button>
+                                            >
+                                                CONVERT
+                                            </Button>
                                         </div>
                                         <div className="tips tipsMax">
                                             <div className="imgWrap">
@@ -802,40 +889,81 @@ export default class Home extends React.Component {
                                             <span style={{ display: this.state.errTipsDestroy && !this.state.getDestroyThresholdBool && Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) < 0 ? 'block' : 'none' }}>Insufficient USDx.</span>
                                             <span style={{ display: this.state.getDestroyThresholdBool ? 'block' : 'none' }}>The minimum accuracy to unconvert is no less than 0.01 USDx.</span>
                                             <span style={{ display: Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) > 0 ? 'block' : 'none' }}>Insufficient DF.</span>
+                                            <span style={{ display: this.state.pull_first ? 'block' : 'none' }}>
+                                                Pull first
+                                            </span>
                                         </div>
                                         <div className="myBalanceOnPoolSection">
                                             <div className="title">Constituents to be returned:</div>
-                                            {/* <p className='partToken'>
-                                                <span>DAI</span>
-                                                <span className='right'>
-                                                    {this.state.USDxToDAI ? this.toThousands(this.state.USDxToDAI.split('.')[0]) : '0'}
-                                                    <i>{this.state.USDxToDAI ? this.state.USDxToDAI.split('.')[1] ? '.' + this.state.USDxToDAI.split('.')[1] : '.00' : '.00'}</i>
-                                                </span>
-                                            </p> */}
-                                            <p className='partSec_new'>
-                                                <span className='exMargin_new'>PAX</span>
-                                                <span className='right_new'>
-                                                    {this.state.USDxToPAX ? this.toThousands(this.state.USDxToPAX.split('.')[0]) : '0'}
-                                                    <i>{this.state.USDxToPAX ? this.state.USDxToPAX.split('.')[1] ? '.' + this.state.USDxToPAX.split('.')[1] : '.00' : '.00'}</i>
-                                                </span>
-                                            </p>
-                                            <div className="clear"></div>
-                                            <p className='partSec_new'>
-                                                <span className='exMargin_new'>TUSD</span>
-                                                <span className='right_new'>
-                                                    {this.state.USDxToTUSD ? this.toThousands(this.state.USDxToTUSD.split('.')[0]) : '0'}
-                                                    <i>{this.state.USDxToTUSD ? this.state.USDxToTUSD.split('.')[1] ? '.' + this.state.USDxToTUSD.split('.')[1] : '.00' : '.00'}</i>
-                                                </span>
-                                            </p>
-                                            <div className="clear"></div>
-                                            <p className='partSec_new'>
-                                                <span className='exMargin_new'>USDC</span>
-                                                <span className='right_new'>
-                                                    {this.state.USDxToUSDC ? this.toThousands(this.state.USDxToUSDC.split('.')[0]) : '0'}
-                                                    <i>{this.state.USDxToUSDC ? this.state.USDxToUSDC.split('.')[1] ? '.' + this.state.USDxToUSDC.split('.')[1] : '.00' : '.00'}</i>
-                                                </span>
-                                            </p>
-                                            <div className="clear"></div>
+
+                                            <div className="sec-wrap">
+                                                <div className="sec-wrap-left">
+                                                    <div className='sec-item'>
+                                                        <span className='sec-item-token'>PAX</span>
+                                                        <span className='sec-item-t-num'>
+                                                            {this.state.USDxToPAX ? this.toThousands(this.state.USDxToPAX.split('.')[0]) : '0'}
+                                                            <i>
+                                                                {this.state.USDxToPAX ? this.state.USDxToPAX.split('.')[1] ? '.' + this.state.USDxToPAX.split('.')[1] : '.00' : '.00'}
+                                                            </i>
+                                                        </span>
+                                                    </div>
+
+                                                    <div className='sec-item'>
+                                                        <span className='sec-item-token'>TUSD</span>
+                                                        <span className='sec-item-t-num'>
+                                                            {this.state.USDxToTUSD ? this.toThousands(this.state.USDxToTUSD.split('.')[0]) : '0'}
+                                                            <i>
+                                                                {this.state.USDxToTUSD ? this.state.USDxToTUSD.split('.')[1] ? '.' + this.state.USDxToTUSD.split('.')[1] : '.00' : '.00'}
+                                                            </i>
+                                                        </span>
+                                                    </div>
+
+                                                    <div className='sec-item'>
+                                                        <span className='sec-item-token'>USDC</span>
+                                                        <span className='sec-item-t-num'>
+                                                            {this.state.USDxToUSDC ? this.toThousands(this.state.USDxToUSDC.split('.')[0]) : '0'}
+                                                            <i>
+                                                                {this.state.USDxToUSDC ? this.state.USDxToUSDC.split('.')[1] ? '.' + this.state.USDxToUSDC.split('.')[1] : '.00' : '.00'}
+                                                            </i>
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                {
+                                                    this.state.need_pull &&
+                                                    <div className="sec-wrap-right">
+                                                        <div className="sec-item" style={{ opacity: this.state.PAX_need ? 1 : 0 }}>
+                                                            <span className="sec-item-btn" onClick={() => { this.pull_click('PAX') }}>PULL</span>
+                                                            <span className="sec-item-num">
+                                                                {this.state.PAX_need ? this.toThousands(this.state.PAX_need.split('.')[0]) : '0'}
+                                                                <i>
+                                                                    {this.state.PAX_need ? this.state.PAX_need.split('.')[1] ? '.' + this.state.PAX_need.split('.')[1] : '.00' : '.00'}
+                                                                </i>
+                                                            </span>
+                                                        </div>
+
+                                                        <div className="sec-item" style={{ opacity: this.state.TUSD_need ? 1 : 0 }}>
+                                                            <span className="sec-item-btn" onClick={() => { this.pull_click('TUSD') }}>PULL</span>
+                                                            <span className="sec-item-num">
+                                                                {this.state.TUSD_need ? this.toThousands(this.state.TUSD_need.split('.')[0]) : '0'}
+                                                                <i>
+                                                                    {this.state.TUSD_need ? this.state.TUSD_need.split('.')[1] ? '.' + this.state.TUSD_need.split('.')[1] : '.00' : '.00'}
+                                                                </i>
+                                                            </span>
+                                                        </div>
+
+                                                        <div className="sec-item" style={{ opacity: this.state.USDC_need ? 1 : 0 }}>
+                                                            <span className="sec-item-btn" onClick={() => { this.pull_click('USDC') }}>PULL</span>
+                                                            <span className="sec-item-num">
+                                                                {this.state.USDC_need ? this.toThousands(this.state.USDC_need.split('.')[0]) : '0'}
+                                                                <i>
+                                                                    {this.state.USDC_need ? this.state.USDC_need.split('.')[1] ? '.' + this.state.USDC_need.split('.')[1] : '.00' : '.00'}
+                                                                </i>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -4945,6 +5073,27 @@ export default class Home extends React.Component {
                 })
             }
         }
+
+        if (
+            this.bignumber(val).mul(this.bignumber(this.state.sectionPAXBurning).div(this.bignumber(this.state.tatolSectionBurning))).gt(this.bignumber(this.state.PAX_Reserve)) ||
+            this.bignumber(val).mul(this.bignumber(this.state.sectionTUSDBurning).div(this.bignumber(this.state.tatolSectionBurning))).gt(this.bignumber(this.state.TUSD_Reserve)) ||
+            this.bignumber(val).mul(this.bignumber(this.state.sectionUSDCBurning).div(this.bignumber(this.state.tatolSectionBurning))).gt(this.bignumber(this.state.USDC_Reserve))
+        ) {
+            this.setState({
+                errTipsDestroy: true,
+                couldDestroy: false,
+                toDestroyNum: val,
+                pull_first: true
+            })
+        } else {
+            this.setState({
+                errTipsDestroy: false,
+                couldDestroy: true,
+                toDestroyNum: val,
+                pull_first: false
+            })
+        }
+        // console.log(this.bignumber(val).mul(this.bignumber(this.state.sectionPAXBurning).div(this.bignumber(this.state.tatolSectionBurning))).toString())
     }
     destroy() {
         if (!this.state.couldDestroy) {
