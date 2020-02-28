@@ -292,7 +292,7 @@ export default class bodyleft extends React.Component {
                         </span>
                     </div>
                     <div className="sectionToken">
-                        <span className="token" style={{ fontSize: '14px', width: '114px', lineHeight: '30px', fontSize: '80%', opacity: 0.7 }}>Target Reserve Ratio</span>
+                        <span className="token" style={{ fontSize: '14px', width: '135px', lineHeight: '30px', fontSize: '80%', opacity: 0.7 }}>Target Reserve Range</span>
                         <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
                             <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>
                                 {this.props.data.PAX_Reserve_lower ? this.props.data.PAX_Reserve_lower / 10 + '%' : '0%'}
@@ -301,7 +301,7 @@ export default class bodyleft extends React.Component {
                             </i>
                         </span>
                     </div>
-                    <div className="sectionToken">
+                    <div className="sectionToken" style={{ marginBottom: '10px' }}>
                         <span className="token" style={{ fontSize: '14px', width: '120px', lineHeight: '30px', fontSize: '80%', opacity: 0.7 }}>Current Reserve Ratio</span>
                         <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
                             <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>
@@ -319,7 +319,7 @@ export default class bodyleft extends React.Component {
                         </span>
                     </div>
                     <div className="sectionToken">
-                        <span className="token" style={{ fontSize: '14px', width: '114px', lineHeight: '30px', fontSize: '80%', opacity: 0.7 }}>Target Reserve Ratio</span>
+                        <span className="token" style={{ fontSize: '14px', width: '135px', lineHeight: '30px', fontSize: '80%', opacity: 0.7 }}>Target Reserve Range</span>
                         <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
                             <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>
                                 {this.props.data.TUSD_Reserve_lower ? this.props.data.TUSD_Reserve_lower / 10 + '%' : '0%'}
@@ -328,7 +328,7 @@ export default class bodyleft extends React.Component {
                             </i>
                         </span>
                     </div>
-                    <div className="sectionToken">
+                    <div className="sectionToken" style={{ marginBottom: '10px' }}>
                         <span className="token" style={{ fontSize: '14px', width: '120px', lineHeight: '30px', fontSize: '80%', opacity: 0.7 }}>Current Reserve Ratio</span>
                         <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
                             <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>
@@ -346,7 +346,7 @@ export default class bodyleft extends React.Component {
                         </span>
                     </div>
                     <div className="sectionToken">
-                        <span className="token" style={{ fontSize: '14px', width: '114px', lineHeight: '30px', fontSize: '80%', opacity: 0.7 }}>Target Reserve Ratio</span>
+                        <span className="token" style={{ fontSize: '14px', width: '135px', lineHeight: '30px', fontSize: '80%', opacity: 0.7 }}>Target Reserve Range</span>
                         <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
                             <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>
                                 {this.props.data.USDC_Reserve_lower ? this.props.data.USDC_Reserve_lower / 10 + '%' : '0%'}

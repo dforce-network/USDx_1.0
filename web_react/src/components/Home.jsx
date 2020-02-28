@@ -698,7 +698,7 @@ export default class Home extends React.Component {
                                             </span>
                                         </div>
                                         <div className="sectionToken">
-                                            <span className="token" style={{ fontSize: '14px', width: '60px', lineHeight: '30px', fontSize: '80%', opacity: 0.7 }}>Target Reserve Ratio</span>
+                                            <span className="token" style={{ fontSize: '14px', width: '60px', lineHeight: '30px', fontSize: '80%', opacity: 0.7 }}>Target Reserve Range</span>
                                             <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
                                                 <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>
                                                     {this.state.PAX_Reserve_lower ? this.state.PAX_Reserve_lower / 10 + '%' : '0%'}
@@ -727,7 +727,7 @@ export default class Home extends React.Component {
                                             </span>
                                         </div>
                                         <div className="sectionToken">
-                                            <span className="token" style={{ fontSize: '14px', width: '60px', lineHeight: '30px', fontSize: '80%', opacity: 0.7 }}>Target Reserve Ratio</span>
+                                            <span className="token" style={{ fontSize: '14px', width: '60px', lineHeight: '30px', fontSize: '80%', opacity: 0.7 }}>Target Reserve Range</span>
                                             <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
                                                 <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>
                                                     {this.state.TUSD_Reserve_lower ? this.state.TUSD_Reserve_lower / 10 + '%' : '0%'}
@@ -756,7 +756,7 @@ export default class Home extends React.Component {
                                             </span>
                                         </div>
                                         <div className="sectionToken">
-                                            <span className="token" style={{ fontSize: '14px', width: '60px', lineHeight: '30px', fontSize: '80%', opacity: 0.7 }}>Target Reserve Ratio</span>
+                                            <span className="token" style={{ fontSize: '14px', width: '60px', lineHeight: '30px', fontSize: '80%', opacity: 0.7 }}>Target Reserve Range</span>
                                             <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
                                                 <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>
                                                     {this.state.USDC_Reserve_lower ? this.state.USDC_Reserve_lower / 10 + '%' : '0%'}
@@ -886,7 +886,7 @@ export default class Home extends React.Component {
                                         <div className="errtips" style={{ display: this.state.errTipsDestroy ? 'block' : 'none' }}>
                                             {/* <div className="errtips"> */}
                                             <h4>Reminder</h4>
-                                            <span style={{ display: this.state.errTipsDestroy && !this.state.getDestroyThresholdBool && Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) < 0 ? 'block' : 'none' }}>Insufficient USDx.</span>
+                                            <span style={{ display: this.state.errTipsDestroy && !this.state.getDestroyThresholdBool && Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) < 0 && !this.state.pull_first ? 'block' : 'none' }}>Insufficient USDx.</span>
                                             <span style={{ display: this.state.getDestroyThresholdBool ? 'block' : 'none' }}>The minimum accuracy to unconvert is no less than 0.01 USDx.</span>
                                             <span style={{ display: Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) > 0 ? 'block' : 'none' }}>Insufficient DF.</span>
                                             <span style={{ display: this.state.pull_first ? 'block' : 'none' }}>
@@ -935,30 +935,21 @@ export default class Home extends React.Component {
                                                         <div className="sec-item" style={{ opacity: this.state.PAX_need ? 1 : 0 }}>
                                                             <span className="sec-item-btn" onClick={() => { this.pull_click('PAX') }}>PULL</span>
                                                             <span className="sec-item-num">
-                                                                {this.state.PAX_need ? this.toThousands(this.state.PAX_need.split('.')[0]) : '0'}
-                                                                <i>
-                                                                    {this.state.PAX_need ? this.state.PAX_need.split('.')[1] ? '.' + this.state.PAX_need.split('.')[1] : '.00' : '.00'}
-                                                                </i>
+                                                                {this.state.PAX_need ? this.toThousands(this.state.PAX_need) : '0'}
                                                             </span>
                                                         </div>
 
                                                         <div className="sec-item" style={{ opacity: this.state.TUSD_need ? 1 : 0 }}>
                                                             <span className="sec-item-btn" onClick={() => { this.pull_click('TUSD') }}>PULL</span>
                                                             <span className="sec-item-num">
-                                                                {this.state.TUSD_need ? this.toThousands(this.state.TUSD_need.split('.')[0]) : '0'}
-                                                                <i>
-                                                                    {this.state.TUSD_need ? this.state.TUSD_need.split('.')[1] ? '.' + this.state.TUSD_need.split('.')[1] : '.00' : '.00'}
-                                                                </i>
+                                                                {this.state.TUSD_need ? this.toThousands(this.state.TUSD_need) : '0'}
                                                             </span>
                                                         </div>
 
                                                         <div className="sec-item" style={{ opacity: this.state.USDC_need ? 1 : 0 }}>
                                                             <span className="sec-item-btn" onClick={() => { this.pull_click('USDC') }}>PULL</span>
                                                             <span className="sec-item-num">
-                                                                {this.state.USDC_need ? this.toThousands(this.state.USDC_need.split('.')[0]) : '0'}
-                                                                <i>
-                                                                    {this.state.USDC_need ? this.state.USDC_need.split('.')[1] ? '.' + this.state.USDC_need.split('.')[1] : '.00' : '.00'}
-                                                                </i>
+                                                                {this.state.USDC_need ? this.toThousands(this.state.USDC_need) : '0'}
                                                             </span>
                                                         </div>
                                                     </div>
