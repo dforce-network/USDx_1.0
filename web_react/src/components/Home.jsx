@@ -13,6 +13,7 @@ import abiTokens from '../abi/abiTokens';
 import abiUSDx from '../abi/abiUSDx';
 import abiProtocol from '../abi/abiProtocol';
 import abiProtocolView from '../abi/abiProtocolView';
+import DispatcherABI from '../abi/dispatcher';
 
 // address map
 import addressMap from '../abi/addressMap'
@@ -124,6 +125,10 @@ export default class Home extends React.Component {
                 this.addressEngine = addressMap[net]['addressEngine'];
                 this.addressPool = addressMap[net]['addressPool'];
 
+                this.address_D_USDC = addressMap[net]['dispatcher_USDC'];
+                this.address_D_PAX = addressMap[net]['dispatcher_PAX'];
+                this.address_D_TUSD = addressMap[net]['dispatcher_TUSD'];
+
 
                 this.contractDAI = this.Web3.eth.contract(abiTokens).at(this.addressDAI);
                 this.contractPAX = this.Web3.eth.contract(abiTokens).at(this.addressPAX);
@@ -135,6 +140,10 @@ export default class Home extends React.Component {
                 this.contractUSDx = this.Web3.eth.contract(abiUSDx).at(this.addressUSDx);
                 this.contractProtocol = this.Web3.eth.contract(abiProtocol).at(this.addressProtocol);
                 this.contractProtocolView = this.Web3.eth.contract(abiProtocolView).at(this.addressProtocolView);
+
+                this.dispatcher_USDC = this.Web3.eth.contract(DispatcherABI).at(this.address_D_USDC);
+                this.dispatcher_PAX = this.Web3.eth.contract(DispatcherABI).at(this.address_D_PAX);
+                this.dispatcher_TUSD = this.Web3.eth.contract(DispatcherABI).at(this.address_D_TUSD);
 
                 this.contractProtocol.allEvents({ toBlock: 'latest' }).watch((error, result) => {
                     console.log(error, result);
@@ -242,11 +251,92 @@ export default class Home extends React.Component {
                 this.getUserWithdrawBalance();
                 // this.isSyncing();
                 this.getGasPrice();
+                this.get_3_dispatcher_status();
             } else {
                 console.log('not connected...');
                 return;
             }
         }, 1000 * 15)
+    }
+
+
+    get_3_dispatcher_status = () => {
+        this.dispatcher_USDC.getReserve.call((err, ret) => {
+            // console.log('USDC.getReserve: ', ret.toString());
+            this.setState({
+                USDC_Reserve: this.formatNumber(ret, 'USDC')
+            })
+        })
+        this.dispatcher_USDC.getReserveRatio.call((err, ret) => {
+            // console.log('USDC.getReserve: ', ret.toString());
+            this.setState({
+                USDC_Reserve_ratio: ret.toString()
+            })
+        })
+        this.dispatcher_USDC.getReserveUpperLimit.call((err, ret) => {
+            // console.log('USDC.getReserve: ', ret.toString());
+            this.setState({
+                USDC_Reserve_upper: ret.toString()
+            })
+        })
+        this.dispatcher_USDC.getReserveLowerLimit.call((err, ret) => {
+            // console.log('USDC.getReserve: ', ret.toString());
+            this.setState({
+                USDC_Reserve_lower: ret.toString()
+            })
+        })
+
+
+        this.dispatcher_PAX.getReserve.call((err, ret) => {
+            // console.log('PAX.getReserve: ', ret.toString());
+            this.setState({
+                PAX_Reserve: this.formatNumber(ret, 'PAX')
+            })
+        })
+        this.dispatcher_PAX.getReserveRatio.call((err, ret) => {
+            // console.log('USDC.getReserve: ', ret.toString());
+            this.setState({
+                PAX_Reserve_ratio: ret.toString()
+            })
+        })
+        this.dispatcher_PAX.getReserveUpperLimit.call((err, ret) => {
+            // console.log('USDC.getReserve: ', ret.toString());
+            this.setState({
+                PAX_Reserve_upper: ret.toString()
+            })
+        })
+        this.dispatcher_PAX.getReserveLowerLimit.call((err, ret) => {
+            // console.log('USDC.getReserve: ', ret.toString());
+            this.setState({
+                PAX_Reserve_lower: ret.toString()
+            })
+        })
+
+
+        this.dispatcher_TUSD.getReserve.call((err, ret) => {
+            // console.log('TUSD.getReserve: ', ret.toString());
+            this.setState({
+                TUSD_Reserve: this.formatNumber(ret, 'TUSD')
+            })
+        })
+        this.dispatcher_TUSD.getReserveRatio.call((err, ret) => {
+            // console.log('USDC.getReserve: ', ret.toString());
+            this.setState({
+                TUSD_Reserve_ratio: ret.toString()
+            })
+        })
+        this.dispatcher_TUSD.getReserveUpperLimit.call((err, ret) => {
+            // console.log('USDC.getReserve: ', ret.toString());
+            this.setState({
+                TUSD_Reserve_upper: ret.toString()
+            })
+        })
+        this.dispatcher_TUSD.getReserveLowerLimit.call((err, ret) => {
+            // console.log('USDC.getReserve: ', ret.toString());
+            this.setState({
+                TUSD_Reserve_lower: ret.toString()
+            })
+        })
     }
 
     componentWillMount() { }
@@ -508,6 +598,100 @@ export default class Home extends React.Component {
                                             </span>
                                         </div>
                                     </div>
+
+                                    <div className="globalpool" style={{ paddingTop: '30px' }}>
+                                        <div className="title">
+                                            {/* <Tooltip placement="bottomLeft" title='Constituents locked as collaterals (the sum total is always idential to the amount of outstanding USDx)'>
+                                                <Button></Button>
+                                            </Tooltip> */}
+                                            Pool Reserve:
+                                        </div>
+                                        <div className="sectionToken">
+                                            <span className="token" style={{ fontSize: '14px', width: '60px', lineHeight: '30px' }}>PAX</span>
+                                            <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
+                                                {this.state.PAX_Reserve ? this.toThousandsbodyleft(this.state.PAX_Reserve.split('.')[0]) : '0'}
+                                                <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>
+                                                    {this.state.PAX_Reserve ? '.' + this.state.PAX_Reserve.split('.')[1] : '.00'}
+                                                </i>
+                                            </span>
+                                        </div>
+                                        <div className="sectionToken">
+                                            <span className="token" style={{ fontSize: '14px', width: '60px', lineHeight: '30px', fontSize: '80%', opacity: 0.7 }}>Target Reserve Ratio</span>
+                                            <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
+                                                <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>
+                                                    {this.state.PAX_Reserve_lower ? this.state.PAX_Reserve_lower / 10 + '%' : '0%'}
+                                                    ~
+                                                    {this.state.PAX_Reserve_upper ? this.state.PAX_Reserve_upper / 10 + '%' : '0%'}
+                                                </i>
+                                            </span>
+                                        </div>
+                                        <div className="sectionToken">
+                                            <span className="token" style={{ fontSize: '14px', width: '60px', lineHeight: '30px', fontSize: '80%', opacity: 0.7 }}>Current Reserve Ratio</span>
+                                            <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
+                                                <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>
+                                                    {this.state.PAX_Reserve_ratio ? this.state.PAX_Reserve_ratio / 10 + '%' : '0%'}
+                                                </i>
+                                            </span>
+                                        </div>
+
+
+                                        <div className="sectionToken">
+                                            <span className="token" style={{ fontSize: '14px', width: '60px', lineHeight: '30px' }}>TUSD</span>
+                                            <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
+                                                {this.state.TUSD_Reserve ? this.toThousandsbodyleft(this.state.TUSD_Reserve.split('.')[0]) : '0'}
+                                                <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>
+                                                    {this.state.TUSD_Reserve ? '.' + this.state.TUSD_Reserve.split('.')[1] : '.00'}
+                                                </i>
+                                            </span>
+                                        </div>
+                                        <div className="sectionToken">
+                                            <span className="token" style={{ fontSize: '14px', width: '60px', lineHeight: '30px', fontSize: '80%', opacity: 0.7 }}>Target Reserve Ratio</span>
+                                            <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
+                                                <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>
+                                                    {this.state.TUSD_Reserve_lower ? this.state.TUSD_Reserve_lower / 10 + '%' : '0%'}
+                                                    ~
+                                                    {this.state.TUSD_Reserve_upper ? this.state.TUSD_Reserve_upper / 10 + '%' : '0%'}
+                                                </i>
+                                            </span>
+                                        </div>
+                                        <div className="sectionToken">
+                                            <span className="token" style={{ fontSize: '14px', width: '60px', lineHeight: '30px', fontSize: '80%', opacity: 0.7 }}>Current Reserve Ratio</span>
+                                            <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
+                                                <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>
+                                                    {this.state.TUSD_Reserve_ratio ? this.state.TUSD_Reserve_ratio / 10 + '%' : '0%'}
+                                                </i>
+                                            </span>
+                                        </div>
+
+
+                                        <div className="sectionToken">
+                                            <span className="token" style={{ fontSize: '14px', width: '60px', lineHeight: '30px' }}>USDC</span>
+                                            <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
+                                                {this.state.USDC_Reserve ? this.toThousandsbodyleft(this.state.USDC_Reserve.split('.')[0]) : '0'}
+                                                <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>
+                                                    {this.state.USDC_Reserve ? '.' + this.state.USDC_Reserve.split('.')[1] : '.00'}
+                                                </i>
+                                            </span>
+                                        </div>
+                                        <div className="sectionToken">
+                                            <span className="token" style={{ fontSize: '14px', width: '60px', lineHeight: '30px', fontSize: '80%', opacity: 0.7 }}>Target Reserve Ratio</span>
+                                            <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
+                                                <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>
+                                                    {this.state.USDC_Reserve_lower ? this.state.USDC_Reserve_lower / 10 + '%' : '0%'}
+                                                    ~
+                                                    {this.state.USDC_Reserve_upper ? this.state.USDC_Reserve_upper / 10 + '%' : '0%'}
+                                                </i>
+                                            </span>
+                                        </div>
+                                        <div className="sectionToken">
+                                            <span className="token" style={{ fontSize: '14px', width: '60px', lineHeight: '30px', fontSize: '80%', opacity: 0.7 }}>Current Reserve Ratio</span>
+                                            <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
+                                                <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>
+                                                    {this.state.USDC_Reserve_ratio ? this.state.USDC_Reserve_ratio / 10 + '%' : '0%'}
+                                                </i>
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
                             </Drawer>
 
@@ -600,11 +784,15 @@ export default class Home extends React.Component {
                                         <div className="tips tipsMax">
                                             <div className="imgWrap">
                                                 <img src={warningtips} alt="" />
-                                                <div className="detials">Please note that 0.1% of USDx equivalent of DF will be consumed for the reconversion of USDx.</div>
+                                                <div className="detials">
+                                                    Please note that 0.1% of USDx equivalent of DF will be consumed for the reconversion of USDx.
+                                                </div>
                                             </div>
                                             Fee in DF Token:
-                                        <span style={{ color: Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) > 0 ? '#fc5645' : '#9696a2' }}>
-                                                <i style={{ color: Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) > 0 ? '#fc5645' : '#9696a2' }}>{(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice).toFixed(2).toString().split('.')[0]}</i>
+                                            <span style={{ color: Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) > 0 ? '#fc5645' : '#9696a2' }}>
+                                                <i style={{ color: Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) > 0 ? '#fc5645' : '#9696a2' }}>
+                                                    {(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice).toFixed(2).toString().split('.')[0]}
+                                                </i>
                                                 {'.' + (this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice).toFixed(2).toString().split('.')[1]}
                                             </span>
                                         </div>

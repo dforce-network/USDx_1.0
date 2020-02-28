@@ -36,7 +36,7 @@ export default class bodyleft extends React.Component {
         var re = /\d{3}$/;
         var result = '';
 
-        while ( re.test(num) ) {
+        while (re.test(num)) {
             result = RegExp.lastMatch + result;
             if (num !== RegExp.lastMatch) {
                 result = ',' + result;
@@ -251,15 +251,6 @@ export default class bodyleft extends React.Component {
                         </Tooltip>
                         Global Collateral Pool:
                     </div>
-                    {
-                        /* <div className="sectionToken">
-                            <span className="token">DAI</span>
-                            <span className="tokenNum">
-                                {this.props.data.DAIonBank ? this.toThousandsbodyleft(this.props.data.DAIonBank.split('.')[0]) : '0'}
-                                <i>{this.props.data.DAIonBank ? '.' + this.props.data.DAIonBank.split('.')[1] : '.00'}</i>
-                            </span>
-                        </div> */
-                    }
                     <div className="sectionToken">
                         <span className="token">PAX</span>
                         <span className="tokenNum">
@@ -267,6 +258,7 @@ export default class bodyleft extends React.Component {
                             <i>{this.props.data.PAXonBank ? '.' + this.props.data.PAXonBank.split('.')[1] : '.00'}</i>
                         </span>
                     </div>
+
                     <div className="sectionToken">
                         <span className="token">TUSD</span>
                         <span className="tokenNum">
@@ -274,11 +266,101 @@ export default class bodyleft extends React.Component {
                             <i>{this.props.data.TUSDonBank ? '.' + this.props.data.TUSDonBank.split('.')[1] : '.00'}</i>
                         </span>
                     </div>
+
                     <div className="sectionToken">
                         <span className="token">USDC</span>
                         <span className="tokenNum">
                             {this.props.data.USDConBank ? this.toThousandsbodyleft(this.props.data.USDConBank.split('.')[0]) : '0'}
                             <i>{this.props.data.USDConBank ? '.' + this.props.data.USDConBank.split('.')[1] : '.00'}</i>
+                        </span>
+                    </div>
+                </div>
+
+
+                <div className="globalpool">
+                    <div className="title">
+                        <Tooltip placement="bottomLeft" title='Constituents locked as collaterals (the sum total is always idential to the amount of outstanding USDx)'>
+                            <Button></Button>
+                        </Tooltip>
+                        Pool Reserve:
+                    </div>
+                    <div className="sectionToken">
+                        <span className="token">PAX</span>
+                        <span className="tokenNum">
+                            {this.props.data.PAX_Reserve ? this.toThousandsbodyleft(this.props.data.PAX_Reserve.split('.')[0]) : '0'}
+                            <i>{this.props.data.PAX_Reserve ? '.' + this.props.data.PAX_Reserve.split('.')[1] : '.00'}</i>
+                        </span>
+                    </div>
+                    <div className="sectionToken">
+                        <span className="token" style={{ fontSize: '14px', width: '114px', lineHeight: '30px', fontSize: '80%', opacity: 0.7 }}>Target Reserve Ratio</span>
+                        <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
+                            <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>
+                                {this.props.data.PAX_Reserve_lower ? this.props.data.PAX_Reserve_lower / 10 + '%' : '0%'}
+                                ~
+                                {this.props.data.PAX_Reserve_upper ? this.props.data.PAX_Reserve_upper / 10 + '%' : '0%'}
+                            </i>
+                        </span>
+                    </div>
+                    <div className="sectionToken">
+                        <span className="token" style={{ fontSize: '14px', width: '120px', lineHeight: '30px', fontSize: '80%', opacity: 0.7 }}>Current Reserve Ratio</span>
+                        <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
+                            <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>
+                                {this.props.data.PAX_Reserve_ratio ? this.props.data.PAX_Reserve_ratio / 10 + '%' : '0%'}
+                            </i>
+                        </span>
+                    </div>
+
+
+                    <div className="sectionToken">
+                        <span className="token">TUSD</span>
+                        <span className="tokenNum">
+                            {this.props.data.TUSD_Reserve ? this.toThousandsbodyleft(this.props.data.TUSD_Reserve.split('.')[0]) : '0'}
+                            <i>{this.props.data.TUSD_Reserve ? '.' + this.props.data.TUSD_Reserve.split('.')[1] : '.00'}</i>
+                        </span>
+                    </div>
+                    <div className="sectionToken">
+                        <span className="token" style={{ fontSize: '14px', width: '114px', lineHeight: '30px', fontSize: '80%', opacity: 0.7 }}>Target Reserve Ratio</span>
+                        <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
+                            <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>
+                                {this.props.data.TUSD_Reserve_lower ? this.props.data.TUSD_Reserve_lower / 10 + '%' : '0%'}
+                                ~
+                                {this.props.data.TUSD_Reserve_upper ? this.props.data.TUSD_Reserve_upper / 10 + '%' : '0%'}
+                            </i>
+                        </span>
+                    </div>
+                    <div className="sectionToken">
+                        <span className="token" style={{ fontSize: '14px', width: '120px', lineHeight: '30px', fontSize: '80%', opacity: 0.7 }}>Current Reserve Ratio</span>
+                        <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
+                            <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>
+                                {this.props.data.TUSD_Reserve_ratio ? this.props.data.TUSD_Reserve_ratio / 10 + '%' : '0%'}
+                            </i>
+                        </span>
+                    </div>
+
+
+                    <div className="sectionToken">
+                        <span className="token">USDC</span>
+                        <span className="tokenNum">
+                            {this.props.data.USDC_Reserve ? this.toThousandsbodyleft(this.props.data.USDC_Reserve.split('.')[0]) : '0'}
+                            <i>{this.props.data.USDC_Reserve ? '.' + this.props.data.USDC_Reserve.split('.')[1] : '.00'}</i>
+                        </span>
+                    </div>
+                    <div className="sectionToken">
+                        <span className="token" style={{ fontSize: '14px', width: '114px', lineHeight: '30px', fontSize: '80%', opacity: 0.7 }}>Target Reserve Ratio</span>
+                        <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
+                            <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>
+                                {this.props.data.USDC_Reserve_lower ? this.props.data.USDC_Reserve_lower / 10 + '%' : '0%'}
+                                ~
+                                {this.props.data.USDC_Reserve_upper ? this.props.data.USDC_Reserve_upper / 10 + '%' : '0%'}
+                            </i>
+                        </span>
+                    </div>
+                    <div className="sectionToken">
+                        <span className="token" style={{ fontSize: '14px', width: '120px', lineHeight: '30px', fontSize: '80%', opacity: 0.7 }}>Current Reserve Ratio</span>
+                        <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
+                            <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>
+                                {this.props.data.USDC_Reserve_ratio ? this.props.data.USDC_Reserve_ratio / 10 + '%' : '0%'}
+                            </i>
                         </span>
                     </div>
                 </div>
