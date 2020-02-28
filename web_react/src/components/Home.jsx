@@ -890,7 +890,12 @@ export default class Home extends React.Component {
                                             <span style={{ display: this.state.getDestroyThresholdBool ? 'block' : 'none' }}>The minimum accuracy to unconvert is no less than 0.01 USDx.</span>
                                             <span style={{ display: Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) > 0 ? 'block' : 'none' }}>Insufficient DF.</span>
                                             <span style={{ display: this.state.pull_first ? 'block' : 'none' }}>
-                                                Pull first
+                                                Insufficient
+                                                {this.state.PAX_need ? 'PAX' : ''}
+                                                {this.state.TUSD_need ? 'TUSD' : ''}
+                                                {this.state.USDC_need ? 'USDC' : ''}
+                                                ,only {this.state.min_to_burn ? this.state.min_to_burn : '0'}
+                                                USDx could be disaggregated at this point.
                                             </span>
                                         </div>
                                         <div className="myBalanceOnPoolSection">
@@ -900,7 +905,7 @@ export default class Home extends React.Component {
                                                 <div className="sec-wrap-left">
                                                     <div className='sec-item'>
                                                         <span className='sec-item-token'>PAX</span>
-                                                        <span className='sec-item-t-num'>
+                                                        <span className='sec-item-t-num' style={{ 'color': this.state.PAX_spe_color ? 'red' : '#333' }}>
                                                             {this.state.USDxToPAX ? this.toThousands(this.state.USDxToPAX.split('.')[0]) : '0'}
                                                             <i>
                                                                 {this.state.USDxToPAX ? this.state.USDxToPAX.split('.')[1] ? '.' + this.state.USDxToPAX.split('.')[1] : '.00' : '.00'}
@@ -910,7 +915,7 @@ export default class Home extends React.Component {
 
                                                     <div className='sec-item'>
                                                         <span className='sec-item-token'>TUSD</span>
-                                                        <span className='sec-item-t-num'>
+                                                        <span className='sec-item-t-num' style={{ 'color': this.state.TUSD_spe_color ? 'red' : '#333' }}>
                                                             {this.state.USDxToTUSD ? this.toThousands(this.state.USDxToTUSD.split('.')[0]) : '0'}
                                                             <i>
                                                                 {this.state.USDxToTUSD ? this.state.USDxToTUSD.split('.')[1] ? '.' + this.state.USDxToTUSD.split('.')[1] : '.00' : '.00'}
@@ -919,7 +924,7 @@ export default class Home extends React.Component {
                                                     </div>
 
                                                     <div className='sec-item'>
-                                                        <span className='sec-item-token'>USDC</span>
+                                                        <span className='sec-item-token' style={{ 'color': this.state.USDC_spe_color ? 'red' : '#333' }}>USDC</span>
                                                         <span className='sec-item-t-num'>
                                                             {this.state.USDxToUSDC ? this.toThousands(this.state.USDxToUSDC.split('.')[0]) : '0'}
                                                             <i>
@@ -1089,6 +1094,8 @@ export default class Home extends React.Component {
                 this.getMyHistory();
                 Cookie.save('isLogin', 'true', { path: '/' });
                 this.getGasPrice();
+                this.get_3_dispatcher_status();
+                this.check_if_need_pull();
             },
             err => {
                 console.log(err);
@@ -5065,10 +5072,13 @@ export default class Home extends React.Component {
             }
         }
 
+        var bn_pax = this.bignumber(val).mul(this.bignumber(this.state.sectionPAXBurning).div(this.bignumber(this.state.tatolSectionBurning)));
+        var bn_tusd = this.bignumber(val).mul(this.bignumber(this.state.sectionTUSDBurning).div(this.bignumber(this.state.tatolSectionBurning)));
+        var bn_usdc = this.bignumber(val).mul(this.bignumber(this.state.sectionUSDCBurning).div(this.bignumber(this.state.tatolSectionBurning)));
         if (
-            this.bignumber(val).mul(this.bignumber(this.state.sectionPAXBurning).div(this.bignumber(this.state.tatolSectionBurning))).gt(this.bignumber(this.state.PAX_Reserve)) ||
-            this.bignumber(val).mul(this.bignumber(this.state.sectionTUSDBurning).div(this.bignumber(this.state.tatolSectionBurning))).gt(this.bignumber(this.state.TUSD_Reserve)) ||
-            this.bignumber(val).mul(this.bignumber(this.state.sectionUSDCBurning).div(this.bignumber(this.state.tatolSectionBurning))).gt(this.bignumber(this.state.USDC_Reserve))
+            bn_pax.gt(this.bignumber(this.state.PAX_Reserve)) ||
+            bn_tusd.gt(this.bignumber(this.state.TUSD_Reserve)) ||
+            bn_usdc.gt(this.bignumber(this.state.USDC_Reserve))
         ) {
             this.setState({
                 errTipsDestroy: true,
@@ -5076,12 +5086,39 @@ export default class Home extends React.Component {
                 toDestroyNum: val,
                 pull_first: true
             })
+            if (bn_pax.gt(this.bignumber(this.state.PAX_Reserve))) {
+                this.setState({
+                    PAX_spe_color: true
+                })
+            }
+            if (bn_tusd.gt(this.bignumber(this.state.TUSD_Reserve))) {
+                this.setState({
+                    TUSD_spe_color: true
+                })
+            }
+            if (bn_usdc.gt(this.bignumber(this.state.USDC_Reserve))) {
+                this.setState({
+                    USDC_spe_color: true
+                })
+            }
+
+            var min_to_burn = Math.min(
+                (this.state.USDC_Reserve / 0.35).toFixed(2),
+                (this.state.PAX_Reserve / 0.35).toFixed(2),
+                (this.state.TUSD_Reserve / 0.3).toFixed(2)
+            )
+            this.setState({
+                min_to_burn: min_to_burn
+            })
         } else {
             this.setState({
                 errTipsDestroy: false,
                 couldDestroy: true,
                 toDestroyNum: val,
-                pull_first: false
+                pull_first: false,
+                PAX_spe_color: false,
+                TUSD_spe_color: false,
+                USDC_spe_color: false
             })
         }
         // console.log(this.bignumber(val).mul(this.bignumber(this.state.sectionPAXBurning).div(this.bignumber(this.state.tatolSectionBurning))).toString())
