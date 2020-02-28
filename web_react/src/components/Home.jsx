@@ -360,15 +360,15 @@ export default class Home extends React.Component {
         ) {
             this.setState({ need_pull: true })
             if (Number(this.state.TUSD_Reserve_ratio) + Number(this.adjustedRate) < Number(this.state.TUSD_Reserve_lower)) {
-                var TUSD_need = this.state.TUSDonBank * this.state.TUSD_Reserve_lower / 1000 - this.state.TUSD_Reserve;
+                var TUSD_need = (this.state.TUSDonBank * this.state.TUSD_Reserve_lower / 1000 - this.state.TUSD_Reserve).toFixed(2);
                 this.setState({ TUSD_need: TUSD_need });
             }
             if (Number(this.state.PAX_Reserve_ratio) + Number(this.adjustedRate) < Number(this.state.PAX_Reserve_lower)) {
-                var PAX_need = this.state.PAXonBank * this.state.PAX_Reserve_lower / 1000 - this.state.PAX_Reserve;
+                var PAX_need = (this.state.PAXonBank * this.state.PAX_Reserve_lower / 1000 - this.state.PAX_Reserve).toFixed(2);
                 this.setState({ PAX_need: PAX_need });
             }
             if (Number(this.state.USDC_Reserve_ratio) + Number(this.adjustedRate) < Number(this.state.USDC_Reserve_lower)) {
-                var USDC_need = this.state.USDConBank * this.state.USDC_Reserve_lower / 1000 - this.state.USDC_Reserve;
+                var USDC_need = (this.state.USDConBank * this.state.USDC_Reserve_lower / 1000 - this.state.USDC_Reserve).toFixed(2);
                 this.setState({ USDC_need: USDC_need });
             }
         } else {
@@ -940,21 +940,21 @@ export default class Home extends React.Component {
                                                         <div className="sec-item" style={{ opacity: this.state.PAX_need ? 1 : 0 }}>
                                                             <span className="sec-item-btn" onClick={() => { this.pull_click('PAX') }}>PULL</span>
                                                             <span className="sec-item-num">
-                                                                {this.state.PAX_need ? this.toThousands(this.state.PAX_need) : '0'}
+                                                                {this.state.PAX_need ? this.state.PAX_need : '0'}
                                                             </span>
                                                         </div>
 
                                                         <div className="sec-item" style={{ opacity: this.state.TUSD_need ? 1 : 0 }}>
                                                             <span className="sec-item-btn" onClick={() => { this.pull_click('TUSD') }}>PULL</span>
                                                             <span className="sec-item-num">
-                                                                {this.state.TUSD_need ? this.toThousands(this.state.TUSD_need) : '0'}
+                                                                {this.state.TUSD_need ? this.state.TUSD_need : '0'}
                                                             </span>
                                                         </div>
 
                                                         <div className="sec-item" style={{ opacity: this.state.USDC_need ? 1 : 0 }}>
                                                             <span className="sec-item-btn" onClick={() => { this.pull_click('USDC') }}>PULL</span>
                                                             <span className="sec-item-num">
-                                                                {this.state.USDC_need ? this.toThousands(this.state.USDC_need) : '0'}
+                                                                {this.state.USDC_need ? this.state.USDC_need : '0'}
                                                             </span>
                                                         </div>
                                                     </div>
