@@ -862,7 +862,17 @@ export default class Home extends React.Component {
                                                 onClick={() => { this.destroy() }}
                                                 variant="contained"
                                                 color="secondary"
-                                                disabled={this.state.couldDestroy ? false : true}
+                                                disabled={
+                                                    this.state.errTipsDestroy ||
+                                                        this.state.err_usdx ||
+                                                        this.state.getDestroyThresholdBool ||
+                                                        this.state.err_df ||
+                                                        this.state.err_pull ||
+                                                        this.state.PAX_spe_color ||
+                                                        this.state.TUSD_spe_color ||
+                                                        this.state.USDC_spe_color ?
+                                                        true : false
+                                                }
                                                 fullWidth={true}
                                             >
                                                 CONVERT
@@ -886,10 +896,12 @@ export default class Home extends React.Component {
                                         <div className="errtips" style={{ display: this.state.errTipsDestroy ? 'block' : 'none' }}>
                                             {/* <div className="errtips"> */}
                                             <h4>Reminder</h4>
-                                            <span style={{ display: this.state.errTipsDestroy && !this.state.getDestroyThresholdBool && Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) < 0 && !this.state.pull_first ? 'block' : 'none' }}>Insufficient USDx.</span>
-                                            <span style={{ display: this.state.getDestroyThresholdBool ? 'block' : 'none' }}>The minimum accuracy to unconvert is no less than 0.01 USDx.</span>
-                                            <span style={{ display: Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) > 0 ? 'block' : 'none' }}>Insufficient DF.</span>
-                                            <span style={{ display: this.state.pull_first ? 'block' : 'none' }}>
+                                            <span style={{ display: this.state.err_usdx ? 'block' : 'none' }}>Insufficient USDx.</span>
+                                            <span style={{ display: this.state.getDestroyThresholdBool ? 'block' : 'none' }}>
+                                                The minimum accuracy to unconvert is no less than 0.01 USDx.
+                                            </span>
+                                            <span style={{ display: this.state.err_df ? 'block' : 'none' }}>Insufficient DF.</span>
+                                            <span style={{ display: this.state.err_pull ? 'block' : 'none' }}>
                                                 Insufficient
                                                 {this.state.PAX_need ? 'PAX' : ''}
                                                 {this.state.TUSD_need ? 'TUSD' : ''}
@@ -5003,105 +5015,84 @@ export default class Home extends React.Component {
         if (val.length > 16) {
             return;
         }
-        if (Number(val) > 0 && this.Web3.toBigNumber(val).sub(this.Web3.toBigNumber(this.state.myUSDx)) <= 0) {
-            var USDxToDAI = this.Web3.toBigNumber(val).mul(this.Web3.toBigNumber(this.state.sectionDAIBurning).div(this.Web3.toBigNumber(this.state.tatolSectionBurning)));
-            var USDxToPAX = this.Web3.toBigNumber(val).mul(this.Web3.toBigNumber(this.state.sectionPAXBurning).div(this.Web3.toBigNumber(this.state.tatolSectionBurning)));
-            var USDxToTUSD = this.Web3.toBigNumber(val).mul(this.Web3.toBigNumber(this.state.sectionTUSDBurning).div(this.Web3.toBigNumber(this.state.tatolSectionBurning)));
-            var USDxToUSDC = this.Web3.toBigNumber(val).mul(this.Web3.toBigNumber(this.state.sectionUSDCBurning).div(this.Web3.toBigNumber(this.state.tatolSectionBurning)));
+        this.setState({
+            errTipsDestroy: false,
+            err_usdx: false,
+            getDestroyThresholdBool: false,
+            err_df: false,
+            err_pull: false,
+            PAX_spe_color: false,
+            TUSD_spe_color: false,
+            USDC_spe_color: false,
+            toDestroyNum: val
+        })
+
+        var USDxToPAX = this.bignumber(val).mul(this.bignumber(this.state.sectionPAXBurning).div(this.bignumber(this.state.tatolSectionBurning)));
+        var USDxToTUSD = this.bignumber(val).mul(this.bignumber(this.state.sectionTUSDBurning).div(this.bignumber(this.state.tatolSectionBurning)));
+        var USDxToUSDC = this.bignumber(val).mul(this.bignumber(this.state.sectionUSDCBurning).div(this.bignumber(this.state.tatolSectionBurning)));
+
+        if (this.bignumber(val).gt(this.bignumber(this.state.myUSDx))) {
             this.setState({
-                ...this.state,
-                errTipsDestroy: false,
-                couldDestroy: true,
+                errTipsDestroy: true,
+                err_usdx: true,
                 toDestroyNum: val,
-                USDxToDAI: USDxToDAI.toString(10),
                 USDxToPAX: USDxToPAX.toString(10),
                 USDxToTUSD: USDxToTUSD.toString(10),
                 USDxToUSDC: USDxToUSDC.toString(10),
-                getDestroyThresholdBool: false
             })
-            if (this.Web3.toBigNumber(val).mod(this.Web3.toBigNumber(this.state.getDestroyThreshold)).toString(10) !== '0') {
-                this.setState({
-                    ...this.state,
-                    errTipsDestroy: true,
-                    couldDestroy: false,
-                    toDestroyNum: val,
-                    USDxToDAI: '',
-                    USDxToPAX: '',
-                    USDxToTUSD: '',
-                    USDxToUSDC: '',
-                    getDestroyThresholdBool: true
-                })
-            }
-            if (this.Web3.toBigNumber(val * this.state.feeRate / this.state.dfPrice).sub(this.Web3.toBigNumber(this.state.myDF)) > 0) {
-                this.setState({
-                    ...this.state,
-                    errTipsDestroy: true,
-                    couldDestroy: false,
-                    toDestroyNum: val,
-                    USDxToDAI: '',
-                    USDxToPAX: '',
-                    USDxToTUSD: '',
-                    USDxToUSDC: '',
-                    getDestroyThresholdBool: false
-                })
-            }
-        } else {
+            return false;
+        }
+        if (this.bignumber(val).mod(this.bignumber(this.state.getDestroyThreshold)).toString(10) !== '0') {
             this.setState({
-                ...this.state,
                 errTipsDestroy: true,
-                couldDestroy: false,
+                getDestroyThresholdBool: true,
                 toDestroyNum: val,
-                USDxToDAI: '',
-                USDxToPAX: '',
-                USDxToTUSD: '',
-                USDxToUSDC: '',
-                getDestroyThresholdBool: false
+                USDxToPAX: USDxToPAX.toString(10),
+                USDxToTUSD: USDxToTUSD.toString(10),
+                USDxToUSDC: USDxToUSDC.toString(10),
             })
-            if (val === '' || Number(val) === 0) {
-                this.setState({
-                    ...this.state,
-                    errTipsDestroy: false,
-                    couldDestroy: false,
-                    toDestroyNum: val,
-                    USDxToDAI: '',
-                    USDxToPAX: '',
-                    USDxToTUSD: '',
-                    USDxToUSDC: '',
-                    getDestroyThresholdBool: false
-                })
-            }
+            return false;
+        }
+        if (Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) > 0) {
+            this.setState({
+                errTipsDestroy: true,
+                err_df: true,
+                toDestroyNum: val,
+                USDxToPAX: USDxToPAX.toString(10),
+                USDxToTUSD: USDxToTUSD.toString(10),
+                USDxToUSDC: USDxToUSDC.toString(10),
+            })
+            return false;
         }
 
-        var bn_pax = this.bignumber(val).mul(this.bignumber(this.state.sectionPAXBurning).div(this.bignumber(this.state.tatolSectionBurning)));
-        var bn_tusd = this.bignumber(val).mul(this.bignumber(this.state.sectionTUSDBurning).div(this.bignumber(this.state.tatolSectionBurning)));
-        var bn_usdc = this.bignumber(val).mul(this.bignumber(this.state.sectionUSDCBurning).div(this.bignumber(this.state.tatolSectionBurning)));
         if (
-            bn_pax.gt(this.bignumber(this.state.PAX_Reserve)) ||
-            bn_tusd.gt(this.bignumber(this.state.TUSD_Reserve)) ||
-            bn_usdc.gt(this.bignumber(this.state.USDC_Reserve))
+            USDxToPAX.gt(this.bignumber(this.state.PAX_Reserve)) ||
+            USDxToTUSD.gt(this.bignumber(this.state.TUSD_Reserve)) ||
+            USDxToUSDC.gt(this.bignumber(this.state.USDC_Reserve))
         ) {
             this.setState({
                 errTipsDestroy: true,
-                couldDestroy: false,
+                err_pull: true,
                 toDestroyNum: val,
-                pull_first: true
+                USDxToPAX: USDxToPAX.toString(10),
+                USDxToTUSD: USDxToTUSD.toString(10),
+                USDxToUSDC: USDxToUSDC.toString(10),
             })
-            if (bn_pax.gt(this.bignumber(this.state.PAX_Reserve))) {
+            if (USDxToPAX.gt(this.bignumber(this.state.PAX_Reserve))) {
                 this.setState({
                     PAX_spe_color: true
                 })
             }
-            if (bn_tusd.gt(this.bignumber(this.state.TUSD_Reserve))) {
+            if (USDxToTUSD.gt(this.bignumber(this.state.TUSD_Reserve))) {
                 this.setState({
                     TUSD_spe_color: true
                 })
             }
-            if (bn_usdc.gt(this.bignumber(this.state.USDC_Reserve))) {
+            if (USDxToUSDC.gt(this.bignumber(this.state.USDC_Reserve))) {
                 this.setState({
                     USDC_spe_color: true
                 })
             }
-
             var min_to_burn = Math.min(
                 (this.state.USDC_Reserve / 0.35).toFixed(2),
                 (this.state.PAX_Reserve / 0.35).toFixed(2),
@@ -5110,21 +5101,38 @@ export default class Home extends React.Component {
             this.setState({
                 min_to_burn: min_to_burn
             })
-        } else {
+            return false;
+        }
+
+        if (val === '' || Number(val) === 0) {
             this.setState({
-                errTipsDestroy: false,
-                couldDestroy: true,
-                toDestroyNum: val,
-                pull_first: false,
-                PAX_spe_color: false,
-                TUSD_spe_color: false,
-                USDC_spe_color: false
+                errTipsDestroy: false
             })
         }
-        // console.log(this.bignumber(val).mul(this.bignumber(this.state.sectionPAXBurning).div(this.bignumber(this.state.tatolSectionBurning))).toString())
+
+        this.setState({
+            errTipsDestroy: false,
+            err_usdx: false,
+            getDestroyThresholdBool: false,
+            err_df: false,
+            err_pull: false,
+            PAX_spe_color: false,
+            TUSD_spe_color: false,
+            USDC_spe_color: false,
+            toDestroyNum: val
+        })
     }
     destroy() {
-        if (!this.state.couldDestroy) {
+        if (
+            this.state.errTipsDestroy ||
+            this.state.err_usdx ||
+            this.state.getDestroyThresholdBool ||
+            this.state.err_df ||
+            this.state.err_pull ||
+            this.state.PAX_spe_color ||
+            this.state.TUSD_spe_color ||
+            this.state.USDC_spe_color
+        ) {
             return;
         }
 

@@ -279,7 +279,10 @@ export default class bodyleft extends React.Component {
 
                 <div className="globalpool">
                     <div className="title">
-                        <Tooltip placement="bottomLeft" title='Constituents locked as collaterals (the sum total is always idential to the amount of outstanding USDx)'>
+                        <Tooltip
+                            placement="bottomLeft"
+                            title='Collaterals reserved as deploying DIP001.'
+                        >
                             <Button></Button>
                         </Tooltip>
                         Pool Reserve:
