@@ -910,12 +910,9 @@ export default class Home extends React.Component {
                                             </span>
                                             <span style={{ display: this.state.err_df ? 'block' : 'none' }}>Insufficient DF.</span>
                                             <span style={{ display: this.state.err_pull ? 'block' : 'none' }}>
-                                                Insufficient
-                                                {this.state.PAX_need_is ? 'PAX' : ''}
-                                                {this.state.TUSD_need_is ? 'TUSD' : ''}
-                                                {this.state.USDC_need_is ? 'USDC' : ''}
-                                                ,only {this.state.min_to_burn ? this.state.min_to_burn : '0'}
-                                                USDx could be disaggregated at this point.
+                                                Insufficient constituent, maximal
+                                                <span style={{ 'color': 'red' }}> {this.state.min_to_burn ? this.new_to_K(this.state.min_to_burn) : '0'} </span>
+                                                USDx can be disaggregated.
                                             </span>
                                         </div>
                                         <div className="myBalanceOnPoolSection">
