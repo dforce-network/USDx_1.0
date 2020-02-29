@@ -358,22 +358,30 @@ export default class Home extends React.Component {
             Number(this.state.PAX_Reserve_ratio) + Number(this.adjustedRate) < Number(this.state.PAX_Reserve_lower) ||
             Number(this.state.USDC_Reserve_ratio) + Number(this.adjustedRate) < Number(this.state.USDC_Reserve_lower)
         ) {
-            this.setState({ need_pull: true })
+            this.setState({
+                need_pull: true,
+                TUSD_need_is: false,
+                PAX_need_is: false,
+                USDC_need_is: false
+            })
             if (Number(this.state.TUSD_Reserve_ratio) + Number(this.adjustedRate) < Number(this.state.TUSD_Reserve_lower)) {
                 var TUSD_need = (this.state.TUSDonBank * this.state.TUSD_Reserve_lower / 1000 - this.state.TUSD_Reserve).toFixed(2);
-                this.setState({ TUSD_need: TUSD_need });
+                this.setState({ TUSD_need: TUSD_need, TUSD_need_is: true });
             }
             if (Number(this.state.PAX_Reserve_ratio) + Number(this.adjustedRate) < Number(this.state.PAX_Reserve_lower)) {
                 var PAX_need = (this.state.PAXonBank * this.state.PAX_Reserve_lower / 1000 - this.state.PAX_Reserve).toFixed(2);
-                this.setState({ PAX_need: PAX_need });
+                this.setState({ PAX_need: PAX_need, PAX_need_is: true });
             }
             if (Number(this.state.USDC_Reserve_ratio) + Number(this.adjustedRate) < Number(this.state.USDC_Reserve_lower)) {
                 var USDC_need = (this.state.USDConBank * this.state.USDC_Reserve_lower / 1000 - this.state.USDC_Reserve).toFixed(2);
-                this.setState({ USDC_need: USDC_need });
+                this.setState({ USDC_need: USDC_need, USDC_need_is: true });
             }
         } else {
             this.setState({
-                need_pull: false
+                need_pull: false,
+                TUSD_need_is: false,
+                PAX_need_is: false,
+                USDC_need_is: false
             })
         }
     }
@@ -903,9 +911,9 @@ export default class Home extends React.Component {
                                             <span style={{ display: this.state.err_df ? 'block' : 'none' }}>Insufficient DF.</span>
                                             <span style={{ display: this.state.err_pull ? 'block' : 'none' }}>
                                                 Insufficient
-                                                {this.state.PAX_need ? 'PAX' : ''}
-                                                {this.state.TUSD_need ? 'TUSD' : ''}
-                                                {this.state.USDC_need ? 'USDC' : ''}
+                                                {this.state.PAX_need_is ? 'PAX' : ''}
+                                                {this.state.TUSD_need_is ? 'TUSD' : ''}
+                                                {this.state.USDC_need_is ? 'USDC' : ''}
                                                 ,only {this.state.min_to_burn ? this.state.min_to_burn : '0'}
                                                 USDx could be disaggregated at this point.
                                             </span>
@@ -958,21 +966,21 @@ export default class Home extends React.Component {
                                                 {
                                                     this.state.need_pull &&
                                                     <div className="sec-wrap-right">
-                                                        <div className="sec-item" style={{ opacity: this.state.PAX_need ? 1 : 0 }}>
+                                                        <div className="sec-item" style={{ opacity: this.state.PAX_need_is ? 1 : 0 }}>
                                                             <span className="sec-item-btn" onClick={() => { this.pull_click('PAX') }}>PULL</span>
                                                             <span className="sec-item-num">
                                                                 {this.state.PAX_need ? this.new_to_K(this.state.PAX_need) : '0'}
                                                             </span>
                                                         </div>
 
-                                                        <div className="sec-item" style={{ opacity: this.state.TUSD_need ? 1 : 0 }}>
+                                                        <div className="sec-item" style={{ opacity: this.state.TUSD_need_is ? 1 : 0 }}>
                                                             <span className="sec-item-btn" onClick={() => { this.pull_click('TUSD') }}>PULL</span>
                                                             <span className="sec-item-num">
                                                                 {this.state.TUSD_need ? this.new_to_K(this.state.TUSD_need) : '0'}
                                                             </span>
                                                         </div>
 
-                                                        <div className="sec-item" style={{ opacity: this.state.USDC_need ? 1 : 0 }}>
+                                                        <div className="sec-item" style={{ opacity: this.state.USDC_need_is ? 1 : 0 }}>
                                                             <span className="sec-item-btn" onClick={() => { this.pull_click('USDC') }}>PULL</span>
                                                             <span className="sec-item-num">
                                                                 {this.state.USDC_need ? this.new_to_K(this.state.USDC_need) : '0'}
@@ -5139,7 +5147,10 @@ export default class Home extends React.Component {
             PAX_spe_color: false,
             TUSD_spe_color: false,
             USDC_spe_color: false,
-            toDestroyNum: val
+            toDestroyNum: val,
+            USDxToPAX: USDxToPAX.toString(10),
+            USDxToTUSD: USDxToTUSD.toString(10),
+            USDxToUSDC: USDxToUSDC.toString(10)
         })
     }
     destroy() {
