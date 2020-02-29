@@ -5081,7 +5081,7 @@ export default class Home extends React.Component {
             })
             return false;
         }
-        if (Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) > 0) {
+        if (Number(val * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) > 0) {
             this.setState({
                 errTipsDestroy: true,
                 err_df: true,
