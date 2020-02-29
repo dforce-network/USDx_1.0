@@ -912,6 +912,15 @@ export default class Home extends React.Component {
                                         </div>
                                         <div className="myBalanceOnPoolSection">
                                             <div className="title">Constituents to be returned:</div>
+                                            {
+                                                this.state.need_pull &&
+                                                <div className="imgWrap">
+                                                    <img src={warningtips} alt="" />
+                                                    <div className="detials">
+                                                        Insufficient reserved collaterals, anyone can pull back from DIP001.
+                                                    </div>
+                                                </div>
+                                            }
 
                                             <div className="sec-wrap">
                                                 <div className="sec-wrap-left">
@@ -952,21 +961,21 @@ export default class Home extends React.Component {
                                                         <div className="sec-item" style={{ opacity: this.state.PAX_need ? 1 : 0 }}>
                                                             <span className="sec-item-btn" onClick={() => { this.pull_click('PAX') }}>PULL</span>
                                                             <span className="sec-item-num">
-                                                                {this.state.PAX_need ? this.state.PAX_need : '0'}
+                                                                {this.state.PAX_need ? this.new_to_K(this.state.PAX_need) : '0'}
                                                             </span>
                                                         </div>
 
                                                         <div className="sec-item" style={{ opacity: this.state.TUSD_need ? 1 : 0 }}>
                                                             <span className="sec-item-btn" onClick={() => { this.pull_click('TUSD') }}>PULL</span>
                                                             <span className="sec-item-num">
-                                                                {this.state.TUSD_need ? this.state.TUSD_need : '0'}
+                                                                {this.state.TUSD_need ? this.new_to_K(this.state.TUSD_need) : '0'}
                                                             </span>
                                                         </div>
 
                                                         <div className="sec-item" style={{ opacity: this.state.USDC_need ? 1 : 0 }}>
                                                             <span className="sec-item-btn" onClick={() => { this.pull_click('USDC') }}>PULL</span>
                                                             <span className="sec-item-num">
-                                                                {this.state.USDC_need ? this.state.USDC_need : '0'}
+                                                                {this.state.USDC_need ? this.new_to_K(this.state.USDC_need) : '0'}
                                                             </span>
                                                         </div>
                                                     </div>
@@ -1135,6 +1144,17 @@ export default class Home extends React.Component {
         }
         if (num) { result = num + result; }
         return result;
+    }
+
+    new_to_K(num) {
+        var str_num = num.toString();
+        var part_a = str_num.split('.')[0];
+        var part_b = str_num.split('.')[1];
+
+        var reg = /\d{1,3}(?=(\d{3})+$)/g;
+        part_a = (part_a + '').replace(reg, '$&,');
+
+        return part_a + '.' + part_b;
     }
 
     // getNetType

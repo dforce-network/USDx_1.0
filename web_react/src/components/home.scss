@@ -65,6 +65,75 @@
             }
         }
     }
+
+    .myBalanceOnPoolSection {
+
+        // background-color: red;
+        div.imgWrap {
+            // background: green;
+
+            img {
+                width: 16px;
+                position: absolute;
+                right: 10px;
+                margin-top: -27px;
+                margin-right: 7px;
+                // opacity: 0.5;
+                cursor: pointer;
+            }
+
+            div.detials {
+                display: none;
+                text-align: left;
+                box-sizing: border-box;
+                background: #fff;
+                position: absolute;
+                top: 173px;
+                left: 0px;
+                width: 100%;
+                font-size: 12px;
+                font-weight: 200;
+                border-radius: 3px;
+                border: 1px solid rgba(221, 221, 230, 1);
+                box-shadow: 0px 0px 15px 0px rgba(116, 116, 116, 0.2);
+                padding: 8px 7px;
+
+                &::after {
+                    content: '';
+                    display: block;
+                    width: 0;
+                    height: 0;
+                    border: 5px solid transparent;
+                    border-top: 5px solid #fff;
+                    top: 33px;
+                    right: 19px;
+                    position: absolute;
+                }
+
+                &::before {
+                    content: '';
+                    display: block;
+                    width: 0;
+                    height: 0;
+                    border: 6px solid transparent;
+                    border-top: 6px solid rgba(221, 221, 230, 1);
+                    top: 34px;
+                    right: 18px;
+                    position: absolute;
+                }
+            }
+
+            &:hover {
+                div.detials {
+                    display: block;
+                }
+
+                img {
+                    opacity: 1;
+                }
+            }
+        }
+    }
 }
 
 @media screen and (max-width: 900px) {
@@ -130,6 +199,75 @@
                     font-style: normal;
                     font-size: 80%;
                     opacity: 0.7;
+                }
+            }
+        }
+    }
+
+    .myBalanceOnPoolSection {
+
+        // background-color: red;
+        div.imgWrap {
+            // background: green;
+
+            img {
+                width: 16px;
+                position: absolute;
+                right: 10px;
+                margin-top: -27px;
+                margin-right: 7px;
+                // opacity: 0.5;
+                cursor: pointer;
+            }
+
+            div.detials {
+                display: none;
+                text-align: left;
+                box-sizing: border-box;
+                background: #fff;
+                position: absolute;
+                top: 173px;
+                left: 0px;
+                width: 100%;
+                font-size: 12px;
+                font-weight: 200;
+                border-radius: 3px;
+                border: 1px solid rgba(221, 221, 230, 1);
+                box-shadow: 0px 0px 15px 0px rgba(116, 116, 116, 0.2);
+                padding: 8px 7px;
+
+                &::after {
+                    content: '';
+                    display: block;
+                    width: 0;
+                    height: 0;
+                    border: 5px solid transparent;
+                    border-top: 5px solid #fff;
+                    top: 33px;
+                    right: 19px;
+                    position: absolute;
+                }
+
+                &::before {
+                    content: '';
+                    display: block;
+                    width: 0;
+                    height: 0;
+                    border: 6px solid transparent;
+                    border-top: 6px solid rgba(221, 221, 230, 1);
+                    top: 34px;
+                    right: 18px;
+                    position: absolute;
+                }
+            }
+
+            &:hover {
+                div.detials {
+                    display: block;
+                }
+
+                img {
+                    opacity: 1;
                 }
             }
         }
