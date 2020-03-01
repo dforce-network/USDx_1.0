@@ -50,9 +50,9 @@ const addressMap = {
         'addressProtocolView': '0xaf47a307ea7d5dc7133b309c1a76c6a3f4ae1618'.toLowerCase(),
         'addressEngine': '0x03463c0ac738a370e0cd8c4e70a9be183255f25d'.toLowerCase(),
         'addressPool': '0xccf31dc9dcb6cb788d3c6b64f73efedfb7e9f20b'.toLowerCase(),
-        'dispatcher_USDC': '0x67015ed6cc1c3ebcca2edd1c1134da5b8698f68a'.toLowerCase(),
-        'dispatcher_PAX': '0xf06c7c4ee424dc376e88307a6f02b0e6d2a84f26'.toLowerCase(),
-        'dispatcher_TUSD': '0xe125e54c22fd4d2ed6c421a63629450a556a5eb2'.toLowerCase()
+        'dispatcher_USDC': '0x1b00a3a2c9edd57e0941601cfa54eabd88ba1dec'.toLowerCase(),
+        'dispatcher_PAX': '0x6debbb79db4fe03ed21170fa6e3d65da080da1ba'.toLowerCase(),
+        'dispatcher_TUSD': '0x29d11de37ceb3d548f4339f36239a52ca280ea52'.toLowerCase()
     }
 };
 
