@@ -921,7 +921,7 @@ export default class Home extends React.Component {
                                                 {
                                                     this.state.need_pull &&
                                                     <div className="button-wrap">
-                                                        <Tooltip placement="topLeft" title='Insufficient reserved collaterals, anyone can pull back from DIP001.'>
+                                                        <Tooltip placement="topRight" title='Insufficient reserved collaterals, anyone can pull back from DIP001.'>
                                                             <Button1></Button1>
                                                         </Tooltip>
                                                     </div>
@@ -951,8 +951,8 @@ export default class Home extends React.Component {
                                                     </div>
 
                                                     <div className='sec-item'>
-                                                        <span className='sec-item-token' style={{ 'color': this.state.USDC_spe_color ? 'red' : '#333' }}>USDC</span>
-                                                        <span className='sec-item-t-num'>
+                                                        <span className='sec-item-token'>USDC</span>
+                                                        <span className='sec-item-t-num' style={{ 'color': this.state.USDC_spe_color ? 'red' : '#333' }}>
                                                             {this.state.USDxToUSDC ? this.toThousands(this.state.USDxToUSDC.split('.')[0]) : '0'}
                                                             <i>
                                                                 {this.state.USDxToUSDC ? this.state.USDxToUSDC.split('.')[1] ? '.' + this.state.USDxToUSDC.split('.')[1] : '.00' : '.00'}
