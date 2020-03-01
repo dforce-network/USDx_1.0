@@ -6,7 +6,7 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import 'antd/dist/antd.css';
-import { Tooltip, Progress, Select, Drawer } from 'antd';
+import { Tooltip, Progress, Select, Drawer, Button as Button1 } from 'antd';
 import './home.scss';
 
 // abis
@@ -916,16 +916,17 @@ export default class Home extends React.Component {
                                             </span>
                                         </div>
                                         <div className="myBalanceOnPoolSection">
-                                            <div className="title">Constituents to be returned:</div>
-                                            {
-                                                this.state.need_pull &&
-                                                <div className="imgWrap">
-                                                    <img src={warningtips} alt="" />
-                                                    <div className="detials">
-                                                        Insufficient reserved collaterals, anyone can pull back from DIP001.
+                                            <div className="title">
+                                                Constituents to be returned:
+                                                {
+                                                    this.state.need_pull &&
+                                                    <div className="button-wrap">
+                                                        <Tooltip placement="topLeft" title='Insufficient reserved collaterals, anyone can pull back from DIP001.'>
+                                                            <Button1></Button1>
+                                                        </Tooltip>
                                                     </div>
-                                                </div>
-                                            }
+                                                }
+                                            </div>
 
                                             <div className="sec-wrap">
                                                 <div className="sec-wrap-left">
