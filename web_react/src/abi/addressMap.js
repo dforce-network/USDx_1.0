@@ -29,9 +29,9 @@
 const addressMap = {
     '1': {
         'addressDAI': '0x3cb8eb28e1ebfba8eedb12233f011b067ad78f8e'.toLowerCase(),
-        'addressPAX': '0xc46751e2494897eb34e2297beb649672dbabf975'.toLowerCase(),
-        'addressTUSD': '0x79ef2692d8191b3fe384306cdbb87124071b4f46'.toLowerCase(),
-        'addressUSDC': '0x0fd23e0e7b7c38682eda1a38407de21989163a3a'.toLowerCase(),
+        'addressPAX': '0x6CDd244AFFf8902cE285F02C39A2623Ecb461454'.toLowerCase(),
+        'addressTUSD': '0xfd062D0EBC900EF504435DCe9347797d3b5e12Aa'.toLowerCase(),
+        'addressUSDC': '0x2cd68eCF48B0687c95EE6C06D33389688C3cbb8e'.toLowerCase(),
         'addressDF': '0x6f407358319567621eab5c02c04aa4b82c1ee957'.toLowerCase(),
         'addressUSDx': '0x1cbd0c8d16dd9c8f450c781b5c3e3623f95f7344'.toLowerCase(),
         'addressProtocol': '0x540a4bc5b14d2a1b81de8e893bf75e2bac585ed9'.toLowerCase(),
