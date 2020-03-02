@@ -211,9 +211,9 @@ export default class Home extends React.Component {
                     approvedDF: false,
                     approvedUSDx: false,
                     DAIonBank: '0.00',
-                    PAXonBank: '0.00',
-                    TUSDonBank: '0.00',
-                    USDConBank: '0.00',
+                    // PAXonBank: '0.00',
+                    // TUSDonBank: '0.00',
+                    // USDConBank: '0.00',
                     claimDAI: '0.00',
                     claimPAX: '0.00',
                     claimTUSD: '0.00',
@@ -245,7 +245,10 @@ export default class Home extends React.Component {
                     need_pull: false,
                     PAX_need_is: false,
                     TUSD_need_is: false,
-                    USDC_need_is: false
+                    USDC_need_is: false,
+                    PAX_need: '',
+                    TUSD_need: '',
+                    USDC_need: ''
                 });
                 this.connectMetamask();
             } else {
@@ -357,6 +360,15 @@ export default class Home extends React.Component {
     }
 
     check_if_need_pull = () => {
+        this.setState({
+            need_pull: false,
+            TUSD_need_is: false,
+            PAX_need_is: false,
+            USDC_need_is: false,
+            TUSD_need: '',
+            PAX_need: '',
+            USDC_need: ''
+        });
         if (
             Number(this.state.TUSD_Reserve_ratio) + Number(this.adjustedRate) < Number(this.state.TUSD_Reserve_lower) ||
             Number(this.state.PAX_Reserve_ratio) + Number(this.adjustedRate) < Number(this.state.PAX_Reserve_lower) ||
@@ -366,7 +378,10 @@ export default class Home extends React.Component {
                 need_pull: true,
                 TUSD_need_is: false,
                 PAX_need_is: false,
-                USDC_need_is: false
+                USDC_need_is: false,
+                TUSD_need: '',
+                PAX_need: '',
+                USDC_need: ''
             })
             if (Number(this.state.TUSD_Reserve_ratio) + Number(this.adjustedRate) < Number(this.state.TUSD_Reserve_lower)) {
                 var TUSD_need = (this.state.TUSDonBank * this.state.TUSD_Reserve_lower / 1000 - this.state.TUSD_Reserve).toFixed(2);
@@ -385,7 +400,10 @@ export default class Home extends React.Component {
                 need_pull: false,
                 TUSD_need_is: false,
                 PAX_need_is: false,
-                USDC_need_is: false
+                USDC_need_is: false,
+                TUSD_need: '',
+                PAX_need: '',
+                USDC_need: ''
             })
         }
     }
