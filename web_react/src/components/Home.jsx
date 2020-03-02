@@ -241,7 +241,11 @@ export default class Home extends React.Component {
                     myHistory: [],
                     couldDeposit: false,
                     maxGenerateUSDx: '0.00',
-                    transcations: {}
+                    transcations: {},
+                    need_pull: false,
+                    PAX_need_is: false,
+                    TUSD_need_is: false,
+                    USDC_need_is: false
                 });
                 this.connectMetamask();
             } else {
