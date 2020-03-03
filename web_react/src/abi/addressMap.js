@@ -38,6 +38,9 @@ const addressMap = {
         'addressProtocolView': '0xce14792a280b20c4f8e1ae76805a6dfbe95729f5'.toLowerCase(),
         'addressEngine': '0x37561992f92c6437f14454d4ad36b0eefe107f19'.toLowerCase(),
         'addressPool': '0xaf54dcb325b6160871f1778c3043a1249bd9b1c1'.toLowerCase(),
+        'dispatcher_USDC': '0x56D5027224f11a69E9495338b35c66B98F9750a1'.toLowerCase(),
+        'dispatcher_PAX': '0x88872BE336DF14Eb5b658445EDa0Fb1eFaDDE6Ad'.toLowerCase(),
+        'dispatcher_TUSD': '0x63cDf1e6149a4F102bbD9040F91c23F7134b3B2b'.toLowerCase()
     },
     '4': {
         'addressDAI': '0x506243424a778382f73bf6c24390d08fa9096092'.toLowerCase(),
