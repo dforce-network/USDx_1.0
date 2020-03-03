@@ -499,50 +499,11 @@ export default class Home extends React.Component {
                                 </div>
                                 <div className="bodyleftHome" style={{}}>
                                     <div className="title" style={{ fontSize: '14px', fontWeight: 300 }}>
-                                        {/* <Tooltip placement="bottomLeft" title='Outstanding constituents pending for conversion due to inventory shortage and allocated USDx to be claimed by contributors of each constituent.'>
-                                            <Button></Button>
-                                        </Tooltip> */}
+                                        <Tooltip placement="bottomLeft" title='Outstanding constituents pending for conversion due to inventory shortage and allocated USDx to be claimed by contributors of each constituent.'>
+                                            <Button1></Button1>
+                                        </Tooltip>
                                         Constituents Pending Pool:
                                     </div>
-                                    {/* <div className="pool" style={{ width: '260px', marginTop: '10px', height: '60px', background: 'rgba(255, 245, 228, 1)', marginLeft: '-5px', borderRadius: '5px' }}>
-                                        <div className="leftSection" style={{ float: 'left', width: '40px', textAlign: 'center', height: '60px', lineHeight: '60px', fontSize: '14px' }}>
-                                            {this.state.sectionDAI ? (this.state.sectionDAI * 100 / this.state.tatolSection).toFixed() : '-'}%
-                                        </div>
-                                        <div className="left" style={{ width: '60px', height: '60px', paddingTop: '8px', paddingBottom: '3px', paddingLeft: '8px', float: 'left' }}>
-                                            <img src={dai} alt="" style={{ width: '28px' }} />
-                                            <p className="token" style={{ fontSize: '12px' }}>DAI</p>
-                                        </div>
-                                        <div className="right" style={{ width: '150px', height: '60px', float: 'left' }}>
-                                            <div className="section" style={{ fontSize: '14px', fontWeight: 300, paddingTop: '8px' }}>
-                                                <Tooltip title={'Claimable USDx: ' + this.toThousandsbodyleft(this.state.claimDAI.split('.')[0]) + '.' + this.state.claimDAI.split('.')[1] + ' / Pending DAI: ' + this.toThousandsbodyleft(this.state.DAIonPool.split('.')[0]) + '.' + this.state.DAIonPool.split('.')[1]}>
-                                                    <Progress
-                                                        percent={100}
-                                                        successPercent={
-                                                            (this.state.claimDAI && this.state.claimDAI > 0) ?
-                                                                ((this.state.claimDAI / (Number(this.state.DAIonPool) + Number(this.state.claimDAI))).toFixed(2) * 100) < 5 ?
-                                                                    '5'
-                                                                    :
-                                                                    Number(this.state.DAIonPool) === 0 ?
-                                                                        '100'
-                                                                        :
-                                                                        (this.state.claimDAI / (Number(this.state.DAIonPool) + Number(this.state.claimDAI))).toFixed(2) * 100 >= 95 ?
-                                                                            '95'
-                                                                            :
-                                                                            (this.state.claimDAI / (Number(this.state.DAIonPool) + Number(this.state.claimDAI))).toFixed(2) * 100
-                                                                :
-                                                                '0'
-                                                        }
-                                                        showInfo={false}
-                                                    />
-                                                </Tooltip>
-                                            </div>
-                                            <p className="sectionNum" style={{ fontSize: '16px', fontWeight: 400, marginTop: '3px', textAlign: 'right' }}>
-                                                <span>{this.state.DAIonPool ? this.toThousandsbodyleft(this.state.DAIonPool.split('.')[0]) : '0'}</span>
-                                                <span className="sectionDot" style={{ fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>{this.state.DAIonPool ? '.' + this.state.DAIonPool.split('.')[1] : '.00'}</span>
-                                            </p>
-                                        </div>
-                                        <div className="clear"></div>
-                                    </div> */}
                                     <div className="pool poolColor2" style={{ width: '260px', marginTop: '10px', height: '60px', marginLeft: '-5px', borderRadius: '5px', background: 'rgba(219, 255, 249, 1)', backgroundSize: 'auto 100%' }}>
                                         <div className="leftSection" style={{ float: 'left', width: '40px', textAlign: 'center', height: '60px', lineHeight: '60px', fontSize: '14px' }}>
                                             {this.state.sectionPAX ? (this.state.sectionPAX * 100 / this.state.tatolSection).toFixed() : '-'}%
@@ -663,9 +624,9 @@ export default class Home extends React.Component {
 
                                     <div className="totalUSDx" style={{ marginTop: '40px' }}>
                                         <div className="title">
-                                            {/* <Tooltip placement="bottomLeft" title='Total USDx minted (always identical to the sum total of collaterals)'>
-                                                <Button></Button>
-                                            </Tooltip> */}
+                                            <Tooltip placement="bottomLeft" title='Total USDx minted (always identical to the sum total of collaterals)'>
+                                                <Button1></Button1>
+                                            </Tooltip>
                                             Total USDx Outstanding:
                                         </div>
                                         <div className="usdxNum" style={{ margin: 0, marginTop: '4px', fontSize: '16px', fontWeight: 400, textAlign: 'right', paddingRight: '5px' }}>
@@ -676,9 +637,9 @@ export default class Home extends React.Component {
 
                                     <div className="globalpool" style={{ paddingTop: '30px' }}>
                                         <div className="title">
-                                            {/* <Tooltip placement="bottomLeft" title='Constituents locked as collaterals (the sum total is always idential to the amount of outstanding USDx)'>
-                                                <Button></Button>
-                                            </Tooltip> */}
+                                            <Tooltip placement="bottomLeft" title='Constituents locked as collaterals (the sum total is always idential to the amount of outstanding USDx)'>
+                                                <Button1></Button1>
+                                            </Tooltip>
                                             Global Collateral Pool:
                                         </div>
                                         {/* <div className="sectionToken" style={{ marginTop: '10px' }}>
@@ -713,9 +674,12 @@ export default class Home extends React.Component {
 
                                     <div className="globalpool" style={{ paddingTop: '30px' }}>
                                         <div className="title">
-                                            {/* <Tooltip placement="bottomLeft" title='Constituents locked as collaterals (the sum total is always idential to the amount of outstanding USDx)'>
-                                                <Button></Button>
-                                            </Tooltip> */}
+                                            <Tooltip
+                                                placement="bottomLeft"
+                                                title='Collaterals reserved as deploying DIP001.'
+                                            >
+                                                <Button1></Button1>
+                                            </Tooltip>
                                             Pool Reserve:
                                         </div>
                                         <div className="sectionToken">
