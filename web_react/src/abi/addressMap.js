@@ -1,18 +1,18 @@
 const addressMap = {
     '1': {
-        'addressDAI': '0x3cb8eb28e1ebfba8eedb12233f011b067ad78f8e'.toLowerCase(),
-        'addressPAX': '0x6CDd244AFFf8902cE285F02C39A2623Ecb461454'.toLowerCase(),
-        'addressTUSD': '0xfd062D0EBC900EF504435DCe9347797d3b5e12Aa'.toLowerCase(),
-        'addressUSDC': '0x2cd68eCF48B0687c95EE6C06D33389688C3cbb8e'.toLowerCase(),
-        'addressDF': '0x6f407358319567621eab5c02c04aa4b82c1ee957'.toLowerCase(),
-        'addressUSDx': '0x1cbd0c8d16dd9c8f450c781b5c3e3623f95f7344'.toLowerCase(),
-        'addressProtocol': '0x540a4bc5b14d2a1b81de8e893bf75e2bac585ed9'.toLowerCase(),
-        'addressProtocolView': '0x8a7624e1715098C79B7b61c7AE5563678Ce83c6B'.toLowerCase(),
-        'addressEngine': '0x37561992f92c6437f14454d4ad36b0eefe107f19'.toLowerCase(),
-        'addressPool': '0xaf54dcb325b6160871f1778c3043a1249bd9b1c1'.toLowerCase(),
-        'dispatcher_USDC': '0x5e71906b4B556f5c09813b816c0DC0f25a35ceA5'.toLowerCase(),
-        'dispatcher_PAX': '0x88872BE336DF14Eb5b658445EDa0Fb1eFaDDE6Ad'.toLowerCase(),
-        'dispatcher_TUSD': '0x213fc2cE8a2aeEbA93f39b029E65fCF714C66d55'.toLowerCase()
+        'addressDAI': '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359'.toLowerCase(),
+        'addressPAX': '0x8e870d67f660d95d5be530380d0ec0bd388289e1'.toLowerCase(),
+        'addressTUSD': '0x0000000000085d4780B73119b644AE5ecd22b376'.toLowerCase(),
+        'addressUSDC': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'.toLowerCase(),
+        'addressDF': '0x431ad2ff6a9c365805ebad47ee021148d6f7dbe0'.toLowerCase(),
+        'addressUSDx': '0xeb269732ab75a6fd61ea60b06fe994cd32a83549'.toLowerCase(),
+        'addressProtocol': '0x5843f1ccc5baa448528eb0e8bc567cda7ed1a1e8'.toLowerCase(),
+        'addressProtocolView': '0x097Dd22173f0e382daE42baAEb9bDBC9fdf3396F'.toLowerCase(),
+        'addressEngine': '0x8dc753d30b9f9f86dac3380e37d5bc03d6b60202'.toLowerCase(),
+        'addressPool': '0x786bf554473f9ab733fd683c528212492a23d895'.toLowerCase(),
+        'dispatcher_USDC': '0x6BAc35D67002d08b3a1a9573d127A24755d868fA'.toLowerCase(),
+        'dispatcher_PAX': '0x6C11011130bf0C09aBb7364BE5a46507A1f30E91'.toLowerCase(),
+        'dispatcher_TUSD': '0x5738e22bACe1f51b50c140684c02DD604A49Bec6'.toLowerCase()
     },
     '4': {
         'addressDAI': '0x506243424a778382f73bf6c24390d08fa9096092'.toLowerCase(),
