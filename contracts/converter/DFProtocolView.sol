@@ -197,4 +197,19 @@ contract DFProtocolView is DSMath {
 
         return mul(_step, _sumMintCW);
     }
+
+    function getCollateralList() public view returns (address[] memory) {
+		address[] memory _tokens = dfStore.getMintedTokenList();
+		address[] memory _srcTokens = new address[](_tokens.length);
+
+		for (uint i = 0; i < _tokens.length; i++)
+			_srcTokens[i] = IDSWrappedToken(_tokens[i]).getSrcERC20();
+
+		return _srcTokens;
+    }
+
+    function getCollateralBalance(address _srcToken) public view returns (uint) {
+		address _tokenID = dfStore.getWrappedToken(_srcToken);
+        return IDSWrappedToken(_tokenID).reverseByMultiple(IDSWrappedToken(_tokenID).balanceOf(dfCol));
+    }
 }
