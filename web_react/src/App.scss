@@ -1,0 +1,13 @@
+.ant-tooltip-content {
+  margin-right: -10px !important;
+
+  .ant-tooltip-arrow {
+    right: 5px !important;
+  }
+}
+
+.ant-tooltip-placement-bottomLeft {
+  .ant-tooltip-arrow {
+    left: 5px !important;
+  }
+}

@@ -6,13 +6,15 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import 'antd/dist/antd.css';
-import { Tooltip, Progress, Select, Drawer } from 'antd';
+import { Tooltip, Progress, Select, Drawer, Button as Button1 } from 'antd';
+import './home.scss';
 
 // abis
 import abiTokens from '../abi/abiTokens';
 import abiUSDx from '../abi/abiUSDx';
 import abiProtocol from '../abi/abiProtocol';
 import abiProtocolView from '../abi/abiProtocolView';
+import DispatcherABI from '../abi/dispatcher';
 
 // address map
 import addressMap from '../abi/addressMap'
@@ -44,6 +46,7 @@ export default class Home extends React.Component {
     gasFee = 3000000;
     faucetNum = 10000;
     gasRatio = 1.3;
+    adjustedRate = 1;
 
     theme = createMuiTheme({
         palette: {
@@ -106,10 +109,20 @@ export default class Home extends React.Component {
             DAIonPool: '0.00',
             PAXonPool: '0.00',
             TUSDonPool: '0.00',
-            USDConPool: '0.00'
+            USDConPool: '0.00',
+
+            USDC_Reserve_lower: 0,
+            TUSD_Reserve_lower: 0,
+            PAX_Reserve_lower: 0,
+
+            need_pull: false,
+            TUSD_Reserve_ratio: 0,
+            USDC_Reserve_ratio: 0,
+            PAX_Reserve_ratio: 0
         }
         if (window.web3) {
             this.Web3 = window.web3;
+            this.bignumber = this.Web3.toBigNumber;
 
             this.Web3.version.getNetwork((err, net) => {
                 console.log(net);
@@ -124,6 +137,10 @@ export default class Home extends React.Component {
                 this.addressEngine = addressMap[net]['addressEngine'];
                 this.addressPool = addressMap[net]['addressPool'];
 
+                this.address_D_USDC = addressMap[net]['dispatcher_USDC'];
+                this.address_D_PAX = addressMap[net]['dispatcher_PAX'];
+                this.address_D_TUSD = addressMap[net]['dispatcher_TUSD'];
+
 
                 this.contractDAI = this.Web3.eth.contract(abiTokens).at(this.addressDAI);
                 this.contractPAX = this.Web3.eth.contract(abiTokens).at(this.addressPAX);
@@ -135,6 +152,10 @@ export default class Home extends React.Component {
                 this.contractUSDx = this.Web3.eth.contract(abiUSDx).at(this.addressUSDx);
                 this.contractProtocol = this.Web3.eth.contract(abiProtocol).at(this.addressProtocol);
                 this.contractProtocolView = this.Web3.eth.contract(abiProtocolView).at(this.addressProtocolView);
+
+                this.dispatcher_USDC = this.Web3.eth.contract(DispatcherABI).at(this.address_D_USDC);
+                this.dispatcher_PAX = this.Web3.eth.contract(DispatcherABI).at(this.address_D_PAX);
+                this.dispatcher_TUSD = this.Web3.eth.contract(DispatcherABI).at(this.address_D_TUSD);
 
                 this.contractProtocol.allEvents({ toBlock: 'latest' }).watch((error, result) => {
                     console.log(error, result);
@@ -190,9 +211,9 @@ export default class Home extends React.Component {
                     approvedDF: false,
                     approvedUSDx: false,
                     DAIonBank: '0.00',
-                    PAXonBank: '0.00',
-                    TUSDonBank: '0.00',
-                    USDConBank: '0.00',
+                    // PAXonBank: '0.00',
+                    // TUSDonBank: '0.00',
+                    // USDConBank: '0.00',
                     claimDAI: '0.00',
                     claimPAX: '0.00',
                     claimTUSD: '0.00',
@@ -220,7 +241,14 @@ export default class Home extends React.Component {
                     myHistory: [],
                     couldDeposit: false,
                     maxGenerateUSDx: '0.00',
-                    transcations: {}
+                    transcations: {},
+                    need_pull: false,
+                    PAX_need_is: false,
+                    TUSD_need_is: false,
+                    USDC_need_is: false,
+                    PAX_need: '',
+                    TUSD_need: '',
+                    USDC_need: ''
                 });
                 this.connectMetamask();
             } else {
@@ -242,11 +270,185 @@ export default class Home extends React.Component {
                 this.getUserWithdrawBalance();
                 // this.isSyncing();
                 this.getGasPrice();
+                this.get_3_dispatcher_status();
+                this.check_if_need_pull();
             } else {
                 console.log('not connected...');
                 return;
             }
         }, 1000 * 15)
+    }
+
+
+    get_3_dispatcher_status = () => {
+        this.dispatcher_USDC.getReserve.call((err, ret) => {
+            // console.log('USDC.getReserve: ', ret.toString());
+            this.setState({
+                USDC_Reserve: this.formatNumber(ret, 'USDC')
+            })
+        })
+        this.dispatcher_USDC.getReserveRatio.call((err, ret) => {
+            // console.log('USDC.getReserve: ', ret.toString());
+            this.setState({
+                USDC_Reserve_ratio: ret.toString()
+            })
+        })
+        this.dispatcher_USDC.getReserveUpperLimit.call((err, ret) => {
+            // console.log('USDC.getReserve: ', ret.toString());
+            this.setState({
+                USDC_Reserve_upper: ret.toString()
+            })
+        })
+        this.dispatcher_USDC.getReserveLowerLimit.call((err, ret) => {
+            // console.log('USDC.getReserve: ', ret.toString());
+            this.setState({
+                USDC_Reserve_lower: ret.toString()
+            })
+        })
+
+
+        this.dispatcher_PAX.getReserve.call((err, ret) => {
+            // console.log('PAX.getReserve: ', ret.toString());
+            this.setState({
+                PAX_Reserve: this.formatNumber(ret, 'PAX')
+            })
+        })
+        this.dispatcher_PAX.getReserveRatio.call((err, ret) => {
+            // console.log('USDC.getReserve: ', ret.toString());
+            this.setState({
+                PAX_Reserve_ratio: ret.toString()
+            })
+        })
+        this.dispatcher_PAX.getReserveUpperLimit.call((err, ret) => {
+            // console.log('USDC.getReserve: ', ret.toString());
+            this.setState({
+                PAX_Reserve_upper: ret.toString()
+            })
+        })
+        this.dispatcher_PAX.getReserveLowerLimit.call((err, ret) => {
+            // console.log('USDC.getReserve: ', ret.toString());
+            this.setState({
+                PAX_Reserve_lower: ret.toString()
+            })
+        })
+
+
+        this.dispatcher_TUSD.getReserve.call((err, ret) => {
+            // console.log('TUSD.getReserve: ', ret.toString());
+            this.setState({
+                TUSD_Reserve: this.formatNumber(ret, 'TUSD')
+            })
+        })
+        this.dispatcher_TUSD.getReserveRatio.call((err, ret) => {
+            // console.log('USDC.getReserve: ', ret.toString());
+            this.setState({
+                TUSD_Reserve_ratio: ret.toString()
+            })
+        })
+        this.dispatcher_TUSD.getReserveUpperLimit.call((err, ret) => {
+            // console.log('USDC.getReserve: ', ret.toString());
+            this.setState({
+                TUSD_Reserve_upper: ret.toString()
+            })
+        })
+        this.dispatcher_TUSD.getReserveLowerLimit.call((err, ret) => {
+            // console.log('USDC.getReserve: ', ret.toString());
+            this.setState({
+                TUSD_Reserve_lower: ret.toString()
+            })
+        })
+    }
+
+    check_if_need_pull = () => {
+        this.setState({
+            need_pull: false,
+            TUSD_need_is: false,
+            PAX_need_is: false,
+            USDC_need_is: false,
+            TUSD_need: '',
+            PAX_need: '',
+            USDC_need: ''
+        });
+        if (
+            Number(this.state.TUSD_Reserve_ratio) + Number(this.adjustedRate) < Number(this.state.TUSD_Reserve_lower) ||
+            Number(this.state.PAX_Reserve_ratio) + Number(this.adjustedRate) < Number(this.state.PAX_Reserve_lower) ||
+            Number(this.state.USDC_Reserve_ratio) + Number(this.adjustedRate) < Number(this.state.USDC_Reserve_lower)
+        ) {
+            this.setState({
+                need_pull: true,
+                TUSD_need_is: false,
+                PAX_need_is: false,
+                USDC_need_is: false,
+                TUSD_need: '',
+                PAX_need: '',
+                USDC_need: ''
+            })
+            if (Number(this.state.TUSD_Reserve_ratio) + Number(this.adjustedRate) < Number(this.state.TUSD_Reserve_lower)) {
+                var TUSD_need = (this.state.TUSDonBank * this.state.TUSD_Reserve_lower / 1000 - this.state.TUSD_Reserve).toFixed(2);
+                this.setState({ TUSD_need: TUSD_need, TUSD_need_is: true });
+            }
+            if (Number(this.state.PAX_Reserve_ratio) + Number(this.adjustedRate) < Number(this.state.PAX_Reserve_lower)) {
+                var PAX_need = (this.state.PAXonBank * this.state.PAX_Reserve_lower / 1000 - this.state.PAX_Reserve).toFixed(2);
+                this.setState({ PAX_need: PAX_need, PAX_need_is: true });
+            }
+            if (Number(this.state.USDC_Reserve_ratio) + Number(this.adjustedRate) < Number(this.state.USDC_Reserve_lower)) {
+                var USDC_need = (this.state.USDConBank * this.state.USDC_Reserve_lower / 1000 - this.state.USDC_Reserve).toFixed(2);
+                this.setState({ USDC_need: USDC_need, USDC_need_is: true });
+            }
+        } else {
+            this.setState({
+                need_pull: false,
+                TUSD_need_is: false,
+                PAX_need_is: false,
+                USDC_need_is: false,
+                TUSD_need: '',
+                PAX_need: '',
+                USDC_need: ''
+            })
+        }
+    }
+
+    pull_click = (token) => {
+        console.log(token);
+        var DisPatcher;
+        if (token === 'PAX') {
+            DisPatcher = this.dispatcher_PAX;
+        } else if (token === 'TUSD') {
+            DisPatcher = this.dispatcher_TUSD;
+        } else if (token === 'USDC') {
+            DisPatcher = this.dispatcher_USDC;
+        }
+
+        // DisPatcher.trigger.sendTransaction  estimateGas
+        DisPatcher.trigger.estimateGas({ from: this.state.accountAddress }, (err, gasLimit) => {
+            DisPatcher.trigger.sendTransaction(
+                {
+                    from: this.state.accountAddress,
+                    gas: Math.ceil(gasLimit * this.gasRatio),
+                    gasPrice: this.state.gasPrice
+                },
+                (err, ret) => {
+                    if (err) {
+                        console.log('cancel the trigger');
+                    }
+                    if (ret) {
+                        var timer_trigger = setInterval(() => {
+                            console.log('i am checking trigger...');
+                            this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                if (data && data.status === '0x1') {
+                                    clearInterval(timer_trigger);
+                                    this.get_3_dispatcher_status();
+                                    this.check_if_need_pull();
+                                }
+                                if (data && data.status === '0x0') {
+                                    clearInterval(timer_trigger);
+                                }
+                            })
+                        }, 2000);
+                    }
+                }
+            )
+        })
     }
 
     componentWillMount() { }
@@ -297,50 +499,11 @@ export default class Home extends React.Component {
                                 </div>
                                 <div className="bodyleftHome" style={{}}>
                                     <div className="title" style={{ fontSize: '14px', fontWeight: 300 }}>
-                                        {/* <Tooltip placement="bottomLeft" title='Outstanding constituents pending for conversion due to inventory shortage and allocated USDx to be claimed by contributors of each constituent.'>
-                                            <Button></Button>
-                                        </Tooltip> */}
+                                        <Tooltip placement="bottomLeft" title='Outstanding constituents pending for conversion due to inventory shortage and allocated USDx to be claimed by contributors of each constituent.'>
+                                            <Button1></Button1>
+                                        </Tooltip>
                                         Constituents Pending Pool:
                                     </div>
-                                    {/* <div className="pool" style={{ width: '260px', marginTop: '10px', height: '60px', background: 'rgba(255, 245, 228, 1)', marginLeft: '-5px', borderRadius: '5px' }}>
-                                        <div className="leftSection" style={{ float: 'left', width: '40px', textAlign: 'center', height: '60px', lineHeight: '60px', fontSize: '14px' }}>
-                                            {this.state.sectionDAI ? (this.state.sectionDAI * 100 / this.state.tatolSection).toFixed() : '-'}%
-                                        </div>
-                                        <div className="left" style={{ width: '60px', height: '60px', paddingTop: '8px', paddingBottom: '3px', paddingLeft: '8px', float: 'left' }}>
-                                            <img src={dai} alt="" style={{ width: '28px' }} />
-                                            <p className="token" style={{ fontSize: '12px' }}>DAI</p>
-                                        </div>
-                                        <div className="right" style={{ width: '150px', height: '60px', float: 'left' }}>
-                                            <div className="section" style={{ fontSize: '14px', fontWeight: 300, paddingTop: '8px' }}>
-                                                <Tooltip title={'Claimable USDx: ' + this.toThousandsbodyleft(this.state.claimDAI.split('.')[0]) + '.' + this.state.claimDAI.split('.')[1] + ' / Pending DAI: ' + this.toThousandsbodyleft(this.state.DAIonPool.split('.')[0]) + '.' + this.state.DAIonPool.split('.')[1]}>
-                                                    <Progress
-                                                        percent={100}
-                                                        successPercent={
-                                                            (this.state.claimDAI && this.state.claimDAI > 0) ?
-                                                                ((this.state.claimDAI / (Number(this.state.DAIonPool) + Number(this.state.claimDAI))).toFixed(2) * 100) < 5 ?
-                                                                    '5'
-                                                                    :
-                                                                    Number(this.state.DAIonPool) === 0 ?
-                                                                        '100'
-                                                                        :
-                                                                        (this.state.claimDAI / (Number(this.state.DAIonPool) + Number(this.state.claimDAI))).toFixed(2) * 100 >= 95 ?
-                                                                            '95'
-                                                                            :
-                                                                            (this.state.claimDAI / (Number(this.state.DAIonPool) + Number(this.state.claimDAI))).toFixed(2) * 100
-                                                                :
-                                                                '0'
-                                                        }
-                                                        showInfo={false}
-                                                    />
-                                                </Tooltip>
-                                            </div>
-                                            <p className="sectionNum" style={{ fontSize: '16px', fontWeight: 400, marginTop: '3px', textAlign: 'right' }}>
-                                                <span>{this.state.DAIonPool ? this.toThousandsbodyleft(this.state.DAIonPool.split('.')[0]) : '0'}</span>
-                                                <span className="sectionDot" style={{ fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>{this.state.DAIonPool ? '.' + this.state.DAIonPool.split('.')[1] : '.00'}</span>
-                                            </p>
-                                        </div>
-                                        <div className="clear"></div>
-                                    </div> */}
                                     <div className="pool poolColor2" style={{ width: '260px', marginTop: '10px', height: '60px', marginLeft: '-5px', borderRadius: '5px', background: 'rgba(219, 255, 249, 1)', backgroundSize: 'auto 100%' }}>
                                         <div className="leftSection" style={{ float: 'left', width: '40px', textAlign: 'center', height: '60px', lineHeight: '60px', fontSize: '14px' }}>
                                             {this.state.sectionPAX ? (this.state.sectionPAX * 100 / this.state.tatolSection).toFixed() : '-'}%
@@ -461,9 +624,9 @@ export default class Home extends React.Component {
 
                                     <div className="totalUSDx" style={{ marginTop: '40px' }}>
                                         <div className="title">
-                                            {/* <Tooltip placement="bottomLeft" title='Total USDx minted (always identical to the sum total of collaterals)'>
-                                                <Button></Button>
-                                            </Tooltip> */}
+                                            <Tooltip placement="bottomLeft" title='Total USDx minted (always identical to the sum total of collaterals)'>
+                                                <Button1></Button1>
+                                            </Tooltip>
                                             Total USDx Outstanding:
                                         </div>
                                         <div className="usdxNum" style={{ margin: 0, marginTop: '4px', fontSize: '16px', fontWeight: 400, textAlign: 'right', paddingRight: '5px' }}>
@@ -474,9 +637,9 @@ export default class Home extends React.Component {
 
                                     <div className="globalpool" style={{ paddingTop: '30px' }}>
                                         <div className="title">
-                                            {/* <Tooltip placement="bottomLeft" title='Constituents locked as collaterals (the sum total is always idential to the amount of outstanding USDx)'>
-                                                <Button></Button>
-                                            </Tooltip> */}
+                                            <Tooltip placement="bottomLeft" title='Constituents locked as collaterals (the sum total is always idential to the amount of outstanding USDx)'>
+                                                <Button1></Button1>
+                                            </Tooltip>
                                             Global Collateral Pool:
                                         </div>
                                         {/* <div className="sectionToken" style={{ marginTop: '10px' }}>
@@ -505,6 +668,103 @@ export default class Home extends React.Component {
                                             <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
                                                 {this.state.USDConBank ? this.toThousandsbodyleft(this.state.USDConBank.split('.')[0]) : '0'}
                                                 <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>{this.state.USDConBank ? '.' + this.state.USDConBank.split('.')[1] : '.00'}</i>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className="globalpool" style={{ paddingTop: '30px' }}>
+                                        <div className="title">
+                                            <Tooltip
+                                                placement="bottomLeft"
+                                                title='Collaterals reserved as deploying DIP001.'
+                                            >
+                                                <Button1></Button1>
+                                            </Tooltip>
+                                            Pool Reserve:
+                                        </div>
+                                        <div className="sectionToken">
+                                            <span className="token" style={{ fontSize: '14px', width: '60px', lineHeight: '30px' }}>PAX</span>
+                                            <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
+                                                {this.state.PAX_Reserve ? this.toThousandsbodyleft(this.state.PAX_Reserve.split('.')[0]) : '0'}
+                                                <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>
+                                                    {this.state.PAX_Reserve ? '.' + this.state.PAX_Reserve.split('.')[1] : '.00'}
+                                                </i>
+                                            </span>
+                                        </div>
+                                        <div className="sectionToken">
+                                            <span className="token" style={{ fontSize: '14px', width: '60px', lineHeight: '30px', fontSize: '80%', opacity: 0.7 }}>Target Reserve Range</span>
+                                            <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
+                                                <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>
+                                                    {this.state.PAX_Reserve_lower ? this.state.PAX_Reserve_lower / 10 + '%' : '0%'}
+                                                    ~
+                                                    {this.state.PAX_Reserve_upper ? this.state.PAX_Reserve_upper / 10 + '%' : '0%'}
+                                                </i>
+                                            </span>
+                                        </div>
+                                        <div className="sectionToken">
+                                            <span className="token" style={{ fontSize: '14px', width: '60px', lineHeight: '30px', fontSize: '80%', opacity: 0.7 }}>Current Reserve Ratio</span>
+                                            <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
+                                                <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>
+                                                    {this.state.PAX_Reserve_ratio ? this.state.PAX_Reserve_ratio / 10 + '%' : '0%'}
+                                                </i>
+                                            </span>
+                                        </div>
+
+
+                                        <div className="sectionToken">
+                                            <span className="token" style={{ fontSize: '14px', width: '60px', lineHeight: '30px' }}>TUSD</span>
+                                            <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
+                                                {this.state.TUSD_Reserve ? this.toThousandsbodyleft(this.state.TUSD_Reserve.split('.')[0]) : '0'}
+                                                <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>
+                                                    {this.state.TUSD_Reserve ? '.' + this.state.TUSD_Reserve.split('.')[1] : '.00'}
+                                                </i>
+                                            </span>
+                                        </div>
+                                        <div className="sectionToken">
+                                            <span className="token" style={{ fontSize: '14px', width: '60px', lineHeight: '30px', fontSize: '80%', opacity: 0.7 }}>Target Reserve Range</span>
+                                            <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
+                                                <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>
+                                                    {this.state.TUSD_Reserve_lower ? this.state.TUSD_Reserve_lower / 10 + '%' : '0%'}
+                                                    ~
+                                                    {this.state.TUSD_Reserve_upper ? this.state.TUSD_Reserve_upper / 10 + '%' : '0%'}
+                                                </i>
+                                            </span>
+                                        </div>
+                                        <div className="sectionToken">
+                                            <span className="token" style={{ fontSize: '14px', width: '60px', lineHeight: '30px', fontSize: '80%', opacity: 0.7 }}>Current Reserve Ratio</span>
+                                            <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
+                                                <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>
+                                                    {this.state.TUSD_Reserve_ratio ? this.state.TUSD_Reserve_ratio / 10 + '%' : '0%'}
+                                                </i>
+                                            </span>
+                                        </div>
+
+
+                                        <div className="sectionToken">
+                                            <span className="token" style={{ fontSize: '14px', width: '60px', lineHeight: '30px' }}>USDC</span>
+                                            <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
+                                                {this.state.USDC_Reserve ? this.toThousandsbodyleft(this.state.USDC_Reserve.split('.')[0]) : '0'}
+                                                <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>
+                                                    {this.state.USDC_Reserve ? '.' + this.state.USDC_Reserve.split('.')[1] : '.00'}
+                                                </i>
+                                            </span>
+                                        </div>
+                                        <div className="sectionToken">
+                                            <span className="token" style={{ fontSize: '14px', width: '60px', lineHeight: '30px', fontSize: '80%', opacity: 0.7 }}>Target Reserve Range</span>
+                                            <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
+                                                <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>
+                                                    {this.state.USDC_Reserve_lower ? this.state.USDC_Reserve_lower / 10 + '%' : '0%'}
+                                                    ~
+                                                    {this.state.USDC_Reserve_upper ? this.state.USDC_Reserve_upper / 10 + '%' : '0%'}
+                                                </i>
+                                            </span>
+                                        </div>
+                                        <div className="sectionToken">
+                                            <span className="token" style={{ fontSize: '14px', width: '60px', lineHeight: '30px', fontSize: '80%', opacity: 0.7 }}>Current Reserve Ratio</span>
+                                            <span className="tokenNum" style={{ fontSize: '16px', fontWeight: 400, float: 'right', marginRight: '5px' }}>
+                                                <i style={{ fontStyle: 'normal', fontSize: '80%', opacity: 0.7, fontWeight: 200 }}>
+                                                    {this.state.USDC_Reserve_ratio ? this.state.USDC_Reserve_ratio / 10 + '%' : '0%'}
+                                                </i>
                                             </span>
                                         </div>
                                     </div>
@@ -583,7 +843,11 @@ export default class Home extends React.Component {
                                     <div style={{ display: !this.state.tab1 ? 'block' : 'none' }} className="generate">
                                         <p className="details">How much USDx you would like to reconvert into constituents:</p>
                                         <div className="input">
-                                            <input type="number" onChange={(val) => { this.destroyNumChange(val.target.value) }} value={this.state.toDestroyNum} />
+                                            <input
+                                                type="number"
+                                                onChange={(val) => { this.destroyNumChange(val.target.value) }}
+                                                value={this.state.toDestroyNum}
+                                            />
                                             <Select className="mySelect" defaultValue="USDx" disabled></Select>
                                         </div>
                                         <div className="clear"></div>
@@ -592,62 +856,123 @@ export default class Home extends React.Component {
                                                 onClick={() => { this.destroy() }}
                                                 variant="contained"
                                                 color="secondary"
-                                                disabled={this.state.couldDestroy ? false : true}
+                                                disabled={
+                                                    this.state.errTipsDestroy ||
+                                                        this.state.err_usdx ||
+                                                        this.state.getDestroyThresholdBool ||
+                                                        this.state.err_df ||
+                                                        this.state.err_pull ||
+                                                        this.state.PAX_spe_color ||
+                                                        this.state.TUSD_spe_color ||
+                                                        this.state.USDC_spe_color ?
+                                                        true : false
+                                                }
                                                 fullWidth={true}
-                                            >CONVERT
-                                        </Button>
+                                            >
+                                                CONVERT
+                                            </Button>
                                         </div>
                                         <div className="tips tipsMax">
                                             <div className="imgWrap">
                                                 <img src={warningtips} alt="" />
-                                                <div className="detials">Please note that 0.1% of USDx equivalent of DF will be consumed for the reconversion of USDx.</div>
+                                                <div className="detials">
+                                                    Please note that 0.1% of USDx equivalent of DF will be consumed for the reconversion of USDx.
+                                                </div>
                                             </div>
                                             Fee in DF Token:
-                                        <span style={{ color: Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) > 0 ? '#fc5645' : '#9696a2' }}>
-                                                <i style={{ color: Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) > 0 ? '#fc5645' : '#9696a2' }}>{(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice).toFixed(2).toString().split('.')[0]}</i>
+                                            <span style={{ color: Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) > 0 ? '#fc5645' : '#9696a2' }}>
+                                                <i style={{ color: Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) > 0 ? '#fc5645' : '#9696a2' }}>
+                                                    {(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice).toFixed(2).toString().split('.')[0]}
+                                                </i>
                                                 {'.' + (this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice).toFixed(2).toString().split('.')[1]}
                                             </span>
                                         </div>
                                         <div className="errtips" style={{ display: this.state.errTipsDestroy ? 'block' : 'none' }}>
                                             {/* <div className="errtips"> */}
                                             <h4>Reminder</h4>
-                                            <span style={{ display: this.state.errTipsDestroy && !this.state.getDestroyThresholdBool && Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) < 0 ? 'block' : 'none' }}>Insufficient USDx.</span>
-                                            <span style={{ display: this.state.getDestroyThresholdBool ? 'block' : 'none' }}>The minimum accuracy to unconvert is no less than 0.01 USDx.</span>
-                                            <span style={{ display: Number(this.state.toDestroyNum * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) > 0 ? 'block' : 'none' }}>Insufficient DF.</span>
+                                            <span style={{ display: this.state.err_usdx ? 'block' : 'none' }}>Insufficient USDx.</span>
+                                            <span style={{ display: this.state.getDestroyThresholdBool ? 'block' : 'none' }}>
+                                                The minimum accuracy to unconvert is no less than 0.01 USDx.
+                                            </span>
+                                            <span style={{ display: this.state.err_df ? 'block' : 'none' }}>Insufficient DF.</span>
+                                            <span style={{ display: this.state.err_pull ? 'block' : 'none' }}>
+                                                Insufficient constituent, maximal
+                                                <span style={{ 'color': 'red' }}> {this.state.min_to_burn ? this.new_to_K(this.state.min_to_burn) : '0'} </span>
+                                                USDx can be disaggregated.
+                                            </span>
                                         </div>
                                         <div className="myBalanceOnPoolSection">
-                                            <div className="title">Constituents to be returned:</div>
-                                            {/* <p className='partToken'>
-                                                <span>DAI</span>
-                                                <span className='right'>
-                                                    {this.state.USDxToDAI ? this.toThousands(this.state.USDxToDAI.split('.')[0]) : '0'}
-                                                    <i>{this.state.USDxToDAI ? this.state.USDxToDAI.split('.')[1] ? '.' + this.state.USDxToDAI.split('.')[1] : '.00' : '.00'}</i>
-                                                </span>
-                                            </p> */}
-                                            <p className='partSec_new'>
-                                                <span className='exMargin_new'>PAX</span>
-                                                <span className='right_new'>
-                                                    {this.state.USDxToPAX ? this.toThousands(this.state.USDxToPAX.split('.')[0]) : '0'}
-                                                    <i>{this.state.USDxToPAX ? this.state.USDxToPAX.split('.')[1] ? '.' + this.state.USDxToPAX.split('.')[1] : '.00' : '.00'}</i>
-                                                </span>
-                                            </p>
-                                            <div className="clear"></div>
-                                            <p className='partSec_new'>
-                                                <span className='exMargin_new'>TUSD</span>
-                                                <span className='right_new'>
-                                                    {this.state.USDxToTUSD ? this.toThousands(this.state.USDxToTUSD.split('.')[0]) : '0'}
-                                                    <i>{this.state.USDxToTUSD ? this.state.USDxToTUSD.split('.')[1] ? '.' + this.state.USDxToTUSD.split('.')[1] : '.00' : '.00'}</i>
-                                                </span>
-                                            </p>
-                                            <div className="clear"></div>
-                                            <p className='partSec_new'>
-                                                <span className='exMargin_new'>USDC</span>
-                                                <span className='right_new'>
-                                                    {this.state.USDxToUSDC ? this.toThousands(this.state.USDxToUSDC.split('.')[0]) : '0'}
-                                                    <i>{this.state.USDxToUSDC ? this.state.USDxToUSDC.split('.')[1] ? '.' + this.state.USDxToUSDC.split('.')[1] : '.00' : '.00'}</i>
-                                                </span>
-                                            </p>
-                                            <div className="clear"></div>
+                                            <div className="title">
+                                                Constituents to be returned:
+                                                {
+                                                    this.state.need_pull &&
+                                                    <div className="button-wrap">
+                                                        <Tooltip placement="topRight" title='Insufficient reserved collaterals, anyone can pull back from DIP001.'>
+                                                            <Button1></Button1>
+                                                        </Tooltip>
+                                                    </div>
+                                                }
+                                            </div>
+
+                                            <div className="sec-wrap">
+                                                <div className="sec-wrap-left">
+                                                    <div className='sec-item'>
+                                                        <span className='sec-item-token'>PAX</span>
+                                                        <span className='sec-item-t-num' style={{ 'color': this.state.PAX_spe_color ? 'red' : '#333' }}>
+                                                            {this.state.USDxToPAX ? this.toThousands(this.state.USDxToPAX.split('.')[0]) : '0'}
+                                                            <i>
+                                                                {this.state.USDxToPAX ? this.state.USDxToPAX.split('.')[1] ? '.' + this.state.USDxToPAX.split('.')[1] : '.00' : '.00'}
+                                                            </i>
+                                                        </span>
+                                                    </div>
+
+                                                    <div className='sec-item'>
+                                                        <span className='sec-item-token'>TUSD</span>
+                                                        <span className='sec-item-t-num' style={{ 'color': this.state.TUSD_spe_color ? 'red' : '#333' }}>
+                                                            {this.state.USDxToTUSD ? this.toThousands(this.state.USDxToTUSD.split('.')[0]) : '0'}
+                                                            <i>
+                                                                {this.state.USDxToTUSD ? this.state.USDxToTUSD.split('.')[1] ? '.' + this.state.USDxToTUSD.split('.')[1] : '.00' : '.00'}
+                                                            </i>
+                                                        </span>
+                                                    </div>
+
+                                                    <div className='sec-item'>
+                                                        <span className='sec-item-token'>USDC</span>
+                                                        <span className='sec-item-t-num' style={{ 'color': this.state.USDC_spe_color ? 'red' : '#333' }}>
+                                                            {this.state.USDxToUSDC ? this.toThousands(this.state.USDxToUSDC.split('.')[0]) : '0'}
+                                                            <i>
+                                                                {this.state.USDxToUSDC ? this.state.USDxToUSDC.split('.')[1] ? '.' + this.state.USDxToUSDC.split('.')[1] : '.00' : '.00'}
+                                                            </i>
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                {
+                                                    this.state.need_pull &&
+                                                    <div className="sec-wrap-right">
+                                                        <div className="sec-item" style={{ opacity: this.state.PAX_need_is ? 1 : 0 }}>
+                                                            <span className="sec-item-btn" onClick={() => { this.pull_click('PAX') }}>PULL</span>
+                                                            <span className="sec-item-num">
+                                                                {this.state.PAX_need ? this.new_to_K(this.state.PAX_need) : '0'}
+                                                            </span>
+                                                        </div>
+
+                                                        <div className="sec-item" style={{ opacity: this.state.TUSD_need_is ? 1 : 0 }}>
+                                                            <span className="sec-item-btn" onClick={() => { this.pull_click('TUSD') }}>PULL</span>
+                                                            <span className="sec-item-num">
+                                                                {this.state.TUSD_need ? this.new_to_K(this.state.TUSD_need) : '0'}
+                                                            </span>
+                                                        </div>
+
+                                                        <div className="sec-item" style={{ opacity: this.state.USDC_need_is ? 1 : 0 }}>
+                                                            <span className="sec-item-btn" onClick={() => { this.pull_click('USDC') }}>PULL</span>
+                                                            <span className="sec-item-num">
+                                                                {this.state.USDC_need ? this.new_to_K(this.state.USDC_need) : '0'}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -782,6 +1107,8 @@ export default class Home extends React.Component {
                 this.getMyHistory();
                 Cookie.save('isLogin', 'true', { path: '/' });
                 this.getGasPrice();
+                this.get_3_dispatcher_status();
+                this.check_if_need_pull();
             },
             err => {
                 console.log(err);
@@ -809,6 +1136,17 @@ export default class Home extends React.Component {
         }
         if (num) { result = num + result; }
         return result;
+    }
+
+    new_to_K(num) {
+        var str_num = num.toString();
+        var part_a = str_num.split('.')[0];
+        var part_b = str_num.split('.')[1];
+
+        var reg = /\d{1,3}(?=(\d{3})+$)/g;
+        part_a = (part_a + '').replace(reg, '$&,');
+
+        return part_a + '.' + part_b;
     }
 
     // getNetType
@@ -4689,77 +5027,127 @@ export default class Home extends React.Component {
         if (val.length > 16) {
             return;
         }
-        if (Number(val) > 0 && this.Web3.toBigNumber(val).sub(this.Web3.toBigNumber(this.state.myUSDx)) <= 0) {
-            var USDxToDAI = this.Web3.toBigNumber(val).mul(this.Web3.toBigNumber(this.state.sectionDAIBurning).div(this.Web3.toBigNumber(this.state.tatolSectionBurning)));
-            var USDxToPAX = this.Web3.toBigNumber(val).mul(this.Web3.toBigNumber(this.state.sectionPAXBurning).div(this.Web3.toBigNumber(this.state.tatolSectionBurning)));
-            var USDxToTUSD = this.Web3.toBigNumber(val).mul(this.Web3.toBigNumber(this.state.sectionTUSDBurning).div(this.Web3.toBigNumber(this.state.tatolSectionBurning)));
-            var USDxToUSDC = this.Web3.toBigNumber(val).mul(this.Web3.toBigNumber(this.state.sectionUSDCBurning).div(this.Web3.toBigNumber(this.state.tatolSectionBurning)));
+        this.setState({
+            errTipsDestroy: false,
+            err_usdx: false,
+            getDestroyThresholdBool: false,
+            err_df: false,
+            err_pull: false,
+            PAX_spe_color: false,
+            TUSD_spe_color: false,
+            USDC_spe_color: false,
+            toDestroyNum: val
+        })
+
+        var USDxToPAX = this.bignumber(val).mul(this.bignumber(this.state.sectionPAXBurning).div(this.bignumber(this.state.tatolSectionBurning)));
+        var USDxToTUSD = this.bignumber(val).mul(this.bignumber(this.state.sectionTUSDBurning).div(this.bignumber(this.state.tatolSectionBurning)));
+        var USDxToUSDC = this.bignumber(val).mul(this.bignumber(this.state.sectionUSDCBurning).div(this.bignumber(this.state.tatolSectionBurning)));
+
+        if (this.bignumber(val).gt(this.bignumber(this.state.myUSDx))) {
             this.setState({
-                ...this.state,
-                errTipsDestroy: false,
-                couldDestroy: true,
+                errTipsDestroy: true,
+                err_usdx: true,
                 toDestroyNum: val,
-                USDxToDAI: USDxToDAI.toString(10),
                 USDxToPAX: USDxToPAX.toString(10),
                 USDxToTUSD: USDxToTUSD.toString(10),
                 USDxToUSDC: USDxToUSDC.toString(10),
-                getDestroyThresholdBool: false
             })
-            if (this.Web3.toBigNumber(val).mod(this.Web3.toBigNumber(this.state.getDestroyThreshold)).toString(10) !== '0') {
-                this.setState({
-                    ...this.state,
-                    errTipsDestroy: true,
-                    couldDestroy: false,
-                    toDestroyNum: val,
-                    USDxToDAI: '',
-                    USDxToPAX: '',
-                    USDxToTUSD: '',
-                    USDxToUSDC: '',
-                    getDestroyThresholdBool: true
-                })
-            }
-            if (this.Web3.toBigNumber(val * this.state.feeRate / this.state.dfPrice).sub(this.Web3.toBigNumber(this.state.myDF)) > 0) {
-                this.setState({
-                    ...this.state,
-                    errTipsDestroy: true,
-                    couldDestroy: false,
-                    toDestroyNum: val,
-                    USDxToDAI: '',
-                    USDxToPAX: '',
-                    USDxToTUSD: '',
-                    USDxToUSDC: '',
-                    getDestroyThresholdBool: false
-                })
-            }
-        } else {
-            this.setState({
-                ...this.state,
-                errTipsDestroy: true,
-                couldDestroy: false,
-                toDestroyNum: val,
-                USDxToDAI: '',
-                USDxToPAX: '',
-                USDxToTUSD: '',
-                USDxToUSDC: '',
-                getDestroyThresholdBool: false
-            })
-            if (val === '' || Number(val) === 0) {
-                this.setState({
-                    ...this.state,
-                    errTipsDestroy: false,
-                    couldDestroy: false,
-                    toDestroyNum: val,
-                    USDxToDAI: '',
-                    USDxToPAX: '',
-                    USDxToTUSD: '',
-                    USDxToUSDC: '',
-                    getDestroyThresholdBool: false
-                })
-            }
+            return false;
         }
+        if (this.bignumber(val).mod(this.bignumber(this.state.getDestroyThreshold)).toString(10) !== '0') {
+            this.setState({
+                errTipsDestroy: true,
+                getDestroyThresholdBool: true,
+                toDestroyNum: val,
+                USDxToPAX: USDxToPAX.toString(10),
+                USDxToTUSD: USDxToTUSD.toString(10),
+                USDxToUSDC: USDxToUSDC.toString(10),
+            })
+            return false;
+        }
+        if (Number(val * this.state.feeRate / this.state.dfPrice) - Number(this.state.myDF) > 0) {
+            this.setState({
+                errTipsDestroy: true,
+                err_df: true,
+                toDestroyNum: val,
+                USDxToPAX: USDxToPAX.toString(10),
+                USDxToTUSD: USDxToTUSD.toString(10),
+                USDxToUSDC: USDxToUSDC.toString(10),
+            })
+            return false;
+        }
+
+        if (
+            USDxToPAX.gt(this.bignumber(this.state.PAX_Reserve)) ||
+            USDxToTUSD.gt(this.bignumber(this.state.TUSD_Reserve)) ||
+            USDxToUSDC.gt(this.bignumber(this.state.USDC_Reserve))
+        ) {
+            this.setState({
+                errTipsDestroy: true,
+                err_pull: true,
+                toDestroyNum: val,
+                USDxToPAX: USDxToPAX.toString(10),
+                USDxToTUSD: USDxToTUSD.toString(10),
+                USDxToUSDC: USDxToUSDC.toString(10),
+            })
+            if (USDxToPAX.gt(this.bignumber(this.state.PAX_Reserve))) {
+                this.setState({
+                    PAX_spe_color: true
+                })
+            }
+            if (USDxToTUSD.gt(this.bignumber(this.state.TUSD_Reserve))) {
+                this.setState({
+                    TUSD_spe_color: true
+                })
+            }
+            if (USDxToUSDC.gt(this.bignumber(this.state.USDC_Reserve))) {
+                this.setState({
+                    USDC_spe_color: true
+                })
+            }
+            var min_to_burn = Math.min(
+                (this.state.USDC_Reserve / 0.35).toFixed(2),
+                (this.state.PAX_Reserve / 0.35).toFixed(2),
+                (this.state.TUSD_Reserve / 0.3).toFixed(2)
+            )
+            this.setState({
+                min_to_burn: min_to_burn
+            })
+            return false;
+        }
+
+        if (val === '' || Number(val) === 0) {
+            this.setState({
+                errTipsDestroy: false
+            })
+        }
+
+        this.setState({
+            errTipsDestroy: false,
+            err_usdx: false,
+            getDestroyThresholdBool: false,
+            err_df: false,
+            err_pull: false,
+            PAX_spe_color: false,
+            TUSD_spe_color: false,
+            USDC_spe_color: false,
+            toDestroyNum: val,
+            USDxToPAX: USDxToPAX.toString(10),
+            USDxToTUSD: USDxToTUSD.toString(10),
+            USDxToUSDC: USDxToUSDC.toString(10)
+        })
     }
     destroy() {
-        if (!this.state.couldDestroy) {
+        if (
+            this.state.errTipsDestroy ||
+            this.state.err_usdx ||
+            this.state.getDestroyThresholdBool ||
+            this.state.err_df ||
+            this.state.err_pull ||
+            this.state.PAX_spe_color ||
+            this.state.TUSD_spe_color ||
+            this.state.USDC_spe_color
+        ) {
             return;
         }
 

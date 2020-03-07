@@ -1,0 +1,347 @@
+// > 901
+@media screen and (min-width: 901px) {
+
+    //ant-tooltip-arrow
+    .sec-wrap {
+        // background-color: red;
+        display: flex;
+        padding-bottom: 11px;
+
+        .sec-item {
+            // background-color: palegoldenrod;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .sec-wrap-left {
+            // background-color: green;
+            flex: 1;
+
+            .sec-item-token {
+                display: inline-block;
+                width: 40%;
+            }
+
+            .sec-item-t-num {
+                display: inline-block;
+                width: 60%;
+                text-align: right;
+
+                i {
+                    font-style: normal;
+                    font-size: 80%;
+                    opacity: 0.7;
+                }
+            }
+        }
+
+        .sec-wrap-right {
+            // background-color: red;
+            width: 160px;
+            // display: none;
+            border-left: 1px solid #DDDDE6;
+            padding-left: 20px;
+            margin-left: 20px;
+
+            .sec-item-btn {
+                display: inline-block;
+                width: 40%;
+                width: 50px;
+                height: 22px;
+                background: rgba(56, 132, 255, 1);
+                border-radius: 2px;
+                color: #fff;
+                text-align: center;
+                cursor: pointer;
+                font-size: 12px;
+                line-height: 24px;
+            }
+
+            .sec-item-num {
+                display: inline-block;
+                width: 60%;
+                text-align: right;
+
+                i {
+                    font-style: normal;
+                    font-size: 80%;
+                    opacity: 0.7;
+                }
+            }
+        }
+    }
+
+    .myBalanceOnPoolSection {
+        .title {
+            .button-wrap {
+                float: right;
+                width: 20px;
+                height: 20px;
+                // overflow: hidden;
+                // background-color: red;
+
+
+
+
+                button {
+                    width: 20px;
+                    height: 20px;
+                    margin-right: 5px;
+                    border-radius: 50%;
+                    padding: 0;
+                    margin-top: 0px;
+                    border: none;
+                    background: url(../assets/img/warningtips.png) no-repeat center center;
+                    background-size: 80%;
+                }
+            }
+        }
+
+
+
+        // background-color: red;
+        div.imgWrap {
+
+            // background: green;
+
+
+            img {
+                width: 16px;
+                position: absolute;
+                right: 10px;
+                margin-top: -27px;
+                margin-right: 7px;
+                // opacity: 0.5;
+                cursor: pointer;
+            }
+
+            div.detials {
+                display: none;
+                text-align: left;
+                box-sizing: border-box;
+                background: #fff;
+                position: absolute;
+                top: 173px;
+                left: 0px;
+                width: 100%;
+                font-size: 12px;
+                font-weight: 200;
+                border-radius: 3px;
+                border: 1px solid rgba(221, 221, 230, 1);
+                box-shadow: 0px 0px 15px 0px rgba(116, 116, 116, 0.2);
+                padding: 8px 7px;
+
+                &::after {
+                    content: '';
+                    display: block;
+                    width: 0;
+                    height: 0;
+                    border: 5px solid transparent;
+                    border-top: 5px solid #fff;
+                    top: 33px;
+                    right: 19px;
+                    position: absolute;
+                }
+
+                &::before {
+                    content: '';
+                    display: block;
+                    width: 0;
+                    height: 0;
+                    border: 6px solid transparent;
+                    border-top: 6px solid rgba(221, 221, 230, 1);
+                    top: 34px;
+                    right: 18px;
+                    position: absolute;
+                }
+            }
+
+            &:hover {
+                div.detials {
+                    display: block;
+                }
+
+                img {
+                    opacity: 1;
+                }
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 900px) {
+    .sec-wrap {
+        // background-color: red;
+        display: flex;
+        padding-bottom: 11px;
+
+        .sec-item {
+            // background-color: palegoldenrod;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .sec-wrap-left {
+            // background-color: green;
+            flex: 1;
+
+            .sec-item-token {
+                display: inline-block;
+                width: 40%;
+            }
+
+            .sec-item-t-num {
+                display: inline-block;
+                width: 60%;
+                text-align: right;
+
+                i {
+                    font-style: normal;
+                    font-size: 80%;
+                    opacity: 0.7;
+                }
+            }
+        }
+
+        .sec-wrap-right {
+            // background-color: red;
+            width: 160px;
+            // display: none;
+            border-left: 1px solid #DDDDE6;
+            padding-left: 20px;
+            margin-left: 20px;
+
+            .sec-item-btn {
+                display: inline-block;
+                width: 40%;
+                width: 50px;
+                height: 22px;
+                background: rgba(56, 132, 255, 1);
+                border-radius: 2px;
+                color: #fff;
+                text-align: center;
+                cursor: pointer;
+                font-size: 12px;
+                line-height: 24px;
+            }
+
+            .sec-item-num {
+                display: inline-block;
+                width: 60%;
+                text-align: right;
+
+                i {
+                    font-style: normal;
+                    font-size: 80%;
+                    opacity: 0.7;
+                }
+            }
+        }
+    }
+
+    .myBalanceOnPoolSection {
+        .title {
+            .button-wrap {
+                float: right;
+                width: 20px;
+                height: 20px;
+                // overflow: hidden;
+                // background-color: red;
+
+                button {
+                    width: 20px;
+                    height: 20px;
+                    margin-right: 5px;
+                    border-radius: 50%;
+                    padding: 0;
+                    margin-top: 0px;
+                    border: none;
+                    background: url(../assets/img/warningtips.png) no-repeat center center;
+                    background-size: 80%;
+                }
+            }
+        }
+
+        // background-color: red;
+        div.imgWrap {
+            // background: green;
+
+            img {
+                width: 16px;
+                position: absolute;
+                right: 10px;
+                margin-top: -27px;
+                margin-right: 7px;
+                // opacity: 0.5;
+                cursor: pointer;
+            }
+
+            div.detials {
+                display: none;
+                text-align: left;
+                box-sizing: border-box;
+                background: #fff;
+                position: absolute;
+                top: 173px;
+                left: 0px;
+                width: 100%;
+                font-size: 12px;
+                font-weight: 200;
+                border-radius: 3px;
+                border: 1px solid rgba(221, 221, 230, 1);
+                box-shadow: 0px 0px 15px 0px rgba(116, 116, 116, 0.2);
+                padding: 8px 7px;
+
+                &::after {
+                    content: '';
+                    display: block;
+                    width: 0;
+                    height: 0;
+                    border: 5px solid transparent;
+                    border-top: 5px solid #fff;
+                    top: 33px;
+                    right: 19px;
+                    position: absolute;
+                }
+
+                &::before {
+                    content: '';
+                    display: block;
+                    width: 0;
+                    height: 0;
+                    border: 6px solid transparent;
+                    border-top: 6px solid rgba(221, 221, 230, 1);
+                    top: 34px;
+                    right: 18px;
+                    position: absolute;
+                }
+            }
+
+            &:hover {
+                div.detials {
+                    display: block;
+                }
+
+                img {
+                    opacity: 1;
+                }
+            }
+        }
+    }
+
+    .bodyleftHome {
+        .title {
+            button {
+                width: 20px;
+                height: 20px;
+                margin-right: 5px;
+                border-radius: 50%;
+                padding: 0;
+                margin-top: 0px;
+                border: none;
+                background: url(../assets/img/warningtips.png) no-repeat center center;
+                background-size: 80%;
+            }
+        }
+    }
+}
