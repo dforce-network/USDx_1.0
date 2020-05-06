@@ -1322,48 +1322,50 @@ export default class Home extends React.Component {
     }
     // get the Token Burning section
     getTokenBurningSection() {
-        this.tatolSectionBurning = 0;
+        // this.tatolSectionBurning = 0;
         this.contractProtocolView.getBurningSection.call((err, ret) => {
             // console.log(err, ret);
             if (ret) {
                 var addrArry = ret[0];
                 var sectionArry = ret[1];
+                // this.tatolSectionBurning = 0;
+                var tatolSectionBurning = 0;
 
                 for (let i = 0; i < addrArry.length; i++) {
                     if (addrArry[i].toLowerCase() === this.addressDAI) {
                         this.sectionDAIBurning = sectionArry[i].div(10 ** 16).toFixed();
-                        this.tatolSectionBurning = Number(this.tatolSectionBurning) + Number(this.sectionDAIBurning);
+                        tatolSectionBurning = Number(tatolSectionBurning) + Number(this.sectionDAIBurning);
                         this.setState({
                             ...this.state,
                             sectionDAIBurning: this.sectionDAIBurning,
-                            tatolSectionBurning: this.tatolSectionBurning
+                            tatolSectionBurning: tatolSectionBurning
                         })
                     }
                     if (addrArry[i].toLowerCase() === this.addressPAX) {
                         this.sectionPAXBurning = sectionArry[i].div(10 ** 16).toFixed();
-                        this.tatolSectionBurning = Number(this.tatolSectionBurning) + Number(this.sectionPAXBurning);
+                        tatolSectionBurning = Number(tatolSectionBurning) + Number(this.sectionPAXBurning);
                         this.setState({
                             ...this.state,
                             sectionPAXBurning: this.sectionPAXBurning,
-                            tatolSectionBurning: this.tatolSectionBurning
+                            tatolSectionBurning: tatolSectionBurning
                         })
                     }
                     if (addrArry[i].toLowerCase() === this.addressTUSD) {
                         this.sectionTUSDBurning = sectionArry[i].div(10 ** 16).toFixed();
-                        this.tatolSectionBurning = Number(this.tatolSectionBurning) + Number(this.sectionTUSDBurning);
+                        tatolSectionBurning = Number(tatolSectionBurning) + Number(this.sectionTUSDBurning);
                         this.setState({
                             ...this.state,
                             sectionTUSDBurning: this.sectionTUSDBurning,
-                            tatolSectionBurning: this.tatolSectionBurning
+                            tatolSectionBurning: tatolSectionBurning
                         })
                     }
                     if (addrArry[i].toLowerCase() === this.addressUSDC) {
                         this.sectionUSDCBurning = sectionArry[i].div(10 ** 16).toFixed();
-                        this.tatolSectionBurning = Number(this.tatolSectionBurning) + Number(this.sectionUSDCBurning);
+                        tatolSectionBurning = Number(tatolSectionBurning) + Number(this.sectionUSDCBurning);
                         this.setState({
                             ...this.state,
                             sectionUSDCBurning: this.sectionUSDCBurning,
-                            tatolSectionBurning: this.tatolSectionBurning
+                            tatolSectionBurning: tatolSectionBurning
                         })
                     }
                 }
