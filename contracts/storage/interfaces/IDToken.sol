@@ -1,7 +1,6 @@
-pragma solidity 0.5.12;
+pragma solidity 0.5.2;
 
 interface IDToken {
-    
     function mint(address _dst, uint256 _pie) external;
 
     function redeem(address _src, uint256 _wad) external;

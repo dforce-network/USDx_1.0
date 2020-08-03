@@ -1,6 +1,6 @@
 pragma solidity ^0.5.2;
 
-import "./interface/IERC20.sol";
+import "./interfaces/IERC20.sol";
 
 contract ERC20SafeTransfer {
     function doTransferOut(
