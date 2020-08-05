@@ -1,6 +1,6 @@
 pragma solidity ^0.5.2;
 
-contract IDFPoolNew {
+contract IDFPoolV2 {
     function transferOut(address _tokenID, address _to, uint _amount) public returns (bool);
     function transferOutSrc(address _tokenID, address _to, uint _amount) public returns (bool);
     function transferFromSender(address _tokenID, address _from, uint _amount) public returns (bool);
