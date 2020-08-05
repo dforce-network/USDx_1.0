@@ -2167,14 +2167,11 @@ contract("USDx", (accounts) => {
                 "depositor balance"
               ] = dfStoreAccountTokenOrigin.toString();
               try {
-                transactionData = await dfProtocol[system].withdraw(
-                  tokenAddress,
-                  new BN(0),
-                  amountNB,
-                  {
-                    from: accountAddress,
-                  }
-                );
+                transactionData = await dfProtocol[
+                  system
+                ].withdraw(tokenAddress, new BN(0), amountNB, {
+                  from: accountAddress,
+                });
                 withdrawGasUsed =
                   withdrawGasUsed < transactionData.receipt.gasUsed
                     ? transactionData.receipt.gasUsed
@@ -3172,13 +3169,11 @@ contract("USDx", (accounts) => {
               }
 
               try {
-                transactionData = await dfProtocol[system].oneClickMinting(
-                  new BN(0),
-                  amountNB,
-                  {
-                    from: accountAddress,
-                  }
-                );
+                transactionData = await dfProtocol[
+                  system
+                ].oneClickMinting(new BN(0), amountNB, {
+                  from: accountAddress,
+                });
                 oneClickMintingGasUsed =
                   oneClickMintingGasUsed < transactionData.receipt.gasUsed
                     ? transactionData.receipt.gasUsed
@@ -3731,13 +3726,11 @@ contract("USDx", (accounts) => {
               runData["tokens"] = tokenAddressIndex;
               runData["weight"] = tokenWeightList;
               try {
-                transactionData = await dfSetting[system].updateMintSection(
-                  xTokenAddressList,
-                  xTokenWeightList,
-                  {
-                    from: owner,
-                  }
-                );
+                transactionData = await dfSetting[
+                  system
+                ].updateMintSection(xTokenAddressList, xTokenWeightList, {
+                  from: owner,
+                });
                 updateGasUsed =
                   updateGasUsed < transactionData.receipt.gasUsed
                     ? transactionData.receipt.gasUsed
@@ -4582,4 +4575,93 @@ contract("USDx", (accounts) => {
       }
     });
   }
+
+  it("Verify V2 DToken Migration", async () => {
+    let system = 0;
+    let dfPoolV1 = dfPool[system];
+    let collateral = dfCollateral[system];
+    console.log(dfPoolV1.address);
+    console.log(srcTokenAddress);
+    console.log(usdxToken.address);
+
+    let dTokenController = await DTokenController.new();
+
+    let dfPoolV2 = await DFPoolV2.new(
+      collateral.address,
+      dfPoolV1.address,
+      dTokenController.address
+    );
+
+    let dTokens = [];
+    let wrapTokenAddresses = [];
+    for (let index = 0; index < srcTokenAddress.length; index++) {
+      console.log("\n-------------------------------------------------------");
+      let srcTokenAddr = srcTokenAddress[index];
+      //console.log(srcTokenAddr);
+      let srcToken = srcTokenContract[srcTokenAddr];
+      let srcTokenName = await srcToken.name.call();
+      console.log("Source Token:\t", srcTokenName);
+
+      let srcBalance = await srcToken.balanceOf.call(dfPoolV1.address);
+      console.log("SToken Balance of PoolV1:\t", srcBalance.toString());
+
+      let wrapTokenAddr = wrapTokenAddress[system][index];
+      //console.log(wrapTokenAddr);
+      wrapTokenAddresses.push(wrapTokenAddr);
+      let wrapToken = wrapTokenContract[system][wrapTokenAddr];
+      //console.log("Wrap Token:\t", await wrapToken.name.call());
+
+      let wrapBalance = await wrapToken.balanceOf.call(dfPoolV1.address);
+      console.log("XToken Balance of PoolV1:\t", wrapBalance.toString());
+
+      let wrapColBalance = await wrapToken.balanceOf.call(collateral.address);
+      console.log("XToken Balance of Collateral:\t", wrapColBalance.toString());
+
+      let dTokenName = "d" + srcTokenName;
+      let dToken = await DToken.new(dTokenName, dTokenName, srcTokenAddr);
+      dTokens.push(dToken);
+
+      await dTokenController.setdTokensRelation(
+        [srcTokenAddr],
+        [dToken.address]
+      );
+
+      await dfPoolV2.approve(srcTokenAddr);
+    }
+
+    // Migrate from V1 to V2
+    console.log(
+      "\n===================================Migrating==================================="
+    );
+    await dSGuard.permitx(dfPoolV2.address, dfPoolV1.address);
+    await dfPoolV2.migrateOldPool(wrapTokenAddresses, usdxToken.address);
+
+    for (let index = 0; index < srcTokenAddress.length; index++) {
+      console.log("\n-------------------------------------------------------");
+      let srcTokenAddr = srcTokenAddress[index];
+      let srcToken = srcTokenContract[srcTokenAddr];
+      let srcTokenName = await srcToken.name.call();
+      console.log("Source Token:\t", srcTokenName);
+
+      let srcBalance = await srcToken.balanceOf.call(dfPoolV2.address);
+      console.log("SToken Balance of PoolV2:\t", srcBalance.toString());
+
+      let wrapTokenAddr = wrapTokenAddress[system][index];
+      let wrapToken = wrapTokenContract[system][wrapTokenAddr];
+      //console.log("Wrap Token:\t", await wrapToken.name.call());
+
+      let wrapBalance = await wrapToken.balanceOf.call(dfPoolV2.address);
+      console.log("XToken Balance of PoolV2:\t", wrapBalance.toString());
+
+      let wrapColBalance = await wrapToken.balanceOf.call(collateral.address);
+      console.log("XToken Balance of Collateral:\t", wrapColBalance.toString());
+
+      let dToken = dTokens[index];
+      //let dTokenName = await dToken.name.call();
+      //console.log("dToken:\t", dTokenName);
+
+      let dTokenBalance = await dToken.balanceOf.call(dfPoolV2.address);
+      console.log("DToken Balance of PoolV2:\t", dTokenBalance.toString());
+    }
+  });
 });
