@@ -8,7 +8,7 @@ import "./interfaces/IDToken.sol";
 import "./interfaces/IDTokenController.sol";
 import "../token/interfaces/IDSWrappedToken.sol";
 
-contract DFPoolOld is DSMath, DSAuth, Utils, ERC20SafeTransfer {
+contract DFPoolV1 is DSMath, DSAuth, Utils, ERC20SafeTransfer {
     address dfcol;
 
     constructor(address _dfcol) public {
@@ -94,7 +94,8 @@ contract DFPoolOld is DSMath, DSAuth, Utils, ERC20SafeTransfer {
     }
 }
 
-contract DFPoolNew is ERC20SafeTransfer, DFPoolOld {
+contract DFPoolV2 is ERC20SafeTransfer, DFPoolV1 {
+    bool private initialized;
     address dFPoolOld;
     address dTokenController;
 
@@ -103,9 +104,22 @@ contract DFPoolNew is ERC20SafeTransfer, DFPoolOld {
         address _dFPoolOld,
         address _dTokenController
     ) public {
+
+        initialize(_dfcol, _dFPoolOld,_dTokenController);
+    }
+
+    // --- Init ---
+    function initialize(
+        address _dfcol,
+        address _dFPoolOld,
+        address _dTokenController
+    ) public {
+        require(!initialized, "initialize: Already initialized!");
+        owner = msg.sender;
         dfcol = _dfcol;
         dFPoolOld = _dFPoolOld;
         dTokenController = _dTokenController;
+        initialized = true;
     }
 
     function transferFromSenderOneClick(
@@ -139,29 +153,55 @@ contract DFPoolNew is ERC20SafeTransfer, DFPoolOld {
         super.transferToCol(_tokenID, _amount);
         IDToken(IDTokenController(dTokenController).getDToken(_tokenID)).mint(
             address(this),
-            add(_amount, migrateOldPool(_tokenID))
+            IDSWrappedToken(_tokenID).reverseByMultiple(_amount)
         );
         return true;
     }
 
-    function migrateOldPool(address _tokenID) internal returns (uint256) {
+    function migrateOldPool(address[] calldata _tokens, address _usdx) external {
         address _dFPoolOld = dFPoolOld;
-        uint256 _balanceOfPoolOld = IERC20(_tokenID).balanceOf(_dFPoolOld);
-        if (_balanceOfPoolOld > 0) {
-            DFPoolOld(_dFPoolOld).transferOut(
-                _tokenID,
-                address(this),
-                _balanceOfPoolOld
-            );
-            address _srcToken = IDSWrappedToken(_tokenID).getSrcERC20();
-            DFPoolOld(_dFPoolOld).transferOut(
-                _srcToken,
-                address(this),
-                IERC20(_srcToken).balanceOf(_dFPoolOld)
-            );
-            return IERC20(_tokenID).balanceOf(dfcol);
+        address _dfcol = dfcol;
+        address _dTokenController = dTokenController;
+        address _srcToken;
+        uint256 _balance;
+        for (uint256 i = 0; i < _tokens.length; i++) {
+            // transfer pending wrapped token to new pool
+            _balance = IERC20(_tokens[i]).balanceOf(_dFPoolOld);
+            if (_balance > 0)
+                DFPoolV1(_dFPoolOld).transferOut(
+                    _tokens[i],
+                    address(this),
+                    _balance
+                );
+            
+            // transfer all src token to new pool
+            _srcToken = IDSWrappedToken(_tokens[i]).getSrcERC20();
+            _balance = IERC20(_srcToken).balanceOf(_dFPoolOld);
+            if (_balance > 0)
+                DFPoolV1(_dFPoolOld).transferOut(
+                    _srcToken,
+                    address(this),
+                    _balance
+                );
+
+            // mint collateral token into dToken
+            _balance = IERC20(_tokens[i]).balanceOf(_dfcol);
+            if (_balance > 0)
+                IDToken(IDTokenController(_dTokenController).getDToken(_srcToken)).mint(
+                    address(this),
+                    IDSWrappedToken(_tokens[i]).reverseByMultiple(_balance)
+                );
         }
-        return 0;
+
+        // transfer claimable USDx to new pool
+        _balance = IERC20(_usdx).balanceOf(_dFPoolOld);
+        if (_balance > 0)
+            DFPoolV1(_dFPoolOld).transferOut(
+                _usdx,
+                address(this),
+                _balance
+            );
+        
     }
 
     function approve(address _tokenID) public {

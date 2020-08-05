@@ -4,14 +4,15 @@ import '../token/interfaces/IDSToken.sol';
 import '../token/interfaces/IDSWrappedToken.sol';
 import '../token/ERC20SafeTransfer.sol';
 import '../storage/interfaces/IDFStore.sol';
-import '../storage/interfaces/IDFPoolNew.sol';
+import '../storage/interfaces/IDFPoolV2.sol';
 import '../oracle/interfaces/IMedianizer.sol';
 import '../utility/DSAuth.sol';
 import '../utility/DSMath.sol';
 
-contract DFEngineNew is DSMath, DSAuth, ERC20SafeTransfer {
+contract DFEngineV2 is DSMath, DSAuth, ERC20SafeTransfer {
+    bool private initialized;
     IDFStore public dfStore;
-    IDFPoolNew public dfPool;
+    IDFPoolV2 public dfPool;
     IDSToken public usdxToken;
     address public dfCol;
     address public dfFunds;
@@ -31,11 +32,25 @@ contract DFEngineNew is DSMath, DSAuth, ERC20SafeTransfer {
         address _dfFunds)
         public
     {
+        initialize(_usdxToken, _dfStore, _dfPool, _dfCol, _dfFunds);
+    }
+
+    // --- Init ---
+    function initialize(
+        address _usdxToken,
+        address _dfStore,
+        address _dfPool,
+        address _dfCol,
+        address _dfFunds
+    ) public {
+        require(!initialized, "initialize: Already initialized!");
+        owner = msg.sender;
         usdxToken = IDSToken(_usdxToken);
         dfStore = IDFStore(_dfStore);
-        dfPool = IDFPoolNew(_dfPool);
+        dfPool = IDFPoolV2(_dfPool);
         dfCol = _dfCol;
         dfFunds = _dfFunds;
+        initialized = true;
     }
 
     function getPrice(address oracle) public view returns (uint) {
