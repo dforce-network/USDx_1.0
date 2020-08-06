@@ -21,7 +21,6 @@ contract DFPoolV1 is DSMath, DSAuth, Utils, ERC20SafeTransfer {
         uint256 _amount
     ) public auth returns (bool) {
         uint256 _balance = IERC20(_tokenID).balanceOf(address(this));
-        // IERC20(_tokenID).transferFrom(_from, address(this), _amount);
         require(
             doTransferFrom(_tokenID, _from, address(this), _amount),
             "transferFromSender: failed"
@@ -38,7 +37,6 @@ contract DFPoolV1 is DSMath, DSAuth, Utils, ERC20SafeTransfer {
         uint256 _amount
     ) public validAddress(_to) auth returns (bool) {
         uint256 _balance = IERC20(_tokenID).balanceOf(_to);
-        // IERC20(_tokenID).transfer(_to, _amount);
         require(doTransferOut(_tokenID, _to, _amount), "transferOut: failed");
         assert(sub(IERC20(_tokenID).balanceOf(_to), _balance) == _amount);
         return true;
@@ -54,7 +52,6 @@ contract DFPoolV1 is DSMath, DSAuth, Utils, ERC20SafeTransfer {
             "TransferToCol: collateral address empty."
         );
         uint256 _balance = IERC20(_tokenID).balanceOf(dfcol);
-        // IERC20(_tokenID).transfer(dfcol, _amount);
         require(
             doTransferOut(_tokenID, dfcol, _amount),
             "transferToCol: failed"
@@ -73,7 +70,6 @@ contract DFPoolV1 is DSMath, DSAuth, Utils, ERC20SafeTransfer {
             "TransferFromSenderToCol: collateral address empty."
         );
         uint256 _balance = IERC20(_tokenID).balanceOf(dfcol);
-        // IERC20(_tokenID).transferFrom(_from, dfcol, _amount);
         require(
             doTransferFrom(_tokenID, _from, dfcol, _amount),
             "transferFromSenderToCol: failed"
@@ -86,7 +82,6 @@ contract DFPoolV1 is DSMath, DSAuth, Utils, ERC20SafeTransfer {
         public
         auth
     {
-        // IERC20(_tokenIdx).approve(_engineAddress, uint(-1));
         require(
             doApprove(_tokenIdx, _engineAddress, uint256(-1)),
             "approveToEngine: Approve failed!"
@@ -158,7 +153,9 @@ contract DFPoolV2 is ERC20SafeTransfer, DFPoolV1(address(0)) {
         return true;
     }
 
-    function migrateOldPool(address[] calldata _tokens, address _usdx) external {
+    function migrateOldPool(address[] calldata _tokens, address _usdx)
+        external
+    {
         address _dFPoolOld = dFPoolOld;
         address _dfcol = dfcol;
         address _dTokenController = dTokenController;
@@ -173,7 +170,7 @@ contract DFPoolV2 is ERC20SafeTransfer, DFPoolV1(address(0)) {
                     address(this),
                     _balance
                 );
-            
+
             // transfer all src token to new pool
             _srcToken = IDSWrappedToken(_tokens[i]).getSrcERC20();
             _balance = IERC20(_srcToken).balanceOf(_dFPoolOld);
@@ -187,7 +184,10 @@ contract DFPoolV2 is ERC20SafeTransfer, DFPoolV1(address(0)) {
             // mint collateral token into dToken
             _balance = IERC20(_tokens[i]).balanceOf(_dfcol);
             if (_balance > 0)
-                IDToken(IDTokenController(_dTokenController).getDToken(_srcToken)).mint(
+                IDToken(
+                    IDTokenController(_dTokenController).getDToken(_srcToken)
+                )
+                    .mint(
                     address(this),
                     IDSWrappedToken(_tokens[i]).reverseByMultiple(_balance)
                 );
@@ -196,12 +196,7 @@ contract DFPoolV2 is ERC20SafeTransfer, DFPoolV1(address(0)) {
         // transfer claimable USDx to new pool
         _balance = IERC20(_usdx).balanceOf(_dFPoolOld);
         if (_balance > 0)
-            DFPoolV1(_dFPoolOld).transferOut(
-                _usdx,
-                address(this),
-                _balance
-            );
-        
+            DFPoolV1(_dFPoolOld).transferOut(_usdx, address(this), _balance);
     }
 
     function approve(address _tokenID) public {
@@ -209,7 +204,6 @@ contract DFPoolV2 is ERC20SafeTransfer, DFPoolV1(address(0)) {
             _tokenID
         );
         require(_dToekn != address(0), "approve: dToekn address empty.");
-        // IERC20(_tokenID).approve(_dToekn, uint(-1));
         require(
             doApprove(_tokenID, _dToekn, uint256(-1)),
             "approve: Approve failed!"
