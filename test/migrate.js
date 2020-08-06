@@ -21,6 +21,7 @@ const Collaterals = artifacts.require("Collaterals_t.sol");
 const DSWrappedToken = artifacts.require("DSWrappedToken.sol");
 
 const DFPoolV2 = artifacts.require("DFPoolV2");
+const DFEngineV2 = artifacts.require("DFEngineV2");
 const DToken = artifacts.require("DToken");
 const DTokenController = artifacts.require("DTokenController");
 
@@ -52,6 +53,8 @@ var runUpdateSection = 20;
 var updateSectionIndex = 6;
 var runDataList = [];
 var runData = {};
+
+const UINT256_MAX = new BN("2").pow(new BN("256")).sub(new BN("1"));
 
 contract("USDx", (accounts) => {
   if (typeof runConfig == "undefined") return;
@@ -4580,124 +4583,220 @@ contract("USDx", (accounts) => {
     });
   }
 
-  it("Verify V2 DToken Migration", async () => {
+  it("Verify Pool & Engine V2 Migration", async () => {
     let system = 0;
     let dfPoolV1 = dfPool[system];
+    let protocol = dfProtocol[system];
     let collateral = dfCollateral[system];
-    //console.log(dfPoolV1.address);
-    //console.log(srcTokenAddress);
-    //console.log(usdxToken.address);
 
     let dTokenController = await DTokenController.new();
-
     let dfPoolV2 = await DFPoolV2.new(
       collateral.address,
       dfPoolV1.address,
       dTokenController.address
     );
+    let dfEngineV2 = await DFEngineV2.new(
+      usdxToken.address,
+      dfStore[system].address,
+      dfPoolV2.address,
+      collateral.address,
+      dfFunds.address
+    );
 
     let dTokens = [];
     let wrapTokenAddresses = [];
-    let balancesBefore = [];
-    for (let index = 0; index < srcTokenAddress.length; index++) {
-      console.log("\n-------------------------------------------------------");
-      let srcTokenAddr = srcTokenAddress[index];
-      //console.log(srcTokenAddr);
-      let srcToken = srcTokenContract[srcTokenAddr];
-      let srcTokenName = await srcToken.name.call();
-      console.log("Source Token:\t", srcTokenName);
 
-      let srcBalance = await srcToken.balanceOf.call(dfPoolV1.address);
-      console.log("SToken Balance of PoolV1:\t", srcBalance.toString());
+    // Verify V2 DToken Migration
+    {
+      let balancesBefore = [];
+      for (let index = 0; index < srcTokenAddress.length; index++) {
+        console.log(
+          "\n-------------------------------------------------------"
+        );
+        let srcTokenAddr = srcTokenAddress[index];
+        //console.log(srcTokenAddr);
+        let srcToken = srcTokenContract[srcTokenAddr];
+        let srcTokenName = await srcToken.name.call();
+        console.log("Source Token:\t", srcTokenName);
 
-      let wrapTokenAddr = wrapTokenAddress[system][index];
-      //console.log(wrapTokenAddr);
-      wrapTokenAddresses.push(wrapTokenAddr);
-      let wrapToken = wrapTokenContract[system][wrapTokenAddr];
-      //console.log("Wrap Token:\t", await wrapToken.name.call());
+        let srcBalance = await srcToken.balanceOf.call(dfPoolV1.address);
+        console.log("SToken Balance of PoolV1:\t", srcBalance.toString());
 
-      let wrapBalance = await wrapToken.balanceOf.call(dfPoolV1.address);
-      console.log("XToken Balance of PoolV1:\t", wrapBalance.toString());
+        let wrapTokenAddr = wrapTokenAddress[system][index];
+        //console.log(wrapTokenAddr);
+        wrapTokenAddresses.push(wrapTokenAddr);
+        let wrapToken = wrapTokenContract[system][wrapTokenAddr];
+        //console.log("Wrap Token:\t", await wrapToken.name.call());
 
-      let wrapColBalance = await wrapToken.balanceOf.call(collateral.address);
-      console.log("XToken Balance of Collateral:\t", wrapColBalance.toString());
+        let wrapBalance = await wrapToken.balanceOf.call(dfPoolV1.address);
+        console.log("XToken Balance of PoolV1:\t", wrapBalance.toString());
 
-      let dTokenName = "d" + srcTokenName;
-      let dToken = await DToken.new(dTokenName, dTokenName, srcTokenAddr);
-      dTokens.push(dToken);
+        let wrapColBalance = await wrapToken.balanceOf.call(collateral.address);
+        console.log(
+          "XToken Balance of Collateral:\t",
+          wrapColBalance.toString()
+        );
 
-      await dTokenController.setdTokensRelation(
-        [srcTokenAddr],
-        [dToken.address]
+        let dTokenName = "d" + srcTokenName;
+        let dToken = await DToken.new(dTokenName, dTokenName, srcTokenAddr);
+        dTokens.push(dToken);
+
+        await dTokenController.setdTokensRelation(
+          [srcTokenAddr],
+          [dToken.address]
+        );
+
+        await dfPoolV2.approve(srcTokenAddr);
+
+        let balanceBefore = {};
+        balanceBefore.sBalancePool = srcBalance;
+        balanceBefore.xBalancePool = wrapBalance;
+        balanceBefore.xBalanceCol = wrapColBalance;
+
+        balancesBefore.push(balanceBefore);
+      }
+
+      let usdxClaimableBefore = await usdxToken.balanceOf(dfPoolV1.address);
+      console.log("Claimable USDx: \t", usdxClaimableBefore.toString());
+
+      // Migrate from V1 to V2
+      console.log(
+        "\n===================================Migrating==================================="
       );
+      await dSGuard.permitx(dfPoolV2.address, dfPoolV1.address);
+      await dfPoolV2.migrateOldPool(wrapTokenAddresses, usdxToken.address);
 
-      await dfPoolV2.approve(srcTokenAddr);
+      for (let index = 0; index < srcTokenAddress.length; index++) {
+        console.log(
+          "\n-------------------------------------------------------"
+        );
+        let srcTokenAddr = srcTokenAddress[index];
+        let srcToken = srcTokenContract[srcTokenAddr];
+        let srcTokenName = await srcToken.name.call();
+        console.log("Source Token:\t", srcTokenName);
 
-      let balanceBefore = {};
-      balanceBefore.sBalancePool = srcBalance;
-      balanceBefore.xBalancePool = wrapBalance;
-      balanceBefore.xBalanceCol = wrapColBalance;
+        let srcBalance = await srcToken.balanceOf.call(dfPoolV2.address);
+        console.log("SToken Balance of PoolV2:\t", srcBalance.toString());
 
-      balancesBefore.push(balanceBefore);
+        let wrapTokenAddr = wrapTokenAddress[system][index];
+        let wrapToken = wrapTokenContract[system][wrapTokenAddr];
+        //console.log("Wrap Token:\t", await wrapToken.name.call());
+
+        let wrapBalance = await wrapToken.balanceOf.call(dfPoolV2.address);
+        console.log("XToken Balance of PoolV2:\t", wrapBalance.toString());
+
+        let wrapColBalance = await wrapToken.balanceOf.call(collateral.address);
+        console.log(
+          "XToken Balance of Collateral:\t",
+          wrapColBalance.toString()
+        );
+
+        let dToken = dTokens[index];
+        //let dTokenName = await dToken.name.call();
+        //console.log("dToken:\t", dTokenName);
+
+        let dTokenBalance = await dToken.getTokenBalance.call(dfPoolV2.address);
+        console.log("DToken Balance of PoolV2:\t", dTokenBalance.toString());
+
+        // Verify balance before and after
+        assert.equal(
+          balancesBefore[index].sBalancePool.toString(),
+          srcBalance.add(dTokenBalance).toString()
+        );
+
+        assert.equal(
+          balancesBefore[index].xBalancePool.toString(),
+          wrapBalance.toString()
+        );
+
+        assert.equal(
+          balancesBefore[index].xBalanceCol.toString(),
+          wrapColBalance.toString()
+        );
+      }
+
+      assert.equal(
+        usdxClaimableBefore.toString(),
+        (await usdxToken.balanceOf(dfPoolV2.address)).toString()
+      );
     }
 
-    let usdxClaimableBefore = await usdxToken.balanceOf(dfPoolV1.address);
-    console.log("Claimable USDx: \t", usdxClaimableBefore.toString());
+    // Pool & Engine update
+    {
+      await usdxToken.setAuthority(dfEngineV2.address);
+      await dfToken.setAuthority(dfEngineV2.address);
+      await dfEngineV2.setAuthority(dSGuard.address);
+      await dfPoolV2.setAuthority(dSGuard.address);
 
-    // Migrate from V1 to V2
-    console.log(
-      "\n===================================Migrating==================================="
-    );
-    await dSGuard.permitx(dfPoolV2.address, dfPoolV1.address);
-    await dfPoolV2.migrateOldPool(wrapTokenAddresses, usdxToken.address);
+      await dSGuard.permitx(dfEngineV2.address, dfStore[system].address);
+      await dSGuard.permitx(dfEngineV2.address, dfPoolV2.address);
+      await dSGuard.permitx(dfEngineV2.address, collateral.address);
+      await dSGuard.permitx(dfEngineV2.address, dfFunds.address);
+      await dSGuard.permitx(protocol.address, dfEngineV2.address);
 
-    for (let index = 0; index < srcTokenAddress.length; index++) {
-      console.log("\n-------------------------------------------------------");
-      let srcTokenAddr = srcTokenAddress[index];
-      let srcToken = srcTokenContract[srcTokenAddr];
-      let srcTokenName = await srcToken.name.call();
-      console.log("Source Token:\t", srcTokenName);
+      for (let index = 0; index < srcTokenAddress.length; index++) {
+        let wrapTokenAddr = wrapTokenAddress[system][index];
+        let wrapToken = wrapTokenContract[system][wrapTokenAddr];
+        let srcTokenAddr = srcTokenAddress[index];
+        let srcToken = srcTokenContract[srcTokenAddr];
 
-      let srcBalance = await srcToken.balanceOf.call(dfPoolV2.address);
-      console.log("SToken Balance of PoolV2:\t", srcBalance.toString());
+        await dfPoolV2.approveToEngine(wrapTokenAddr, dfEngineV2.address);
+        await collateral.approveToEngine(wrapTokenAddr, dfEngineV2.address);
 
-      let wrapTokenAddr = wrapTokenAddress[system][index];
-      let wrapToken = wrapTokenContract[system][wrapTokenAddr];
-      //console.log("Wrap Token:\t", await wrapToken.name.call());
+        await wrapToken.setAuthority(dfEngineV2.address);
 
-      let wrapBalance = await wrapToken.balanceOf.call(dfPoolV2.address);
-      console.log("XToken Balance of PoolV2:\t", wrapBalance.toString());
+        await srcToken.approve(dfPoolV2.address, UINT256_MAX);
+      }
 
-      let wrapColBalance = await wrapToken.balanceOf.call(collateral.address);
-      console.log("XToken Balance of Collateral:\t", wrapColBalance.toString());
+      await protocol.requestImplChange(dfEngineV2.address);
+      await protocol.confirmImplChange();
 
-      let dToken = dTokens[index];
-      //let dTokenName = await dToken.name.call();
-      //console.log("dToken:\t", dTokenName);
-
-      let dTokenBalance = await dToken.getTokenBalance.call(dfPoolV2.address);
-      console.log("DToken Balance of PoolV2:\t", dTokenBalance.toString());
-
-      // Verify balance before and after
-      assert.equal(
-        balancesBefore[index].sBalancePool.toString(),
-        srcBalance.add(dTokenBalance).toString()
-      );
-
-      assert.equal(
-        balancesBefore[index].xBalancePool.toString(),
-        wrapBalance.toString()
-      );
-
-      assert.equal(
-        balancesBefore[index].xBalanceCol.toString(),
-        wrapColBalance.toString()
-      );
+      await dfToken.approve(dfEngineV2.address, UINT256_MAX);
+      await usdxToken.approve(dfEngineV2.address, UINT256_MAX);
     }
 
-    assert.equal(
-      usdxClaimableBefore.toString(),
-      (await usdxToken.balanceOf(dfPoolV2.address)).toString()
-    );
+    // Verify deposit & withdraw after Migration
+    {
+      for (let index = 0; index < srcTokenAddress.length; index++) {
+        console.log(
+          "\n-------------------------------------------------------\n"
+        );
+
+        let srcTokenAddr = srcTokenAddress[index];
+        let srcToken = srcTokenContract[srcTokenAddr];
+        let decimals = await srcToken.decimals();
+        console.log(await srcToken.name());
+
+        let amount = new BN(1000).mul(new BN(10).pow(decimals));
+        await protocol.deposit(srcTokenAddr, 0, amount);
+
+        amount = new BN(10).mul(new BN(10).pow(decimals));
+        await protocol.withdraw(srcTokenAddr, 0, amount);
+
+        let srcBalance = await srcToken.balanceOf.call(dfPoolV2.address);
+        console.log("SToken Balance of PoolV2:\t", srcBalance.toString());
+
+        let dToken = dTokens[index];
+        let dTokenBalance = await dToken.getTokenBalance.call(dfPoolV2.address);
+        console.log("DToken Balance of PoolV2:\t", dTokenBalance.toString());
+      }
+
+      let usdxBalance = await usdxToken.balanceOf(accounts[0]);
+      console.log("USDx minted:\t", usdxBalance.toString());
+
+      
+    }
+
+    // Verify claim after Migration
+    {
+    }
+
+    // Verify destroy after Migration
+    {
+    }
+
+    // Verify oneClickMinting after Migration
+    {
+    }
   });
 });
