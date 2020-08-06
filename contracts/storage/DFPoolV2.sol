@@ -94,7 +94,7 @@ contract DFPoolV1 is DSMath, DSAuth, Utils, ERC20SafeTransfer {
     }
 }
 
-contract DFPoolV2 is ERC20SafeTransfer, DFPoolV1 {
+contract DFPoolV2 is ERC20SafeTransfer, DFPoolV1(address(0)) {
     bool private initialized;
     address dFPoolOld;
     address dTokenController;
@@ -104,8 +104,7 @@ contract DFPoolV2 is ERC20SafeTransfer, DFPoolV1 {
         address _dFPoolOld,
         address _dTokenController
     ) public {
-
-        initialize(_dfcol, _dFPoolOld,_dTokenController);
+        initialize(_dfcol, _dFPoolOld, _dTokenController);
     }
 
     // --- Init ---
@@ -151,7 +150,8 @@ contract DFPoolV2 is ERC20SafeTransfer, DFPoolV1 {
         returns (bool)
     {
         super.transferToCol(_tokenID, _amount);
-        IDToken(IDTokenController(dTokenController).getDToken(_tokenID)).mint(
+        address _srcToken = IDSWrappedToken(_tokenID).getSrcERC20();
+        IDToken(IDTokenController(dTokenController).getDToken(_srcToken)).mint(
             address(this),
             IDSWrappedToken(_tokenID).reverseByMultiple(_amount)
         );
