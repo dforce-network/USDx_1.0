@@ -155,6 +155,7 @@ contract DFPoolV2 is ERC20SafeTransfer, DFPoolV1(address(0)) {
 
     function migrateOldPool(address[] calldata _tokens, address _usdx)
         external
+        auth
     {
         address _dFPoolOld = dFPoolOld;
         address _dfcol = dfcol;
@@ -199,13 +200,13 @@ contract DFPoolV2 is ERC20SafeTransfer, DFPoolV1(address(0)) {
             DFPoolV1(_dFPoolOld).transferOut(_usdx, address(this), _balance);
     }
 
-    function approve(address _tokenID) public {
-        address _dToekn = IDTokenController(dTokenController).getDToken(
+    function approve(address _tokenID) external auth {
+        address _dToken = IDTokenController(dTokenController).getDToken(
             _tokenID
         );
-        require(_dToekn != address(0), "approve: dToekn address empty.");
+        require(_dToken != address(0), "approve: dToekn address empty.");
         require(
-            doApprove(_tokenID, _dToekn, uint256(-1)),
+            doApprove(_tokenID, _dToken, uint256(-1)),
             "approve: Approve failed!"
         );
     }
