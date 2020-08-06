@@ -36,6 +36,15 @@ import tusd from '../assets/img/tusd.png';
 import usdc from '../assets/img/usdc.png';
 import meun from '../assets/img/meun.png';
 import close_mobile from '../assets/img/close_mobile.png';
+import faq_icon from '../assets/img/icon-FAQ.svg';
+
+import Twitter from '../assets/img/twitter.svg';
+import Telegram from '../assets/img/telegram.svg';
+import Medium from '../assets/img/medium.svg';
+import Reddit from '../assets/img/Reddit.svg';
+import Discord from '../assets/img/Discord.svg';
+import LinkedIn from '../assets/img/LinkedIn.svg';
+import Youtube from '../assets/img/Youtube.svg';
 
 export default class Home extends React.Component {
     units = 10 ** 18;
@@ -730,6 +739,63 @@ export default class Home extends React.Component {
                                     web3={this.Web3}
                                 />
                                 {/* <div className="history"></div> */}
+
+                                <div className="faq-wrap">
+                                    {/* foot */}
+                                    <div className="foot">
+                                        <div className="foot-item">
+                                            <div className="foot-item-title">Resource</div>
+                                            <div className="foot-item-content">
+                                                <a href='https://github.com/dforce-network/USDx_1.0' target='_blank' rel="noopener noreferrer">
+                                                    GitHub
+                                                </a>
+                                            </div>
+                                            <div className="foot-item-content">
+                                                <a href={'https://docs.dforce.network/dforce-assets/usdx'} target='_blank' rel="noopener noreferrer">
+                                                    FAQ
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        <div className="foot-item">
+                                            <div className="foot-item-title">
+                                                Community
+                                            </div>
+                                            <div className="foot-item-content icom-a">
+                                                <a href='https://twitter.com/dForcenet' target='_blank' rel="noopener noreferrer">
+                                                    <img alt='' src={Twitter} />
+                                                </a>
+                                                <a href='https://t.me/dforcenet' target='_blank' rel="noopener noreferrer">
+                                                    <img alt='' src={Telegram} />
+                                                </a>
+                                                <a href='https://medium.com/dforcenet' target='_blank' rel="noopener noreferrer">
+                                                    <img alt='' src={Medium} />
+                                                </a>
+                                                <a href='https://www.reddit.com/r/dForceNetwork' target='_blank' rel="noopener noreferrer">
+                                                    <img alt='' src={Reddit} />
+                                                </a>
+                                                <a href='https://discord.gg/Gbtd3MR' target='_blank' rel="noopener noreferrer">
+                                                    <img alt='' src={Discord} />
+                                                </a>
+                                                <a href='https://www.linkedin.com/company/dforce-network' target='_blank' rel="noopener noreferrer">
+                                                    <img alt='' src={LinkedIn} />
+                                                </a>
+                                                <a href='https://www.youtube.com/channel/UCM6Vgoc-BhFGG11ZndUr6Ow' target='_blank' rel="noopener noreferrer">
+                                                    <img alt='' src={Youtube} />
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        <div className="foot-item padding-left20">
+                                            <div className="foot-item-title">Contract US</div>
+                                            <div className="foot-item-content">support@dforce.network</div>
+                                            <div className="foot-item-content">bd@dforce.network</div>
+                                            <div className="foot-item-content">tech@dforce.network</div>
+                                        </div>
+                                        <div className="clear"></div>
+                                    </div>
+                                </div>
+
                             </div>
                             <div className="clear"></div>
                         </div>
