@@ -20,6 +20,10 @@ const DFProtocolView = artifacts.require("DFProtocolView.sol");
 const Collaterals = artifacts.require("Collaterals_t.sol");
 const DSWrappedToken = artifacts.require("DSWrappedToken.sol");
 
+const DFPoolV2 = artifacts.require("DFPoolV2");
+const DToken = artifacts.require("DToken");
+const DTokenController = artifacts.require("DTokenController");
+
 const BN = require("bn.js");
 const utils = require("./helpers/Utils");
 const MathTool = require("./helpers/MathTool");
@@ -4580,9 +4584,9 @@ contract("USDx", (accounts) => {
     let system = 0;
     let dfPoolV1 = dfPool[system];
     let collateral = dfCollateral[system];
-    console.log(dfPoolV1.address);
-    console.log(srcTokenAddress);
-    console.log(usdxToken.address);
+    //console.log(dfPoolV1.address);
+    //console.log(srcTokenAddress);
+    //console.log(usdxToken.address);
 
     let dTokenController = await DTokenController.new();
 
@@ -4594,6 +4598,7 @@ contract("USDx", (accounts) => {
 
     let dTokens = [];
     let wrapTokenAddresses = [];
+    let balancesBefore = [];
     for (let index = 0; index < srcTokenAddress.length; index++) {
       console.log("\n-------------------------------------------------------");
       let srcTokenAddr = srcTokenAddress[index];
@@ -4627,7 +4632,17 @@ contract("USDx", (accounts) => {
       );
 
       await dfPoolV2.approve(srcTokenAddr);
+
+      let balanceBefore = {};
+      balanceBefore.sBalancePool = srcBalance;
+      balanceBefore.xBalancePool = wrapBalance;
+      balanceBefore.xBalanceCol = wrapColBalance;
+
+      balancesBefore.push(balanceBefore);
     }
+
+    let usdxClaimableBefore = await usdxToken.balanceOf(dfPoolV1.address);
+    console.log("Claimable USDx: \t", usdxClaimableBefore.toString());
 
     // Migrate from V1 to V2
     console.log(
@@ -4660,8 +4675,29 @@ contract("USDx", (accounts) => {
       //let dTokenName = await dToken.name.call();
       //console.log("dToken:\t", dTokenName);
 
-      let dTokenBalance = await dToken.balanceOf.call(dfPoolV2.address);
+      let dTokenBalance = await dToken.getTokenBalance.call(dfPoolV2.address);
       console.log("DToken Balance of PoolV2:\t", dTokenBalance.toString());
+
+      // Verify balance before and after
+      assert.equal(
+        balancesBefore[index].sBalancePool.toString(),
+        srcBalance.add(dTokenBalance).toString()
+      );
+
+      assert.equal(
+        balancesBefore[index].xBalancePool.toString(),
+        wrapBalance.toString()
+      );
+
+      assert.equal(
+        balancesBefore[index].xBalanceCol.toString(),
+        wrapColBalance.toString()
+      );
     }
+
+    assert.equal(
+      usdxClaimableBefore.toString(),
+      (await usdxToken.balanceOf(dfPoolV2.address)).toString()
+    );
   });
 });
