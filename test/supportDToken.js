@@ -256,6 +256,9 @@ async function depositAndWithdraw(contracts, accounts) {
     let balance = await dToken.getTokenBalance(poolV2.address);
 
     let weight = mintingSection[1][index].mul(new BN(100)).div(weightSum);
+    let dTokenMinted = balance
+      .sub(dTokenBefore[index])
+      .div(new BN(10).pow(dTokenDecimals));
 
     console.log(
       await dToken.name(),
@@ -263,17 +266,11 @@ async function depositAndWithdraw(contracts, accounts) {
       weight.toString(),
       "%)",
       "minted:\t",
-      balance
-        .sub(dTokenBefore[index])
-        .div(new BN(10).pow(dTokenDecimals))
-        .toString()
+      dTokenMinted.toString()
     );
 
     assert.equal(
-      balance
-        .sub(dTokenBefore[index])
-        .div(new BN(10).pow(dTokenDecimals))
-        .toString(),
+      dTokenMinted.toString(),
       usdxMinted
         .mul(mintingSection[1][index])
         .div(weightSum)
@@ -345,26 +342,41 @@ async function destroy(contracts, accounts) {
       weightSum = weightSum.add(burningSection[1][index]);
     }
 
+    let usdxDecimals = await usdxToken.decimals();
+
     if (amount > 0) {
-      console.log(account, " destroy ", amount.toString(), " USDx");
+      console.log(
+        account,
+        " destroy ",
+        amount.div(new BN(10).pow(usdxDecimals)).toString(),
+        " USDx"
+      );
       await protocol.destroy(0, amount, { from: account });
     }
-
-    let usdxDecimals = await usdxToken.decimals();
 
     for (let index = 0; index < burningSection[0].length; index++) {
       let dToken = await DToken.at(
         await dTokenController.getDToken(burningSection[0][index])
       );
-
       let dTokenDecimals = await dToken.decimals();
-
       let balance = await dToken.getTokenBalance(poolV2.address);
+
+      let weight = burningSection[1][index].mul(new BN(100)).div(weightSum);
+      let dTokenRedeemed = dTokenBefore[index]
+        .sub(balance)
+        .div(new BN(10).pow(dTokenDecimals));
+
+      console.log(
+        await dToken.name(),
+        "(",
+        weight.toString(),
+        "%)",
+        "Redeemed:\t",
+        dTokenRedeemed.toString()
+      );
+
       assert.equal(
-        dTokenBefore[index]
-          .sub(balance)
-          .div(new BN(10).pow(dTokenDecimals))
-          .toString(),
+        dTokenRedeemed.toString(),
         amount
           .mul(burningSection[1][index])
           .div(weightSum)
@@ -380,17 +392,78 @@ async function oneClickMinting(contracts, accounts) {
     "\n-------------------Verifying oneClickMinting------------------------------------\n"
   );
 
-  let { usdxToken, protocol } = contracts;
+  let {
+    usdxToken,
+    protocol,
+    protocolView,
+    dTokenController,
+    poolV2,
+  } = contracts;
 
-  let balanceBefore = await usdxToken.balanceOf(accounts[0]);
+  let mintingSection = await protocolView.getMintingSection();
+  let srcTokenAddress = mintingSection[0];
 
-  let decimals = await usdxToken.decimals();
-  let amount = new BN(1000).mul(new BN(10).pow(decimals));
+  let usdxBalanceBefore = await usdxToken.balanceOf(accounts[0]);
+
+  let weightSum = new BN(0);
+  mintingSection[1].forEach(function (weight) {
+    weightSum = weightSum.add(weight);
+  });
+
+  async function getDTokenBalance(srcTokenAddr) {
+    let dToken = await DToken.at(
+      await dTokenController.getDToken(srcTokenAddr)
+    );
+
+    return await dToken.getTokenBalance(poolV2.address);
+  }
+  let dTokenBefore = await Promise.all(srcTokenAddress.map(getDTokenBalance));
+
+  let usdxDecimals = await usdxToken.decimals();
+  let amount = new BN(1000).mul(new BN(10).pow(usdxDecimals));
   await protocol.oneClickMinting(0, amount);
 
-  let balanceAfter = await usdxToken.balanceOf(accounts[0]);
+  let usdxMinted = (await usdxToken.balanceOf(accounts[0])).sub(
+    usdxBalanceBefore
+  );
 
-  assert.equal(balanceAfter.sub(balanceBefore).toString(), amount.toString());
+  console.log(
+    "USDx minted:\t",
+    usdxMinted.div(new BN(10).pow(usdxDecimals)).toString()
+  );
+
+  assert.equal(usdxMinted.toString(), amount.toString());
+
+  for (let index = 0; index < srcTokenAddress.length; index++) {
+    let dToken = await DToken.at(
+      await dTokenController.getDToken(srcTokenAddress[index])
+    );
+    let dTokenDecimals = await dToken.decimals();
+    let balance = await dToken.getTokenBalance(poolV2.address);
+
+    let weight = mintingSection[1][index].mul(new BN(100)).div(weightSum);
+    let dTokenMinted = balance
+      .sub(dTokenBefore[index])
+      .div(new BN(10).pow(dTokenDecimals));
+
+    console.log(
+      await dToken.name(),
+      "(",
+      weight.toString(),
+      "%)",
+      "minted:\t",
+      dTokenMinted.toString()
+    );
+
+    assert.equal(
+      dTokenMinted.toString(),
+      usdxMinted
+        .mul(mintingSection[1][index])
+        .div(weightSum)
+        .div(new BN(10).pow(usdxDecimals))
+        .toString()
+    );
+  }
 }
 
 async function runAll(contracts, accounts) {
