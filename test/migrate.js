@@ -20,16 +20,11 @@ const DFProtocolView = artifacts.require("DFProtocolView.sol");
 const Collaterals = artifacts.require("Collaterals_t.sol");
 const DSWrappedToken = artifacts.require("DSWrappedToken.sol");
 
-const DFPoolV2 = artifacts.require("DFPoolV2");
-const DFEngineV2 = artifacts.require("DFEngineV2");
-const DToken = artifacts.require("DToken");
-const DTokenController = artifacts.require("DTokenController");
-const SupportDToken = require("./supportDToken");
-
 const BN = require("bn.js");
 const utils = require("./helpers/Utils");
 const MathTool = require("./helpers/MathTool");
 const DataMethod = require("./helpers/DataMethod");
+const supportDToken = require("./supportDToken");
 
 // var collateralNames = new Array('DAI', 'PAX', 'TUSD', 'USDC', 'DAITEST', 'PAXTEST', 'TUSDTEST', 'USDCTEST');
 // var collateralNames = new Array('DAI', 'PAX', 'TUSD', 'USDC');
@@ -54,8 +49,6 @@ var runUpdateSection = 20;
 var updateSectionIndex = 6;
 var runDataList = [];
 var runData = {};
-
-const UINT256_MAX = new BN("2").pow(new BN("256")).sub(new BN("1"));
 
 contract("USDx", (accounts) => {
   if (typeof runConfig == "undefined") return;
@@ -4596,40 +4589,10 @@ contract("USDx", (accounts) => {
     contracts.store = dfStore[system];
     contracts.protocolView = dfProtocolView[system];
     contracts.poolV1 = dfPool[system];
-
     contracts.srcTokens = srcTokenAddress.map(function (addr) {
       return srcTokenContract[addr];
     });
 
-    contracts.dTokenController = await DTokenController.new();
-
-    contracts.poolV2 = await DFPoolV2.new(
-      contracts.collateral.address,
-      contracts.poolV1.address,
-      contracts.dTokenController.address
-    );
-    contracts.engineV2 = await DFEngineV2.new(
-      contracts.usdxToken.address,
-      contracts.store.address,
-      contracts.poolV2.address,
-      contracts.collateral.address,
-      contracts.funds.address
-    );
-
-    let claimableList = await SupportDToken.getClaimableList(
-      contracts.protocolView,
-      accounts
-    );
-
-    await SupportDToken.deployDTokens(
-      contracts.srcTokens,
-      contracts.dTokenController
-    );
-    await SupportDToken.migrate(contracts);
-    await SupportDToken.updateEngineAndPool(contracts, accounts);
-    await SupportDToken.depositAndWithdraw(contracts, accounts);
-    await SupportDToken.claim(contracts, claimableList);
-    await SupportDToken.destroy(contracts, accounts);
-    await SupportDToken.oneClickMinting(contracts, accounts);
+    await supportDToken.runAll(contracts, accounts);
   });
 });

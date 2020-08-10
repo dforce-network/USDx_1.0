@@ -214,16 +214,19 @@ async function depositAndWithdraw(contracts, accounts) {
     await usdxToken.balanceOf(poolV2.address)
   );
 
-  let dTokenBefore = [];
+  async function getDTokenBalance(srcTokenAddr) {
+    let dToken = await DToken.at(
+      await dTokenController.getDToken(srcTokenAddr)
+    );
+
+    return await dToken.getTokenBalance(poolV2.address);
+  }
+
+  let dTokenBefore = await Promise.all(srcTokenAddress.map(getDTokenBalance));
+
   let weightSum = new BN(0);
   for (let index = 0; index < srcTokenAddress.length; index++) {
     weightSum = weightSum.add(mintingSection[1][index]);
-
-    let dToken = await DToken.at(
-      await dTokenController.getDToken(srcTokenAddress[index])
-    );
-    let balance = await dToken.getTokenBalance(poolV2.address);
-    dTokenBefore.push(balance);
 
     let srcTokenAddr = srcTokenAddress[index];
     let srcToken = await Collaterals.at(srcTokenAddr);
@@ -253,6 +256,7 @@ async function depositAndWithdraw(contracts, accounts) {
     let balance = await dToken.getTokenBalance(poolV2.address);
 
     let weight = mintingSection[1][index].mul(new BN(100)).div(weightSum);
+
     console.log(
       await dToken.name(),
       "(",
@@ -389,6 +393,34 @@ async function oneClickMinting(contracts, accounts) {
   assert.equal(balanceAfter.sub(balanceBefore).toString(), amount.toString());
 }
 
+async function runAll(contracts, accounts) {
+  contracts.dTokenController = await DTokenController.new();
+
+  contracts.poolV2 = await DFPoolV2.new(
+    contracts.collateral.address,
+    contracts.poolV1.address,
+    contracts.dTokenController.address
+  );
+
+  contracts.engineV2 = await DFEngineV2.new(
+    contracts.usdxToken.address,
+    contracts.store.address,
+    contracts.poolV2.address,
+    contracts.collateral.address,
+    contracts.funds.address
+  );
+
+  let claimableList = await getClaimableList(contracts.protocolView, accounts);
+
+  await deployDTokens(contracts.srcTokens, contracts.dTokenController);
+  await migrate(contracts);
+  await updateEngineAndPool(contracts, accounts);
+  await depositAndWithdraw(contracts, accounts);
+  await claim(contracts, claimableList);
+  await destroy(contracts, accounts);
+  await oneClickMinting(contracts, accounts);
+}
+
 module.exports = {
   getClaimableList,
   deployDTokens,
@@ -398,4 +430,5 @@ module.exports = {
   claim,
   destroy,
   oneClickMinting,
+  runAll,
 };
