@@ -4587,6 +4587,8 @@ contract("USDx", (accounts) => {
     let system = 0;
     let dfPoolV1 = dfPool[system];
     let protocol = dfProtocol[system];
+    let store = dfStore[system];
+    let protocolView = dfProtocolView[system];
     let collateral = dfCollateral[system];
 
     let dTokenController = await DTokenController.new();
@@ -4597,7 +4599,7 @@ contract("USDx", (accounts) => {
     );
     let dfEngineV2 = await DFEngineV2.new(
       usdxToken.address,
-      dfStore[system].address,
+      store.address,
       dfPoolV2.address,
       collateral.address,
       dfFunds.address
@@ -4605,6 +4607,7 @@ contract("USDx", (accounts) => {
 
     let dTokens = [];
     let wrapTokenAddresses = [];
+    let claimableList = [];
 
     // Verify V2 DToken Migration
     {
@@ -4658,6 +4661,18 @@ contract("USDx", (accounts) => {
 
       let usdxClaimableBefore = await usdxToken.balanceOf(dfPoolV1.address);
       console.log("Claimable USDx: \t", usdxClaimableBefore.toString());
+
+      for (const account of accounts) {
+        let amount = await protocolView.getUserMaxToClaim({ from: account });
+
+        if (amount > 0) {
+          let claimable = {};
+          claimable.amount = amount;
+          claimable.account = account;
+
+          claimableList.push(claimable);
+        }
+      }
 
       // Migrate from V1 to V2
       console.log(
@@ -4751,52 +4766,198 @@ contract("USDx", (accounts) => {
       await protocol.requestImplChange(dfEngineV2.address);
       await protocol.confirmImplChange();
 
-      await dfToken.approve(dfEngineV2.address, UINT256_MAX);
-      await usdxToken.approve(dfEngineV2.address, UINT256_MAX);
+      for (const account of accounts) {
+        await dfToken.approve(dfEngineV2.address, UINT256_MAX, {
+          from: account,
+        });
+        await usdxToken.approve(dfEngineV2.address, UINT256_MAX, {
+          from: account,
+        });
+      }
     }
 
     // Verify deposit & withdraw after Migration
     {
+      console.log(
+        "\n-------------------Checking Deposit & Withdraw------------------------------------\n"
+      );
+      let mintingSection = await protocolView.getMintingSection();
+      let srcTokenAddress = mintingSection[0];
+
+      let usdxBalanceBefore = (await usdxToken.balanceOf(accounts[0])).add(
+        await usdxToken.balanceOf(dfPoolV2.address)
+      );
+
+      let dTokenBefore = [];
+      let weightSum = new BN(0);
       for (let index = 0; index < srcTokenAddress.length; index++) {
-        console.log(
-          "\n-------------------------------------------------------\n"
+        weightSum = weightSum.add(mintingSection[1][index]);
+
+        let dToken = await DToken.at(
+          await dTokenController.getDToken(mintingSection[0][index])
         );
+        let balance = await dToken.getTokenBalance(dfPoolV2.address);
+        dTokenBefore.push(balance);
 
         let srcTokenAddr = srcTokenAddress[index];
         let srcToken = srcTokenContract[srcTokenAddr];
         let decimals = await srcToken.decimals();
-        console.log(await srcToken.name());
+        //console.log(await srcToken.name());
 
         let amount = new BN(1000).mul(new BN(10).pow(decimals));
         await protocol.deposit(srcTokenAddr, 0, amount);
 
         amount = new BN(10).mul(new BN(10).pow(decimals));
         await protocol.withdraw(srcTokenAddr, 0, amount);
-
-        let srcBalance = await srcToken.balanceOf.call(dfPoolV2.address);
-        console.log("SToken Balance of PoolV2:\t", srcBalance.toString());
-
-        let dToken = dTokens[index];
-        let dTokenBalance = await dToken.getTokenBalance.call(dfPoolV2.address);
-        console.log("DToken Balance of PoolV2:\t", dTokenBalance.toString());
       }
 
-      let usdxBalance = await usdxToken.balanceOf(accounts[0]);
-      console.log("USDx minted:\t", usdxBalance.toString());
+      let usdxMinted = (await usdxToken.balanceOf(accounts[0]))
+        .add(await usdxToken.balanceOf(dfPoolV2.address))
+        .sub(usdxBalanceBefore);
+      let usdxDecimals = await usdxToken.decimals();
+      console.log(
+        "USDx minted:\t",
+        usdxMinted.div(new BN(10).pow(usdxDecimals)).toString()
+      );
 
-      
+      for (let index = 0; index < mintingSection[0].length; index++) {
+        let dToken = await DToken.at(
+          await dTokenController.getDToken(mintingSection[0][index])
+        );
+        let dTokenDecimals = await dToken.decimals();
+        let balance = await dToken.getTokenBalance(dfPoolV2.address);
+
+        let weight = mintingSection[1][index].mul(new BN(100)).div(weightSum);
+        console.log(
+          await dToken.name(),
+          "(",
+          weight.toString(),
+          "%)",
+          "minted:\t",
+          balance
+            .sub(dTokenBefore[index])
+            .div(new BN(10).pow(dTokenDecimals))
+            .toString()
+        );
+
+        assert.equal(
+          balance
+            .sub(dTokenBefore[index])
+            .div(new BN(10).pow(dTokenDecimals))
+            .toString(),
+          usdxMinted
+            .mul(mintingSection[1][index])
+            .div(weightSum)
+            .div(new BN(10).pow(usdxDecimals))
+            .toString()
+        );
+      }
     }
 
     // Verify claim after Migration
     {
+      console.log(
+        "\n-------------------Checking Claimable------------------------------------\n"
+      );
+      for (const claimable of claimableList) {
+        console.log(
+          claimable.account,
+          " can claim ",
+          claimable.amount.toString(),
+          "USDx"
+        );
+
+        let balanceBefore = await usdxToken.balanceOf(claimable.account);
+        await protocol.claim(0, {
+          from: claimable.account,
+        });
+        let balanceAfter = await usdxToken.balanceOf(claimable.account);
+
+        assert.equal(
+          balanceAfter.sub(balanceBefore).toString(),
+          claimable.amount.toString()
+        );
+      }
     }
 
     // Verify destroy after Migration
     {
+      console.log(
+        "\n-------------------Checking Destroy------------------------------------\n"
+      );
+      for (const account of accounts) {
+        let balance = await usdxToken.balanceOf(account);
+        if (balance.isZero()) break;
+
+        let sectionData = await store.getSectionData(
+          await store.getBurnPosition
+        );
+        let diff = sectionData[0].sub(sectionData[1]);
+
+        let amount = balance.gt(diff) ? diff : balance;
+        let burningSection = await protocolView.getBurningSection();
+
+        let dTokenBefore = [];
+        let weightSum = new BN(0);
+        for (let index = 0; index < burningSection[0].length; index++) {
+          let dToken = await DToken.at(
+            await dTokenController.getDToken(burningSection[0][index])
+          );
+          let balance = await dToken.getTokenBalance(dfPoolV2.address);
+          dTokenBefore.push(balance);
+
+          weightSum = weightSum.add(burningSection[1][index]);
+        }
+
+        if (amount > 0) {
+          console.log(account, " destroy ", amount.toString(), " USDx");
+          await protocol.destroy(0, amount, { from: account });
+        }
+
+        // let usdxBalance = await usdxToken.balanceOf(account);
+        // assert.equal(usdxBalance.toString(), 0);
+
+        let usdxDecimals = await usdxToken.decimals();
+
+        for (let index = 0; index < burningSection[0].length; index++) {
+          let dToken = await DToken.at(
+            await dTokenController.getDToken(burningSection[0][index])
+          );
+
+          let dTokenDecimals = await dToken.decimals();
+
+          let balance = await dToken.getTokenBalance(dfPoolV2.address);
+          assert.equal(
+            dTokenBefore[index]
+              .sub(balance)
+              .div(new BN(10).pow(dTokenDecimals))
+              .toString(),
+            amount
+              .mul(burningSection[1][index])
+              .div(weightSum)
+              .div(new BN(10).pow(usdxDecimals))
+              .toString()
+          );
+        }
+      }
     }
 
     // Verify oneClickMinting after Migration
     {
+      console.log(
+        "\n-------------------Checking oneClickMinting------------------------------------\n"
+      );
+
+      let decimals = await usdxToken.decimals();
+      let balanceBefore = await usdxToken.balanceOf(accounts[0]);
+      let amount = new BN(1000).mul(new BN(10).pow(decimals));
+      await protocol.oneClickMinting(0, amount);
+
+      let balanceAfter = await usdxToken.balanceOf(accounts[0]);
+      assert.equal(
+        balanceAfter.sub(balanceBefore).toString(),
+        amount.toString()
+      );
     }
   });
 });
