@@ -272,6 +272,14 @@ export default class Home extends React.Component {
                     </div>
 
                     {
+                        this.state.isConnected && this.state.netType === 'Kovan' &&
+                        <div className='topTips'>
+                            <img src={right_net} alt="" />
+                            <span>Note: You are currently connected to the Kovan Testnet</span>
+                        </div>
+                    }
+
+                    {
                         this.state.isConnected && this.state.netType !== 'Rinkeby' && this.state.netType !== 'Main' && this.state.netType !== 'Kovan' &&
                         <div className='topTips redBg'>
                             <img src={error_net} alt="" />
