@@ -8,8 +8,9 @@ import '../storage/interfaces/IDFPoolV2.sol';
 import '../oracle/interfaces/IMedianizer.sol';
 import '../utility/DSAuth.sol';
 import '../utility/DSMath.sol';
+import '../utility/ReentrancyGuard.sol';
 
-contract DFEngineV2 is DSMath, DSAuth, ERC20SafeTransfer {
+contract DFEngineV2 is DSMath, DSAuth, ReentrancyGuard, ERC20SafeTransfer {
     bool private initialized;
     IDFStore public dfStore;
     IDFPoolV2 public dfPool;
@@ -45,6 +46,7 @@ contract DFEngineV2 is DSMath, DSAuth, ERC20SafeTransfer {
     ) public {
         require(!initialized, "initialize: Already initialized!");
         owner = msg.sender;
+        initReentrancyStatus();
         usdxToken = IDSToken(_usdxToken);
         dfStore = IDFStore(_dfStore);
         dfPool = IDFPoolV2(_dfPool);
@@ -77,7 +79,7 @@ contract DFEngineV2 is DSMath, DSAuth, ERC20SafeTransfer {
         }
     }
 
-    function deposit(address _depositor, address _srcToken, uint _feeTokenIdx, uint _srcAmount) public auth returns (uint) {
+    function deposit(address _depositor, address _srcToken, uint _feeTokenIdx, uint _srcAmount) public auth nonReentrant returns (uint) {
         address _tokenID = dfStore.getWrappedToken(_srcToken);
         require(dfStore.getMintingToken(_tokenID), "Deposit: asset is not allowed.");
 
@@ -136,7 +138,7 @@ contract DFEngineV2 is DSMath, DSAuth, ERC20SafeTransfer {
         return (_tokenBalance[1]);
     }
 
-    function withdraw(address _depositor, address _srcToken, uint _feeTokenIdx, uint _srcAmount) public auth returns (uint) {
+    function withdraw(address _depositor, address _srcToken, uint _feeTokenIdx, uint _srcAmount) public auth nonReentrant returns (uint) {
         address _tokenID = dfStore.getWrappedToken(_srcToken);
         uint _amount = IDSWrappedToken(_tokenID).changeByMultiple(_srcAmount);
         require(_amount > 0, "Withdraw: amount is invalid.");
@@ -159,7 +161,7 @@ contract DFEngineV2 is DSMath, DSAuth, ERC20SafeTransfer {
         return (_srcWithdrawAmount);
     }
 
-    function claim(address _depositor, uint _feeTokenIdx) public auth returns (uint) {
+    function claim(address _depositor, uint _feeTokenIdx) public auth nonReentrant returns (uint) {
         address[] memory _tokens = dfStore.getMintedTokenList();
         uint _resUSDXBalance;
         uint _depositorBalance;
@@ -187,7 +189,7 @@ contract DFEngineV2 is DSMath, DSAuth, ERC20SafeTransfer {
         return _mintAmount;
     }
 
-    function destroy(address _depositor, uint _feeTokenIdx, uint _amount) public auth returns (bool) {
+    function destroy(address _depositor, uint _feeTokenIdx, uint _amount) public auth nonReentrant returns (bool) {
         require(_amount > 0 && (_amount % dfStore.getMinBurnAmount() == 0), "Destroy: amount not correct.");
         require(_amount <= usdxToken.balanceOf(_depositor), "Destroy: exceed max USDX balance.");
         require(_amount <= sub(dfStore.getTotalMinted(), dfStore.getTotalBurned()), "Destroy: not enough to burn.");
@@ -243,7 +245,7 @@ contract DFEngineV2 is DSMath, DSAuth, ERC20SafeTransfer {
         return true;
     }
 
-    function oneClickMinting(address _depositor, uint _feeTokenIdx, uint _amount) public auth {
+    function oneClickMinting(address _depositor, uint _feeTokenIdx, uint _amount) public auth nonReentrant {
         address[] memory _tokens;
         uint[] memory _mintCW;
         uint _sumMintCW;
@@ -314,7 +316,7 @@ contract DFEngineV2 is DSMath, DSAuth, ERC20SafeTransfer {
         return _depositorMintTotal;
     }
 
-    function checkUSDXTotalAndColTotal() public view {
+    function checkUSDXTotalAndColTotal() internal view {
         address[] memory _tokens = dfStore.getMintedTokenList();
         address _dfCol = dfCol;
         uint _colTotal;
