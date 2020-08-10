@@ -4134,7 +4134,7 @@ export default class Home extends React.Component {
                     num,
                     {
                         from: this.state.accountAddress,
-                        gas: 900000,
+                        gas: Math.ceil(gasLimit * 1.2),
                         gasPrice: this.state.gasPrice
                     },
                     (err, ret) => {
@@ -4300,7 +4300,7 @@ export default class Home extends React.Component {
                     num,
                     {
                         from: this.state.accountAddress,
-                        gas: 900000,
+                        gas: Math.ceil(gasLimit * 1.2),
                         gasPrice: this.state.gasPrice
                     },
                     (err, ret) => {
@@ -4464,7 +4464,7 @@ export default class Home extends React.Component {
                     num,
                     {
                         from: this.state.accountAddress,
-                        gas: 900000,
+                        gas: Math.ceil(gasLimit * 1.2),
                         gasPrice: this.state.gasPrice
                     },
                     (err, ret) => {
@@ -4628,7 +4628,7 @@ export default class Home extends React.Component {
                     num,
                     {
                         from: this.state.accountAddress,
-                        gas: 900000,
+                        gas: Math.ceil(gasLimit * 1.2),
                         gasPrice: this.state.gasPrice
                     },
                     (err, ret) => {

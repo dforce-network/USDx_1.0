@@ -32,8 +32,8 @@ const addressMap = {
         'addressUSDx': '0xFe1F0C31F4f477569622E284baBa0a6F030c6ea6'.toLowerCase(),
         'addressProtocol': '0x7Fdc6cE130cE4080962f4e65017bb5385E782A5f'.toLowerCase(),
         'addressProtocolView': '0x389285D27419c7a4a0d500272d52e02d0D759ACc'.toLowerCase(),
-        'addressEngine': '0xa4490E153d1766a14379c6199a40Da0E31193A2E'.toLowerCase(),
-        'addressPool': '0xa3fC78897b5e97Aa319032F44B587E28CcB52890'.toLowerCase(),
+        'addressEngine': '0x7e760A5a19a63eb7D036C127e4cE308656f9f417'.toLowerCase(),
+        'addressPool': '0x20BD82890Ad3c02A132F60aDB0BcedE645E2cd14'.toLowerCase(),
     }
 };
 
