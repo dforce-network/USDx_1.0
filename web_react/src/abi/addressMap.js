@@ -8,8 +8,8 @@ const addressMap = {
         'addressUSDx': '0xeb269732ab75a6fd61ea60b06fe994cd32a83549'.toLowerCase(),
         'addressProtocol': '0x5843f1ccc5baa448528eb0e8bc567cda7ed1a1e8'.toLowerCase(),
         'addressProtocolView': '0x1351e109fb51888d8e9dd6b364297998b36bf55e'.toLowerCase(),
-        'addressEngine': '0x8dc753d30b9f9f86dac3380e37d5bc03d6b60202'.toLowerCase(),
-        'addressPool': '0x786bf554473f9ab733fd683c528212492a23d895'.toLowerCase(),
+        'addressEngine': '0x3ea496977A356024bE096c1068a57Bd0B92c7d7c'.toLowerCase(),
+        'addressPool': '0x7FdcDAd3b4a67e00D9fD5F22f4FD89a5fa4f57bA'.toLowerCase(),
     },
     '4': {
         'addressDAI': '0x506243424a778382f73bf6c24390d08fa9096092'.toLowerCase(),
