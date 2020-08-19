@@ -22,6 +22,18 @@ const addressMap = {
         'addressProtocolView': '0xaf47a307ea7d5dc7133b309c1a76c6a3f4ae1618'.toLowerCase(),
         'addressEngine': '0x03463c0ac738a370e0cd8c4e70a9be183255f25d'.toLowerCase(),
         'addressPool': '0xccf31dc9dcb6cb788d3c6b64f73efedfb7e9f20b'.toLowerCase(),
+    },
+    '42': {
+        'addressDAI': '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa'.toLowerCase(),
+        'addressPAX': '0xfc26E36DA58618b52C14aeB1802E38dc58dFE7b6'.toLowerCase(),
+        'addressTUSD': '0x1c4a937d171752e1313D70fb16Ae2ea02f86303e'.toLowerCase(),
+        'addressUSDC': '0xb7a4F3E9097C08dA09517b5aB877F7a917224ede'.toLowerCase(),
+        'addressDF': '0x8b35559b594403Ca394C1C258E303b0c77Fa2048'.toLowerCase(),
+        'addressUSDx': '0xFe1F0C31F4f477569622E284baBa0a6F030c6ea6'.toLowerCase(),
+        'addressProtocol': '0x7Fdc6cE130cE4080962f4e65017bb5385E782A5f'.toLowerCase(),
+        'addressProtocolView': '0x389285D27419c7a4a0d500272d52e02d0D759ACc'.toLowerCase(),
+        'addressEngine': '0x7e760A5a19a63eb7D036C127e4cE308656f9f417'.toLowerCase(),
+        'addressPool': '0x20BD82890Ad3c02A132F60aDB0BcedE645E2cd14'.toLowerCase(),
     }
 };
 

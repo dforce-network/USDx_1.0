@@ -161,43 +161,56 @@ contract DFPoolV2 is ERC20SafeTransfer, DFPoolV1(address(0)) {
         address _dfcol = dfcol;
         address _dTokenController = dTokenController;
         address _srcToken;
+        uint256 _amount;
         uint256 _balance;
         for (uint256 i = 0; i < _tokens.length; i++) {
             // transfer pending wrapped token to new pool
-            _balance = IERC20(_tokens[i]).balanceOf(_dFPoolOld);
-            if (_balance > 0)
+            _amount = IERC20(_tokens[i]).balanceOf(_dFPoolOld);
+            if (_amount > 0)
                 DFPoolV1(_dFPoolOld).transferOut(
                     _tokens[i],
                     address(this),
-                    _balance
+                    _amount
                 );
 
             // transfer all src token to new pool
             _srcToken = IDSWrappedToken(_tokens[i]).getSrcERC20();
-            _balance = IERC20(_srcToken).balanceOf(_dFPoolOld);
-            if (_balance > 0)
+            _amount = IERC20(_srcToken).balanceOf(_dFPoolOld);
+            _balance = IERC20(_srcToken).balanceOf(address(this));
+            if (_amount > 0)
                 DFPoolV1(_dFPoolOld).transferOut(
                     _srcToken,
                     address(this),
-                    _balance
+                    _amount
                 );
+            require(
+                add(_balance, _amount) ==
+                    IERC20(_srcToken).balanceOf(address(this)),
+                "migrateOldPool: Transfer src token to new pool verification failed"
+            );
 
             // mint collateral token into dToken
-            _balance = IERC20(_tokens[i]).balanceOf(_dfcol);
-            if (_balance > 0)
+            _amount = IERC20(_tokens[i]).balanceOf(_dfcol);
+            if (_amount > 0)
                 IDToken(
                     IDTokenController(_dTokenController).getDToken(_srcToken)
                 )
                     .mint(
                     address(this),
-                    IDSWrappedToken(_tokens[i]).reverseByMultiple(_balance)
+                    IDSWrappedToken(_tokens[i]).reverseByMultiple(_amount)
                 );
+            require(
+                IDSWrappedToken(_tokens[i]).reverseByMultiple(
+                    IERC20(_tokens[i]).balanceOf(address(this))
+                ) == IERC20(_srcToken).balanceOf(address(this)),
+                "migrateOldPool: Pending src token in new pool verification failed"
+            );
         }
 
         // transfer claimable USDx to new pool
-        _balance = IERC20(_usdx).balanceOf(_dFPoolOld);
-        if (_balance > 0)
-            DFPoolV1(_dFPoolOld).transferOut(_usdx, address(this), _balance);
+        _amount = IERC20(_usdx).balanceOf(_dFPoolOld);
+        if (_amount > 0)
+            DFPoolV1(_dFPoolOld).transferOut(_usdx, address(this), _amount);
     }
 
     function approve(address _tokenID) external auth {
@@ -209,5 +222,28 @@ contract DFPoolV2 is ERC20SafeTransfer, DFPoolV1(address(0)) {
             doApprove(_tokenID, _dToken, uint256(-1)),
             "approve: Approve failed!"
         );
+    }
+
+    function rmul(uint256 x, uint256 y) internal pure returns (uint256 z) {
+        z = mul(x, y) / 1e18;
+    }
+
+    function getInterestByXToken(address _xToken) public returns (address, uint256) {
+
+        address _token = IDSWrappedToken(_xToken).getSrcERC20();
+        uint256 _xBalance = IDSWrappedToken(_xToken).changeByMultiple(getUnderlying(_token)); 
+        uint256 _xPrincipal = IERC20(_xToken).balanceOf(dfcol);
+        return (_token, _xBalance > _xPrincipal ? sub(_xBalance, _xPrincipal) : 0);
+    }
+
+    function getUnderlying(address _underlying) public returns (uint256) {
+        address _dToken = IDTokenController(dTokenController).getDToken(_underlying);
+        if (_dToken == address(0))
+            return 0;
+
+        (, uint256 _exchangeRate, , uint256 _feeRate,) = IDToken(_dToken).getBaseData();
+
+        uint256 _grossAmount = rmul(IERC20(_dToken).balanceOf(address(this)), _exchangeRate);
+        return sub(_grossAmount, rmul(_grossAmount, _feeRate));
     }
 }

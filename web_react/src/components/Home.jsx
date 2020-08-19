@@ -270,14 +270,23 @@ export default class Home extends React.Component {
                         <img src={right_net} alt="" />
                         <span>Note: You are currently connected to the Rinkeby Testnet</span>
                     </div>
-                    <div className='topTips redBg' style={{ display: this.state.isConnected && this.state.netType !== 'Rinkeby' && this.state.netType !== 'Main' ? 'block' : 'none' }}>
-                        <img src={error_net} alt="" />
-                        <span>USDx is currently only available on Mainnet or the Rinkeby Testnet</span>
-                    </div>
-                    {/* <div className='topTips redBg' style={{display: !this.state.isConnected ? 'block':'none'}}>
-                        <img src={error_net} alt=""/>
-                        <span>Please enable MetaMask or visit this page in a Web3 browser to interact with the dForce protocol</span>
-                    </div> */}
+
+                    {
+                        this.state.isConnected && this.state.netType === 'Kovan' &&
+                        <div className='topTips'>
+                            <img src={right_net} alt="" />
+                            <span>Note: You are currently connected to the Kovan Testnet</span>
+                        </div>
+                    }
+
+                    {
+                        this.state.isConnected && this.state.netType !== 'Rinkeby' && this.state.netType !== 'Main' && this.state.netType !== 'Kovan' &&
+                        <div className='topTips redBg'>
+                            <img src={error_net} alt="" />
+                            <span>USDx is currently only available on Mainnet or the Kovan/Rinkeby Testnet</span>
+                        </div>
+                    }
+
                     <Header
                         status={this.state}
                         DisconnectMetamask={() => { this.DisconnectMetamask() }}
@@ -4133,7 +4142,7 @@ export default class Home extends React.Component {
                     num,
                     {
                         from: this.state.accountAddress,
-                        gas: 900000,
+                        gas: Math.ceil(gasLimit * 1.2),
                         gasPrice: this.state.gasPrice
                     },
                     (err, ret) => {
@@ -4299,7 +4308,7 @@ export default class Home extends React.Component {
                     num,
                     {
                         from: this.state.accountAddress,
-                        gas: 900000,
+                        gas: Math.ceil(gasLimit * 1.2),
                         gasPrice: this.state.gasPrice
                     },
                     (err, ret) => {
@@ -4463,7 +4472,7 @@ export default class Home extends React.Component {
                     num,
                     {
                         from: this.state.accountAddress,
-                        gas: 900000,
+                        gas: Math.ceil(gasLimit * 1.2),
                         gasPrice: this.state.gasPrice
                     },
                     (err, ret) => {
@@ -4627,7 +4636,7 @@ export default class Home extends React.Component {
                     num,
                     {
                         from: this.state.accountAddress,
-                        gas: 900000,
+                        gas: Math.ceil(gasLimit * 1.2),
                         gasPrice: this.state.gasPrice
                     },
                     (err, ret) => {
