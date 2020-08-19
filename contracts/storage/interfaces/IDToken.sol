@@ -9,7 +9,6 @@ interface IDToken {
 
     function getBaseData()
         external
-        view
         returns (
             uint256,
             uint256,
