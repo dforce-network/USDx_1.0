@@ -11,6 +11,7 @@ USDx 此次升级加入了对 dToken 的支持，铸成 USDx 的成分币，被�
 
 - converter/DFEngineV2.sol
 - storage/DFPoolV2.sol
+- oracle/UniswapOracle.sol
 
 #### 修改内容
 
@@ -18,5 +19,6 @@ USDx 此次升级加入了对 dToken 的支持，铸成 USDx 的成分币，被�
 - DFPool 升级为 DFPoolV2：
   - 铸币时，增加了将底层成分币铸成相应 dToken 的动作。
   - 销币时，增加了将底层成分币从相应 dToken 中取回的动作。
+  - 销币时，收取DF作为费用,DF价格修改为动态获取uniswap中 DF <-> USDx 的价格。
   - 添加查询底层成分币接口
   - 添加查询xToken对应的利息接口
