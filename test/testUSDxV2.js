@@ -12,7 +12,7 @@ contract("USDx with Pool & Engine V2", (accounts) => {
 
   it("Deployment", async () => {
     var collateralNames = new Array("PAX", "TUSD", "USDC");
-    var weights = new Array(8, 1, 1);
+    var weights = new Array(1, 1, 8);
     contracts = await USDxV2deploy.contractsDeploy(
       accounts,
       collateralNames,
@@ -36,6 +36,10 @@ contract("USDx with Pool & Engine V2", (accounts) => {
     describe("Stop", () => {
       it("should be able to stop by owner", async () => {
         await contracts.usdxToken.stop();
+        await expectRevert(
+          supportDToken.oneClickMinting(contracts, accounts),
+          "ds-stop-is-stopped"
+        );
       });
 
       it("should not be able to stop by non-owner", async () => {
@@ -53,7 +57,8 @@ contract("USDx with Pool & Engine V2", (accounts) => {
       });
 
       it("should not be able to start by owner", async () => {
-        contracts.usdxToken.start();
+        await contracts.usdxToken.start();
+        await supportDToken.oneClickMinting(contracts, accounts);
       });
     });
 
