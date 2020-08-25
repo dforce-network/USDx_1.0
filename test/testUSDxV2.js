@@ -9,8 +9,12 @@ const {
 const BN = require("bn.js");
 const { assertion } = require("@openzeppelin/test-helpers/src/expectRevert");
 
-contract("USDx with Pool & Engine V2", (accounts) => {
-  let contracts;
+describe("USDx with Pool & Engine V2", () => {
+  let contracts, accounts;
+
+  before(async () => {
+    accounts = await web3.eth.getAccounts();
+  });
 
   it("Deployment", async () => {
     var collateralNames = new Array("PAX", "TUSD", "USDC");

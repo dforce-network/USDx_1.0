@@ -137,24 +137,20 @@ contract DToken is ERC20SafeTransfer, DSMath {
     }
 
     function getBaseData()
-    external
-    returns (
-      uint256,
-      uint256,
-      uint256,
-      uint256,
-      uint256
-    )
-  {
-      uint256 _totalToken = IERC20(token).balanceOf(address(this));
-      uint256 exchangeRate = totalSupply == 0 ? BASE : div(mul(_totalToken, BASE), totalSupply);
+        external
+        returns (
+            uint256,
+            uint256,
+            uint256,
+            uint256,
+            uint256
+        )
+    {
+        uint256 _totalToken = IERC20(token).balanceOf(address(this));
+        uint256 exchangeRate = totalSupply == 0
+            ? BASE
+            : div(mul(_totalToken, BASE), totalSupply);
 
-    return (
-      decimals,
-      exchangeRate,
-      0,
-      0,
-      0
-    );
-  }
+        return (decimals, exchangeRate, 0, 0, 0);
+    }
 }
