@@ -15,6 +15,8 @@ contract DToken is ERC20SafeTransfer, DSMath {
     uint8 public decimals;
     uint256 public totalSupply;
 
+    uint256 public constant BASE = 10**18;
+
     mapping(address => uint256) public balances;
     mapping(address => mapping(address => uint256)) public allowance;
 
@@ -133,4 +135,26 @@ contract DToken is ERC20SafeTransfer, DSMath {
     function getTokenBalance(address _account) external view returns (uint256) {
         return balances[_account];
     }
+
+    function getBaseData()
+    external
+    returns (
+      uint256,
+      uint256,
+      uint256,
+      uint256,
+      uint256
+    )
+  {
+      uint256 _totalToken = IERC20(token).balanceOf(address(this));
+      uint256 exchangeRate = totalSupply == 0 ? BASE : div(mul(_totalToken, BASE), totalSupply);
+
+    return (
+      decimals,
+      exchangeRate,
+      0,
+      0,
+      0
+    );
+  }
 }

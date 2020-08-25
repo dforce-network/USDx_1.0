@@ -25,12 +25,11 @@ const { MAX_UINT256 } = require("@openzeppelin/test-helpers/src/constants");
 let gasPrice = 10 ** 10;
 
 let wrapTokenAddress = [];
-let wrapTokenContract = {};
+let wrapTokens = [];
 
 let srcTokenAddress = [];
 let srcTokenDecimals = [];
-let srcTokenContract = [];
-let srcTokenIndex = 0;
+let srcTokens = [];
 
 async function deployCollateralAndWrappedToken(accounts, name) {
   decimals = MathTool.randomNum(6, 22);
@@ -44,17 +43,11 @@ async function deployCollateralAndWrappedToken(accounts, name) {
   let amount = await collateral.balanceOf(accounts[accounts.length - 1]);
   for (const account of accounts) {
     await collateral.transfer(account, amount);
-
-    // console.log(
-    //   "Account has",
-    //   (await collateral.balanceOf(account)).toString(),
-    //   name
-    // );
   }
 
   srcTokenAddress.push(collateral.address);
   srcTokenDecimals.push(decimals);
-  srcTokenContract[collateral.address] = collateral;
+  srcTokens.push(collateral);
 
   let wrappedToken = await DSWrappedToken.new(
     collateral.address,
@@ -62,7 +55,7 @@ async function deployCollateralAndWrappedToken(accounts, name) {
     web3.utils.hexToBytes(web3.utils.asciiToHex("x" + name))
   );
   wrapTokenAddress.push(wrappedToken.address);
-  wrapTokenContract[wrappedToken.address] = wrappedToken;
+  wrapTokens.push(wrappedToken);
 }
 
 async function contractsDeploy(accounts, collateralNames, weightTest) {
@@ -117,9 +110,7 @@ async function contractsDeploy(accounts, collateralNames, weightTest) {
   );
 
   for (let index = 0; index < wrapTokenAddress.length; index++) {
-    await wrapTokenContract[wrapTokenAddress[index]].setAuthority(
-      dfEngine.address
-    );
+    await wrapTokens[index].setAuthority(dfEngine.address);
     await dfPool.approveToEngine(wrapTokenAddress[index], dfEngine.address);
     await dfCollateral.approveToEngine(
       wrapTokenAddress[index],
@@ -127,9 +118,9 @@ async function contractsDeploy(accounts, collateralNames, weightTest) {
     );
   }
 
-  let srcTokens = await Promise.all(
-    srcTokenAddress.map((a) => Collaterals.at(a))
-  );
+  //   let srcTokens = await Promise.all(
+  //     srcTokenAddress.map((a) => Collaterals.at(a))
+  //   );
 
   await usdxToken.setAuthority(dfEngine.address);
   await dfToken.setAuthority(dfEngine.address);
@@ -185,7 +176,7 @@ async function contractsDeploy(accounts, collateralNames, weightTest) {
 
   owner = accounts[0];
 
-  await supportDToken.deployDTokens(srcTokens, dTokenController);
+  await supportDToken.deployDTokens(srcTokens, dTokenController, accounts);
 
   // Allow dToken to transfer src token from pool
   await Promise.all(
@@ -219,6 +210,7 @@ async function contractsDeploy(accounts, collateralNames, weightTest) {
     poolV2: dfPool,
     engineV2: dfEngine,
     srcTokens,
+    wrapTokens,
     dTokenController: dTokenController,
   };
 }

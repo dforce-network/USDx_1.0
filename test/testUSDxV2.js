@@ -1,11 +1,13 @@
 const USDxV2deploy = require("./helpers/USDxV2deploy.js");
 const supportDToken = require("./supportDToken.js");
+const Collaterals = artifacts.require("Collaterals_t.sol");
 
 const {
   expectRevert, // Assertions for transactions that should fail
 } = require("@openzeppelin/test-helpers");
 
 const BN = require("bn.js");
+const { assertion } = require("@openzeppelin/test-helpers/src/expectRevert");
 
 contract("USDx with Pool & Engine V2", (accounts) => {
   let contracts;
@@ -108,6 +110,55 @@ contract("USDx with Pool & Engine V2", (accounts) => {
           "ds-auth-unauthorized"
         );
       });
+    });
+  });
+
+  describe("Query Interface for USR", () => {
+    it("should be able to call getUnderlying()", async () => {
+      for (const srcToken of contracts.srcTokens) {
+        let underlying = await contracts.poolV2.methods[
+          "getUnderlying(address)"
+        ].call(srcToken.address);
+
+        console.log(
+          "Underlying of ",
+          await srcToken.name(),
+          ":",
+          underlying.toString()
+        );
+      }
+    });
+    it("should be able to call getInterestByXToken()", async () => {
+      for (const wrapToken of contracts.wrapTokens) {
+        let srcToken = await Collaterals.at(await wrapToken.getSrcERC20());
+        let dToken = await contracts.dTokenController.getDToken(
+          srcToken.address
+        );
+
+        let mockInterest = new BN(1000).mul(
+          new BN(10).pow(await srcToken.decimals())
+        );
+        await srcToken.transfer(dToken, mockInterest);
+
+        mockInterest = await wrapToken.changeByMultiple(mockInterest);
+
+        let ret = await contracts.poolV2.methods[
+          "getInterestByXToken(address)"
+        ].call(wrapToken.address);
+
+        let interest = ret["1"];
+
+        console.log(
+          "Interest of ",
+          await srcToken.name(),
+          ":",
+          interest.toString(),
+          "vs",
+          mockInterest.toString()
+        );
+
+        //assert.equal(interest.toString(), mockInterest.toString());
+      }
     });
   });
 });

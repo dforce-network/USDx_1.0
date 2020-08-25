@@ -25,7 +25,7 @@ async function getClaimableList(protocolView, accounts) {
   return claimableList;
 }
 
-async function deployDTokens(srcTokens, dTokenController) {
+async function deployDTokens(srcTokens, dTokenController, accounts) {
   for (let index = 0; index < srcTokens.length; index++) {
     let srcToken = srcTokens[index];
     let dTokenName = "d" + (await srcToken.name());
@@ -35,6 +35,12 @@ async function deployDTokens(srcTokens, dTokenController) {
       [srcToken.address],
       [dToken.address]
     );
+
+    // Mint some dToken and mock some interest
+    let amount = new BN(1000).mul(new BN(10).pow(await srcToken.decimals()));
+    await srcToken.approve(dToken.address, amount);
+    await dToken.mint(accounts[0], amount);
+    await srcToken.transfer(dToken.address, amount.div(new BN(10)));
   }
 }
 async function migrate(contracts) {
@@ -485,7 +491,11 @@ async function runAll(contracts, accounts) {
 
   let claimableList = await getClaimableList(contracts.protocolView, accounts);
 
-  await deployDTokens(contracts.srcTokens, contracts.dTokenController);
+  await deployDTokens(
+    contracts.srcTokens,
+    contracts.dTokenController,
+    accounts
+  );
   await migrate(contracts);
   await updateEngineAndPool(contracts, accounts);
   await depositAndWithdraw(contracts, accounts);
