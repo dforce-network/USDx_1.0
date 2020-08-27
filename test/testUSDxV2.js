@@ -1,6 +1,8 @@
 const USDxV2deploy = require("./helpers/USDxV2deploy.js");
 const supportDToken = require("./supportDToken.js");
+
 const Collaterals = artifacts.require("Collaterals_t.sol");
+const DToken = artifacts.require("DToken.sol");
 
 const {
   expectRevert, // Assertions for transactions that should fail
@@ -70,47 +72,55 @@ describe("USDx with Pool & Engine V2", () => {
 
     describe("Transfer Assets", () => {
       it("should be able to transfer assets by owner", async () => {
-        // The pool may not have src token available, make some transfer
-        let amount = new BN(10).pow(await contracts.srcTokens[0].decimals());
-        await contracts.srcTokens[0].transfer(contracts.poolV2.address, amount);
+        let account = accounts[1];
+        let token = contracts.srcTokens[0].address;
 
-        await contracts.poolV2.transferOut(
-          contracts.srcTokens[0].address,
-          accounts[2],
+        let amount = new BN(10).pow(await contracts.srcTokens[0].decimals());
+
+        // transferFromSender()/transferOut() pair
+        await contracts.poolV2.transferFromSender(token, account, amount);
+        await contracts.poolV2.transferOut(token, account, amount);
+
+        // transferFromSenderOneClick()/transferOutSrc() pair
+        await contracts.poolV2.transferFromSenderOneClick(
+          token,
+          account,
           amount
         );
-
-        // Redeem src token from dToken first
-        await contracts.poolV2.transferOutSrc(
-          contracts.srcTokens[0].address,
-          accounts[2],
-          1000
-        );
+        await contracts.poolV2.transferOutSrc(token, account, amount);
       });
 
       it("should not be able to transfer assets by non-auth", async () => {
+        let account = accounts[1];
+        let token = contracts.srcTokens[0].address;
         // The pool may not have src token available, make some transfer
         let amount = new BN(10).pow(await contracts.srcTokens[0].decimals());
-        await contracts.srcTokens[0].transfer(contracts.poolV2.address, amount);
 
+        // transferFromSender()/transferOut() pair
         await expectRevert(
-          contracts.poolV2.transferOut(
-            contracts.srcTokens[0].address,
-            accounts[2],
-            amount,
-            { from: accounts[1] }
-          ),
+          contracts.poolV2.transferFromSender(token, account, amount, {
+            from: account,
+          }),
+          "ds-auth-unauthorized"
+        );
+        await expectRevert(
+          contracts.poolV2.transferOut(token, account, amount, {
+            from: account,
+          }),
           "ds-auth-unauthorized"
         );
 
         // Redeem src token from dToken first
         await expectRevert(
-          contracts.poolV2.transferOutSrc(
-            contracts.srcTokens[0].address,
-            accounts[2],
-            1000,
-            { from: accounts[1] }
-          ),
+          contracts.poolV2.transferFromSenderOneClick(token, account, amount, {
+            from: account,
+          }),
+          "ds-auth-unauthorized"
+        );
+        await expectRevert(
+          contracts.poolV2.transferOutSrc(token, account, amount, {
+            from: account,
+          }),
           "ds-auth-unauthorized"
         );
       });
@@ -135,9 +145,14 @@ describe("USDx with Pool & Engine V2", () => {
     it("should be able to call getInterestByXToken()", async () => {
       for (const wrapToken of contracts.wrapTokens) {
         let srcToken = await Collaterals.at(await wrapToken.getSrcERC20());
-        let dToken = await contracts.dTokenController.getDToken(
-          srcToken.address
+        let dToken = await DToken.at(
+          await contracts.dTokenController.getDToken(srcToken.address)
         );
+
+        let usdxUnderlying = await contracts.poolV2.methods[
+          "getUnderlying(address)"
+        ].call(srcToken.address);
+        let dTokenTotalUnderlying = await dToken.getTotalBalance();
 
         let interestBefore = (
           await contracts.poolV2.methods["getInterestByXToken(address)"].call(
@@ -145,12 +160,12 @@ describe("USDx with Pool & Engine V2", () => {
           )
         )["1"];
 
-        let mockInterest = new BN(1000).mul(
-          new BN(10).pow(await srcToken.decimals())
-        );
-        await srcToken.transfer(dToken, mockInterest);
-
+        // Mock 10% interest
+        let mockDTokenInterest = dTokenTotalUnderlying.div(new BN(10));
+        let mockInterest = usdxUnderlying.div(new BN(10));
         mockInterest = await wrapToken.changeByMultiple(mockInterest);
+
+        await srcToken.transfer(dToken.address, mockDTokenInterest);
 
         let interestAfter = (
           await contracts.poolV2.methods["getInterestByXToken(address)"].call(
@@ -169,7 +184,7 @@ describe("USDx with Pool & Engine V2", () => {
           mockInterest.toString()
         );
 
-        //assert.equal(interest.toString(), mockInterest.toString());
+        assert.equal(interestChanged.toString(), mockInterest.toString());
       }
     });
   });

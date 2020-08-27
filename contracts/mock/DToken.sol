@@ -130,7 +130,7 @@ contract DToken is ERC20SafeTransfer, DSMath {
     return balances[account];
   }
 
-  function totalUnderlying() public view returns (uint256) {
+  function getTotalBalance() public view returns (uint256) {
     return IERC20(token).balanceOf(address(this));
   }
 
@@ -140,7 +140,7 @@ contract DToken is ERC20SafeTransfer, DSMath {
 
   function getExchangeRate() public view returns (uint256) {
     uint256 _totalSupply = totalSupply;
-    return _totalSupply > 0 ? rdiv(totalUnderlying(), _totalSupply) : BASE;
+    return _totalSupply > 0 ? rdiv(getTotalBalance(), _totalSupply) : BASE;
   }
 
   function getBaseData()
