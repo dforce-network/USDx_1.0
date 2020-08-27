@@ -55,14 +55,14 @@ describe("USDx with Pool & Engine V2", () => {
         );
       });
 
-      it("should be able to start by non-owner", async () => {
+      it("should not be able to start by non-owner", async () => {
         await expectRevert(
           contracts.usdxToken.start({ from: accounts[1] }),
           "ds-auth-non-owner"
         );
       });
 
-      it("should not be able to start by owner", async () => {
+      it("should be able to start by owner", async () => {
         await contracts.usdxToken.start();
         await supportDToken.oneClickMinting(contracts, accounts);
       });
@@ -139,6 +139,12 @@ describe("USDx with Pool & Engine V2", () => {
           srcToken.address
         );
 
+        let interestBefore = (
+          await contracts.poolV2.methods["getInterestByXToken(address)"].call(
+            wrapToken.address
+          )
+        )["1"];
+
         let mockInterest = new BN(1000).mul(
           new BN(10).pow(await srcToken.decimals())
         );
@@ -146,17 +152,19 @@ describe("USDx with Pool & Engine V2", () => {
 
         mockInterest = await wrapToken.changeByMultiple(mockInterest);
 
-        let ret = await contracts.poolV2.methods[
-          "getInterestByXToken(address)"
-        ].call(wrapToken.address);
+        let interestAfter = (
+          await contracts.poolV2.methods["getInterestByXToken(address)"].call(
+            wrapToken.address
+          )
+        )["1"];
 
-        let interest = ret["1"];
+        let interestChanged = interestAfter.sub(interestBefore);
 
         console.log(
           "Interest of ",
           await srcToken.name(),
           ":",
-          interest.toString(),
+          interestChanged.toString(),
           "vs",
           mockInterest.toString()
         );
