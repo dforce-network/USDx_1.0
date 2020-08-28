@@ -244,6 +244,6 @@ contract DFPoolV2 is ERC20SafeTransfer, DFPoolV1(address(0)) {
         (, uint256 _exchangeRate, , uint256 _feeRate,) = IDToken(_dToken).getBaseData();
 
         uint256 _grossAmount = rmul(IERC20(_dToken).balanceOf(address(this)), _exchangeRate);
-        return sub(_grossAmount, rmul(_grossAmount, _feeRate));
+        return rmul(_grossAmount, sub(1e18, _feeRate));
     }
 }
