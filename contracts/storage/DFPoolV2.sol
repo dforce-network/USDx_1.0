@@ -223,4 +223,27 @@ contract DFPoolV2 is ERC20SafeTransfer, DFPoolV1(address(0)) {
             "approve: Approve failed!"
         );
     }
+
+    function rmul(uint256 x, uint256 y) internal pure returns (uint256 z) {
+        z = mul(x, y) / 1e18;
+    }
+
+    function getInterestByXToken(address _xToken) public returns (address, uint256) {
+
+        address _token = IDSWrappedToken(_xToken).getSrcERC20();
+        uint256 _xBalance = IDSWrappedToken(_xToken).changeByMultiple(getUnderlying(_token)); 
+        uint256 _xPrincipal = IERC20(_xToken).balanceOf(dfcol);
+        return (_token, _xBalance > _xPrincipal ? sub(_xBalance, _xPrincipal) : 0);
+    }
+
+    function getUnderlying(address _underlying) public returns (uint256) {
+        address _dToken = IDTokenController(dTokenController).getDToken(_underlying);
+        if (_dToken == address(0))
+            return 0;
+
+        (, uint256 _exchangeRate, , uint256 _feeRate,) = IDToken(_dToken).getBaseData();
+
+        uint256 _grossAmount = rmul(IERC20(_dToken).balanceOf(address(this)), _exchangeRate);
+        return rmul(_grossAmount, sub(1e18, _feeRate));
+    }
 }
