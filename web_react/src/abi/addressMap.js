@@ -10,6 +10,7 @@ const addressMap = {
         'addressProtocolView': '0x8a7624e1715098C79B7b61c7AE5563678Ce83c6B'.toLowerCase(),
         'addressEngine': '0x37561992f92c6437f14454d4ad36b0eefe107f19'.toLowerCase(),
         'addressPool': '0xaf54dcb325b6160871f1778c3043a1249bd9b1c1'.toLowerCase(),
+        'addressUSR': '0xeF004C5CdFaaB19299B3ED66f14Ec010Fe5F20d0'.toLowerCase(),
     },
     '4': {
         'addressDAI': '0x506243424a778382f73bf6c24390d08fa9096092'.toLowerCase(),
@@ -34,6 +35,7 @@ const addressMap = {
         'addressProtocolView': '0x552d5d3467B55857Ae7fdc7D9b05B7fEBAE69D4C'.toLowerCase(),
         'addressEngine': '0x4f85B25088c4b8Dbd7a98c3AfC149705d27bDb49'.toLowerCase(),
         'addressPool': '0x38511020a5B340cdE56e57Ce9bFBd13572C62Eb1'.toLowerCase(),
+        'addressUSR': '0x8Fbde3988CEB8C62D52cCe6FCBFf535127a6f6cf'.toLowerCase(),
     }
 };
 

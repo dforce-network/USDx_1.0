@@ -7,6 +7,83 @@ div.body {
     padding-top: 30px;
     // background: red;
 
+    .input-spe {
+        margin-top: 60px !important;
+
+        input {
+            width: 470px !important;
+        }
+
+        .right25 {
+            right: 40px !important;
+            top: 14px !important;
+        }
+    }
+
+    .link_to_usr {
+        // background: red;
+        padding-left: 30px;
+        padding-top: 50px;
+
+        a {
+            img {
+                margin-left: 10px;
+                width: 30px;
+            }
+        }
+    }
+
+    .you_have__wrap {
+        // background: red;
+        padding-left: 25px;
+        padding-top: 20px;
+        border-bottom: 1px solid rgba(230, 234, 238, 1);
+        padding-bottom: 19px;
+
+        .you_have {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333344;
+
+            .you_have_balance {
+                font-size: 20px;
+                color: #3884FF
+            }
+        }
+
+        .apy {
+            padding-top: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #333344;
+
+            .apy-right {
+                font-size: 20px;
+            }
+        }
+    }
+
+    .usdx_logo_wrap {
+        padding-left: 25px;
+        padding-top: 27px;
+        padding-left: 25px;
+        padding-top: 35px;
+
+        .usdx_logo_wrap__logo {
+            img {
+                width: 30px;
+                margin-top: -5px;
+            }
+        }
+
+        .usdx_logo_wrap__token {
+            margin-left: 6px;
+            font-size: 16px;
+            font-weight: 400;
+            color: #333344;
+        }
+    }
+
     div.openMeun {
         display: none;
     }
@@ -209,9 +286,33 @@ div.body {
             // min-width: 527px;
             margin-right: 30px;
             border-radius: 4px;
-            overflow: hidden;
+            // overflow: hidden;
             border: 1px solid rgba(230, 234, 238, 1);
             box-shadow: 0px 0px 35px 0px rgba(0, 0, 0, 0.05);
+            position: relative;
+            margin-top: 40px;
+
+            .tab1__new_title {
+                position: absolute;
+                top: -40px;
+                left: 0;
+
+                .tab1__img {
+                    padding-right: 6px;
+
+                    img {
+                        width: 25px;
+                        margin-top: -3px;
+                    }
+                }
+
+                .tab1__txt {
+                    font-size: 16px;
+                    font-weight: 500;
+                    color: #333343;
+                    line-height: 16px;
+                }
+            }
 
             button {
                 font-size: 20px;
@@ -221,37 +322,25 @@ div.body {
                 // background: red;
                 height: 70px;
                 position: relative;
+                display: flex;
+                border-bottom: 1px solid rgba(230, 234, 238, 1);
 
-                &::after {
-                    content: '';
-                    display: block;
-                    position: absolute;
-                    width: 5px;
-                    height: 20px;
-                    left: 30px;
-                    top: 30px;
-                    background: rgba(91, 152, 250, 1);
-                }
-
-                div.leftTitle {
-                    float: left;
-                    font-size: 20px;
-                    color: rgba(56, 132, 255, 1);
+                .titleInTab_title {
+                    flex: 1;
+                    text-align: center;
+                    font-size: 16px;
                     font-weight: 500;
-                    padding-top: 25px;
-                    padding-left: 45px;
+                    color: #333344;
+                    line-height: 70px;
+                    cursor: pointer;
                 }
 
-                div.rightIcon {
-                    // background: green;
-                    float: right;
-                    padding-top: 15px;
-                    margin-right: 30px;
-
-                    img {
-                        width: 20px;
-                        height: 20px;
-                    }
+                .titleInTab_title__active {
+                    flex: 1.4;
+                    font-size: 18px;
+                    font-weight: bold;
+                    color: #3884FF;
+                    background: rgba(56, 132, 255, 0.1);
                 }
             }
 
@@ -512,12 +601,13 @@ div.body {
                         margin: 0;
                         line-height: 38px;
 
-                        span.exMargin_new{
+                        span.exMargin_new {
                             font-size: 16px;
                             color: rgba(150, 150, 162, 1);
                             font-weight: 200;
                             float: left;
                         }
+
                         span.right_new {
                             float: right;
                             text-align: right;
@@ -612,6 +702,32 @@ div.body {
 @media screen and (max-width: 1500px) and (min-width: 901px) {
     div.body {
         min-width: 1260px;
+
+        .input-spe {
+            margin-top: 20px !important;
+        }
+
+        .you_have__wrap {
+            padding-bottom: 23px;
+        }
+
+        .usdx_logo_wrap {
+            padding-left: 25px;
+            padding-top: 27px;
+        }
+
+        .link_to_usr {
+            // background: red;
+            padding-left: 23px;
+            padding-top: 30px;
+
+            a {
+                img {
+                    margin-left: 10px;
+                    width: 30px;
+                }
+            }
+        }
 
         div.openMeun {
             display: none;
@@ -739,36 +855,8 @@ div.body {
                     height: 50px;
                     position: relative;
 
-                    &::after {
-                        content: '';
-                        display: block;
-                        position: absolute;
-                        width: 4px;
-                        height: 15px;
-                        left: 20px;
-                        top: 19px;
-                        background: rgba(91, 152, 250, 1);
-                    }
-
-                    div.leftTitle {
-                        float: left;
-                        font-size: 18px;
-                        color: rgba(56, 132, 255, 1);
-                        font-weight: 400;
-                        padding-top: 14px;
-                        padding-left: 35px;
-                    }
-
-                    div.rightIcon {
-                        // background: green;
-                        float: right;
-                        padding-top: 6px;
-                        margin-right: 20px;
-
-                        img {
-                            width: 16px;
-                            height: 16px;
-                        }
+                    .titleInTab_title {
+                        line-height: 50px;
                     }
                 }
 
@@ -805,6 +893,11 @@ div.body {
                             cursor: pointer;
                         }
 
+                        .right25 {
+                            right: 35px !important;
+                            top: 10px !important;
+                        }
+
                         input {
                             height: 35px;
                             padding-left: 10px;
@@ -828,7 +921,7 @@ div.body {
                         }
                     }
 
-                    div.ButtonWrap_new{
+                    div.ButtonWrap_new {
                         padding-bottom: 101px;
                     }
 
@@ -1047,6 +1140,60 @@ div.body {
         min-width: 100%;
         // background: red;
 
+        .you_have__wrap {
+            // background: red;
+            padding-left: 20px;
+            padding-top: 16px;
+            padding-bottom: 14px;
+
+            .you_have {
+                font-size: 14px;
+
+                .you_have_balance {
+                    font-size: 16px;
+                }
+            }
+
+            .apy {
+                padding-top: 10px;
+                font-size: 14px;
+
+                .apy-right {
+                    font-size: 16px;
+                }
+            }
+        }
+
+        .usdx_logo_wrap {
+            padding-left: 20px;
+            padding-top: 17px;
+
+            .usdx_logo_wrap__logo {
+                img {
+                    width: 20px;
+                    margin-top: -3px;
+                }
+            }
+
+            .usdx_logo_wrap__token {
+                margin-left: 6px;
+                font-size: 14px;
+            }
+        }
+
+        .input-spe {
+            margin-top: 30px !important;
+
+            input {
+                // width: 470px !important;
+            }
+
+            .right25 {
+                right: 35px !important;
+                top: 9px !important;
+            }
+        }
+
         div.openMeun {
             display: block;
         }
@@ -1058,50 +1205,49 @@ div.body {
         div.bodyright {
             width: 100%;
             padding-left: 0px;
+            // padding-top: 30px;
 
             div.tab1 {
                 width: 100%;
                 max-width: 100%;
-                ;
                 margin-right: 0px;
                 // margin: 0 auto;
                 margin-bottom: 40px;
+                position: relative;
+
+                .tab1__new_title {
+                    position: absolute;
+                    top: -34px;
+                    left: 0;
+
+                    .tab1__img {
+                        padding-right: 6px;
+
+                        img {
+                            width: 22px;
+                            margin-top: -3px;
+                        }
+                    }
+
+                    .tab1__txt {
+                        font-size: 14px;
+                        line-height: 16px;
+                    }
+                }
 
                 div.titleInTab {
                     // background: red;
                     height: 50px;
                     position: relative;
 
-                    &::after {
-                        content: '';
-                        display: block;
-                        position: absolute;
-                        width: 4px;
-                        height: 15px;
-                        left: 20px;
-                        top: 19px;
-                        background: rgba(91, 152, 250, 1);
+                    .titleInTab_title {
+                        text-align: center;
+                        font-size: 14px;
+                        line-height: 50px;
                     }
 
-                    div.leftTitle {
-                        float: left;
-                        font-size: 18px;
-                        color: rgba(56, 132, 255, 1);
-                        font-weight: 400;
-                        padding-top: 14px;
-                        padding-left: 35px;
-                    }
-
-                    div.rightIcon {
-                        // background: green;
-                        float: right;
-                        padding-top: 6px;
-                        margin-right: 20px;
-
-                        img {
-                            width: 16px;
-                            height: 16px;
-                        }
+                    .titleInTab_title__active {
+                        font-size: 16px;
                     }
                 }
 

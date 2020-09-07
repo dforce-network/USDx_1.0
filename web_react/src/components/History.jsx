@@ -48,7 +48,7 @@ export default class History extends React.Component {
         }
 
 
-        if ( originStr.indexOf('.') > 0 ) {
+        if (originStr.indexOf('.') > 0) {
             originStr = originStr.substr(0, originStr.indexOf('.') + 3);
             if (originStr.length >= 12) {
                 return originStr = originStr.substr(0, 11);
@@ -65,7 +65,7 @@ export default class History extends React.Component {
         var re = /\d{3}$/;
         var result = '';
 
-        while ( re.test(num) ) {
+        while (re.test(num)) {
             result = RegExp.lastMatch + result;
             if (num !== RegExp.lastMatch) {
                 result = ',' + result;
@@ -89,6 +89,23 @@ export default class History extends React.Component {
                             (item, index) => {
                                 if (window.ethereum.isImToken) {
                                     return false;
+                                }
+
+
+                                if (item.event === 'Deposit-usr') {
+                                    return <li key={index}>
+                                        <img src={deposit} alt='' />
+                                        <p className="time">
+                                            <span className='span1'>{(new Date(item.timeStamp - this.timeZoom).toGMTString()).replace(/GMT/g, '')}</span>
+                                            <span className='span2' onClick={() => { this.openOnnewTab(item.transactionHash) }}>
+                                                <i>{item.transactionHash.substring(0, 6) + '...' + item.transactionHash.substring(item.transactionHash.length - 4)}</i>
+                                            </span>
+                                        </p>
+                                        <p className="event">
+                                            {'Deposit '}
+                                            {this.toThousands(item.title_num.split('.')[0]) + '.' + item.title_num.split('.')[1]} {'USDx'}
+                                        </p>
+                                    </li>
                                 }
 
 
