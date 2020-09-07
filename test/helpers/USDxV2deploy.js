@@ -65,18 +65,18 @@ async function contractsDeploy(accounts, collateralNames, weightTest) {
 
   let xTokenWeightList = weightTest.map((w) => web3.utils.toWei(new BN(w)));
 
-  console.log("srcTokenAddress");
-  console.log(srcTokenAddress);
-  console.log("wrapTokenAddress");
-  console.log(wrapTokenAddress);
-  console.log("\n");
+  // console.log("srcTokenAddress");
+  // console.log(srcTokenAddress);
+  // console.log("wrapTokenAddress");
+  // console.log(wrapTokenAddress);
+  // console.log("\n");
 
-  console.log("weightTest");
-  console.log(weightTest);
-  console.log("\n");
-  console.log("xTokenWeightList");
-  console.log(xTokenWeightList.map((w) => w.toString()));
-  console.log("\n");
+  // console.log("weightTest");
+  // console.log(weightTest);
+  // console.log("\n");
+  // console.log("xTokenWeightList");
+  // console.log(xTokenWeightList.map((w) => w.toString()));
+  // console.log("\n");
 
   dSGuard = await DSGuard.new();
   usdxToken = await DSToken.new("0x555344780000000000000000000000");
@@ -185,18 +185,7 @@ async function contractsDeploy(accounts, collateralNames, weightTest) {
     })
   );
 
-  console.log("contract init finish!!!\n");
-
-  // Returns all contracts
-  //   return {
-  //     usdxToken: usdxToken,
-  //     dfToken: dfToken,
-  //     dfStore: dfStore,
-  //     dfCollateral: dfCollateral,
-  //     dfProtocol: dfProtocol,
-  //     dfFunds: dfFunds,
-  //     dfEngine: dfEngine,
-  //   };
+  // console.log("contract init finish!!!\n");
 
   return {
     guard: dSGuard,
