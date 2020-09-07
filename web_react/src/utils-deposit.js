@@ -801,7 +801,7 @@ export const approve = (that, token) => {
                                                     fromDepositDAI: false
                                                 });
                                                 setTimeout(() => {
-                                                    that.deposit();
+                                                    deposit(that);
                                                 }, 4000)
                                             } else {
                                                 return false;
@@ -938,7 +938,7 @@ export const approve = (that, token) => {
                                                     fromDepositPAX: false
                                                 });
                                                 setTimeout(() => {
-                                                    that.deposit();
+                                                    deposit(that);
                                                 }, 4000)
                                             } else {
                                                 return false;
@@ -1075,7 +1075,7 @@ export const approve = (that, token) => {
                                                     fromDepositTUSD: false
                                                 });
                                                 setTimeout(() => {
-                                                    that.deposit();
+                                                    deposit(that);
                                                 }, 4000)
                                             } else {
                                                 return false;
@@ -1212,7 +1212,7 @@ export const approve = (that, token) => {
                                                     fromDepositUSDC: false
                                                 });
                                                 setTimeout(() => {
-                                                    that.deposit();
+                                                    deposit(that);
                                                 }, 4000)
                                             } else {
                                                 return false;
@@ -1349,7 +1349,7 @@ export const approve = (that, token) => {
                                                     fromDestroy1: false
                                                 });
                                                 setTimeout(() => {
-                                                    that.destroy();
+                                                    destroy(that);
                                                 }, 4000)
                                             } else {
                                                 return false;
@@ -1473,7 +1473,7 @@ export const approve = (that, token) => {
                                                     fromDestroy2: false
                                                 });
                                                 setTimeout(() => {
-                                                    that.destroy();
+                                                    destroy(that);
                                                 }, 4000)
                                             } else {
                                                 return false;
