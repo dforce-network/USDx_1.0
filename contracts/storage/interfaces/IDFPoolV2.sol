@@ -10,4 +10,6 @@ contract IDFPoolV2 {
     function approveToEngine(address _tokenIdx, address _engineAddress) public;
     function getInterestByXToken(address _xToken) public returns (address, uint256);
     function getUnderlying(address _underlying) public returns (uint256);
+    function enableDToken(address _tokenID) public;
+    function disableDToken(address _tokenID) public;
 }
