@@ -7,6 +7,8 @@ interface IDToken {
 
   function redeemUnderlying(address _src, uint256 _pie) external;
 
+  function balanceOfUnderlying(address _account) external returns (uint256);
+
   function getBaseData()
     external
     returns (

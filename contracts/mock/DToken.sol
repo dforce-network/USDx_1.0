@@ -153,6 +153,7 @@ contract DToken is ERC20SafeTransfer, DSMath {
       uint256
     )
   {
+    decimals = decimals;
     return (decimals, getExchangeRate(), 0, 0, 0);
   }
 
