@@ -189,6 +189,12 @@ contract DFPoolV2 is ERC20SafeTransfer, DFPoolV1(address(0)) {
         );
         require(_dToken != address(0), "enableDToken: dToken address empty.");
 
+        if (IERC20(_tokenID).allowance(address(this), _dToken) == 0)
+            require(
+                doApprove(_tokenID, _dToken, uint256(-1)),
+                "approve: Approve failed!"
+            );
+
         address _xToken = IDFStore(dfStore).getWrappedToken(_tokenID);
         require(_xToken != address(0), "enableDToken: xToken address empty.");
 
