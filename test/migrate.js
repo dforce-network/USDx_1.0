@@ -248,7 +248,8 @@ contract("USDx", (accounts) => {
         var wrappedToken = await DSWrappedToken.new(
           collaterals.address,
           decimals,
-          "x" + collateralNames[index]
+          web3.utils.hexToBytes(
+            web3.utils.asciiToHex("x" + collateralNames[index]))
         );
         wrapTokenAddress[system].push(wrappedToken.address);
         wrapTokenContract[system][wrappedToken.address] = wrappedToken;
