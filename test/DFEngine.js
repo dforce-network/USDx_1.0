@@ -253,9 +253,7 @@ contract("DFEngine", (accounts) => {
                 var wrappedToken = await DSWrappedToken.new(
                     collaterals.address,
                     decimals,
-                    web3.utils.hexToBytes(
-                        web3.utils.asciiToHex("x" + collateralNames[index])
-                    )
+                    web3.utils.asciiToHex("x" + collateralNames[index])
                 );
 
                 xCollateralAddress.push(wrappedToken.address);
@@ -4068,9 +4066,9 @@ contract("DFEngine", (accounts) => {
                                         var wrappedToken = await DSWrappedToken.new(
                                             collaterals.address,
                                             decimals,
-                                            "x" +
+                                            web3.utils.asciiToHex("x" +
                                                 collateralNames[nameIndex] +
-                                                collateralIndex
+                                                collateralIndex)
                                         );
 
                                         await wrappedToken.setAuthority(

@@ -248,9 +248,7 @@ contract("USDx", (accounts) => {
                 var wrappedToken = await DSWrappedToken.new(
                     collaterals.address,
                     decimals,
-                    web3.utils.hexToBytes(
-                        web3.utils.asciiToHex("x" + collateralNames[index])
-                    )
+                    web3.utils.asciiToHex("x" + collateralNames[index])
                 );
                 wrapTokenAddress[system].push(wrappedToken.address);
                 wrapTokenContract[system][wrappedToken.address] = wrappedToken;
@@ -4261,9 +4259,9 @@ contract("USDx", (accounts) => {
                                         var wrappedToken = await DSWrappedToken.new(
                                             collaterals.address,
                                             decimals,
-                                            "x" +
+                                            web3.utils.asciiToHex("x" +
                                                 collateralNames[nameIndex] +
-                                                srcTokenIndex
+                                                srcTokenIndex)
                                         );
 
                                         await wrappedToken.setAuthority(
@@ -4917,9 +4915,7 @@ contract("USDx", (accounts) => {
                                 wrappedToken = await DSWrappedToken.new(
                                     srcToken,
                                     decimals,
-                                    web3.utils.hexToBytes(
-                                        web3.utils.asciiToHex("x2" + srcName)
-                                    )
+                                    web3.utils.asciiToHex("x2" + srcName)
                                 );
 
                                 wrapTokenAddress[systemNew].push(

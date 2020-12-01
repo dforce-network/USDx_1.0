@@ -52,7 +52,7 @@ async function deployCollateralAndWrappedToken(accounts, name) {
   let wrappedToken = await DSWrappedToken.new(
     collateral.address,
     decimals,
-    web3.utils.hexToBytes(web3.utils.asciiToHex("x" + name))
+    web3.utils.asciiToHex("x" + name)
   );
   wrapTokenAddress.push(wrappedToken.address);
   wrapTokens.push(wrappedToken);
