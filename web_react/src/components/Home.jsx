@@ -13,7 +13,6 @@ import abiTokens from '../abi/abiTokens';
 import abiUSDx from '../abi/abiUSDx';
 import abiProtocol from '../abi/abiProtocol';
 import abiProtocolView from '../abi/abiProtocolView';
-import abi__usr from '../abi/abi__USR';
 
 // address map
 import addressMap from '../abi/addressMap'
@@ -46,31 +45,6 @@ import Reddit from '../assets/img/Reddit.svg';
 import Discord from '../assets/img/Discord.svg';
 import LinkedIn from '../assets/img/LinkedIn.svg';
 import Youtube from '../assets/img/Youtube.svg';
-import icon_right from '../assets/img/icon-right.svg';
-import logo__usdx from '../assets/img/USDx.svg';
-import icon__left from '../assets/img/icon-one.svg';
-import icon__right from '../assets/img/icon-two.svg';
-
-import {
-    change__deposite_to_usr,
-    click__deposite_to_usr,
-    click__deposite_to_usr__approve,
-    click__max__deposite_to_usr,
-    format_bn,
-    get_tokens_status_apy,
-    format_num_to_K,
-    getDecimals,
-    click__mint_max,
-    click__redeem_max,
-} from '../utils.js';
-
-import { allocateTo } from '../utils-faucet.js';
-import { claim } from '../utils-claim.js';
-import { approve, deposit, destroy, toGenerateMax } from '../utils-deposit.js';
-import { lock } from '../utils-lock.js';
-import { withdraw, withdrawOptChange, withdrawNumChange } from '../utils-withdraw.js';
-
-
 
 export default class Home extends React.Component {
     units = 10 ** 18;
@@ -130,6 +104,7 @@ export default class Home extends React.Component {
             toWithdraw: 'PAX',
             toWithdrawNum: '',
             toDestroyNum: '',
+            tab1: true,
             netType: 'Main',
             myHistory: [],
             gasPrice: 0,
@@ -140,13 +115,10 @@ export default class Home extends React.Component {
             DAIonPool: '0.00',
             PAXonPool: '0.00',
             TUSDonPool: '0.00',
-            USDConPool: '0.00',
-            show__tab: 2,
-            value__deposit_to_usr: '',
+            USDConPool: '0.00'
         }
         if (window.web3) {
             this.Web3 = window.web3;
-            this.bn = this.Web3.toBigNumber;
 
             this.Web3.version.getNetwork((err, net) => {
                 console.log(net);
@@ -160,7 +132,6 @@ export default class Home extends React.Component {
                 this.addressProtocolView = addressMap[net]['addressProtocolView'];
                 this.addressEngine = addressMap[net]['addressEngine'];
                 this.addressPool = addressMap[net]['addressPool'];
-                this.addressUSR = addressMap[net]['addressUSR'];
 
 
                 this.contractDAI = this.Web3.eth.contract(abiTokens).at(this.addressDAI);
@@ -174,8 +145,6 @@ export default class Home extends React.Component {
                 this.contractProtocol = this.Web3.eth.contract(abiProtocol).at(this.addressProtocol);
                 this.contractProtocolView = this.Web3.eth.contract(abiProtocolView).at(this.addressProtocolView);
 
-                this.contract_USR = this.Web3.eth.contract(abi__usr).at(this.addressUSR);
-
                 this.contractProtocol.allEvents({ toBlock: 'latest' }).watch((error, result) => {
                     console.log(error, result);
                     if (result && result.args._sender.toLowerCase() === this.state.accountAddress.toLowerCase()) {
@@ -186,6 +155,7 @@ export default class Home extends React.Component {
                         tmphistory.unshift(itemHistory);
 
                         this.setState({
+                            ...this.state,
                             myHistory: tmphistory
                         })
 
@@ -279,6 +249,7 @@ export default class Home extends React.Component {
                 this.getPrice();
                 this.getColMaxClaim();
                 this.getUserWithdrawBalance();
+                // this.isSyncing();
                 this.getGasPrice();
             } else {
                 console.log('not connected...');
@@ -287,13 +258,13 @@ export default class Home extends React.Component {
         }, 1000 * 15)
     }
 
-
+    componentWillMount() { }
     componentDidMount() { }
-
     render() {
         return (
             <DocuentTitle title='USDx'>
                 <React.Fragment>
+                    {/* <Welcome ifShow={this.state.isConnected} connectMetamask={()=>{this.connectMetamask()}}/> */}
                     <Notify transcations={this.state.transcations} netType={this.state.netType} />
                     <div className='topTips' style={{ display: this.state.isConnected && this.state.netType === 'Rinkeby' ? 'block' : 'none' }}>
                         <img src={right_net} alt="" />
@@ -320,11 +291,11 @@ export default class Home extends React.Component {
                         status={this.state}
                         DisconnectMetamask={() => { this.DisconnectMetamask() }}
                         connectMetamask={() => { this.connectMetamask() }}
-                        approve={(v) => { approve(this, v) }}
-                        lock={(v) => { lock(this, v) }}
-                        allocateTo={(v) => { allocateTo(this, v) }}
+                        approve={(v) => { this.approve(v) }}
+                        lock={(v) => { this.lock(v) }}
+                        allocateTo={(v) => { this.allocateTo(v) }}
                         getMaxNumToGenerateOnestep={() => { this.getMaxNumToGenerateOnestep() }}
-                        toGenerateMax={(BN) => { toGenerateMax(this, BN) }}
+                        toGenerateMax={(BN) => { this.toGenerateMax(BN) }}
                         showOnestwpFn={() => { this.showOnestwpFn() }}
                         closeOnestwpFn={() => { this.closeOnestwpFn() }}
                     />
@@ -339,7 +310,7 @@ export default class Home extends React.Component {
                                 width='300px'
                             >
 
-                                <div className="openMeun" onClick={this.showDrawer} style={{ background: 'rgba(34, 44, 60, 1)', position: 'fixed', left: '300px', top: '124px', zIndex: '999', height: '30px', width: '38px', lineHeight: '30px', paddingLeft: '8px', borderRadius: '0 15px 15px 0' }}>
+                                <div className="openMeun" onClick={this.showDrawer} style={{ background: 'rgba(34, 44, 60, 1)', position: 'fixed', left: '300px', top: '96px', zIndex: '999', height: '30px', width: '38px', lineHeight: '30px', paddingLeft: '8px', borderRadius: '0 15px 15px 0' }}>
                                     <img src={this.state.visible ? close_mobile : meun} alt="" style={{ width: '16px' }} />
                                 </div>
                                 <div className="bodyleftHome" style={{}}>
@@ -559,49 +530,24 @@ export default class Home extends React.Component {
                             </Drawer>
 
                             <div className="bodyright">
-                                <div className="openMeun" style={{ background: 'rgba(34, 44, 60, 1)', position: 'fixed', left: '0', top: '124px', zIndex: '999', height: '30px', width: '38px', lineHeight: '30px', paddingLeft: '8px', borderRadius: '0 15px 15px 0' }} onClick={this.showDrawer}>
+                                <div className="openMeun" style={{ background: 'rgba(34, 44, 60, 1)', position: 'fixed', left: '0', top: '96px', zIndex: '999', height: '30px', width: '38px', lineHeight: '30px', paddingLeft: '8px', borderRadius: '0 15px 15px 0' }} onClick={this.showDrawer}>
                                     <img src={meun} alt="" style={{ width: '16px' }} />
                                 </div>
                                 <div className="tab1">
-                                    <div className="tab1__new_title">
-                                        <span className="tab1__img"><img src={icon__left} alt="" /></span>
-                                        <span className="tab1__txt">Mint USDx, Redeem/Withdraw your constiruent</span>
-                                    </div>
                                     <div className="titleInTab">
-                                        <div
-                                            className={this.state.show__tab === 1 ? "titleInTab_title titleInTab_title__active" : "titleInTab_title"}
-                                            onClick={() => { this.handleChange1(1) }}
-                                        >
-                                            Redeem
+                                        <div className="leftTitle">EXCHANGE</div>
+                                        <div className="rightIcon">
+                                            <IconButton color="inherit" onClick={() => { this.handleChange1() }}>
+                                                <img src={exchangeTo} alt="" style={{ display: this.state.tab1 ? 'block' : 'none' }} />
+                                                <img src={exchangeBack} alt="" style={{ display: !this.state.tab1 ? 'block' : 'none' }} />
+                                            </IconButton>
                                         </div>
-                                        <div
-                                            className={this.state.show__tab === 2 ? "titleInTab_title titleInTab_title__active" : "titleInTab_title"}
-                                            onClick={() => { this.handleChange1(2) }}
-                                        >
-                                            Mint
-                                        </div>
-                                        <div
-                                            className={this.state.show__tab === 3 ? "titleInTab_title titleInTab_title__active" : "titleInTab_title"}
-                                            onClick={() => { this.handleChange1(3) }}
-                                        >
-                                            Withdraw
-                                        </div>
+                                        <div className="clear"></div>
                                     </div>
-
-                                    <div style={{ display: this.state.show__tab === 2 ? 'block' : 'none' }} className="generate">
+                                    <div style={{ display: this.state.tab1 ? 'block' : 'none' }} className="generate">
                                         <p className="details">Select which constituent you would like to deposit:</p>
                                         <div className="input">
-                                            <div
-                                                className="maxNum"
-                                                onClick={() => { click__mint_max(this) }}
-                                            >
-                                                MAX
-                                            </div>
-                                            <input
-                                                type="number"
-                                                onChange={(val) => { this.depositNumChange(val.target.value) }}
-                                                value={this.state.toDepositNum}
-                                            />
+                                            <input type="number" onChange={(val) => { this.depositNumChange(val.target.value) }} value={this.state.toDepositNum} />
                                             <Select className="mySelect" defaultValue="PAX" onChange={(val) => { this.depositOptChange(val) }}>
                                                 {/* <Select.Option value="DAI">DAI</Select.Option> */}
                                                 <Select.Option value="PAX">PAX</Select.Option>
@@ -611,14 +557,14 @@ export default class Home extends React.Component {
                                         </div>
                                         <div className="myBalanceOnPool myBalanceOnPoolMax">
                                             Max USDx available to aggregate:
-                                            <span>
+                                        <span>
                                                 <i>{this.state.maxGenerateUSDx ? this.toThousands(this.state.maxGenerateUSDx.split('.')[0]) : '0'}</i>
                                                 {this.state.maxGenerateUSDx ? '.' + this.state.maxGenerateUSDx.split('.')[1] : '.00'}
                                             </span>
                                         </div>
                                         <div className="ButtonWrap">
                                             <Button
-                                                onClick={() => { deposit(this) }}
+                                                onClick={() => { this.deposit() }}
                                                 variant="contained"
                                                 color="secondary"
                                                 disabled={this.state.couldDeposit ? false : true}
@@ -637,7 +583,7 @@ export default class Home extends React.Component {
                                         </div>
                                         <div className="ButtonWrap marginTop10 marginMax ButtonWrap_new">
                                             <Button
-                                                onClick={() => { claim(this) }}
+                                                onClick={() => { this.claim() }}
                                                 variant="contained"
                                                 color="secondary"
                                                 disabled={this.state.couldClaim ? false : true}
@@ -652,26 +598,16 @@ export default class Home extends React.Component {
                                         </div>
                                     </div>
 
-                                    <div style={{ display: this.state.show__tab === 1 ? 'block' : 'none' }} className="generate">
+                                    <div style={{ display: !this.state.tab1 ? 'block' : 'none' }} className="generate">
                                         <p className="details">How much USDx you would like to reconvert into constituents:</p>
                                         <div className="input">
-                                            <div
-                                                className="maxNum"
-                                                onClick={() => { click__redeem_max(this) }}
-                                            >
-                                                MAX
-                                            </div>
-                                            <input
-                                                type="number"
-                                                onChange={(val) => { this.destroyNumChange(val.target.value) }}
-                                                value={this.state.toDestroyNum}
-                                            />
+                                            <input type="number" onChange={(val) => { this.destroyNumChange(val.target.value) }} value={this.state.toDestroyNum} />
                                             <Select className="mySelect" defaultValue="USDx" disabled></Select>
                                         </div>
                                         <div className="clear"></div>
                                         <div className="ButtonWrap ButtonWrapWithdraw">
                                             <Button
-                                                onClick={() => { destroy(this) }}
+                                                onClick={() => { this.destroy() }}
                                                 variant="contained"
                                                 color="secondary"
                                                 disabled={this.state.couldDestroy ? false : true}
@@ -732,13 +668,19 @@ export default class Home extends React.Component {
                                             <div className="clear"></div>
                                         </div>
                                     </div>
+                                </div>
 
-                                    <div style={{ display: this.state.show__tab === 3 ? 'block' : 'none' }} className="generate">
+                                <div className="tab1 noRightMargin">
+                                    <div className="titleInTab">
+                                        <div className="leftTitle">WITHDRAW</div>
+                                        <div className="clear"></div>
+                                    </div>
+                                    <div className="generate nomargin">
                                         <p className="details">Select which constituent you would like to withdraw:</p>
                                         <div className="input">
                                             <div className="maxNum" onClick={() => { this.adjustMaxToWithdraw() }}>MAX</div>
-                                            <input type="number" onChange={(val) => { withdrawNumChange(this, val.target.value) }} value={this.state.toWithdrawNum} />
-                                            <Select className="mySelect" defaultValue="PAX" onChange={(val) => { withdrawOptChange(this, val) }}>
+                                            <input type="number" onChange={(val) => { this.withdrawNumChange(val.target.value) }} value={this.state.toWithdrawNum} />
+                                            <Select className="mySelect" defaultValue="PAX" onChange={(val) => { this.withdrawOptChange(val) }}>
                                                 {/* <Select.Option value="DAI">DAI</Select.Option> */}
                                                 <Select.Option value="PAX">PAX</Select.Option>
                                                 <Select.Option value="TUSD">TUSD</Select.Option>
@@ -748,7 +690,7 @@ export default class Home extends React.Component {
                                         <div className="clear"></div>
                                         <div className="ButtonWrap ButtonWrapWithdraw">
                                             <Button
-                                                onClick={() => { withdraw(this) }}
+                                                onClick={() => { this.withdraw() }}
                                                 variant="contained"
                                                 color="secondary"
                                                 disabled={this.state.couldWithdraw ? false : true}
@@ -796,85 +738,6 @@ export default class Home extends React.Component {
                                         </div>
                                     </div>
                                 </div>
-
-                                <div className="tab1 noRightMargin">
-                                    <div className="tab1__new_title">
-                                        <span className="tab1__img"><img src={icon__right} alt="" /></span>
-                                        <span className="tab1__txt">Deposit your USDx to earn high yield</span>
-                                    </div>
-                                    <div className="you_have__wrap">
-                                        <div className="you_have">
-                                            You have
-                                            <span className="you_have_balance">
-                                                {this.state.you_have ? ' ' + format_num_to_K(format_bn(this.state.you_have, 18, 6)) + ' ' : '...'}
-                                            </span>
-                                            USDx brewing.
-                                        </div>
-                                        <div className="apy">
-                                            <span className="apy-left">
-                                                {'APY: '}
-                                            </span>
-                                            <span className="apy-right">
-                                                {this.state.token_apy ? this.state.token_apy.toFixed(2) + '%' : '...'}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className="generate nomargin">
-                                        <div className="usdx_logo_wrap">
-                                            <span className="usdx_logo_wrap__logo">
-                                                <img src={logo__usdx} />
-                                            </span>
-                                            <span className="usdx_logo_wrap__token">
-                                                {'USDx'}
-                                            </span>
-                                        </div>
-
-                                        <div className="input input-spe">
-                                            <div
-                                                className="maxNum right25"
-                                                onClick={() => { click__max__deposite_to_usr(this) }}>
-                                                MAX
-                                            </div>
-                                            <input
-                                                type="number"
-                                                onChange={(val) => { change__deposite_to_usr(this, val.target.value) }}
-                                                value={this.state.value__deposit_to_usr}
-                                            />
-                                        </div>
-                                        <div className="clear"></div>
-                                        <div className="ButtonWrap ButtonWrapWithdraw">
-                                            {
-                                                this.state.is_ready && this.state.approved_to_usr &&
-                                                <Button
-                                                    onClick={() => { click__deposite_to_usr(this) }}
-                                                    variant="contained"
-                                                    color="secondary"
-                                                    disabled={this.state.enable__deposite_to_usr ? false : true}
-                                                    fullWidth={true}
-                                                >DEPOSIT
-                                                </Button>
-                                            }
-                                            {
-                                                !(this.state.is_ready && this.state.approved_to_usr) &&
-                                                <Button
-                                                    onClick={() => { click__deposite_to_usr__approve(this) }}
-                                                    variant="contained"
-                                                    color="secondary"
-                                                    disabled={false}
-                                                    fullWidth={true}
-                                                >ENABLE
-                                                </Button>
-                                            }
-
-                                        </div>
-                                        <div className="link_to_usr">
-                                            <a href="https://usr.dforce.network" target="_blank" rel="noopener noreferrer">
-                                                Withdraw
-                                                <img src={icon_right} alt="" srcset="" />
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
                                 <div className="clear"></div>
                                 <History
                                     data={this.state}
@@ -882,7 +745,6 @@ export default class Home extends React.Component {
                                     addressPAX={this.addressPAX}
                                     addressTUSD={this.addressTUSD}
                                     addressUSDC={this.addressUSDC}
-                                    addressUSDx={this.addressUSDx}
                                     web3={this.Web3}
                                 />
                                 {/* <div className="history"></div> */}
@@ -953,14 +815,14 @@ export default class Home extends React.Component {
     }
 
 
-    handleChange1 = (num) => {
-        console.log(num);
+    handleChange1 = () => {
         this.setState({
-            show__tab: num
+            ...this.state,
+            tab1: !this.state.tab1
         });
     }
 
-
+    // connectMetamask
     DisconnectMetamask() {
         this.setState({
             isConnected: false,
@@ -970,17 +832,18 @@ export default class Home extends React.Component {
         window.location.reload();
         return;
     }
-    // connect Metamask
+    // connectMetamask
     connectMetamask() {
         this.Web3.currentProvider.enable().then(
             res => {
                 console.log('you connected.');
                 this.setState({
+                    ...this.state,
                     isConnected: true,
                     accountAddress: res[0]
                 });
                 this.getNetType();
-                getDecimals(this);
+                this.getDecimals();
                 this.getMyBalance();
                 this.getPoolBankTotalStatus();
                 this.getUserWithdrawBalance();
@@ -1029,38 +892,85 @@ export default class Home extends React.Component {
             switch (net) {
                 case '1':
                     this.setState({
+                        ...this.state,
                         netTypeColor: '#1abc9c',
                         netType: 'Main'
                     });
                     break;
                 case '3':
                     this.setState({
+                        ...this.state,
                         netTypeColor: '#FC4E8E',
                         netType: 'Ropsten'
                     });
                     break;
                 case '4':
                     this.setState({
+                        ...this.state,
                         netTypeColor: '#F5C250',
                         netType: 'Rinkeby'
                     });
                     break;
                 case '42':
                     this.setState({
+                        ...this.state,
                         netTypeColor: '#715EFB',
                         netType: 'Kovan'
                     });
                     break;
                 default:
                     this.setState({
+                        ...this.state,
                         netTypeColor: '#fff',
                         netType: 'Unknown'
                     });
             }
         });
     }
+    // getDecimals
+    getDecimals() {
+        this.contractDAI.decimals.call((err, ret) => {
+            this.setState({
+                ...this.state,
+                decimalsDAI: ret.toFixed()
+            })
+        })
+        this.contractPAX.decimals.call((err, ret) => {
+            this.setState({
+                ...this.state,
+                decimalsPAX: ret.toFixed()
+            })
+        })
+        this.contractTUSD.decimals.call((err, ret) => {
+            this.setState({
+                ...this.state,
+                decimalsTUSD: ret.toFixed()
+            })
+        })
+        this.contractUSDC.decimals.call((err, ret) => {
+            this.setState({
+                ...this.state,
+                decimalsUSDC: ret.toFixed()
+            })
+        })
+        this.contractUSDx.decimals.call((err, ret) => {
+            this.setState({
+                ...this.state,
+                decimalsUSDx: ret.toFixed()
+            })
+        })
+        this.contractDF.decimals.call((err, ret) => {
+            this.setState({
+                ...this.state,
+                decimalsDF: ret.toFixed()
+            })
+        })
 
-
+        setTimeout(() => {
+            this.getTokenSection();
+            this.getTokenBurningSection();
+        }, 2000);
+    }
 
     // getMyHistory
     getMyHistory() {
@@ -1087,6 +997,7 @@ export default class Home extends React.Component {
                 var historyArr = (JSON.parse(localStorage.getItem(this.state.accountAddress)))[this.state.netType].history;
                 console.log(historyArr);
                 this.setState({
+                    ...this.state,
                     myHistory: historyArr
                 })
             }
@@ -1094,12 +1005,115 @@ export default class Home extends React.Component {
     }
 
 
+    // get the Token section
+    getTokenSection() {
+        // this.tatolSection = 0;
+        this.contractProtocolView.getMintingSection.call((err, ret) => {
+            // console.log(ret[0])
+            // console.log(ret[1])
+            if (ret) {
+                var addressArry = ret[0];
+                var secArry = ret[1];
+                this.tatolSection = 0;
+
+                for (let i = 0; i < addressArry.length; i++) {
+                    if (addressArry[i].toLowerCase() === this.addressDAI) {
+                        this.sectionDAI = secArry[i].div(10 ** 18).toFixed();
+                        this.tatolSection = Number(this.tatolSection) + Number(this.sectionDAI);
+                        this.setState({
+                            ...this.state,
+                            sectionDAI: this.sectionDAI,
+                            tatolSection: this.tatolSection
+                        })
+                    }
+                    if (addressArry[i].toLowerCase() === this.addressPAX) {
+                        this.sectionPAX = secArry[i].div(10 ** 18).toFixed();
+                        this.tatolSection = Number(this.tatolSection) + Number(this.sectionPAX);
+                        this.setState({
+                            ...this.state,
+                            sectionPAX: this.sectionPAX,
+                            tatolSection: this.tatolSection
+                        })
+                    }
+                    if (addressArry[i].toLowerCase() === this.addressUSDC) {
+                        this.sectionUSDC = secArry[i].div(10 ** 18).toFixed();
+                        this.tatolSection = Number(this.tatolSection) + Number(this.sectionUSDC);
+                        this.setState({
+                            ...this.state,
+                            sectionUSDC: this.sectionUSDC,
+                            tatolSection: this.tatolSection
+                        })
+                    }
+                    if (addressArry[i].toLowerCase() === this.addressTUSD) {
+                        this.sectionTUSD = secArry[i].div(10 ** 18).toFixed();
+                        this.tatolSection = Number(this.tatolSection) + Number(this.sectionTUSD);
+                        this.setState({
+                            ...this.state,
+                            sectionTUSD: this.sectionTUSD,
+                            tatolSection: this.tatolSection
+                        })
+                    }
+                }
+            }
+        })
+    }
+    // get the Token Burning section
+    getTokenBurningSection() {
+        this.tatolSectionBurning = 0;
+        this.contractProtocolView.getBurningSection.call((err, ret) => {
+            // console.log(err, ret);
+            if (ret) {
+                var addrArry = ret[0];
+                var sectionArry = ret[1];
+
+                for (let i = 0; i < addrArry.length; i++) {
+                    if (addrArry[i].toLowerCase() === this.addressDAI) {
+                        this.sectionDAIBurning = sectionArry[i].div(10 ** 16).toFixed();
+                        this.tatolSectionBurning = Number(this.tatolSectionBurning) + Number(this.sectionDAIBurning);
+                        this.setState({
+                            ...this.state,
+                            sectionDAIBurning: this.sectionDAIBurning,
+                            tatolSectionBurning: this.tatolSectionBurning
+                        })
+                    }
+                    if (addrArry[i].toLowerCase() === this.addressPAX) {
+                        this.sectionPAXBurning = sectionArry[i].div(10 ** 16).toFixed();
+                        this.tatolSectionBurning = Number(this.tatolSectionBurning) + Number(this.sectionPAXBurning);
+                        this.setState({
+                            ...this.state,
+                            sectionPAXBurning: this.sectionPAXBurning,
+                            tatolSectionBurning: this.tatolSectionBurning
+                        })
+                    }
+                    if (addrArry[i].toLowerCase() === this.addressTUSD) {
+                        this.sectionTUSDBurning = sectionArry[i].div(10 ** 16).toFixed();
+                        this.tatolSectionBurning = Number(this.tatolSectionBurning) + Number(this.sectionTUSDBurning);
+                        this.setState({
+                            ...this.state,
+                            sectionTUSDBurning: this.sectionTUSDBurning,
+                            tatolSectionBurning: this.tatolSectionBurning
+                        })
+                    }
+                    if (addrArry[i].toLowerCase() === this.addressUSDC) {
+                        this.sectionUSDCBurning = sectionArry[i].div(10 ** 16).toFixed();
+                        this.tatolSectionBurning = Number(this.tatolSectionBurning) + Number(this.sectionUSDCBurning);
+                        this.setState({
+                            ...this.state,
+                            sectionUSDCBurning: this.sectionUSDCBurning,
+                            tatolSectionBurning: this.tatolSectionBurning
+                        })
+                    }
+                }
+            }
+        })
+    }
     // getMaxNumToGenerateOnestep
     getMaxNumToGenerateOnestep() {
         this.contractProtocolView.calcMaxMinting.call((err, ret) => {
             // console.log(err, ret);
             if (ret) {
                 this.setState({
+                    ...this.state,
                     calcMaxMinting: ret
                 })
             }
@@ -1110,6 +1124,7 @@ export default class Home extends React.Component {
     getDestroyThreshold() {
         this.contractProtocolView.getDestroyThreshold.call((err, ret) => {
             this.setState({
+                ...this.state,
                 getDestroyThreshold: ret / (10 ** 10) / (10 ** 8)
             })
         })
@@ -1120,11 +1135,13 @@ export default class Home extends React.Component {
             // console.log(err, ret);
             if (ret && ret.c[0] > 0) {
                 this.setState({
+                    ...this.state,
                     userMaxToClaim: this.formatNumber(ret, 'USDx'),
                     couldClaim: true
                 })
             } else {
                 this.setState({
+                    ...this.state,
                     userMaxToClaim: '0.00',
                     couldClaim: false
                 })
@@ -1137,6 +1154,7 @@ export default class Home extends React.Component {
             // console.log(err, ret);
             if (ret) {
                 this.setState({
+                    ...this.state,
                     dfPrice: this.formatNumber(ret, 'DF')
                 })
             }
@@ -1148,6 +1166,7 @@ export default class Home extends React.Component {
             // console.log(err, ret);
             if (ret) {
                 this.setState({
+                    ...this.state,
                     feeRate: ret / 10000
                 })
             }
@@ -1164,21 +1183,25 @@ export default class Home extends React.Component {
                 for (let i = 0; i < claimAddress.length; i++) {
                     if (claimAddress[i] === this.addressDAI) {
                         this.setState({
+                            ...this.state,
                             claimDAI: this.formatNumber(claimNumber[i], 'USDx')
                         })
                     }
                     if (claimAddress[i] === this.addressPAX) {
                         this.setState({
+                            ...this.state,
                             claimPAX: this.formatNumber(claimNumber[i], 'USDx')
                         })
                     }
                     if (claimAddress[i] === this.addressTUSD) {
                         this.setState({
+                            ...this.state,
                             claimTUSD: this.formatNumber(claimNumber[i], 'USDx')
                         })
                     }
                     if (claimAddress[i] === this.addressUSDC) {
                         this.setState({
+                            ...this.state,
                             claimUSDC: this.formatNumber(claimNumber[i], 'USDx')
                         })
                     }
@@ -1188,6 +1211,18 @@ export default class Home extends React.Component {
     }
 
 
+    // *** isSyncing ***
+    isSyncing() {
+        this.Web3.eth.isSyncing((res) => {
+            if (res) {
+                console.log(res);
+            }
+        })
+        // lastSyncState: false
+        // this.Web3.eth.syncing((err, ret)=>{
+        //     console.log(err, ret);
+        // })
+    }
 
 
     // *** get price ***
@@ -1195,6 +1230,7 @@ export default class Home extends React.Component {
         this.Web3.eth.getGasPrice((e, r) => {
             // console.log(e, Number(r));
             this.setState({
+                ...this.state,
                 gasPrice: Number(r)
             })
         })
@@ -1205,57 +1241,50 @@ export default class Home extends React.Component {
     getMyBalance() {
         this.Web3.eth.getBalance(this.state.accountAddress, (err, ret) => {
             this.setState({
+                ...this.state,
                 myETH: this.formatNumber(ret, 'ETH')
             });
         });
         this.contractDAI.balanceOf.call(this.state.accountAddress, (err, ret) => {
             this.setState({
+                ...this.state,
                 myDAI: this.formatNumber(ret, 'DAI'),
                 myDAIOrigin: ret.toString(10)
             });
         });
         this.contractPAX.balanceOf.call(this.state.accountAddress, (err, ret) => {
             this.setState({
+                ...this.state,
                 myPAX: this.formatNumber(ret, 'PAX'),
-                myPAX__origin: ret
+                myPAXOrigin: ret.toString(10)
             });
         });
         this.contractTUSD.balanceOf.call(this.state.accountAddress, (err, ret) => {
             this.setState({
+                ...this.state,
                 myTUSD: this.formatNumber(ret, 'TUSD'),
-                myTUSD__origin: ret
+                myTUSDOrigin: ret.toString(10)
             });
         });
         this.contractUSDC.balanceOf.call(this.state.accountAddress, (err, ret) => {
             this.setState({
+                ...this.state,
                 myUSDC: this.formatNumber(ret, 'USDC'),
-                myUSDC__origin: ret
+                myUSDCOrigin: ret.toString(10)
             });
         });
         this.contractDF.balanceOf.call(this.state.accountAddress, (err, ret) => {
             this.setState({
+                ...this.state,
                 myDF: this.formatNumber(ret, 'DF')
             });
         });
         this.contractUSDx.balanceOf.call(this.state.accountAddress, (err, ret) => {
-            // console.log(ret,ret.toString(10));
             this.setState({
-                myUSDx: this.formatNumber(ret, 'USDx'),
-                myUSDx__origin: ret
+                ...this.state,
+                myUSDx: this.formatNumber(ret, 'USDx')
             });
         });
-
-        // get usr balance
-        this.contract_USR.balanceOfUnderlying.call(this.state.accountAddress, (err, ret) => {
-            // console.log(ret, ret.toString(10),format_bn(ret.toString(10),18,6));
-            this.setState({
-                // myUSDx: this.formatNumber(ret, 'USDx'),
-                you_have__origin: ret,
-                you_have: ret.toString(10)
-            });
-        });
-
-        get_tokens_status_apy(this);
     }
 
 
@@ -1263,6 +1292,7 @@ export default class Home extends React.Component {
     getPoolBankTotalStatus() {
         this.contractUSDx.totalSupply.call((err, ret) => {
             this.setState({
+                ...this.state,
                 totalSupplyUSDx: this.formatNumber(ret, 'USDx')
             });
         });
@@ -1276,21 +1306,25 @@ export default class Home extends React.Component {
                 for (let i = 0; i < addressIDs.length; i++) {
                     if (addressIDs[i] === this.addressDAI) {
                         this.setState({
+                            ...this.state,
                             DAIonPool: this.formatNumber(myBalance[i], 'DAI')
                         });
                     }
                     if (addressIDs[i] === this.addressPAX) {
                         this.setState({
+                            ...this.state,
                             PAXonPool: this.formatNumber(myBalance[i], 'PAX')
                         });
                     }
                     if (addressIDs[i] === this.addressTUSD) {
                         this.setState({
+                            ...this.state,
                             TUSDonPool: this.formatNumber(myBalance[i], 'TUSD')
                         });
                     }
                     if (addressIDs[i] === this.addressUSDC) {
                         this.setState({
+                            ...this.state,
                             USDConPool: this.formatNumber(myBalance[i], 'USDC')
                         });
                     }
@@ -1307,21 +1341,25 @@ export default class Home extends React.Component {
                 for (let i = 0; i < addressIDs.length; i++) {
                     if (addressIDs[i] === this.addressDAI) {
                         this.setState({
+                            ...this.state,
                             DAIonBank: this.formatNumber(myBalance[i], 'DAI')
                         });
                     }
                     if (addressIDs[i] === this.addressPAX) {
                         this.setState({
+                            ...this.state,
                             PAXonBank: this.formatNumber(myBalance[i], 'PAX')
                         });
                     }
                     if (addressIDs[i] === this.addressTUSD) {
                         this.setState({
+                            ...this.state,
                             TUSDonBank: this.formatNumber(myBalance[i], 'TUSD')
                         });
                     }
                     if (addressIDs[i] === this.addressUSDC) {
                         this.setState({
+                            ...this.state,
                             USDConBank: this.formatNumber(myBalance[i], 'USDC')
                         });
                     }
@@ -1342,24 +1380,28 @@ export default class Home extends React.Component {
                 for (let i = 0; i < addressIDs.length; i++) {
                     if (addressIDs[i] === this.addressDAI) {
                         this.setState({
+                            ...this.state,
                             myDAIonPool: this.formatNumber(myBalance[i], 'DAI'),
                             myDAIonPoolOrigin: this.handleMaxWithdraw(myBalance[i].toString(10), 'DAI')
                         })
                     }
                     if (addressIDs[i] === this.addressPAX) {
                         this.setState({
+                            ...this.state,
                             myPAXonPool: this.formatNumber(myBalance[i], 'PAX'),
                             myPAXonPoolOrigin: this.handleMaxWithdraw(myBalance[i].toString(10), 'PAX')
                         })
                     }
                     if (addressIDs[i] === this.addressTUSD) {
                         this.setState({
+                            ...this.state,
                             myTUSDonPool: this.formatNumber(myBalance[i], 'TUSD'),
                             myTUSDonPoolOrigin: this.handleMaxWithdraw(myBalance[i].toString(10), 'TUSD')
                         })
                     }
                     if (addressIDs[i] === this.addressUSDC) {
                         this.setState({
+                            ...this.state,
                             myUSDConPool: this.formatNumber(myBalance[i], 'USDC'),
                             myUSDConPoolOrigin: this.handleMaxWithdraw(myBalance[i].toString(10), 'USDC')
                         })
@@ -1372,33 +1414,33 @@ export default class Home extends React.Component {
         if (token === 'DAI') {
             if (NumStr.length < 18) {
                 NumStr = '00000000000000000' + NumStr;
-                return this.bn(NumStr.substring(0, NumStr.length - this.state.decimalsDAI) + '.' + NumStr.substring(NumStr.length - this.state.decimalsDAI)).toString(10);
+                return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - this.state.decimalsDAI) + '.' + NumStr.substring(NumStr.length - this.state.decimalsDAI)).toString(10);
             } else {
-                return this.bn(NumStr.substring(0, NumStr.length - this.state.decimalsDAI) + '.' + NumStr.substring(NumStr.length - this.state.decimalsDAI)).toString(10);
+                return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - this.state.decimalsDAI) + '.' + NumStr.substring(NumStr.length - this.state.decimalsDAI)).toString(10);
             }
         }
         if (token === 'PAX') {
             if (NumStr.length < 18) {
                 NumStr = '00000000000000000' + NumStr;
-                return this.bn(NumStr.substring(0, NumStr.length - this.state.decimalsPAX) + '.' + NumStr.substring(NumStr.length - this.state.decimalsPAX)).toString(10);
+                return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - this.state.decimalsPAX) + '.' + NumStr.substring(NumStr.length - this.state.decimalsPAX)).toString(10);
             } else {
-                return this.bn(NumStr.substring(0, NumStr.length - this.state.decimalsPAX) + '.' + NumStr.substring(NumStr.length - this.state.decimalsPAX)).toString(10);
+                return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - this.state.decimalsPAX) + '.' + NumStr.substring(NumStr.length - this.state.decimalsPAX)).toString(10);
             }
         }
         if (token === 'TUSD') {
             if (NumStr.length < 18) {
                 NumStr = '00000000000000000' + NumStr;
-                return this.bn(NumStr.substring(0, NumStr.length - this.state.decimalsTUSD) + '.' + NumStr.substring(NumStr.length - this.state.decimalsTUSD)).toString(10);
+                return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - this.state.decimalsTUSD) + '.' + NumStr.substring(NumStr.length - this.state.decimalsTUSD)).toString(10);
             } else {
-                return this.bn(NumStr.substring(0, NumStr.length - this.state.decimalsTUSD) + '.' + NumStr.substring(NumStr.length - this.state.decimalsTUSD)).toString(10);
+                return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - this.state.decimalsTUSD) + '.' + NumStr.substring(NumStr.length - this.state.decimalsTUSD)).toString(10);
             }
         }
         if (token === 'USDC') {
             if (NumStr.length < 18) {
                 NumStr = '00000000000000000' + NumStr;
-                return this.bn(NumStr.substring(0, NumStr.length - this.state.decimalsUSDC) + '.' + NumStr.substring(NumStr.length - this.state.decimalsUSDC)).toString(10);
+                return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - this.state.decimalsUSDC) + '.' + NumStr.substring(NumStr.length - this.state.decimalsUSDC)).toString(10);
             } else {
-                return this.bn(NumStr.substring(0, NumStr.length - this.state.decimalsUSDC) + '.' + NumStr.substring(NumStr.length - this.state.decimalsUSDC)).toString(10);
+                return this.Web3.toBigNumber(NumStr.substring(0, NumStr.length - this.state.decimalsUSDC) + '.' + NumStr.substring(NumStr.length - this.state.decimalsUSDC)).toString(10);
             }
         }
     }
@@ -1466,20 +1508,23 @@ export default class Home extends React.Component {
     }
 
 
-    // *** check if_approve ***
+    // *** check if approve ***
     checkApprove() {
         this.contractDAI.allowance.call(this.state.accountAddress, this.addressPool, (err, ret) => {
             if (err) {
                 this.setState({
+                    ...this.state,
                     approvedDAI: false
                 });
             }
             if (ret && ret.c[0] > 0) {
                 this.setState({
+                    ...this.state,
                     approvedDAI: true
                 });
             } else {
                 this.setState({
+                    ...this.state,
                     approvedDAI: false
                 });
             }
@@ -1487,15 +1532,18 @@ export default class Home extends React.Component {
         this.contractPAX.allowance.call(this.state.accountAddress, this.addressPool, (err, ret) => {
             if (err) {
                 this.setState({
+                    ...this.state,
                     approvedPAX: false
                 });
             }
             if (ret && ret.c[0] > 0) {
                 this.setState({
+                    ...this.state,
                     approvedPAX: true
                 });
             } else {
                 this.setState({
+                    ...this.state,
                     approvedPAX: false
                 });
             }
@@ -1503,15 +1551,18 @@ export default class Home extends React.Component {
         this.contractTUSD.allowance.call(this.state.accountAddress, this.addressPool, (err, ret) => {
             if (err) {
                 this.setState({
+                    ...this.state,
                     approvedTUSD: false
                 });
             }
             if (ret && ret.c[0] > 0) {
                 this.setState({
+                    ...this.state,
                     approvedTUSD: true
                 });
             } else {
                 this.setState({
+                    ...this.state,
                     approvedTUSD: false
                 });
             }
@@ -1519,15 +1570,18 @@ export default class Home extends React.Component {
         this.contractUSDC.allowance.call(this.state.accountAddress, this.addressPool, (err, ret) => {
             if (err) {
                 this.setState({
+                    ...this.state,
                     approvedUSDC: false
                 });
             }
             if (ret && ret.c[0] > 0) {
                 this.setState({
+                    ...this.state,
                     approvedUSDC: true
                 });
             } else {
                 this.setState({
+                    ...this.state,
                     approvedUSDC: false
                 });
             }
@@ -1535,15 +1589,18 @@ export default class Home extends React.Component {
         this.contractDF.allowance.call(this.state.accountAddress, this.addressEngine, (err, ret) => {
             if (err) {
                 this.setState({
+                    ...this.state,
                     approvedDF: false
                 });
             }
             if (ret && ret.c[0] > 0) {
                 this.setState({
+                    ...this.state,
                     approvedDF: true
                 });
             } else {
                 this.setState({
+                    ...this.state,
                     approvedDF: false
                 });
             }
@@ -1551,69 +1608,2330 @@ export default class Home extends React.Component {
         this.contractUSDx.allowance.call(this.state.accountAddress, this.addressEngine, (err, ret) => {
             if (err) {
                 this.setState({
+                    ...this.state,
                     approvedUSDx: false
                 });
             }
             if (ret && ret.c[0] > 0) {
                 this.setState({
+                    ...this.state,
                     approvedUSDx: true
                 });
             } else {
                 this.setState({
+                    ...this.state,
                     approvedUSDx: false
-                });
-            }
-        });
-
-        this.contractUSDx.allowance.call(this.state.accountAddress, this.addressUSR, (err, ret) => {
-            if (ret && ret.c[0] > 0) {
-                this.setState({
-                    is_ready: true,
-                    approved_to_usr: true
-                });
-            } else {
-                this.setState({
-                    is_ready: true,
-                    approved_to_usr: false
                 });
             }
         });
     }
 
 
+    // *** Approve ***
+    approve(token) {
+        if (!this.state.isConnected) {
+            return;
+        }
 
+        Cookie.save('curAccount', this.state.accountAddress, { path: '/' });
+
+        const keys = Object.keys(this.state.transcations);
+        for (var i = 0; i < keys.length; i++) {
+            if (this.state.transcations[keys[i]].title === 'Approve ' + token) {
+                return;
+            }
+        }
+
+        const id = Math.random();
+        const msg = 'Waiting for transaction signature...';
+        const tmepState = this.state;
+        tmepState.transcations[id] = {
+            id: id,
+            msg: msg,
+            class: 'inprocess',
+            title: 'Approve ' + token
+        }
+        this.setState({ tmepState });
+
+        // witch token to be approved
+        if (token === 'DAI') {
+            this.contractDAI.approve.estimateGas(
+                this.addressPool,
+                -1,
+                {
+                    from: this.state.accountAddress
+                },
+                (err, gasLimit) => {
+                    this.contractDAI.approve.sendTransaction(
+                        this.addressPool,
+                        -1,
+                        {
+                            from: this.state.accountAddress,
+                            gas: Math.ceil(gasLimit * this.gasRatio),
+                            gasPrice: this.state.gasPrice
+                        },
+                        (err, ret) => {
+                            if (err) {
+                                const keys = Object.keys(this.state.transcations);
+                                const tmepState = this.state;
+                                keys.map((key) => {
+                                    if (tmepState.transcations[key].title === 'Approve ' + token) {
+                                        tmepState.transcations[key] = {
+                                            ...tmepState.transcations[key],
+                                            class: 'error',
+                                            msg: 'User reject transaction'
+                                        }
+                                        this.setState({ tmepState });
+
+                                        setTimeout(() => {
+                                            delete tmepState.transcations[key];
+                                            this.setState({ tmepState });
+                                        }, 3000);
+                                    };
+                                    return false;
+                                });
+                            }
+                            if (ret) {
+                                const keys = Object.keys(this.state.transcations);
+                                const tmepState = this.state;
+
+                                keys.map((key) => {
+                                    if (tmepState.transcations[key].title === 'Approve ' + token) {
+                                        tmepState.transcations[key].txhash = ret;
+                                        tmepState.transcations[key] = {
+                                            ...tmepState.transcations[key],
+                                            msg: 'Waiting for confirmation...'
+                                        }
+                                        this.setState({ tmepState });
+                                    };
+                                    return false;
+                                });
+
+                                var approveDAItimer = setInterval(() => {
+                                    console.log('i am checking approve DAI...');
+                                    this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                        if (data && data.status === '0x1') {
+                                            clearInterval(approveDAItimer);
+                                            if (Cookie.load('curAccount') === this.state.accountAddress) {
+                                                this.setState({
+                                                    ...this.state,
+                                                    approvedDAI: true
+                                                });
+                                            }
+                                            const keys = Object.keys(this.state.transcations);
+                                            const tmepState = this.state;
+                                            keys.map((key) => {
+                                                if (tmepState.transcations[key].txhash === ret) {
+                                                    tmepState.transcations[key] = {
+                                                        ...tmepState.transcations[key],
+                                                        class: 'success',
+                                                        msg: 'Transaction succeeded'
+                                                    }
+                                                    this.setState({ tmepState });
+
+                                                    setTimeout(() => {
+                                                        delete tmepState.transcations[key];
+                                                        this.setState({ tmepState });
+                                                    }, 3000);
+                                                };
+                                                return false;
+                                            })
+                                            if (this.state.fromDepositDAI) {
+                                                if (Cookie.load('curAccount') === this.state.accountAddress) {
+                                                    this.setState({
+                                                        ...this.state,
+                                                        fromDepositDAI: false
+                                                    });
+                                                    setTimeout(() => {
+                                                        this.deposit();
+                                                    }, 4000)
+                                                } else {
+                                                    return false;
+                                                }
+                                            }
+                                            if (this.state.fromGenerateMax) {
+                                                if (Cookie.load('curAccount') === this.state.accountAddress) {
+                                                    this.setState({
+                                                        ...this.state,
+                                                        fromGenerateMax: false
+                                                    });
+                                                    setTimeout(() => {
+                                                        this.toGenerateMax(this.state.toGenerateMaxNum);
+                                                    }, 4000)
+                                                } else {
+                                                    return false;
+                                                }
+                                            }
+                                        }
+                                        if (data && data.status === '0x0') {
+                                            clearInterval(approveDAItimer);
+                                            const keys = Object.keys(this.state.transcations);
+                                            const tmepState = this.state;
+                                            keys.map((key) => {
+                                                if (tmepState.transcations[key].txhash === ret) {
+                                                    tmepState.transcations[key] = {
+                                                        ...tmepState.transcations[key],
+                                                        class: 'error',
+                                                        msg: 'Transaction failed'
+                                                    }
+                                                    this.setState({ tmepState });
+
+                                                    setTimeout(() => {
+                                                        delete tmepState.transcations[key];
+                                                        this.setState({ tmepState });
+                                                    }, 3000);
+                                                };
+                                                return false;
+                                            })
+                                        }
+                                    })
+                                }, 2000);
+                            }
+                        }
+                    );
+                }
+            )
+        } else if (token === 'PAX') {
+            this.contractPAX.approve.estimateGas(
+                this.addressPool,
+                -1,
+                {
+                    from: this.state.accountAddress
+                },
+                (err, gasLimit) => {
+                    this.contractPAX.approve.sendTransaction(
+                        this.addressPool,
+                        -1,
+                        {
+                            from: this.state.accountAddress,
+                            gas: Math.ceil(gasLimit * this.gasRatio),
+                            gasPrice: this.state.gasPrice
+                        },
+                        (err, ret) => {
+                            if (err) {
+                                const keys = Object.keys(this.state.transcations);
+                                const tmepState = this.state;
+                                keys.map((key) => {
+                                    if (tmepState.transcations[key].title === 'Approve ' + token) {
+                                        tmepState.transcations[key] = {
+                                            ...tmepState.transcations[key],
+                                            class: 'error',
+                                            msg: 'User reject transaction'
+                                        }
+                                        this.setState({ tmepState });
+
+                                        setTimeout(() => {
+                                            delete tmepState.transcations[key];
+                                            this.setState({ tmepState });
+                                        }, 3000);
+                                    };
+                                    return false;
+                                });
+                            }
+                            if (ret) {
+                                const keys = Object.keys(this.state.transcations);
+                                const tmepState = this.state;
+
+                                keys.map((key) => {
+                                    if (tmepState.transcations[key].title === 'Approve ' + token) {
+                                        tmepState.transcations[key].txhash = ret;
+                                        tmepState.transcations[key] = {
+                                            ...tmepState.transcations[key],
+                                            msg: 'Waiting for confirmation...'
+                                        }
+                                        this.setState({ tmepState });
+                                    };
+                                    return false;
+                                });
+
+                                var approvePAXtimer = setInterval(() => {
+                                    console.log('i am checking approve PAX...');
+                                    this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                        if (data && data.status === '0x1') {
+                                            clearInterval(approvePAXtimer);
+                                            if (Cookie.load('curAccount') === this.state.accountAddress) {
+                                                this.setState({
+                                                    ...this.state,
+                                                    approvedPAX: true
+                                                });
+                                            }
+                                            const keys = Object.keys(this.state.transcations);
+                                            const tmepState = this.state;
+                                            keys.map((key) => {
+                                                if (tmepState.transcations[key].txhash === ret) {
+                                                    tmepState.transcations[key] = {
+                                                        ...tmepState.transcations[key],
+                                                        class: 'success',
+                                                        msg: 'Transaction succeeded'
+                                                    }
+                                                    this.setState({ tmepState });
+
+                                                    setTimeout(() => {
+                                                        delete tmepState.transcations[key];
+                                                        this.setState({ tmepState });
+                                                    }, 3000);
+                                                };
+                                                return false;
+                                            })
+                                            if (this.state.fromDepositPAX) {
+                                                if (Cookie.load('curAccount') === this.state.accountAddress) {
+                                                    this.setState({
+                                                        ...this.state,
+                                                        fromDepositPAX: false
+                                                    });
+                                                    setTimeout(() => {
+                                                        this.deposit();
+                                                    }, 4000)
+                                                } else {
+                                                    return false;
+                                                }
+                                            }
+                                            if (this.state.fromGenerateMax) {
+                                                if (Cookie.load('curAccount') === this.state.accountAddress) {
+                                                    this.setState({
+                                                        ...this.state,
+                                                        fromGenerateMax: false
+                                                    });
+                                                    setTimeout(() => {
+                                                        this.toGenerateMax(this.state.toGenerateMaxNum);
+                                                    }, 4000)
+                                                } else {
+                                                    return false;
+                                                }
+                                            }
+                                        }
+                                        if (data && data.status === '0x0') {
+                                            clearInterval(approvePAXtimer);
+                                            const keys = Object.keys(this.state.transcations);
+                                            const tmepState = this.state;
+                                            keys.map((key) => {
+                                                if (tmepState.transcations[key].txhash === ret) {
+                                                    tmepState.transcations[key] = {
+                                                        ...tmepState.transcations[key],
+                                                        class: 'error',
+                                                        msg: 'Transaction failed'
+                                                    }
+                                                    this.setState({ tmepState });
+
+                                                    setTimeout(() => {
+                                                        delete tmepState.transcations[key];
+                                                        this.setState({ tmepState });
+                                                    }, 3000);
+                                                };
+                                                return false;
+                                            })
+                                        }
+                                    })
+                                }, 2000);
+                            }
+                        }
+                    );
+                }
+            )
+        } else if (token === 'TUSD') {
+            this.contractTUSD.approve.estimateGas(
+                this.addressPool,
+                -1,
+                {
+                    from: this.state.accountAddress
+                },
+                (err, gasLimit) => {
+                    this.contractTUSD.approve.sendTransaction(
+                        this.addressPool,
+                        -1,
+                        {
+                            from: this.state.accountAddress,
+                            gas: Math.ceil(gasLimit * this.gasRatio),
+                            gasPrice: this.state.gasPrice
+                        },
+                        (err, ret) => {
+                            if (err) {
+                                const keys = Object.keys(this.state.transcations);
+                                const tmepState = this.state;
+                                keys.map((key) => {
+                                    if (tmepState.transcations[key].title === 'Approve ' + token) {
+                                        tmepState.transcations[key] = {
+                                            ...tmepState.transcations[key],
+                                            class: 'error',
+                                            msg: 'User reject transaction'
+                                        }
+                                        this.setState({ tmepState });
+
+                                        setTimeout(() => {
+                                            delete tmepState.transcations[key];
+                                            this.setState({ tmepState });
+                                        }, 3000);
+                                    };
+                                    return false;
+                                });
+                            }
+                            if (ret) {
+                                const keys = Object.keys(this.state.transcations);
+                                const tmepState = this.state;
+
+                                keys.map((key) => {
+                                    if (tmepState.transcations[key].title === 'Approve ' + token) {
+                                        tmepState.transcations[key].txhash = ret;
+                                        tmepState.transcations[key] = {
+                                            ...tmepState.transcations[key],
+                                            msg: 'Waiting for confirmation...'
+                                        }
+                                        this.setState({ tmepState });
+                                    };
+                                    return false;
+                                });
+
+                                var approveTUSDtimer = setInterval(() => {
+                                    console.log('i am checking approve TUSD...');
+                                    this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                        if (data && data.status === '0x1') {
+                                            clearInterval(approveTUSDtimer);
+                                            if (Cookie.load('curAccount') === this.state.accountAddress) {
+                                                this.setState({
+                                                    ...this.state,
+                                                    approvedTUSD: true
+                                                });
+                                            }
+                                            const keys = Object.keys(this.state.transcations);
+                                            const tmepState = this.state;
+                                            keys.map((key) => {
+                                                if (tmepState.transcations[key].txhash === ret) {
+                                                    tmepState.transcations[key] = {
+                                                        ...tmepState.transcations[key],
+                                                        class: 'success',
+                                                        msg: 'Transaction succeeded'
+                                                    }
+                                                    this.setState({ tmepState });
+
+                                                    setTimeout(() => {
+                                                        delete tmepState.transcations[key];
+                                                        this.setState({ tmepState });
+                                                    }, 3000);
+                                                };
+                                                return false;
+                                            })
+                                            if (this.state.fromDepositTUSD) {
+                                                if (Cookie.load('curAccount') === this.state.accountAddress) {
+                                                    this.setState({
+                                                        ...this.state,
+                                                        fromDepositTUSD: false
+                                                    });
+                                                    setTimeout(() => {
+                                                        this.deposit();
+                                                    }, 4000)
+                                                } else {
+                                                    return false;
+                                                }
+                                            }
+                                            if (this.state.fromGenerateMax) {
+                                                if (Cookie.load('curAccount') === this.state.accountAddress) {
+                                                    this.setState({
+                                                        ...this.state,
+                                                        fromGenerateMax: false
+                                                    });
+                                                    setTimeout(() => {
+                                                        this.toGenerateMax(this.state.toGenerateMaxNum);
+                                                    }, 4000)
+                                                } else {
+                                                    return false;
+                                                }
+                                            }
+                                        }
+                                        if (data && data.status === '0x0') {
+                                            clearInterval(approveTUSDtimer);
+                                            const keys = Object.keys(this.state.transcations);
+                                            const tmepState = this.state;
+                                            keys.map((key) => {
+                                                if (tmepState.transcations[key].txhash === ret) {
+                                                    tmepState.transcations[key] = {
+                                                        ...tmepState.transcations[key],
+                                                        class: 'error',
+                                                        msg: 'Transaction failed'
+                                                    }
+                                                    this.setState({ tmepState });
+
+                                                    setTimeout(() => {
+                                                        delete tmepState.transcations[key];
+                                                        this.setState({ tmepState });
+                                                    }, 3000);
+                                                };
+                                                return false;
+                                            })
+                                        }
+                                    })
+                                }, 2000);
+                            }
+                        }
+                    );
+                }
+            )
+        } else if (token === 'USDC') {
+            this.contractUSDC.approve.estimateGas(
+                this.addressPool,
+                -1,
+                {
+                    from: this.state.accountAddress
+                },
+                (err, gasLimit) => {
+                    this.contractUSDC.approve.sendTransaction(
+                        this.addressPool,
+                        -1,
+                        {
+                            from: this.state.accountAddress,
+                            gas: Math.ceil(gasLimit * this.gasRatio),
+                            gasPrice: this.state.gasPrice
+                        },
+                        (err, ret) => {
+                            if (err) {
+                                const keys = Object.keys(this.state.transcations);
+                                const tmepState = this.state;
+                                keys.map((key) => {
+                                    if (tmepState.transcations[key].title === 'Approve ' + token) {
+                                        tmepState.transcations[key] = {
+                                            ...tmepState.transcations[key],
+                                            class: 'error',
+                                            msg: 'User reject transaction'
+                                        }
+                                        this.setState({ tmepState });
+
+                                        setTimeout(() => {
+                                            delete tmepState.transcations[key];
+                                            this.setState({ tmepState });
+                                        }, 3000);
+                                    };
+                                    return false;
+                                });
+                            }
+                            if (ret) {
+                                const keys = Object.keys(this.state.transcations);
+                                const tmepState = this.state;
+
+                                keys.map((key) => {
+                                    if (tmepState.transcations[key].title === 'Approve ' + token) {
+                                        tmepState.transcations[key].txhash = ret;
+                                        tmepState.transcations[key] = {
+                                            ...tmepState.transcations[key],
+                                            msg: 'Waiting for confirmation...'
+                                        }
+                                        this.setState({ tmepState });
+                                    };
+                                    return false;
+                                });
+
+                                var approveUSDCtimer = setInterval(() => {
+                                    console.log('i am checking approve USDC...');
+                                    this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                        if (data && data.status === '0x1') {
+                                            clearInterval(approveUSDCtimer);
+                                            if (Cookie.load('curAccount') === this.state.accountAddress) {
+                                                this.setState({
+                                                    ...this.state,
+                                                    approvedUSDC: true
+                                                });
+                                            }
+                                            const keys = Object.keys(this.state.transcations);
+                                            const tmepState = this.state;
+                                            keys.map((key) => {
+                                                if (tmepState.transcations[key].txhash === ret) {
+                                                    tmepState.transcations[key] = {
+                                                        ...tmepState.transcations[key],
+                                                        class: 'success',
+                                                        msg: 'Transaction succeeded'
+                                                    }
+                                                    this.setState({ tmepState });
+
+                                                    setTimeout(() => {
+                                                        delete tmepState.transcations[key];
+                                                        this.setState({ tmepState });
+                                                    }, 3000);
+                                                };
+                                                return false;
+                                            })
+                                            if (this.state.fromDepositUSDC) {
+                                                if (Cookie.load('curAccount') === this.state.accountAddress) {
+                                                    this.setState({
+                                                        ...this.state,
+                                                        fromDepositUSDC: false
+                                                    });
+                                                    setTimeout(() => {
+                                                        this.deposit();
+                                                    }, 4000)
+                                                } else {
+                                                    return false;
+                                                }
+                                            }
+                                            if (this.state.fromGenerateMax) {
+                                                if (Cookie.load('curAccount') === this.state.accountAddress) {
+                                                    this.setState({
+                                                        ...this.state,
+                                                        fromGenerateMax: false
+                                                    });
+                                                    setTimeout(() => {
+                                                        this.toGenerateMax(this.state.toGenerateMaxNum);
+                                                    }, 4000)
+                                                } else {
+                                                    return false;
+                                                }
+                                            }
+                                        }
+                                        if (data && data.status === '0x0') {
+                                            clearInterval(approveUSDCtimer);
+                                            const keys = Object.keys(this.state.transcations);
+                                            const tmepState = this.state;
+                                            keys.map((key) => {
+                                                if (tmepState.transcations[key].txhash === ret) {
+                                                    tmepState.transcations[key] = {
+                                                        ...tmepState.transcations[key],
+                                                        class: 'error',
+                                                        msg: 'Transaction failed'
+                                                    }
+                                                    this.setState({ tmepState });
+
+                                                    setTimeout(() => {
+                                                        delete tmepState.transcations[key];
+                                                        this.setState({ tmepState });
+                                                    }, 3000);
+                                                };
+                                                return false;
+                                            })
+                                        }
+                                    })
+                                }, 2000);
+                            }
+                        }
+                    );
+                }
+            )
+        } else if (token === 'DF') {
+            this.contractDF.approve.estimateGas(
+                this.addressEngine,
+                -1,
+                {
+                    from: this.state.accountAddress
+                },
+                (err, gasLimit) => {
+                    this.contractDF.approve.sendTransaction(
+                        this.addressEngine,
+                        -1,
+                        {
+                            from: this.state.accountAddress,
+                            gas: Math.ceil(gasLimit * this.gasRatio),
+                            gasPrice: this.state.gasPrice
+                        },
+                        (err, ret) => {
+                            if (err) {
+                                const keys = Object.keys(this.state.transcations);
+                                const tmepState = this.state;
+                                keys.map((key) => {
+                                    if (tmepState.transcations[key].title === 'Approve ' + token) {
+                                        tmepState.transcations[key] = {
+                                            ...tmepState.transcations[key],
+                                            class: 'error',
+                                            msg: 'User reject transaction'
+                                        }
+                                        this.setState({ tmepState });
+
+                                        setTimeout(() => {
+                                            delete tmepState.transcations[key];
+                                            this.setState({ tmepState });
+                                        }, 3000);
+                                    };
+                                    return false;
+                                });
+                            }
+                            if (ret) {
+                                const keys = Object.keys(this.state.transcations);
+                                const tmepState = this.state;
+
+                                keys.map((key) => {
+                                    if (tmepState.transcations[key].title === 'Approve ' + token) {
+                                        tmepState.transcations[key].txhash = ret;
+                                        tmepState.transcations[key] = {
+                                            ...tmepState.transcations[key],
+                                            msg: 'Waiting for confirmation...'
+                                        }
+                                        this.setState({ tmepState });
+                                    };
+                                    return false;
+                                });
+
+                                var approveDFtimer = setInterval(() => {
+                                    console.log('i am checking approve DF...');
+                                    this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                        if (data && data.status === '0x1') {
+                                            clearInterval(approveDFtimer);
+                                            if (Cookie.load('curAccount') === this.state.accountAddress) {
+                                                this.setState({
+                                                    ...this.state,
+                                                    approvedDF: true
+                                                });
+                                            }
+                                            const keys = Object.keys(this.state.transcations);
+                                            const tmepState = this.state;
+                                            keys.map((key) => {
+                                                if (tmepState.transcations[key].txhash === ret) {
+                                                    tmepState.transcations[key] = {
+                                                        ...tmepState.transcations[key],
+                                                        class: 'success',
+                                                        msg: 'Transaction succeeded'
+                                                    }
+                                                    this.setState({ tmepState });
+
+                                                    setTimeout(() => {
+                                                        delete tmepState.transcations[key];
+                                                        this.setState({ tmepState });
+                                                    }, 3000);
+                                                };
+                                                return false;
+                                            })
+                                            if (this.state.fromDestroy1) {
+                                                if (Cookie.load('curAccount') === this.state.accountAddress) {
+                                                    this.setState({
+                                                        ...this.state,
+                                                        fromDestroy1: false
+                                                    });
+                                                    setTimeout(() => {
+                                                        this.destroy();
+                                                    }, 4000)
+                                                } else {
+                                                    return false;
+                                                }
+                                            }
+                                        }
+                                        if (data && data.status === '0x0') {
+                                            clearInterval(approveDFtimer);
+                                            const keys = Object.keys(this.state.transcations);
+                                            const tmepState = this.state;
+                                            keys.map((key) => {
+                                                if (tmepState.transcations[key].txhash === ret) {
+                                                    tmepState.transcations[key] = {
+                                                        ...tmepState.transcations[key],
+                                                        class: 'error',
+                                                        msg: 'Transaction failed'
+                                                    }
+                                                    this.setState({ tmepState });
+
+                                                    setTimeout(() => {
+                                                        delete tmepState.transcations[key];
+                                                        this.setState({ tmepState });
+                                                    }, 3000);
+                                                };
+                                                return false;
+                                            })
+                                        }
+                                    })
+                                }, 2000);
+                            }
+                        }
+                    );
+                }
+            )
+        } else if (token === 'USDx') {
+            this.contractUSDx.approve.estimateGas(
+                this.addressEngine,
+                -1,
+                {
+                    from: this.state.accountAddress
+                },
+                (err, gasLimit) => {
+                    this.contractUSDx.approve.sendTransaction(
+                        this.addressEngine,
+                        -1,
+                        {
+                            from: this.state.accountAddress,
+                            gas: Math.ceil(gasLimit * this.gasRatio),
+                            gasPrice: this.state.gasPrice
+                        },
+                        (err, ret) => {
+                            if (err) {
+                                const keys = Object.keys(this.state.transcations);
+                                const tmepState = this.state;
+                                keys.map((key) => {
+                                    if (tmepState.transcations[key].title === 'Approve ' + token) {
+                                        tmepState.transcations[key] = {
+                                            ...tmepState.transcations[key],
+                                            class: 'error',
+                                            msg: 'User reject transaction'
+                                        }
+                                        this.setState({ tmepState });
+
+                                        setTimeout(() => {
+                                            delete tmepState.transcations[key];
+                                            this.setState({ tmepState });
+                                        }, 3000);
+                                    };
+                                    return false;
+                                });
+                            }
+                            if (ret) {
+                                const keys = Object.keys(this.state.transcations);
+                                const tmepState = this.state;
+
+                                keys.map((key) => {
+                                    if (tmepState.transcations[key].title === 'Approve ' + token) {
+                                        tmepState.transcations[key].txhash = ret;
+                                        tmepState.transcations[key] = {
+                                            ...tmepState.transcations[key],
+                                            msg: 'Waiting for confirmation...'
+                                        }
+                                        this.setState({ tmepState });
+                                    };
+                                    return false;
+                                });
+
+                                var approveUSDxtimer = setInterval(() => {
+                                    console.log('i am checking approve USDx...');
+                                    this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                        if (data && data.status === '0x1') {
+                                            clearInterval(approveUSDxtimer);
+                                            if (Cookie.load('curAccount') === this.state.accountAddress) {
+                                                this.setState({
+                                                    ...this.state,
+                                                    approvedUSDx: true
+                                                });
+                                            }
+                                            const keys = Object.keys(this.state.transcations);
+                                            const tmepState = this.state;
+                                            keys.map((key) => {
+                                                if (tmepState.transcations[key].txhash === ret) {
+                                                    tmepState.transcations[key] = {
+                                                        ...tmepState.transcations[key],
+                                                        class: 'success',
+                                                        msg: 'Transaction succeeded'
+                                                    }
+                                                    this.setState({ tmepState });
+
+                                                    setTimeout(() => {
+                                                        delete tmepState.transcations[key];
+                                                        this.setState({ tmepState });
+                                                    }, 3000);
+                                                };
+                                                return false;
+                                            })
+                                            if (this.state.fromDestroy2) {
+                                                if (Cookie.load('curAccount') === this.state.accountAddress) {
+                                                    this.setState({
+                                                        ...this.state,
+                                                        fromDestroy2: false
+                                                    });
+                                                    setTimeout(() => {
+                                                        this.destroy();
+                                                    }, 4000)
+                                                } else {
+                                                    return false;
+                                                }
+                                            }
+                                        }
+                                        if (data && data.status === '0x0') {
+                                            clearInterval(approveUSDxtimer);
+                                            const keys = Object.keys(this.state.transcations);
+                                            const tmepState = this.state;
+                                            keys.map((key) => {
+                                                if (tmepState.transcations[key].txhash === ret) {
+                                                    tmepState.transcations[key] = {
+                                                        ...tmepState.transcations[key],
+                                                        class: 'error',
+                                                        msg: 'Transaction failed'
+                                                    }
+                                                    this.setState({ tmepState });
+
+                                                    setTimeout(() => {
+                                                        delete tmepState.transcations[key];
+                                                        this.setState({ tmepState });
+                                                    }, 3000);
+                                                };
+                                                return false;
+                                            })
+                                        }
+                                    })
+                                }, 2000);
+                            }
+                        }
+                    );
+                }
+            )
+        }
+    }
+
+
+    // *** Lock ***
+    lock(token) {
+        const keys = Object.keys(this.state.transcations);
+        for (var i = 0; i < keys.length; i++) {
+            if (this.state.transcations[keys[i]].title === 'Lock ' + token) {
+                return;
+            }
+        }
+
+        const id = Math.random();
+        const msg = 'Waiting for transaction signature...';
+        const tmepState = this.state;
+        tmepState.transcations[id] = {
+            id: id,
+            msg: msg,
+            class: 'inprocess',
+            title: 'Lock ' + token,
+        }
+        this.setState({ tmepState });
+
+        // witch token to be locked
+        if (token === 'DAI') {
+            this.contractDAI.approve.estimateGas(
+                this.addressPool,
+                0,
+                {
+                    from: this.state.accountAddress
+                },
+                (err, gasLimit) => {
+                    this.contractDAI.approve.sendTransaction(
+                        this.addressPool,
+                        0,
+                        {
+                            from: this.state.accountAddress,
+                            gas: Math.ceil(gasLimit * this.gasRatio),
+                            gasPrice: this.state.gasPrice
+                        },
+                        (err, ret) => {
+                            if (err) {
+                                const keys = Object.keys(this.state.transcations);
+                                const tmepState = this.state;
+                                keys.map((key) => {
+                                    if (tmepState.transcations[key].title === 'Lock ' + token) {
+                                        tmepState.transcations[key] = {
+                                            ...tmepState.transcations[key],
+                                            class: 'error',
+                                            msg: 'User reject transaction'
+                                        }
+                                        this.setState({ tmepState });
+
+                                        setTimeout(() => {
+                                            delete tmepState.transcations[key];
+                                            this.setState({ tmepState });
+                                        }, 3000);
+                                    };
+                                    return false;
+                                });
+                            }
+                            if (ret) {
+                                const keys = Object.keys(this.state.transcations);
+                                const tmepState = this.state;
+
+                                keys.map((key) => {
+                                    if (tmepState.transcations[key].title === 'Lock ' + token) {
+                                        tmepState.transcations[key].txhash = ret;
+                                        tmepState.transcations[key] = {
+                                            ...tmepState.transcations[key],
+                                            msg: 'Waiting for confirmation...'
+                                        }
+                                        this.setState({ tmepState });
+                                    };
+                                    return false;
+                                });
+
+                                var lockDAItimer = setInterval(() => {
+                                    console.log('i am checking lock DAI...');
+                                    this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                        if (data && data.status === '0x1') {
+                                            clearInterval(lockDAItimer);
+                                            this.setState({
+                                                ...this.state,
+                                                approvedDAI: false
+                                            });
+                                            const keys = Object.keys(this.state.transcations);
+                                            const tmepState = this.state;
+                                            keys.map((key) => {
+                                                if (tmepState.transcations[key].txhash === ret) {
+                                                    tmepState.transcations[key] = {
+                                                        ...tmepState.transcations[key],
+                                                        class: 'success',
+                                                        msg: 'Transaction succeeded'
+                                                    }
+                                                    this.setState({ tmepState });
+
+                                                    setTimeout(() => {
+                                                        delete tmepState.transcations[key];
+                                                        this.setState({ tmepState });
+                                                    }, 3000);
+                                                };
+                                                return false;
+                                            })
+                                        }
+                                        if (data && data.status === '0x0') {
+                                            clearInterval(lockDAItimer);
+                                            const keys = Object.keys(this.state.transcations);
+                                            const tmepState = this.state;
+                                            keys.map((key) => {
+                                                if (tmepState.transcations[key].txhash === ret) {
+                                                    tmepState.transcations[key] = {
+                                                        ...tmepState.transcations[key],
+                                                        class: 'error',
+                                                        msg: 'Transaction failed'
+                                                    }
+                                                    this.setState({ tmepState });
+
+                                                    setTimeout(() => {
+                                                        delete tmepState.transcations[key];
+                                                        this.setState({ tmepState });
+                                                    }, 3000);
+                                                };
+                                                return false;
+                                            })
+                                        }
+                                    })
+                                }, 2000);
+                            }
+                        }
+                    );
+                }
+            )
+        } else if (token === 'PAX') {
+            this.contractPAX.approve.estimateGas(
+                this.addressPool,
+                0,
+                {
+                    from: this.state.accountAddress
+                },
+                (err, gasLimit) => {
+                    this.contractPAX.approve.sendTransaction(
+                        this.addressPool,
+                        0,
+                        {
+                            from: this.state.accountAddress,
+                            gas: Math.ceil(gasLimit * this.gasRatio),
+                            gasPrice: this.state.gasPrice
+                        },
+                        (err, ret) => {
+                            if (err) {
+                                const keys = Object.keys(this.state.transcations);
+                                const tmepState = this.state;
+                                keys.map((key) => {
+                                    if (tmepState.transcations[key].title === 'Lock ' + token) {
+                                        tmepState.transcations[key] = {
+                                            ...tmepState.transcations[key],
+                                            class: 'error',
+                                            msg: 'User reject transaction'
+                                        }
+                                        this.setState({ tmepState });
+
+                                        setTimeout(() => {
+                                            delete tmepState.transcations[key];
+                                            this.setState({ tmepState });
+                                        }, 3000);
+                                    };
+                                    return false;
+                                });
+                            }
+                            if (ret) {
+                                const keys = Object.keys(this.state.transcations);
+                                const tmepState = this.state;
+
+                                keys.map((key) => {
+                                    if (tmepState.transcations[key].title === 'Lock ' + token) {
+                                        tmepState.transcations[key].txhash = ret;
+                                        tmepState.transcations[key] = {
+                                            ...tmepState.transcations[key],
+                                            msg: 'Waiting for confirmation...'
+                                        }
+                                        this.setState({ tmepState });
+                                    };
+                                    return false;
+                                });
+
+                                var lockPAXtimer = setInterval(() => {
+                                    console.log('i am checking lock PAX...');
+                                    this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                        if (data && data.status === '0x1') {
+                                            clearInterval(lockPAXtimer);
+                                            this.setState({
+                                                ...this.state,
+                                                approvedPAX: false
+                                            });
+                                            const keys = Object.keys(this.state.transcations);
+                                            const tmepState = this.state;
+                                            keys.map((key) => {
+                                                if (tmepState.transcations[key].txhash === ret) {
+                                                    tmepState.transcations[key] = {
+                                                        ...tmepState.transcations[key],
+                                                        class: 'success',
+                                                        msg: 'Transaction succeeded'
+                                                    }
+                                                    this.setState({ tmepState });
+
+                                                    setTimeout(() => {
+                                                        delete tmepState.transcations[key];
+                                                        this.setState({ tmepState });
+                                                    }, 3000);
+                                                };
+                                                return false;
+                                            })
+                                        }
+                                        if (data && data.status === '0x0') {
+                                            clearInterval(lockPAXtimer);
+                                            const keys = Object.keys(this.state.transcations);
+                                            const tmepState = this.state;
+                                            keys.map((key) => {
+                                                if (tmepState.transcations[key].txhash === ret) {
+                                                    tmepState.transcations[key] = {
+                                                        ...tmepState.transcations[key],
+                                                        class: 'error',
+                                                        msg: 'Transaction failed'
+                                                    }
+                                                    this.setState({ tmepState });
+
+                                                    setTimeout(() => {
+                                                        delete tmepState.transcations[key];
+                                                        this.setState({ tmepState });
+                                                    }, 3000);
+                                                };
+                                                return false;
+                                            })
+                                        }
+                                    })
+                                }, 2000);
+                            }
+                        }
+                    );
+                }
+            )
+        } else if (token === 'TUSD') {
+            this.contractTUSD.approve.estimateGas(
+                this.addressPool,
+                0,
+                {
+                    from: this.state.accountAddress
+                },
+                (err, gasLimit) => {
+                    this.contractTUSD.approve.sendTransaction(
+                        this.addressPool,
+                        0,
+                        {
+                            from: this.state.accountAddress,
+                            gas: Math.ceil(gasLimit * this.gasRatio),
+                            gasPrice: this.state.gasPrice
+                        },
+                        (err, ret) => {
+                            if (err) {
+                                const keys = Object.keys(this.state.transcations);
+                                const tmepState = this.state;
+                                keys.map((key) => {
+                                    if (tmepState.transcations[key].title === 'Lock ' + token) {
+                                        tmepState.transcations[key] = {
+                                            ...tmepState.transcations[key],
+                                            class: 'error',
+                                            msg: 'User reject transaction'
+                                        }
+                                        this.setState({ tmepState });
+
+                                        setTimeout(() => {
+                                            delete tmepState.transcations[key];
+                                            this.setState({ tmepState });
+                                        }, 3000);
+                                    };
+                                    return false;
+                                });
+                            }
+                            if (ret) {
+                                const keys = Object.keys(this.state.transcations);
+                                const tmepState = this.state;
+
+                                keys.map((key) => {
+                                    if (tmepState.transcations[key].title === 'Lock ' + token) {
+                                        tmepState.transcations[key].txhash = ret;
+                                        tmepState.transcations[key] = {
+                                            ...tmepState.transcations[key],
+                                            msg: 'Waiting for confirmation...'
+                                        }
+                                        this.setState({ tmepState });
+                                    };
+                                    return false;
+                                });
+
+                                var lockTUSDtimer = setInterval(() => {
+                                    console.log('i am checking lock TUSD...');
+                                    this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                        if (data && data.status === '0x1') {
+                                            clearInterval(lockTUSDtimer);
+                                            this.setState({
+                                                ...this.state,
+                                                approvedTUSD: false
+                                            });
+                                            const keys = Object.keys(this.state.transcations);
+                                            const tmepState = this.state;
+                                            keys.map((key) => {
+                                                if (tmepState.transcations[key].txhash === ret) {
+                                                    tmepState.transcations[key] = {
+                                                        ...tmepState.transcations[key],
+                                                        class: 'success',
+                                                        msg: 'Transaction succeeded'
+                                                    }
+                                                    this.setState({ tmepState });
+
+                                                    setTimeout(() => {
+                                                        delete tmepState.transcations[key];
+                                                        this.setState({ tmepState });
+                                                    }, 3000);
+                                                };
+                                                return false;
+                                            })
+                                        }
+                                        if (data && data.status === '0x0') {
+                                            clearInterval(lockTUSDtimer);
+                                            const keys = Object.keys(this.state.transcations);
+                                            const tmepState = this.state;
+                                            keys.map((key) => {
+                                                if (tmepState.transcations[key].txhash === ret) {
+                                                    tmepState.transcations[key] = {
+                                                        ...tmepState.transcations[key],
+                                                        class: 'error',
+                                                        msg: 'Transaction failed'
+                                                    }
+                                                    this.setState({ tmepState });
+
+                                                    setTimeout(() => {
+                                                        delete tmepState.transcations[key];
+                                                        this.setState({ tmepState });
+                                                    }, 3000);
+                                                };
+                                                return false;
+                                            })
+                                        }
+                                    })
+                                }, 2000);
+                            }
+                        }
+                    );
+                }
+            )
+        } else if (token === 'USDC') {
+            this.contractUSDC.approve.estimateGas(
+                this.addressPool,
+                0,
+                {
+                    from: this.state.accountAddress
+                },
+                (err, gasLimit) => {
+                    this.contractUSDC.approve.sendTransaction(
+                        this.addressPool,
+                        0,
+                        {
+                            from: this.state.accountAddress,
+                            gas: Math.ceil(gasLimit * this.gasRatio),
+                            gasPrice: this.state.gasPrice
+                        },
+                        (err, ret) => {
+                            if (err) {
+                                const keys = Object.keys(this.state.transcations);
+                                const tmepState = this.state;
+                                keys.map((key) => {
+                                    if (tmepState.transcations[key].title === 'Lock ' + token) {
+                                        tmepState.transcations[key] = {
+                                            ...tmepState.transcations[key],
+                                            class: 'error',
+                                            msg: 'User reject transaction'
+                                        }
+                                        this.setState({ tmepState });
+
+                                        setTimeout(() => {
+                                            delete tmepState.transcations[key];
+                                            this.setState({ tmepState });
+                                        }, 3000);
+                                    };
+                                    return false;
+                                });
+                            }
+                            if (ret) {
+                                const keys = Object.keys(this.state.transcations);
+                                const tmepState = this.state;
+
+                                keys.map((key) => {
+                                    if (tmepState.transcations[key].title === 'Lock ' + token) {
+                                        tmepState.transcations[key].txhash = ret;
+                                        tmepState.transcations[key] = {
+                                            ...tmepState.transcations[key],
+                                            msg: 'Waiting for confirmation...'
+                                        }
+                                        this.setState({ tmepState });
+                                    };
+                                    return false;
+                                });
+
+                                var lockUSDCtimer = setInterval(() => {
+                                    console.log('i am checking lock USDC...');
+                                    this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                        if (data && data.status === '0x1') {
+                                            clearInterval(lockUSDCtimer);
+                                            this.setState({
+                                                ...this.state,
+                                                approvedUSDC: false
+                                            });
+                                            const keys = Object.keys(this.state.transcations);
+                                            const tmepState = this.state;
+                                            keys.map((key) => {
+                                                if (tmepState.transcations[key].txhash === ret) {
+                                                    tmepState.transcations[key] = {
+                                                        ...tmepState.transcations[key],
+                                                        class: 'success',
+                                                        msg: 'Transaction succeeded'
+                                                    }
+                                                    this.setState({ tmepState });
+
+                                                    setTimeout(() => {
+                                                        delete tmepState.transcations[key];
+                                                        this.setState({ tmepState });
+                                                    }, 3000);
+                                                };
+                                                return false;
+                                            })
+                                        }
+                                        if (data && data.status === '0x0') {
+                                            clearInterval(lockUSDCtimer);
+                                            const keys = Object.keys(this.state.transcations);
+                                            const tmepState = this.state;
+                                            keys.map((key) => {
+                                                if (tmepState.transcations[key].txhash === ret) {
+                                                    tmepState.transcations[key] = {
+                                                        ...tmepState.transcations[key],
+                                                        class: 'error',
+                                                        msg: 'Transaction failed'
+                                                    }
+                                                    this.setState({ tmepState });
+
+                                                    setTimeout(() => {
+                                                        delete tmepState.transcations[key];
+                                                        this.setState({ tmepState });
+                                                    }, 3000);
+                                                };
+                                                return false;
+                                            })
+                                        }
+                                    })
+                                }, 2000);
+                            }
+                        }
+                    );
+                }
+            )
+        } else if (token === 'DF') {
+            this.contractDF.approve.estimateGas(
+                this.addressEngine,
+                0,
+                {
+                    from: this.state.accountAddress
+                },
+                (err, gasLimit) => {
+                    this.contractDF.approve.sendTransaction(
+                        this.addressEngine,
+                        0,
+                        {
+                            from: this.state.accountAddress,
+                            gas: Math.ceil(gasLimit * this.gasRatio),
+                            gasPrice: this.state.gasPrice
+                        },
+                        (err, ret) => {
+                            if (err) {
+                                const keys = Object.keys(this.state.transcations);
+                                const tmepState = this.state;
+                                keys.map((key) => {
+                                    if (tmepState.transcations[key].title === 'Lock ' + token) {
+                                        tmepState.transcations[key] = {
+                                            ...tmepState.transcations[key],
+                                            class: 'error',
+                                            msg: 'User reject transaction'
+                                        }
+                                        this.setState({ tmepState });
+
+                                        setTimeout(() => {
+                                            delete tmepState.transcations[key];
+                                            this.setState({ tmepState });
+                                        }, 3000);
+                                    };
+                                    return false;
+                                });
+                            }
+                            if (ret) {
+                                const keys = Object.keys(this.state.transcations);
+                                const tmepState = this.state;
+
+                                keys.map((key) => {
+                                    if (tmepState.transcations[key].title === 'Lock ' + token) {
+                                        tmepState.transcations[key].txhash = ret;
+                                        tmepState.transcations[key] = {
+                                            ...tmepState.transcations[key],
+                                            msg: 'Waiting for confirmation...'
+                                        }
+                                        this.setState({ tmepState });
+                                    };
+                                    return false;
+                                });
+
+                                var lockDFtimer = setInterval(() => {
+                                    console.log('i am checking lock DF...');
+                                    this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                        if (data && data.status === '0x1') {
+                                            clearInterval(lockDFtimer);
+                                            this.setState({
+                                                ...this.state,
+                                                approvedDF: false
+                                            });
+                                            const keys = Object.keys(this.state.transcations);
+                                            const tmepState = this.state;
+                                            keys.map((key) => {
+                                                if (tmepState.transcations[key].txhash === ret) {
+                                                    tmepState.transcations[key] = {
+                                                        ...tmepState.transcations[key],
+                                                        class: 'success',
+                                                        msg: 'Transaction succeeded'
+                                                    }
+                                                    this.setState({ tmepState });
+
+                                                    setTimeout(() => {
+                                                        delete tmepState.transcations[key];
+                                                        this.setState({ tmepState });
+                                                    }, 3000);
+                                                };
+                                                return false;
+                                            })
+                                        }
+                                        if (data && data.status === '0x0') {
+                                            clearInterval(lockDFtimer);
+                                            const keys = Object.keys(this.state.transcations);
+                                            const tmepState = this.state;
+                                            keys.map((key) => {
+                                                if (tmepState.transcations[key].txhash === ret) {
+                                                    tmepState.transcations[key] = {
+                                                        ...tmepState.transcations[key],
+                                                        class: 'error',
+                                                        msg: 'Transaction failed'
+                                                    }
+                                                    this.setState({ tmepState });
+
+                                                    setTimeout(() => {
+                                                        delete tmepState.transcations[key];
+                                                        this.setState({ tmepState });
+                                                    }, 3000);
+                                                };
+                                                return false;
+                                            })
+                                        }
+                                    })
+                                }, 2000);
+                            }
+                        }
+                    );
+                }
+            )
+        } else if (token === 'USDx') {
+            this.contractUSDx.approve.estimateGas(
+                this.addressEngine,
+                0,
+                {
+                    from: this.state.accountAddress
+                },
+                (err, gasLimit) => {
+                    this.contractUSDx.approve.sendTransaction(
+                        this.addressEngine,
+                        0,
+                        {
+                            from: this.state.accountAddress,
+                            gas: Math.ceil(gasLimit * this.gasRatio),
+                            gasPrice: this.state.gasPrice
+                        },
+                        (err, ret) => {
+                            if (err) {
+                                const keys = Object.keys(this.state.transcations);
+                                const tmepState = this.state;
+                                keys.map((key) => {
+                                    if (tmepState.transcations[key].title === 'Lock ' + token) {
+                                        tmepState.transcations[key] = {
+                                            ...tmepState.transcations[key],
+                                            class: 'error',
+                                            msg: 'User reject transaction'
+                                        }
+                                        this.setState({ tmepState });
+
+                                        setTimeout(() => {
+                                            delete tmepState.transcations[key];
+                                            this.setState({ tmepState });
+                                        }, 3000);
+                                    };
+                                    return false;
+                                });
+                            }
+                            if (ret) {
+                                const keys = Object.keys(this.state.transcations);
+                                const tmepState = this.state;
+
+                                keys.map((key) => {
+                                    if (tmepState.transcations[key].title === 'Lock ' + token) {
+                                        tmepState.transcations[key].txhash = ret;
+                                        tmepState.transcations[key] = {
+                                            ...tmepState.transcations[key],
+                                            msg: 'Waiting for confirmation...'
+                                        }
+                                        this.setState({ tmepState });
+                                    };
+                                    return false;
+                                });
+
+                                var lockUSDxtimer = setInterval(() => {
+                                    console.log('i am checking lock USDx...');
+                                    this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                        if (data && data.status === '0x1') {
+                                            clearInterval(lockUSDxtimer);
+                                            this.setState({
+                                                ...this.state,
+                                                approvedUSDx: false
+                                            });
+                                            const keys = Object.keys(this.state.transcations);
+                                            const tmepState = this.state;
+                                            keys.map((key) => {
+                                                if (tmepState.transcations[key].txhash === ret) {
+                                                    tmepState.transcations[key] = {
+                                                        ...tmepState.transcations[key],
+                                                        class: 'success',
+                                                        msg: 'Transaction succeeded'
+                                                    }
+                                                    this.setState({ tmepState });
+
+                                                    setTimeout(() => {
+                                                        delete tmepState.transcations[key];
+                                                        this.setState({ tmepState });
+                                                    }, 3000);
+                                                };
+                                                return false;
+                                            })
+                                        }
+                                        if (data && data.status === '0x0') {
+                                            clearInterval(lockUSDxtimer);
+                                            const keys = Object.keys(this.state.transcations);
+                                            const tmepState = this.state;
+                                            keys.map((key) => {
+                                                if (tmepState.transcations[key].txhash === ret) {
+                                                    tmepState.transcations[key] = {
+                                                        ...tmepState.transcations[key],
+                                                        class: 'error',
+                                                        msg: 'Transaction failed'
+                                                    }
+                                                    this.setState({ tmepState });
+
+                                                    setTimeout(() => {
+                                                        delete tmepState.transcations[key];
+                                                        this.setState({ tmepState });
+                                                    }, 3000);
+                                                };
+                                                return false;
+                                            })
+                                        }
+                                    })
+                                }, 2000);
+                            }
+                        }
+                    );
+                }
+            )
+        }
+    }
 
 
     // *** adjust Max To Withdraw ***
     adjustMaxToWithdraw() {
         if (this.state.toWithdraw === 'DAI') {
             this.setState({
+                ...this.state,
                 toWithdrawNum: this.state.myDAIonPoolOrigin
             })
         }
         if (this.state.toWithdraw === 'PAX') {
             this.setState({
+                ...this.state,
                 toWithdrawNum: this.state.myPAXonPoolOrigin
             })
         }
         if (this.state.toWithdraw === 'TUSD') {
             this.setState({
+                ...this.state,
                 toWithdrawNum: this.state.myTUSDonPoolOrigin
             })
         }
         if (this.state.toWithdraw === 'USDC') {
             this.setState({
+                ...this.state,
                 toWithdrawNum: this.state.myUSDConPoolOrigin
             })
         }
 
         setTimeout(() => {
-            withdrawNumChange(this, this.state.toWithdrawNum);
+            this.withdrawNumChange(this.state.toWithdrawNum);
         }, 500)
     }
+    // *** withdraw ***
+    withdrawNumChange(val) {
+        if (val.length > 20) {
+            return;
+        }
+        if (this.state.toWithdraw === 'DAI') {
+            if (Number(val) > 0 && Number(val) <= Number(this.state.myDAIonPoolOrigin)) {
+                this.setState({
+                    ...this.state,
+                    errTipsWithdraw: false,
+                    couldWithdraw: true,
+                    toWithdrawNum: val
+                })
+            } else {
+                this.setState({
+                    ...this.state,
+                    errTipsWithdraw: true,
+                    couldWithdraw: false,
+                    toWithdrawNum: val
+                })
+                if (val === '' || Number(val) === 0) {
+                    this.setState({
+                        ...this.state,
+                        errTipsWithdraw: false,
+                        couldWithdraw: false,
+                        toWithdrawNum: val
+                    })
+                }
+            }
+        }
+        if (this.state.toWithdraw === 'PAX') {
+            if (Number(val) > 0 && Number(val) <= Number(this.state.myPAXonPoolOrigin)) {
+                this.setState({
+                    ...this.state,
+                    errTipsWithdraw: false,
+                    couldWithdraw: true,
+                    toWithdrawNum: val
+                })
+            } else {
+                this.setState({
+                    ...this.state,
+                    errTipsWithdraw: true,
+                    couldWithdraw: false,
+                    toWithdrawNum: val
+                })
+                if (val === '' || Number(val) === 0) {
+                    this.setState({
+                        ...this.state,
+                        errTipsWithdraw: false,
+                        couldWithdraw: false,
+                        toWithdrawNum: val
+                    })
+                }
+            }
+        }
+        if (this.state.toWithdraw === 'TUSD') {
+            if (Number(val) > 0 && Number(val) <= Number(this.state.myTUSDonPoolOrigin)) {
+                this.setState({
+                    ...this.state,
+                    errTipsWithdraw: false,
+                    couldWithdraw: true,
+                    toWithdrawNum: val
+                })
+            } else {
+                this.setState({
+                    ...this.state,
+                    errTipsWithdraw: true,
+                    couldWithdraw: false,
+                    toWithdrawNum: val
+                })
+                if (val === '' || Number(val) === 0) {
+                    this.setState({
+                        ...this.state,
+                        errTipsWithdraw: false,
+                        couldWithdraw: false,
+                        toWithdrawNum: val
+                    })
+                }
+            }
+        }
+        if (this.state.toWithdraw === 'USDC') {
+            if (Number(val) > 0 && Number(val) <= Number(this.state.myUSDConPoolOrigin)) {
+                this.setState({
+                    ...this.state,
+                    errTipsWithdraw: false,
+                    couldWithdraw: true,
+                    toWithdrawNum: val
+                })
+            } else {
+                this.setState({
+                    ...this.state,
+                    errTipsWithdraw: true,
+                    couldWithdraw: false,
+                    toWithdrawNum: val
+                })
+                if (val === '' || Number(val) === 0) {
+                    this.setState({
+                        ...this.state,
+                        errTipsWithdraw: false,
+                        couldWithdraw: false,
+                        toWithdrawNum: val
+                    })
+                }
+            }
+        }
+    }
+    withdrawOptChange(token) {
+        this.setState({
+            ...this.state,
+            toWithdraw: token
+        }, () => {
+            if (!this.state.toWithdrawNum) {
+                return;
+            }
+            this.withdrawNumChange(this.state.toWithdrawNum);
+        })
 
+        // setTimeout(() => {
+        //     if (!this.state.toWithdrawNum) {
+        //         return;
+        //     }
+        //     this.withdrawNumChange(this.state.toWithdrawNum);
+        // }, 0);
+    }
+    withdraw() {
+        if (!this.state.couldWithdraw) {
+            return;
+        }
+        var addr;
+        var num;
+        if (this.state.toWithdraw === 'DAI') {
+            addr = this.addressDAI;
+            num = this.Web3.toBigNumber(this.state.toWithdrawNum).mul(this.Web3.toBigNumber(10 ** this.state.decimalsDAI));
+            this.withdrawDAI(addr, num);
+        } else if (this.state.toWithdraw === 'PAX') {
+            addr = this.addressPAX;
+            num = this.Web3.toBigNumber(this.state.toWithdrawNum).mul(this.Web3.toBigNumber(10 ** this.state.decimalsPAX));
+            this.withdrawPAX(addr, num);
+        } else if (this.state.toWithdraw === 'TUSD') {
+            addr = this.addressTUSD;
+            num = this.Web3.toBigNumber(this.state.toWithdrawNum).mul(this.Web3.toBigNumber(10 ** this.state.decimalsTUSD));
+            this.withdrawTUSD(addr, num);
+        } else if (this.state.toWithdraw === 'USDC') {
+            addr = this.addressUSDC;
+            num = this.Web3.toBigNumber(this.state.toWithdrawNum).mul(this.Web3.toBigNumber(10 ** this.state.decimalsUSDC));
+            this.withdrawUSDC(addr, num);
+        }
+    }
+    withdrawDAI(addr, num) {
+        var str1;
+        var str2;
+        if (num.div(10 ** this.state.decimalsDAI).toString(10).indexOf('.') > 0) {
+            str1 = this.toThousands(num.div(10 ** this.state.decimalsDAI).toString(10).split('.')[0]);
+            str2 = '.' + num.div(10 ** this.state.decimalsDAI).toString(10).split('.')[1];
+        } else {
+            str1 = this.toThousands(num.div(10 ** this.state.decimalsDAI).toString(10));
+            str2 = '';
+        }
+        const id = Math.random();
+        const msg = 'Waiting for transaction signature...';
+        const tmepState = this.state;
+        tmepState.transcations[id] = {
+            id: id,
+            msg: msg,
+            class: 'inprocess',
+            title: 'Withdraw ' + str1 + str2 + ' DAI',
+        }
+        this.setState({ tmepState });
+        // get Limit first
+        this.contractProtocol.withdraw.estimateGas(
+            addr,
+            0,
+            num,
+            {
+                from: this.state.accountAddress
+            },
+            (err, gasLimit) => {
+                this.contractProtocol.withdraw.sendTransaction(
+                    addr,
+                    0,
+                    num,
+                    {
+                        from: this.state.accountAddress,
+                        gas: Math.ceil(gasLimit * this.gasRatio),
+                        gasPrice: this.state.gasPrice
+                    },
+                    (err, ret) => {
+                        if (err) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        class: 'error',
+                                        msg: 'User reject transaction'
+                                    }
+                                    this.setState({ tmepState });
 
+                                    setTimeout(() => {
+                                        delete tmepState.transcations[key];
+                                        this.setState({ tmepState });
+                                    }, 3000);
+                                };
+                                return false;
+                            });
+                        }
+                        if (ret) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
 
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key].txhash = ret;
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        msg: 'Waiting for confirmation...'
+                                    }
+                                    this.setState({ tmepState });
+                                };
+                                return false;
+                            });
+
+                            var timerOBJ = {};
+                            var tempRnum = Math.random();
+                            timerOBJ[tempRnum] = setInterval(() => {
+                                console.log('i am checking withdraw DAI... =>' + tempRnum);
+                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                    if (data && data.status === '0x1') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'success',
+                                                    msg: 'Transaction succeeded'
+                                                }
+                                                tmepState.toWithdrawNum = '';
+                                                tmepState.couldWithdraw = false;
+                                                this.setState({ tmepState });
+
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({ tmepState });
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                        setTimeout(() => {
+                                            this.getMyBalance();
+                                            this.getPoolBankTotalStatus();
+                                            this.getUserWithdrawBalance();
+                                        }, 3000)
+                                        // !!window.ethereum.isImToken
+                                        if (!!window.ethereum.isImToken) {
+                                            var itemHistory = {
+                                                event: 'Withdraw',
+                                                title: 'Withdraw ' + str1 + str2 + ' DAI',
+                                                transactionHash: ret,
+                                                timeStamp: new Date().getTime()
+                                            };
+                                            var tmphistory = this.state.myHistory;
+                                            tmphistory.unshift(itemHistory);
+                                            this.setState({
+                                                ...this.state,
+                                                myHistory: tmphistory
+                                            })
+                                            var localHistory = JSON.parse(localStorage.getItem(this.state.accountAddress));
+                                            localHistory[this.state.netType].history.unshift(itemHistory);
+                                            localStorage.setItem(this.state.accountAddress, JSON.stringify(localHistory));
+                                        }
+                                    }
+                                    if (data && data.status === '0x0') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'error',
+                                                    msg: 'Transaction failed'
+                                                }
+                                                this.setState({ tmepState });
+
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({ tmepState });
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                    }
+                                })
+                            }, 2000);
+                        }
+                    }
+                )
+            }
+        )
+    }
+    withdrawPAX(addr, num) {
+        var str1;
+        var str2;
+        if (num.div(10 ** this.state.decimalsPAX).toString(10).indexOf('.') > 0) {
+            str1 = this.toThousands(num.div(10 ** this.state.decimalsPAX).toString(10).split('.')[0]);
+            str2 = '.' + num.div(10 ** this.state.decimalsPAX).toString(10).split('.')[1];
+        } else {
+            str1 = this.toThousands(num.div(10 ** this.state.decimalsPAX).toString(10));
+            str2 = '';
+        }
+        const id = Math.random();
+        const msg = 'Waiting for transaction signature...';
+        const tmepState = this.state;
+        tmepState.transcations[id] = {
+            id: id,
+            msg: msg,
+            class: 'inprocess',
+            title: 'Withdraw ' + str1 + str2 + ' PAX',
+        }
+        this.setState({ tmepState });
+        // get Limit first
+        this.contractProtocol.withdraw.estimateGas(
+            addr,
+            0,
+            num,
+            {
+                from: this.state.accountAddress
+            },
+            (err, gasLimit) => {
+                this.contractProtocol.withdraw.sendTransaction(
+                    addr,
+                    0,
+                    num,
+                    {
+                        from: this.state.accountAddress,
+                        gas: Math.ceil(gasLimit * this.gasRatio),
+                        gasPrice: this.state.gasPrice
+                    },
+                    (err, ret) => {
+                        if (err) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        class: 'error',
+                                        msg: 'User reject transaction'
+                                    }
+                                    this.setState({ tmepState });
+
+                                    setTimeout(() => {
+                                        delete tmepState.transcations[key];
+                                        this.setState({ tmepState });
+                                    }, 3000);
+                                };
+                                return false;
+                            });
+                        }
+                        if (ret) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key].txhash = ret;
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        msg: 'Waiting for confirmation...'
+                                    }
+                                    this.setState({ tmepState });
+                                };
+                                return false;
+                            });
+
+                            var timerOBJ = {};
+                            var tempRnum = Math.random();
+                            timerOBJ[tempRnum] = setInterval(() => {
+                                console.log('i am checking withdraw PAX... =>' + tempRnum);
+                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                    if (data && data.status === '0x1') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'success',
+                                                    msg: 'Transaction succeeded'
+                                                }
+                                                tmepState.toWithdrawNum = '';
+                                                tmepState.couldWithdraw = false;
+                                                this.setState({ tmepState });
+
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({ tmepState });
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                        setTimeout(() => {
+                                            this.getMyBalance();
+                                            this.getPoolBankTotalStatus();
+                                            this.getUserWithdrawBalance();
+                                        }, 3000)
+                                        // !!window.ethereum.isImToken
+                                        if (!!window.ethereum.isImToken) {
+                                            var itemHistory = {
+                                                event: 'Withdraw',
+                                                title: 'Withdraw ' + str1 + str2 + ' PAX',
+                                                transactionHash: ret,
+                                                timeStamp: new Date().getTime()
+                                            };
+                                            var tmphistory = this.state.myHistory;
+                                            tmphistory.unshift(itemHistory);
+                                            this.setState({
+                                                ...this.state,
+                                                myHistory: tmphistory
+                                            })
+                                            var localHistory = JSON.parse(localStorage.getItem(this.state.accountAddress));
+                                            localHistory[this.state.netType].history.unshift(itemHistory);
+                                            localStorage.setItem(this.state.accountAddress, JSON.stringify(localHistory));
+                                        }
+                                    }
+                                    if (data && data.status === '0x0') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'error',
+                                                    msg: 'Transaction failed'
+                                                }
+                                                this.setState({ tmepState });
+
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({ tmepState });
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                    }
+                                })
+                            }, 2000);
+                        }
+                    }
+                )
+            }
+        )
+    }
+    withdrawTUSD(addr, num) {
+        var str1;
+        var str2;
+        if (num.div(10 ** this.state.decimalsTUSD).toString(10).indexOf('.') > 0) {
+            str1 = this.toThousands(num.div(10 ** this.state.decimalsTUSD).toString(10).split('.')[0]);
+            str2 = '.' + num.div(10 ** this.state.decimalsTUSD).toString(10).split('.')[1];
+        } else {
+            str1 = this.toThousands(num.div(10 ** this.state.decimalsTUSD).toString(10));
+            str2 = '';
+        }
+        const id = Math.random();
+        const msg = 'Waiting for transaction signature...';
+        const tmepState = this.state;
+        tmepState.transcations[id] = {
+            id: id,
+            msg: msg,
+            class: 'inprocess',
+            title: 'Withdraw ' + str1 + str2 + ' TUSD',
+        }
+        this.setState({ tmepState });
+        // get Limit first
+        this.contractProtocol.withdraw.estimateGas(
+            addr,
+            0,
+            num,
+            {
+                from: this.state.accountAddress
+            },
+            (err, gasLimit) => {
+                this.contractProtocol.withdraw.sendTransaction(
+                    addr,
+                    0,
+                    num,
+                    {
+                        from: this.state.accountAddress,
+                        gas: Math.ceil(gasLimit * this.gasRatio),
+                        gasPrice: this.state.gasPrice
+                    },
+                    (err, ret) => {
+                        if (err) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        class: 'error',
+                                        msg: 'User reject transaction'
+                                    }
+                                    this.setState({ tmepState });
+
+                                    setTimeout(() => {
+                                        delete tmepState.transcations[key];
+                                        this.setState({ tmepState });
+                                    }, 3000);
+                                };
+                                return false;
+                            });
+                        }
+                        if (ret) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key].txhash = ret;
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        msg: 'Waiting for confirmation...'
+                                    }
+                                    this.setState({ tmepState });
+                                };
+                                return false;
+                            });
+
+                            var timerOBJ = {};
+                            var tempRnum = Math.random();
+                            timerOBJ[tempRnum] = setInterval(() => {
+                                console.log('i am checking withdraw TUSD... =>' + tempRnum);
+                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                    if (data && data.status === '0x1') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'success',
+                                                    msg: 'Transaction succeeded'
+                                                }
+                                                tmepState.toWithdrawNum = '';
+                                                tmepState.couldWithdraw = false;
+                                                this.setState({ tmepState });
+
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({ tmepState });
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                        setTimeout(() => {
+                                            this.getMyBalance();
+                                            this.getPoolBankTotalStatus();
+                                            this.getUserWithdrawBalance();
+                                        }, 3000)
+                                        // !!window.ethereum.isImToken
+                                        if (!!window.ethereum.isImToken) {
+                                            var itemHistory = {
+                                                event: 'Withdraw',
+                                                title: 'Withdraw ' + str1 + str2 + ' TUSD',
+                                                transactionHash: ret,
+                                                timeStamp: new Date().getTime()
+                                            };
+                                            var tmphistory = this.state.myHistory;
+                                            tmphistory.unshift(itemHistory);
+                                            this.setState({
+                                                ...this.state,
+                                                myHistory: tmphistory
+                                            })
+                                            var localHistory = JSON.parse(localStorage.getItem(this.state.accountAddress));
+                                            localHistory[this.state.netType].history.unshift(itemHistory);
+                                            localStorage.setItem(this.state.accountAddress, JSON.stringify(localHistory));
+                                        }
+                                    }
+                                    if (data && data.status === '0x0') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'error',
+                                                    msg: 'Transaction failed'
+                                                }
+                                                this.setState({ tmepState });
+
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({ tmepState });
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                    }
+                                })
+                            }, 2000);
+                        }
+                    }
+                )
+            }
+        )
+    }
+    withdrawUSDC(addr, num) {
+        var str1;
+        var str2;
+        if (num.div(10 ** this.state.decimalsUSDC).toString(10).indexOf('.') > 0) {
+            str1 = this.toThousands(num.div(10 ** this.state.decimalsUSDC).toString(10).split('.')[0]);
+            str2 = '.' + num.div(10 ** this.state.decimalsUSDC).toString(10).split('.')[1];
+        } else {
+            str1 = this.toThousands(num.div(10 ** this.state.decimalsUSDC).toString(10));
+            str2 = '';
+        }
+        const id = Math.random();
+        const msg = 'Waiting for transaction signature...';
+        const tmepState = this.state;
+        tmepState.transcations[id] = {
+            id: id,
+            msg: msg,
+            class: 'inprocess',
+            title: 'Withdraw ' + str1 + str2 + ' USDC',
+        }
+        this.setState({ tmepState });
+        // get Limit first
+        this.contractProtocol.withdraw.estimateGas(
+            addr,
+            0,
+            num,
+            {
+                from: this.state.accountAddress
+            },
+            (err, gasLimit) => {
+                this.contractProtocol.withdraw.sendTransaction(
+                    addr,
+                    0,
+                    num,
+                    {
+                        from: this.state.accountAddress,
+                        gas: Math.ceil(gasLimit * this.gasRatio),
+                        gasPrice: this.state.gasPrice
+                    },
+                    (err, ret) => {
+                        if (err) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        class: 'error',
+                                        msg: 'User reject transaction'
+                                    }
+                                    this.setState({ tmepState });
+
+                                    setTimeout(() => {
+                                        delete tmepState.transcations[key];
+                                        this.setState({ tmepState });
+                                    }, 3000);
+                                };
+                                return false;
+                            });
+                        }
+                        if (ret) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key].txhash = ret;
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        msg: 'Waiting for confirmation...'
+                                    }
+                                    this.setState({ tmepState });
+                                };
+                                return false;
+                            });
+
+                            var timerOBJ = {};
+                            var tempRnum = Math.random();
+                            timerOBJ[tempRnum] = setInterval(() => {
+                                console.log('i am checking withdraw USDC... =>' + tempRnum);
+                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                    if (data && data.status === '0x1') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'success',
+                                                    msg: 'Transaction succeeded'
+                                                }
+                                                tmepState.toWithdrawNum = '';
+                                                tmepState.couldWithdraw = false;
+                                                this.setState({ tmepState });
+
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({ tmepState });
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                        setTimeout(() => {
+                                            this.getMyBalance();
+                                            this.getPoolBankTotalStatus();
+                                            this.getUserWithdrawBalance();
+                                        }, 3000)
+                                        // !!window.ethereum.isImToken
+                                        if (!!window.ethereum.isImToken) {
+                                            var itemHistory = {
+                                                event: 'Withdraw',
+                                                title: 'Withdraw ' + str1 + str2 + ' USDC',
+                                                transactionHash: ret,
+                                                timeStamp: new Date().getTime()
+                                            };
+                                            var tmphistory = this.state.myHistory;
+                                            tmphistory.unshift(itemHistory);
+                                            this.setState({
+                                                ...this.state,
+                                                myHistory: tmphistory
+                                            })
+                                            var localHistory = JSON.parse(localStorage.getItem(this.state.accountAddress));
+                                            localHistory[this.state.netType].history.unshift(itemHistory);
+                                            localStorage.setItem(this.state.accountAddress, JSON.stringify(localHistory));
+                                        }
+                                    }
+                                    if (data && data.status === '0x0') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'error',
+                                                    msg: 'Transaction failed'
+                                                }
+                                                this.setState({ tmepState });
+
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({ tmepState });
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                    }
+                                })
+                            }, 2000);
+                        }
+                    }
+                )
+            }
+        )
+    }
 
 
     // *** get USDx For my Deposit ***
@@ -1626,6 +3944,7 @@ export default class Home extends React.Component {
                 }
 
                 this.setState({
+                    ...this.state,
                     maxGenerateUSDx: this.formatNumber(ret, 'USDx')
                 })
             }
@@ -1633,14 +3952,11 @@ export default class Home extends React.Component {
     }
 
 
-    // *** deposit_num ***
+    // *** deposit ***
     depositNumChange(val) {
-        this.setState({
-            wanna_to_deposit__max: false,
-        })
-
         if (val === '' || Number(val) === 0) {
             this.setState({
+                ...this.state,
                 couldDeposit: false,
                 errTips: false,
                 toDepositNum: val,
@@ -1660,6 +3976,7 @@ export default class Home extends React.Component {
             tempUnits = this.state.decimalsDAI;
             if (Number(val) > 0 && Number(val) <= Number(this.state.myDAI)) {
                 this.setState({
+                    ...this.state,
                     couldDeposit: true,
                     errTips: false,
                     toDepositNum: val
@@ -1668,6 +3985,7 @@ export default class Home extends React.Component {
                 })
             } else {
                 this.setState({
+                    ...this.state,
                     couldDeposit: false,
                     errTips: true,
                     toDepositNum: val
@@ -1679,6 +3997,7 @@ export default class Home extends React.Component {
             tempUnits = this.state.decimalsPAX;
             if (Number(val) > 0 && Number(val) <= Number(this.state.myPAX)) {
                 this.setState({
+                    ...this.state,
                     couldDeposit: true,
                     errTips: false,
                     toDepositNum: val
@@ -1687,6 +4006,7 @@ export default class Home extends React.Component {
                 })
             } else {
                 this.setState({
+                    ...this.state,
                     couldDeposit: false,
                     errTips: true,
                     toDepositNum: val
@@ -1698,6 +4018,7 @@ export default class Home extends React.Component {
             tempUnits = this.state.decimalsTUSD;
             if (Number(val) > 0 && Number(val) <= Number(this.state.myTUSD)) {
                 this.setState({
+                    ...this.state,
                     couldDeposit: true,
                     errTips: false,
                     toDepositNum: val
@@ -1706,6 +4027,7 @@ export default class Home extends React.Component {
                 })
             } else {
                 this.setState({
+                    ...this.state,
                     couldDeposit: false,
                     errTips: true,
                     toDepositNum: val
@@ -1717,6 +4039,7 @@ export default class Home extends React.Component {
             tempUnits = this.state.decimalsUSDC;
             if (Number(val) > 0 && Number(val) <= Number(this.state.myUSDC)) {
                 this.setState({
+                    ...this.state,
                     couldDeposit: true,
                     errTips: false,
                     toDepositNum: val
@@ -1725,6 +4048,7 @@ export default class Home extends React.Component {
                 })
             } else {
                 this.setState({
+                    ...this.state,
                     couldDeposit: false,
                     errTips: true,
                     toDepositNum: val
@@ -1734,30 +4058,719 @@ export default class Home extends React.Component {
     }
     depositOptChange(token) {
         this.setState({
-            toDeposit: token,
-            toDepositNum: '',
-            wanna_to_deposit__max: false,
+            ...this.state,
+            toDeposit: token
         }, () => {
             if (!this.state.toDepositNum) {
                 return;
             }
-            // this.depositNumChange(this.state.toDepositNum);
+            this.depositNumChange(this.state.toDepositNum);
         })
+
+        // setTimeout(() => {
+        //     if (!this.state.toDepositNum) {
+        //         return;
+        //     }
+        //     this.depositNumChange(this.state.toDepositNum);
+        // }, 0);
+    }
+    deposit() {
+        if (!this.state.couldDeposit) {
+            return;
+        }
+        var addr;
+        var num;
+        if (this.state.toDeposit === 'DAI') {
+            addr = this.addressDAI;
+            num = this.Web3.toBigNumber(this.state.toDepositNum).mul(this.Web3.toBigNumber(10 ** this.state.decimalsDAI));
+            this.depositDAI(addr, num);
+        } else if (this.state.toDeposit === 'PAX') {
+            addr = this.addressPAX;
+            num = this.Web3.toBigNumber(this.state.toDepositNum).mul(this.Web3.toBigNumber(10 ** this.state.decimalsPAX));
+            this.depositPAX(addr, num);
+        } else if (this.state.toDeposit === 'TUSD') {
+            addr = this.addressTUSD;
+            num = this.Web3.toBigNumber(this.state.toDepositNum).mul(this.Web3.toBigNumber(10 ** this.state.decimalsTUSD));
+            this.depositTUSD(addr, num);
+        } else if (this.state.toDeposit === 'USDC') {
+            addr = this.addressUSDC;
+            num = this.Web3.toBigNumber(this.state.toDepositNum).mul(this.Web3.toBigNumber(10 ** this.state.decimalsUSDC));
+            this.depositUSDC(addr, num);
+        }
+    }
+    depositDAI(addr, num) {
+        if (!this.state.approvedDAI) {
+            this.setState({
+                ...this.state,
+                fromDepositDAI: true
+            });
+            this.approve('DAI');
+            return;
+        }
+        var str1;
+        var str2;
+        if (num.div(10 ** this.state.decimalsDAI).toString(10).indexOf('.') > 0) {
+            str1 = this.toThousands(num.div(10 ** this.state.decimalsDAI).toString(10).split('.')[0]);
+            str2 = '.' + num.div(10 ** this.state.decimalsDAI).toString(10).split('.')[1];
+        } else {
+            str1 = this.toThousands(num.div(10 ** this.state.decimalsDAI).toString(10));
+            str2 = '';
+        }
+        const id = Math.random();
+        const msg = 'Waiting for transaction signature...';
+        const tmepState = this.state;
+        tmepState.transcations[id] = {
+            id: id,
+            msg: msg,
+            class: 'inprocess',
+            title: 'Deposit ' + str1 + str2 + ' DAI',
+        }
+        this.setState({ tmepState });
+        // get Limit first
+        this.contractProtocol.deposit.estimateGas(
+            addr,
+            0,
+            num,
+            {
+                from: this.state.accountAddress
+            },
+            (err, gasLimit) => {
+                // console.log(err, gasLimit);
+                this.contractProtocol.deposit.sendTransaction(
+                    addr,
+                    0,
+                    num,
+                    {
+                        from: this.state.accountAddress,
+                        gas: Math.ceil(gasLimit * 1.2),
+                        gasPrice: this.state.gasPrice
+                    },
+                    (err, ret) => {
+                        if (err) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        class: 'error',
+                                        msg: 'User reject transaction'
+                                    }
+                                    this.setState({ tmepState });
+
+                                    setTimeout(() => {
+                                        delete tmepState.transcations[key];
+                                        this.setState({ tmepState });
+                                    }, 3000);
+                                };
+                                return false;
+                            });
+                        }
+                        if (ret) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key].txhash = ret;
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        msg: 'Waiting for confirmation...'
+                                    }
+                                    this.setState({ tmepState });
+                                };
+                                return false;
+                            });
+
+                            var timerOBJ = {};
+                            var tempRnum = Math.random();
+                            timerOBJ[tempRnum] = setInterval(() => {
+                                console.log('i am checking deposit DAI... =>' + tempRnum);
+                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                    if (data && data.status === '0x1') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'success',
+                                                    msg: 'Transaction succeeded'
+                                                }
+                                                tmepState.toDepositNum = '';
+                                                tmepState.couldDeposit = false;
+                                                tmepState.maxGenerateUSDx = '';
+                                                this.setState({ tmepState });
+
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({ tmepState });
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                        setTimeout(() => {
+                                            this.getMyBalance();
+                                            this.getPoolBankTotalStatus();
+                                            this.getUserWithdrawBalance();
+                                        }, 3000)
+
+                                        // !!window.ethereum.isImToken
+                                        if (!!window.ethereum.isImToken) {
+                                            var itemHistory = {
+                                                event: 'Deposit',
+                                                title: 'Deposit ' + str1 + str2 + ' DAI',
+                                                transactionHash: ret,
+                                                timeStamp: new Date().getTime()
+                                            };
+                                            var tmphistory = this.state.myHistory;
+                                            tmphistory.unshift(itemHistory);
+                                            this.setState({
+                                                ...this.state,
+                                                myHistory: tmphistory
+                                            })
+                                            var localHistory = JSON.parse(localStorage.getItem(this.state.accountAddress));
+                                            localHistory[this.state.netType].history.unshift(itemHistory);
+                                            localStorage.setItem(this.state.accountAddress, JSON.stringify(localHistory));
+                                        }
+
+                                    }
+                                    if (data && data.status === '0x0') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'error',
+                                                    msg: 'Transaction failed'
+                                                }
+                                                this.setState({ tmepState });
+
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({ tmepState });
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                    }
+                                })
+                            }, 2000);
+                        }
+                    }
+                )
+            }
+        )
+    }
+    depositPAX(addr, num) {
+        if (!this.state.approvedPAX) {
+            this.setState({
+                ...this.state,
+                fromDepositPAX: true
+            });
+            this.approve('PAX');
+            return;
+        }
+        var str1;
+        var str2;
+        if (num.div(10 ** this.state.decimalsPAX).toString(10).indexOf('.') > 0) {
+            str1 = this.toThousands(num.div(10 ** this.state.decimalsPAX).toString(10).split('.')[0]);
+            str2 = '.' + num.div(10 ** this.state.decimalsPAX).toString(10).split('.')[1];
+        } else {
+            str1 = this.toThousands(num.div(10 ** this.state.decimalsPAX).toString(10));
+            str2 = '';
+        }
+        const id = Math.random();
+        const msg = 'Waiting for transaction signature...';
+        const tmepState = this.state;
+        tmepState.transcations[id] = {
+            id: id,
+            msg: msg,
+            class: 'inprocess',
+            title: 'Deposit ' + str1 + str2 + ' PAX',
+        }
+        this.setState({ tmepState });
+        // get Limit first
+        this.contractProtocol.deposit.estimateGas(
+            addr,
+            0,
+            num,
+            {
+                from: this.state.accountAddress
+            },
+            (err, gasLimit) => {
+                this.contractProtocol.deposit.sendTransaction(
+                    addr,
+                    0,
+                    num,
+                    {
+                        from: this.state.accountAddress,
+                        gas: Math.ceil(gasLimit * 1.2),
+                        gasPrice: this.state.gasPrice
+                    },
+                    (err, ret) => {
+                        if (err) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        class: 'error',
+                                        msg: 'User reject transaction'
+                                    }
+                                    this.setState({ tmepState });
+
+                                    setTimeout(() => {
+                                        delete tmepState.transcations[key];
+                                        this.setState({ tmepState });
+                                    }, 3000);
+                                };
+                                return false;
+                            });
+                        }
+                        if (ret) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key].txhash = ret;
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        msg: 'Waiting for confirmation...'
+                                    }
+                                    this.setState({ tmepState });
+                                };
+                                return false;
+                            });
+
+                            var timerOBJ = {};
+                            var tempRnum = Math.random();
+                            timerOBJ[tempRnum] = setInterval(() => {
+                                console.log('i am checking deposit PAX... =>' + tempRnum);
+                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                    if (data && data.status === '0x1') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'success',
+                                                    msg: 'Transaction succeeded'
+                                                }
+                                                tmepState.toDepositNum = '';
+                                                tmepState.couldDeposit = false;
+                                                tmepState.maxGenerateUSDx = '';
+                                                this.setState({ tmepState });
+
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({ tmepState });
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                        setTimeout(() => {
+                                            this.getMyBalance();
+                                            this.getPoolBankTotalStatus();
+                                            this.getUserWithdrawBalance();
+                                        }, 3000)
+                                        // !!window.ethereum.isImToken
+                                        if (!!window.ethereum.isImToken) {
+                                            var itemHistory = {
+                                                event: 'Deposit',
+                                                title: 'Deposit ' + str1 + str2 + ' PAX',
+                                                transactionHash: ret,
+                                                timeStamp: new Date().getTime()
+                                            };
+                                            var tmphistory = this.state.myHistory;
+                                            tmphistory.unshift(itemHistory);
+                                            this.setState({
+                                                ...this.state,
+                                                myHistory: tmphistory
+                                            })
+                                            var localHistory = JSON.parse(localStorage.getItem(this.state.accountAddress));
+                                            localHistory[this.state.netType].history.unshift(itemHistory);
+                                            localStorage.setItem(this.state.accountAddress, JSON.stringify(localHistory));
+                                        }
+                                    }
+                                    if (data && data.status === '0x0') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'error',
+                                                    msg: 'Transaction failed'
+                                                }
+                                                this.setState({ tmepState });
+
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({ tmepState });
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                    }
+                                })
+                            }, 2000);
+                        }
+                    }
+                )
+            }
+        )
+    }
+    depositTUSD(addr, num) {
+        if (!this.state.approvedTUSD) {
+            this.setState({
+                ...this.state,
+                fromDepositTUSD: true
+            });
+            this.approve('TUSD');
+            return;
+        }
+        var str1;
+        var str2;
+        if (num.div(10 ** this.state.decimalsTUSD).toString(10).indexOf('.') > 0) {
+            str1 = this.toThousands(num.div(10 ** this.state.decimalsTUSD).toString(10).split('.')[0]);
+            str2 = '.' + num.div(10 ** this.state.decimalsTUSD).toString(10).split('.')[1];
+        } else {
+            str1 = this.toThousands(num.div(10 ** this.state.decimalsTUSD).toString(10));
+            str2 = '';
+        }
+        const id = Math.random();
+        const msg = 'Waiting for transaction signature...';
+        const tmepState = this.state;
+        tmepState.transcations[id] = {
+            id: id,
+            msg: msg,
+            class: 'inprocess',
+            title: 'Deposit ' + str1 + str2 + ' TUSD',
+        }
+        this.setState({ tmepState });
+        // get Limit first
+        this.contractProtocol.deposit.estimateGas(
+            addr,
+            0,
+            num,
+            {
+                from: this.state.accountAddress
+            },
+            (err, gasLimit) => {
+                this.contractProtocol.deposit.sendTransaction(
+                    addr,
+                    0,
+                    num,
+                    {
+                        from: this.state.accountAddress,
+                        gas: Math.ceil(gasLimit * 1.2),
+                        gasPrice: this.state.gasPrice
+                    },
+                    (err, ret) => {
+                        if (err) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        class: 'error',
+                                        msg: 'User reject transaction'
+                                    }
+                                    this.setState({ tmepState });
+
+                                    setTimeout(() => {
+                                        delete tmepState.transcations[key];
+                                        this.setState({ tmepState });
+                                    }, 3000);
+                                };
+                                return false;
+                            });
+                        }
+                        if (ret) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key].txhash = ret;
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        msg: 'Waiting for confirmation...'
+                                    }
+                                    this.setState({ tmepState });
+                                };
+                                return false;
+                            });
+
+                            var timerOBJ = {};
+                            var tempRnum = Math.random();
+                            timerOBJ[tempRnum] = setInterval(() => {
+                                console.log('i am checking deposit TUSD... =>' + tempRnum);
+                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                    if (data && data.status === '0x1') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'success',
+                                                    msg: 'Transaction succeeded'
+                                                }
+                                                tmepState.toDepositNum = '';
+                                                tmepState.couldDeposit = false;
+                                                tmepState.maxGenerateUSDx = '';
+                                                this.setState({ tmepState });
+
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({ tmepState });
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                        setTimeout(() => {
+                                            this.getMyBalance();
+                                            this.getPoolBankTotalStatus();
+                                            this.getUserWithdrawBalance();
+                                        }, 3000)
+                                        // !!window.ethereum.isImToken
+                                        if (!!window.ethereum.isImToken) {
+                                            var itemHistory = {
+                                                event: 'Deposit',
+                                                title: 'Deposit ' + str1 + str2 + ' TUSD',
+                                                transactionHash: ret,
+                                                timeStamp: new Date().getTime()
+                                            };
+                                            var tmphistory = this.state.myHistory;
+                                            tmphistory.unshift(itemHistory);
+                                            this.setState({
+                                                ...this.state,
+                                                myHistory: tmphistory
+                                            })
+                                            var localHistory = JSON.parse(localStorage.getItem(this.state.accountAddress));
+                                            localHistory[this.state.netType].history.unshift(itemHistory);
+                                            localStorage.setItem(this.state.accountAddress, JSON.stringify(localHistory));
+                                        }
+                                    }
+                                    if (data && data.status === '0x0') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'error',
+                                                    msg: 'Transaction failed'
+                                                }
+                                                this.setState({ tmepState });
+
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({ tmepState });
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                    }
+                                })
+                            }, 2000);
+                        }
+                    }
+                )
+            }
+        )
+    }
+    depositUSDC(addr, num) {
+        if (!this.state.approvedUSDC) {
+            this.setState({
+                ...this.state,
+                fromDepositUSDC: true
+            });
+            this.approve('USDC');
+            return;
+        }
+        var str1;
+        var str2;
+        if (num.div(10 ** this.state.decimalsUSDC).toString(10).indexOf('.') > 0) {
+            str1 = this.toThousands(num.div(10 ** this.state.decimalsUSDC).toString(10).split('.')[0]);
+            str2 = '.' + num.div(10 ** this.state.decimalsUSDC).toString(10).split('.')[1];
+        } else {
+            str1 = this.toThousands(num.div(10 ** this.state.decimalsUSDC).toString(10));
+            str2 = '';
+        }
+        const id = Math.random();
+        const msg = 'Waiting for transaction signature...';
+        const tmepState = this.state;
+        tmepState.transcations[id] = {
+            id: id,
+            msg: msg,
+            class: 'inprocess',
+            title: 'Deposit ' + str1 + str2 + ' USDC',
+        }
+        this.setState({ tmepState });
+        // get Limit first
+        this.contractProtocol.deposit.estimateGas(
+            addr,
+            0,
+            num,
+            {
+                from: this.state.accountAddress
+            },
+            (err, gasLimit) => {
+                this.contractProtocol.deposit.sendTransaction(
+                    addr,
+                    0,
+                    num,
+                    {
+                        from: this.state.accountAddress,
+                        gas: Math.ceil(gasLimit * 1.2),
+                        gasPrice: this.state.gasPrice
+                    },
+                    (err, ret) => {
+                        if (err) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        class: 'error',
+                                        msg: 'User reject transaction'
+                                    }
+                                    this.setState({ tmepState });
+
+                                    setTimeout(() => {
+                                        delete tmepState.transcations[key];
+                                        this.setState({ tmepState });
+                                    }, 3000);
+                                };
+                                return false;
+                            });
+                        }
+                        if (ret) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key].txhash = ret;
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        msg: 'Waiting for confirmation...'
+                                    }
+                                    this.setState({ tmepState });
+                                };
+                                return false;
+                            });
+
+                            var timerOBJ = {};
+                            var tempRnum = Math.random();
+                            timerOBJ[tempRnum] = setInterval(() => {
+                                console.log('i am checking deposit USDC... =>' + tempRnum);
+                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                    if (data && data.status === '0x1') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'success',
+                                                    msg: 'Transaction succeeded'
+                                                }
+                                                tmepState.toDepositNum = '';
+                                                tmepState.couldDeposit = false;
+                                                tmepState.maxGenerateUSDx = '';
+                                                this.setState({ tmepState });
+
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({ tmepState });
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                        setTimeout(() => {
+                                            this.getMyBalance();
+                                            this.getPoolBankTotalStatus();
+                                            this.getUserWithdrawBalance();
+                                        }, 3000)
+                                        // !!window.ethereum.isImToken
+                                        if (!!window.ethereum.isImToken) {
+                                            var itemHistory = {
+                                                event: 'Deposit',
+                                                title: 'Deposit ' + str1 + str2 + ' USDC',
+                                                transactionHash: ret,
+                                                timeStamp: new Date().getTime()
+                                            };
+                                            var tmphistory = this.state.myHistory;
+                                            tmphistory.unshift(itemHistory);
+                                            this.setState({
+                                                ...this.state,
+                                                myHistory: tmphistory
+                                            })
+                                            var localHistory = JSON.parse(localStorage.getItem(this.state.accountAddress));
+                                            localHistory[this.state.netType].history.unshift(itemHistory);
+                                            localStorage.setItem(this.state.accountAddress, JSON.stringify(localHistory));
+                                        }
+                                    }
+                                    if (data && data.status === '0x0') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'error',
+                                                    msg: 'Transaction failed'
+                                                }
+                                                this.setState({ tmepState });
+
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({ tmepState });
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                    }
+                                })
+                            }, 2000);
+                        }
+                    }
+                )
+            }
+        )
     }
 
 
-
-    // *** destroy_chang ***
+    // *** destroy ***
     destroyNumChange(val) {
         if (val.length > 16) {
             return;
         }
-        if (Number(val) > 0 && this.bn(val).sub(this.bn(this.state.myUSDx)) <= 0) {
-            var USDxToDAI = this.bn(val).mul(this.bn(this.state.sectionDAIBurning).div(this.bn(this.state.tatolSectionBurning)));
-            var USDxToPAX = this.bn(val).mul(this.bn(this.state.sectionPAXBurning).div(this.bn(this.state.tatolSectionBurning)));
-            var USDxToTUSD = this.bn(val).mul(this.bn(this.state.sectionTUSDBurning).div(this.bn(this.state.tatolSectionBurning)));
-            var USDxToUSDC = this.bn(val).mul(this.bn(this.state.sectionUSDCBurning).div(this.bn(this.state.tatolSectionBurning)));
+        if (Number(val) > 0 && this.Web3.toBigNumber(val).sub(this.Web3.toBigNumber(this.state.myUSDx)) <= 0) {
+            var USDxToDAI = this.Web3.toBigNumber(val).mul(this.Web3.toBigNumber(this.state.sectionDAIBurning).div(this.Web3.toBigNumber(this.state.tatolSectionBurning)));
+            var USDxToPAX = this.Web3.toBigNumber(val).mul(this.Web3.toBigNumber(this.state.sectionPAXBurning).div(this.Web3.toBigNumber(this.state.tatolSectionBurning)));
+            var USDxToTUSD = this.Web3.toBigNumber(val).mul(this.Web3.toBigNumber(this.state.sectionTUSDBurning).div(this.Web3.toBigNumber(this.state.tatolSectionBurning)));
+            var USDxToUSDC = this.Web3.toBigNumber(val).mul(this.Web3.toBigNumber(this.state.sectionUSDCBurning).div(this.Web3.toBigNumber(this.state.tatolSectionBurning)));
             this.setState({
+                ...this.state,
                 errTipsDestroy: false,
                 couldDestroy: true,
                 toDestroyNum: val,
@@ -1767,8 +4780,9 @@ export default class Home extends React.Component {
                 USDxToUSDC: USDxToUSDC.toString(10),
                 getDestroyThresholdBool: false
             })
-            if (this.bn(val).mod(this.bn(this.state.getDestroyThreshold)).toString(10) !== '0') {
+            if (this.Web3.toBigNumber(val).mod(this.Web3.toBigNumber(this.state.getDestroyThreshold)).toString(10) !== '0') {
                 this.setState({
+                    ...this.state,
                     errTipsDestroy: true,
                     couldDestroy: false,
                     toDestroyNum: val,
@@ -1779,8 +4793,9 @@ export default class Home extends React.Component {
                     getDestroyThresholdBool: true
                 })
             }
-            if (this.bn(val * this.state.feeRate / this.state.dfPrice).sub(this.bn(this.state.myDF)) > 0) {
+            if (this.Web3.toBigNumber(val * this.state.feeRate / this.state.dfPrice).sub(this.Web3.toBigNumber(this.state.myDF)) > 0) {
                 this.setState({
+                    ...this.state,
                     errTipsDestroy: true,
                     couldDestroy: false,
                     toDestroyNum: val,
@@ -1793,6 +4808,7 @@ export default class Home extends React.Component {
             }
         } else {
             this.setState({
+                ...this.state,
                 errTipsDestroy: true,
                 couldDestroy: false,
                 toDestroyNum: val,
@@ -1804,6 +4820,7 @@ export default class Home extends React.Component {
             })
             if (val === '' || Number(val) === 0) {
                 this.setState({
+                    ...this.state,
                     errTipsDestroy: false,
                     couldDestroy: false,
                     toDestroyNum: val,
@@ -1816,18 +4833,1187 @@ export default class Home extends React.Component {
             }
         }
     }
+    destroy() {
+        if (!this.state.couldDestroy) {
+            return;
+        }
+
+        if (!this.state.approvedDF) {
+            this.setState({
+                ...this.state,
+                fromDestroy1: true
+            });
+            this.approve('DF');
+            return;
+        }
+
+        if (!this.state.approvedUSDx) {
+            this.setState({
+                ...this.state,
+                fromDestroy2: true
+            });
+            this.approve('USDx');
+            return;
+        }
+
+        const id = Math.random();
+        const msg = 'Waiting for transaction signature...';
+        const tmepState = this.state;
+        var str1;
+        var str2;
+        if (this.state.toDestroyNum.indexOf('.') > 0) {
+            str1 = this.toThousands(this.state.toDestroyNum.split('.')[0]);
+            str2 = '.' + this.state.toDestroyNum.split('.')[1];
+        } else {
+            str1 = this.toThousands(this.state.toDestroyNum);
+            str2 = '';
+        }
+        tmepState.transcations[id] = {
+            id: id,
+            msg: msg,
+            class: 'inprocess',
+            title: 'Reconvert ' + str1 + str2 + ' USDx',
+        }
+        this.setState({ tmepState });
+        this.contractProtocol.destroy.estimateGas(
+            0,
+            this.Web3.toBigNumber(this.state.toDestroyNum).mul(this.Web3.toBigNumber(10 ** 18)),
+            {
+                from: this.state.accountAddress
+            },
+            (err, gasLimit) => {
+                this.contractProtocol.destroy.sendTransaction(
+                    0,
+                    this.Web3.toBigNumber(this.state.toDestroyNum).mul(this.Web3.toBigNumber(10 ** 18)),
+                    {
+                        from: this.state.accountAddress,
+                        gas: Math.ceil(gasLimit * this.gasRatio),
+                        gasPrice: this.state.gasPrice
+                    },
+                    (err, ret) => {
+                        if (err) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        class: 'error',
+                                        msg: 'User reject transaction'
+                                    }
+                                    this.setState({ tmepState });
+
+                                    setTimeout(() => {
+                                        delete tmepState.transcations[key];
+                                        this.setState({ tmepState });
+                                    }, 3000);
+                                };
+                                return false;
+                            });
+                        }
+                        if (ret) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key].txhash = ret;
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        msg: 'Waiting for confirmation...'
+                                    }
+                                    this.setState({ tmepState });
+                                };
+                                return false;
+                            });
+
+                            var timerOBJ = {};
+                            var tempRnum = Math.random();
+                            timerOBJ[tempRnum] = setInterval(() => {
+                                console.log('i am checking Reconvert USDx... =>' + tempRnum);
+                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                    if (data && data.status === '0x1') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'success',
+                                                    msg: 'Transaction succeeded'
+                                                }
+                                                tmepState.toDestroyNum = '';
+                                                tmepState.couldDestroy = false;
+                                                tmepState.USDxToDAI = tmepState.USDxToPAX = tmepState.USDxToTUSD = tmepState.USDxToUSDC = '';
+                                                this.setState({ tmepState });
+
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({ tmepState });
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                        setTimeout(() => {
+                                            this.getMyBalance();
+                                            this.getPoolBankTotalStatus();
+                                            this.getUserWithdrawBalance();
+                                        }, 3000)
+                                        // !!window.ethereum.isImToken
+                                        if (!!window.ethereum.isImToken) {
+                                            var itemHistory = {
+                                                event: 'Destroy',
+                                                title: 'Destroy ' + str1 + str2 + ' USDx',
+                                                transactionHash: ret,
+                                                timeStamp: new Date().getTime()
+                                            };
+                                            var tmphistory = this.state.myHistory;
+                                            tmphistory.unshift(itemHistory);
+                                            this.setState({
+                                                ...this.state,
+                                                myHistory: tmphistory
+                                            })
+                                            var localHistory = JSON.parse(localStorage.getItem(this.state.accountAddress));
+                                            localHistory[this.state.netType].history.unshift(itemHistory);
+                                            localStorage.setItem(this.state.accountAddress, JSON.stringify(localHistory));
+                                        }
+                                    }
+                                    if (data && data.status === '0x0') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'error',
+                                                    msg: 'Transaction failed'
+                                                }
+                                                this.setState({ tmepState });
+
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({ tmepState });
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                    }
+                                })
+                            }, 2000);
+                        }
+                    }
+                )
+            }
+        )
+    }
 
 
+    // *** toGenerateMax ***
+    toGenerateMax(BN) {
+        this.setState({
+            ...this.state,
+            toGenerateMaxNum: BN,
+            isMintting: true
+        });
 
+        if (!this.state.approvedDAI) {
+            this.setState({
+                ...this.state,
+                fromGenerateMax: true
+            });
+            this.approve('DAI');
+            return;
+        }
+        if (!this.state.approvedPAX) {
+            this.setState({
+                ...this.state,
+                fromGenerateMax: true
+            });
+            this.approve('PAX');
+            return;
+        }
+        if (!this.state.approvedTUSD) {
+            this.setState({
+                ...this.state,
+                fromGenerateMax: true
+            });
+            this.approve('TUSD');
+            return;
+        }
+        if (!this.state.approvedUSDC) {
+            this.setState({
+                ...this.state,
+                fromGenerateMax: true
+            });
+            this.approve('USDC');
+            return;
+        }
 
+        const id = Math.random();
+        const msg = 'Waiting for transaction signature...';
+        const tmepState = this.state;
+        tmepState.transcations[id] = {
+            id: id,
+            msg: msg,
+            class: 'inprocess',
+            title: 'Mintage ' + this.toThousands(BN.toString(10)) + ' USDx',
+        }
+        this.setState({ tmepState });
+        // get Limit first
+        this.contractProtocol.oneClickMinting.estimateGas(
+            0,
+            BN.mul(this.Web3.toBigNumber(10 ** 18)),
+            {
+                from: this.state.accountAddress
+            },
+            (err, gasLimit) => {
+                // console.log('0000000000000000',err,  BN.mul(this.Web3.toBigNumber(10 ** 18)), gasLimit, this.state.gasPrice)
+                this.contractProtocol.oneClickMinting.sendTransaction(
+                    0,
+                    BN.mul(this.Web3.toBigNumber(10 ** 18)),
+                    {
+                        from: this.state.accountAddress,
+                        gas: Math.ceil(gasLimit * this.gasRatio),
+                        gasPrice: this.state.gasPrice
+                    },
+                    (err, ret) => {
+                        if (err) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        class: 'error',
+                                        msg: 'User reject transaction'
+                                    }
+                                    this.setState({ tmepState });
+
+                                    setTimeout(() => {
+                                        delete tmepState.transcations[key];
+                                        this.setState({ tmepState });
+                                    }, 3000);
+                                };
+                                return false;
+                            });
+                        }
+                        if (ret) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key].txhash = ret;
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        msg: 'Waiting for confirmation...'
+                                    }
+                                    this.setState({ tmepState });
+                                };
+                                return false;
+                            });
+
+                            var timerOBJ = {};
+                            var tempRnum = Math.random();
+                            timerOBJ[tempRnum] = setInterval(() => {
+                                console.log('i am checking oneClickMinting... =>' + tempRnum);
+                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                    if (data && data.status === '0x1') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'success',
+                                                    msg: 'Transaction succeeded'
+                                                }
+                                                this.setState({ tmepState });
+
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({ tmepState });
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                        this.setState({
+                                            ...this.state,
+                                            showOnestep: false,
+                                            isMintting: false
+                                        });
+                                        setTimeout(() => {
+                                            this.getMyBalance();
+                                            this.getPoolBankTotalStatus();
+                                            this.getUserWithdrawBalance();
+                                            this.getMaxNumToGenerateOnestep();
+                                        }, 3000)
+                                        // !!window.ethereum.isImToken
+                                        if (!!window.ethereum.isImToken) {
+                                            var itemHistory = {
+                                                event: 'OneClickMinting',
+                                                title: 'Mint ' + this.toThousands(BN.toString(10)) + ' USDx',
+                                                transactionHash: ret,
+                                                timeStamp: new Date().getTime()
+                                            };
+                                            var tmphistory = this.state.myHistory;
+                                            tmphistory.unshift(itemHistory);
+                                            this.setState({
+                                                ...this.state,
+                                                myHistory: tmphistory
+                                            })
+                                            var localHistory = JSON.parse(localStorage.getItem(this.state.accountAddress));
+                                            localHistory[this.state.netType].history.unshift(itemHistory);
+                                            localStorage.setItem(this.state.accountAddress, JSON.stringify(localHistory));
+                                        }
+                                    }
+                                    if (data && data.status === '0x0') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'error',
+                                                    msg: 'Transaction failed'
+                                                }
+                                                this.setState({ tmepState });
+
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({ tmepState });
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                    }
+                                })
+                            }, 2000);
+                        }
+                    }
+                )
+            }
+        )
+    }
     showOnestwpFn() {
         this.setState({
+            ...this.state,
             showOnestep: !this.state.showOnestep
         })
     }
     closeOnestwpFn() {
         this.setState({
+            ...this.state,
             showOnestep: !this.state.showOnestep
         })
     }
+
+
+    // *** claim ***
+    claim() {
+        const id = Math.random();
+        const msg = 'Waiting for transaction signature...';
+        const tmepState = this.state;
+        tmepState.transcations[id] = {
+            id: id,
+            msg: msg,
+            class: 'inprocess',
+            title: 'CLAIM USDx',
+        }
+        this.setState({ tmepState });
+        // get Limit first
+        this.contractProtocol.claim.estimateGas(
+            0,
+            {
+                from: this.state.accountAddress
+            },
+            (err, gasLimit) => {
+                this.contractProtocol.claim.sendTransaction(
+                    0,
+                    {
+                        from: this.state.accountAddress,
+                        gas: Math.ceil(gasLimit * this.gasRatio),
+                        gasPrice: this.state.gasPrice
+                    },
+                    (err, ret) => {
+                        if (err) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        class: 'error',
+                                        msg: 'User reject transaction'
+                                    }
+                                    this.setState({ tmepState });
+
+                                    setTimeout(() => {
+                                        delete tmepState.transcations[key];
+                                        this.setState({ tmepState });
+                                    }, 3000);
+                                };
+                                return false;
+                            });
+                        }
+                        if (ret) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].id === id) {
+                                    tmepState.transcations[key].txhash = ret;
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        msg: 'Waiting for confirmation...'
+                                    }
+                                    this.setState({ tmepState });
+                                };
+                                return false;
+                            });
+
+                            var timerOBJ = {};
+                            var tempRnum = Math.random();
+                            timerOBJ[tempRnum] = setInterval(() => {
+                                console.log('i am checking claim USDx... =>' + tempRnum);
+                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                    if (data && data.status === '0x1') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'success',
+                                                    msg: 'Transaction succeeded'
+                                                }
+                                                this.setState({ tmepState });
+
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({ tmepState });
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                        setTimeout(() => {
+                                            this.getMyBalance();
+                                            this.getPoolBankTotalStatus();
+                                            this.getUserWithdrawBalance();
+                                        }, 3000)
+                                        // !!window.ethereum.isImToken
+                                        if (!!window.ethereum.isImToken) {
+                                            var itemHistory = {
+                                                event: 'Claim',
+                                                title: 'Claim USDx',
+                                                transactionHash: ret,
+                                                timeStamp: new Date().getTime()
+                                            };
+                                            var tmphistory = this.state.myHistory;
+                                            tmphistory.unshift(itemHistory);
+                                            this.setState({
+                                                ...this.state,
+                                                myHistory: tmphistory
+                                            })
+                                            var localHistory = JSON.parse(localStorage.getItem(this.state.accountAddress));
+                                            localHistory[this.state.netType].history.unshift(itemHistory);
+                                            localStorage.setItem(this.state.accountAddress, JSON.stringify(localHistory));
+                                        }
+                                    }
+                                    if (data && data.status === '0x0') {
+                                        clearInterval(timerOBJ[tempRnum]);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'error',
+                                                    msg: 'Transaction failed'
+                                                }
+                                                this.setState({ tmepState });
+
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({ tmepState });
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                    }
+                                })
+                            }, 2000);
+                        }
+                    }
+                )
+            }
+        )
+    }
+
+
+    // *** allocateTo ***
+    allocateTo(token) {
+        if (token === 'DAI') {
+            this.allocateToDAI();
+        }
+        if (token === 'PAX') {
+            this.allocateToPAX();
+        }
+        if (token === 'TUSD') {
+            this.allocateToTUSD();
+        }
+        if (token === 'USDC') {
+            this.allocateToUSDC();
+        }
+        if (token === 'DF') {
+            this.allocateToDF();
+        }
+    }
+    allocateToDAI() {
+        const keys = Object.keys(this.state.transcations);
+        for (var i = 0; i < keys.length; i++) {
+            if (this.state.transcations[keys[i]].title === 'Allocate DAI') {
+                return;
+            }
+        }
+        const id = Math.random();
+        const msg = 'Waiting for transaction signature...';
+        const tmepState = this.state;
+        tmepState.transcations[id] = {
+            id: id,
+            msg: msg,
+            class: 'inprocess',
+            title: 'Allocate DAI',
+        }
+        this.setState({ tmepState });
+        // get Limit first
+        this.contractDAI.allocateTo.estimateGas(
+            this.state.accountAddress,
+            this.faucetNum * (10 ** this.state.decimalsDAI),
+            {
+                from: this.state.accountAddress
+            },
+            (err, gasLimit) => {
+                this.contractDAI.allocateTo.sendTransaction(
+                    this.state.accountAddress,
+                    this.faucetNum * (10 ** this.state.decimalsDAI),
+                    {
+                        from: this.state.accountAddress,
+                        gas: Math.ceil(gasLimit * this.gasRatio),
+                        gasPrice: this.state.gasPrice
+                    },
+                    (err, ret) => {
+                        if (err) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].title === 'Allocate DAI') {
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        class: 'error',
+                                        msg: 'User reject transaction'
+                                    }
+                                    this.setState({ tmepState });
+
+                                    setTimeout(() => {
+                                        delete tmepState.transcations[key];
+                                        this.setState({ tmepState });
+                                    }, 3000);
+                                };
+                                return false;
+                            });
+                        }
+                        if (ret) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].title === 'Allocate DAI') {
+                                    tmepState.transcations[key].txhash = ret;
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        msg: 'Waiting for confirmation...'
+                                    }
+                                    this.setState({ tmepState });
+                                };
+                                return false;
+                            });
+
+                            var allocateDAItimer = setInterval(() => {
+                                console.log('i am checking Allocate DAI...');
+                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                    if (data && data.status === '0x1') {
+                                        clearInterval(allocateDAItimer);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'success',
+                                                    msg: 'Transaction succeeded'
+                                                }
+                                                this.setState({ tmepState });
+
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({ tmepState });
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                        setTimeout(() => {
+                                            this.getMyBalance();
+                                            this.getPoolBankTotalStatus();
+                                            this.getUserWithdrawBalance();
+                                        }, 3000)
+                                    }
+                                    if (data && data.status === '0x0') {
+                                        clearInterval(allocateDAItimer);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'error',
+                                                    msg: 'Transaction failed'
+                                                }
+                                                this.setState({ tmepState });
+
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({ tmepState });
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                    }
+                                })
+                            }, 2000);
+                        }
+                    }
+                )
+            }
+        )
+    }
+    allocateToPAX() {
+        const keys = Object.keys(this.state.transcations);
+        for (var i = 0; i < keys.length; i++) {
+            if (this.state.transcations[keys[i]].title === 'Allocate PAX') {
+                return;
+            }
+        }
+        const id = Math.random();
+        const msg = 'Waiting for transaction signature...';
+        const tmepState = this.state;
+        tmepState.transcations[id] = {
+            id: id,
+            msg: msg,
+            class: 'inprocess',
+            title: 'Allocate PAX',
+        }
+        this.setState({ tmepState });
+        // get Limit first
+        this.contractPAX.allocateTo.estimateGas(
+            this.state.accountAddress,
+            this.faucetNum * (10 ** this.state.decimalsPAX),
+            {
+                from: this.state.accountAddress,
+                gas: this.gasFee
+            },
+            (err, gasLimit) => {
+                this.contractPAX.allocateTo.sendTransaction(
+                    this.state.accountAddress,
+                    this.faucetNum * (10 ** this.state.decimalsPAX),
+                    {
+                        from: this.state.accountAddress,
+                        gas: Math.ceil(gasLimit * this.gasRatio),
+                        gasPrice: this.state.gasPrice
+                    },
+                    (err, ret) => {
+                        if (err) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].title === 'Allocate PAX') {
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        class: 'error',
+                                        msg: 'User reject transaction'
+                                    }
+                                    this.setState({ tmepState });
+
+                                    setTimeout(() => {
+                                        delete tmepState.transcations[key];
+                                        this.setState({ tmepState });
+                                    }, 3000);
+                                };
+                                return false;
+                            });
+                        }
+                        if (ret) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].title === 'Allocate PAX') {
+                                    tmepState.transcations[key].txhash = ret;
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        msg: 'Waiting for confirmation...'
+                                    }
+                                    this.setState({ tmepState });
+                                };
+                                return false;
+                            });
+
+                            var allocatePAXtimer = setInterval(() => {
+                                console.log('i am checking Allocate PAX...');
+                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                    if (data && data.status === '0x1') {
+                                        clearInterval(allocatePAXtimer);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'success',
+                                                    msg: 'Transaction succeeded'
+                                                }
+                                                this.setState({ tmepState });
+
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({ tmepState });
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                        setTimeout(() => {
+                                            this.getMyBalance();
+                                            this.getPoolBankTotalStatus();
+                                            this.getUserWithdrawBalance();
+                                        }, 3000)
+                                    }
+                                    if (data && data.status === '0x0') {
+                                        clearInterval(allocatePAXtimer);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'error',
+                                                    msg: 'Transaction failed'
+                                                }
+                                                this.setState({ tmepState });
+
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({ tmepState });
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                    }
+                                })
+                            }, 2000);
+                        }
+                    }
+                )
+            }
+        )
+    }
+    allocateToTUSD() {
+        const keys = Object.keys(this.state.transcations);
+        for (var i = 0; i < keys.length; i++) {
+            if (this.state.transcations[keys[i]].title === 'Allocate TUSD') {
+                return;
+            }
+        }
+        const id = Math.random();
+        const msg = 'Waiting for transaction signature...';
+        const tmepState = this.state;
+        tmepState.transcations[id] = {
+            id: id,
+            msg: msg,
+            class: 'inprocess',
+            title: 'Allocate TUSD',
+        }
+        this.setState({ tmepState });
+        // get Limit first
+        this.contractTUSD.allocateTo.estimateGas(
+            this.state.accountAddress,
+            this.faucetNum * (10 ** this.state.decimalsTUSD),
+            {
+                from: this.state.accountAddress
+            },
+            (err, gasLimit) => {
+                this.contractTUSD.allocateTo.sendTransaction(
+                    this.state.accountAddress,
+                    this.faucetNum * (10 ** this.state.decimalsTUSD),
+                    {
+                        from: this.state.accountAddress,
+                        gas: Math.ceil(gasLimit * this.gasRatio),
+                        gasPrice: this.state.gasPrice
+                    },
+                    (err, ret) => {
+                        if (err) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].title === 'Allocate TUSD') {
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        class: 'error',
+                                        msg: 'User reject transaction'
+                                    }
+                                    this.setState({ tmepState });
+
+                                    setTimeout(() => {
+                                        delete tmepState.transcations[key];
+                                        this.setState({ tmepState });
+                                    }, 3000);
+                                };
+                                return false;
+                            });
+                        }
+                        if (ret) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].title === 'Allocate TUSD') {
+                                    tmepState.transcations[key].txhash = ret;
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        msg: 'Waiting for confirmation...'
+                                    }
+                                    this.setState({ tmepState });
+                                };
+                                return false;
+                            });
+
+                            var allocateTUSDtimer = setInterval(() => {
+                                console.log('i am checking Allocate TUSD...');
+                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                    if (data && data.status === '0x1') {
+                                        clearInterval(allocateTUSDtimer);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'success',
+                                                    msg: 'Transaction succeeded'
+                                                }
+                                                this.setState({ tmepState });
+
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({ tmepState });
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                        setTimeout(() => {
+                                            this.getMyBalance();
+                                            this.getPoolBankTotalStatus();
+                                            this.getUserWithdrawBalance();
+                                        }, 3000)
+                                    }
+                                    if (data && data.status === '0x0') {
+                                        clearInterval(allocateTUSDtimer);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'error',
+                                                    msg: 'Transaction failed'
+                                                }
+                                                this.setState({ tmepState });
+
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({ tmepState });
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                    }
+                                })
+                            }, 2000);
+                        }
+                    }
+                )
+            }
+        )
+    }
+    allocateToUSDC() {
+        const keys = Object.keys(this.state.transcations);
+        for (var i = 0; i < keys.length; i++) {
+            if (this.state.transcations[keys[i]].title === 'Allocate USDC') {
+                return;
+            }
+        }
+        const id = Math.random();
+        const msg = 'Waiting for transaction signature...';
+        const tmepState = this.state;
+        tmepState.transcations[id] = {
+            id: id,
+            msg: msg,
+            class: 'inprocess',
+            title: 'Allocate USDC',
+        }
+        this.setState({ tmepState });
+        // get Limit first
+        this.contractUSDC.allocateTo.estimateGas(
+            this.state.accountAddress,
+            this.faucetNum * (10 ** this.state.decimalsUSDC),
+            {
+                from: this.state.accountAddress
+            },
+            (err, gasLimit) => {
+                this.contractUSDC.allocateTo.sendTransaction(
+                    this.state.accountAddress,
+                    this.faucetNum * (10 ** this.state.decimalsUSDC),
+                    {
+                        from: this.state.accountAddress,
+                        gas: Math.ceil(gasLimit * this.gasRatio),
+                        gasPrice: this.state.gasPrice
+                    },
+                    (err, ret) => {
+                        if (err) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].title === 'Allocate USDC') {
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        class: 'error',
+                                        msg: 'User reject transaction'
+                                    }
+                                    this.setState({ tmepState });
+
+                                    setTimeout(() => {
+                                        delete tmepState.transcations[key];
+                                        this.setState({ tmepState });
+                                    }, 3000);
+                                };
+                                return false;
+                            });
+                        }
+                        if (ret) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].title === 'Allocate USDC') {
+                                    tmepState.transcations[key].txhash = ret;
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        msg: 'Waiting for confirmation...'
+                                    }
+                                    this.setState({ tmepState });
+                                };
+                                return false;
+                            });
+
+                            var allocateUSDCtimer = setInterval(() => {
+                                console.log('i am checking Allocate USDC...');
+                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                    if (data && data.status === '0x1') {
+                                        clearInterval(allocateUSDCtimer);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'success',
+                                                    msg: 'Transaction succeeded'
+                                                }
+                                                this.setState({ tmepState });
+
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({ tmepState });
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                        setTimeout(() => {
+                                            this.getMyBalance();
+                                            this.getPoolBankTotalStatus();
+                                            this.getUserWithdrawBalance();
+                                        }, 3000)
+                                    }
+                                    if (data && data.status === '0x0') {
+                                        clearInterval(allocateUSDCtimer);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'error',
+                                                    msg: 'Transaction failed'
+                                                }
+                                                this.setState({ tmepState });
+
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({ tmepState });
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                    }
+                                })
+                            }, 2000);
+                        }
+                    }
+                )
+            }
+        )
+    }
+    allocateToDF() {
+        const keys = Object.keys(this.state.transcations);
+        for (var i = 0; i < keys.length; i++) {
+            if (this.state.transcations[keys[i]].title === 'Allocate DF') {
+                return;
+            }
+        }
+        const id = Math.random();
+        const msg = 'Waiting for transaction signature...';
+        const tmepState = this.state;
+        tmepState.transcations[id] = {
+            id: id,
+            msg: msg,
+            class: 'inprocess',
+            title: 'Allocate DF',
+        }
+        this.setState({ tmepState });
+        // get Limit first
+        this.contractDF.allocateTo.estimateGas(
+            this.state.accountAddress,
+            this.faucetNum * (10 ** this.state.decimalsDF),
+            {
+                from: this.state.accountAddress
+            },
+            (err, gasLimit) => {
+                this.contractDF.allocateTo.sendTransaction(
+                    this.state.accountAddress,
+                    this.faucetNum * (10 ** this.state.decimalsDF),
+                    {
+                        from: this.state.accountAddress,
+                        gas: Math.ceil(gasLimit * this.gasRatio),
+                        gasPrice: this.state.gasPrice
+                    },
+                    (err, ret) => {
+                        if (err) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].title === 'Allocate DF') {
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        class: 'error',
+                                        msg: 'User reject transaction'
+                                    }
+                                    this.setState({ tmepState });
+
+                                    setTimeout(() => {
+                                        delete tmepState.transcations[key];
+                                        this.setState({ tmepState });
+                                    }, 3000);
+                                };
+                                return false;
+                            });
+                        }
+                        if (ret) {
+                            const keys = Object.keys(this.state.transcations);
+                            const tmepState = this.state;
+
+                            keys.map((key) => {
+                                if (tmepState.transcations[key].title === 'Allocate DF') {
+                                    tmepState.transcations[key].txhash = ret;
+                                    tmepState.transcations[key] = {
+                                        ...tmepState.transcations[key],
+                                        msg: 'Waiting for confirmation...'
+                                    }
+                                    this.setState({ tmepState });
+                                };
+                                return false;
+                            });
+
+                            var allocateDFtimer = setInterval(() => {
+                                console.log('i am checking Allocate DF...');
+                                this.Web3.eth.getTransactionReceipt(ret, (err, data) => {
+                                    if (data && data.status === '0x1') {
+                                        clearInterval(allocateDFtimer);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'success',
+                                                    msg: 'Transaction succeeded'
+                                                }
+                                                this.setState({ tmepState });
+
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({ tmepState });
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                        setTimeout(() => {
+                                            this.getMyBalance();
+                                            this.getPoolBankTotalStatus();
+                                            this.getUserWithdrawBalance();
+                                        }, 3000)
+                                    }
+                                    if (data && data.status === '0x0') {
+                                        clearInterval(allocateDFtimer);
+                                        const keys = Object.keys(this.state.transcations);
+                                        const tmepState = this.state;
+                                        keys.map((key) => {
+                                            if (tmepState.transcations[key].txhash === ret) {
+                                                tmepState.transcations[key] = {
+                                                    ...tmepState.transcations[key],
+                                                    class: 'error',
+                                                    msg: 'Transaction failed'
+                                                }
+                                                this.setState({ tmepState });
+
+                                                setTimeout(() => {
+                                                    delete tmepState.transcations[key];
+                                                    this.setState({ tmepState });
+                                                }, 3000);
+                                            };
+                                            return false;
+                                        })
+                                    }
+                                })
+                            }, 2000);
+                        }
+                    }
+                )
+            }
+        )
+    }
 }
+
