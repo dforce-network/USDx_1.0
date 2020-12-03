@@ -783,7 +783,7 @@ export default class Home extends React.Component {
                                                 <a href='https://www.reddit.com/r/dForceNetwork' target='_blank' rel="noopener noreferrer">
                                                     <img alt='' src={Reddit} />
                                                 </a>
-                                                <a href='https://discord.gg/Gbtd3MR' target='_blank' rel="noopener noreferrer">
+                                                <a href='https://discord.gg/c2PC8SM' target='_blank' rel="noopener noreferrer">
                                                     <img alt='' src={Discord} />
                                                 </a>
                                                 <a href='https://www.linkedin.com/company/dforce-network' target='_blank' rel="noopener noreferrer">

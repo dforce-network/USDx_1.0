@@ -177,7 +177,7 @@ export default class Header extends React.Component {
                                         <span className="token">DF</span>
                                         <img style={{ display: this.props.status.approvedDF ? 'none' : 'inline-block' }} src={lock} alt="" onClick={() => { this.approve('DF') }} />
                                         <img style={{ display: this.props.status.approvedDF ? 'inline-block' : 'none' }} src={unlock} alt="" onClick={() => { this.lock('DF') }} />
-                                        <span onClick={() => { this.allocateTo('DF') }} className="faucet" style={{ display: (this.props.status.netType === 'Main') ? 'none' : 'inline-block' }}>Faucet</span>
+                                        {/* <span onClick={() => { this.allocateTo('DF') }} className="faucet" style={{ display: (this.props.status.netType === 'Main') ? 'none' : 'inline-block' }}>Faucet</span> */}
                                         <span className="balance">
                                             {this.props.status.myDF ? this.toThousands(this.props.status.myDF.split('.')[0]) : '0'}
                                             <i>{this.props.status.myDF ? '.' + this.props.status.myDF.split('.')[1] : '.00'}</i>
@@ -213,7 +213,7 @@ export default class Header extends React.Component {
                                         <span className="token">PAX</span>
                                         <img style={{ display: this.props.status.approvedPAX ? 'none' : 'inline-block' }} src={lock} alt="" onClick={() => { this.approve('PAX') }} />
                                         <img style={{ display: this.props.status.approvedPAX ? 'inline-block' : 'none' }} src={unlock} alt="" onClick={() => { this.lock('PAX') }} />
-                                        <span onClick={() => { this.allocateTo('PAX') }} className="faucet" style={{ display: (this.props.status.netType === 'Main') ? 'none' : 'inline-block' }}>Faucet</span>
+                                        {/* <span onClick={() => { this.allocateTo('PAX') }} className="faucet" style={{ display: (this.props.status.netType === 'Main') ? 'none' : 'inline-block' }}>Faucet</span> */}
                                         <span className="balance">
                                             {this.props.status.myPAX ? this.toThousands(this.props.status.myPAX.split('.')[0]) : '0'}
                                             <i>{this.props.status.myPAX ? this.props.status.myPAX.split('.')[1] ? '.' + this.props.status.myPAX.split('.')[1] : '.00' : '.00'}</i>
@@ -223,7 +223,7 @@ export default class Header extends React.Component {
                                         <span className="token">TUSD</span>
                                         <img style={{ display: this.props.status.approvedTUSD ? 'none' : 'inline-block' }} src={lock} alt="" onClick={() => { this.approve('TUSD') }} />
                                         <img style={{ display: this.props.status.approvedTUSD ? 'inline-block' : 'none' }} src={unlock} alt="" onClick={() => { this.lock('TUSD') }} />
-                                        <span onClick={() => { this.allocateTo('TUSD') }} className="faucet" style={{ display: (this.props.status.netType === 'Main') ? 'none' : 'inline-block' }}>Faucet</span>
+                                        {/* <span onClick={() => { this.allocateTo('TUSD') }} className="faucet" style={{ display: (this.props.status.netType === 'Main') ? 'none' : 'inline-block' }}>Faucet</span> */}
                                         <span className="balance">
                                             {this.props.status.myTUSD ? this.toThousands(this.props.status.myTUSD.split('.')[0]) : '0'}
                                             <i>{this.props.status.myTUSD ? this.props.status.myTUSD.split('.')[1] ? '.' + this.props.status.myTUSD.split('.')[1] : '.00' : '.00'}</i>
@@ -233,7 +233,7 @@ export default class Header extends React.Component {
                                         <span className="token">USDC</span>
                                         <img style={{ display: this.props.status.approvedUSDC ? 'none' : 'inline-block' }} src={lock} alt="" onClick={() => { this.approve('USDC') }} />
                                         <img style={{ display: this.props.status.approvedUSDC ? 'inline-block' : 'none' }} src={unlock} alt="" onClick={() => { this.lock('USDC') }} />
-                                        <span onClick={() => { this.allocateTo('USDC') }} className="faucet" style={{ display: (this.props.status.netType === 'Main') ? 'none' : 'inline-block' }}>Faucet</span>
+                                        {/* <span onClick={() => { this.allocateTo('USDC') }} className="faucet" style={{ display: (this.props.status.netType === 'Main') ? 'none' : 'inline-block' }}>Faucet</span> */}
                                         <span className="balance">
                                             {this.props.status.myUSDC ? this.toThousands(this.props.status.myUSDC.split('.')[0]) : '0'}
                                             <i>{this.props.status.myUSDC ? this.props.status.myUSDC.split('.')[1] ? '.' + this.props.status.myUSDC.split('.')[1] : '.00' : '.00'}</i>
