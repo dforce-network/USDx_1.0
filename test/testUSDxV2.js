@@ -1,5 +1,5 @@
 const USDxV2deploy = require("./helpers/USDxV2deploy.js");
-const supportDToken = require("./supportDToken.js");
+const supportDToken = require("./helpers/supportDToken.js");
 
 const Collaterals = artifacts.require("Collaterals_t.sol");
 const DToken = artifacts.require("DToken.sol");

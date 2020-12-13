@@ -12,20 +12,32 @@
 // npm run build
 // Run command
 // truffle test .\test\DFEngine_random.js > testDF_random.log
-collateralNames = new Array('DAI', 'PAX', 'TUSD', 'USDC');
-weightTest = new Array(0.1, 0.3, 0.3, 0.3);
-runConfig = [ 
-    {
-        'times':500, 
-        'data':[
-            {
-                'data':[
-                    {}
-                ]
-            }
-        ],      
-    },
-      
+const runner = require("./helpers/DFEngine");
+
+const collateralNames = new Array("DAI", "PAX", "TUSD", "USDC");
+const weightTest = new Array(0.1, 0.3, 0.3, 0.3);
+const runConfig = [
+  {
+    times: 100,
+    data: [
+      {
+        data: [{}],
+      },
+    ],
+  },
 ];
 
-require('./DFEngine.js');
+describe("DFEngine random", async () => {
+  for (let configIndex = 0; configIndex < runConfig.length; configIndex++) {
+    it("Config " + configIndex, async () => {
+      const accounts = await web3.eth.getAccounts();
+      await runner.runConfig(
+        collateralNames,
+        weightTest,
+        runConfig,
+        configIndex,
+        accounts
+      );
+    });
+  }
+});

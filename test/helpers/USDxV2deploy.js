@@ -19,7 +19,7 @@ const BN = require("bn.js");
 const utils = require("./Utils.js");
 const MathTool = require("./MathTool.js");
 const DataMethod = require("./DataMethod.js");
-const supportDToken = require("../supportDToken.js");
+const supportDToken = require("./supportDToken.js");
 const { MAX_UINT256 } = require("@openzeppelin/test-helpers/src/constants");
 
 let gasPrice = 10 ** 10;

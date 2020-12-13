@@ -22,9 +22,9 @@
  *
  */
 
-require('dotenv').config();
+require("dotenv").config();
 
-const HDWalletProvider = require('truffle-hdwallet-provider');
+const HDWalletProvider = require("truffle-hdwallet-provider");
 var infuraKey = process.env.INFURA_APIKEY;
 var mnemonic = process.env.MNEMONIC;
 
@@ -57,20 +57,24 @@ module.exports = {
     // },
     development: {
       host: "localhost",
-      port: 7545,
+      port: 8545,
       network_id: "*",
       gasPrice: 20000000000,
-      gas: 8000000
+      gas: 8000000,
     },
 
     mainnet: {
-      provider: () => new HDWalletProvider(mnemonic, `https://mainnet.infura.io/v3/${infuraKey}`),
+      provider: () =>
+        new HDWalletProvider(
+          mnemonic,
+          `https://mainnet.infura.io/v3/${infuraKey}`
+        ),
       network_id: 1, // Mainnet's id
       gas: 6721975, // Gas limit used for deploys
       gasPrice: 7000000000, // Gas price used for deploys: 7gwei
       confirmations: 2,
       timeoutBlocks: 200,
-      skipDryRun: true
+      skipDryRun: true,
     },
 
     // Another network with more advanced options...
@@ -95,34 +99,46 @@ module.exports = {
     // },
 
     kovan: {
-      provider: () => new HDWalletProvider(mnemonic, `https://kovan.infura.io/v3/${infuraKey}`),
+      provider: () =>
+        new HDWalletProvider(
+          mnemonic,
+          `https://kovan.infura.io/v3/${infuraKey}`
+        ),
       network_id: 42, // Kovan's id
       gas: 6721975,
       gasPrice: 1000000000, // Gas price used for deploys: 1gwei
       confirmations: 2,
       timeoutBlocks: 200,
-      skipDryRun: true
+      skipDryRun: true,
     },
 
     ropsten: {
-      provider: () => new HDWalletProvider(mnemonic, `https://ropsten.infura.io/v3/${infuraKey}`),
+      provider: () =>
+        new HDWalletProvider(
+          mnemonic,
+          `https://ropsten.infura.io/v3/${infuraKey}`
+        ),
       network_id: 3, // ropsten's id
       gas: 6721975,
       gasPrice: 10000000000, // Gas price used for deploys: 10gwei
       confirmations: 2,
       timeoutBlocks: 200,
-      skipDryRun: true
+      skipDryRun: true,
     },
 
     rinkeby: {
-      provider: () => new HDWalletProvider(mnemonic, `https://rinkeby.infura.io/v3/${infuraKey}`),
+      provider: () =>
+        new HDWalletProvider(
+          mnemonic,
+          `https://rinkeby.infura.io/v3/${infuraKey}`
+        ),
       network_id: 4, // ropsten's id
       gas: 6721975,
       gasPrice: 10000000000, // Gas price used for deploys: 10gwei
       confirmations: 2,
       timeoutBlocks: 200,
-      skipDryRun: true
-    }
+      skipDryRun: true,
+    },
   },
 
   // Set default mocha options here, use special reporters etc.
@@ -130,14 +146,14 @@ module.exports = {
     timeout: 2000000,
     enableTimeouts: false,
     useColors: true,
-    bail: true
+    bail: true,
   },
 
   solc: {
     optimizer: {
       enabled: true,
-      runs: 200
-    }
+      runs: 200,
+    },
   },
 
   // Configure your compilers
@@ -152,6 +168,7 @@ module.exports = {
       //  },
       //  evmVersion: "byzantium"
       // }
-    }
-  }
-}
+    },
+  },
+  plugins: ["solidity-coverage"],
+};

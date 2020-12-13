@@ -12,35 +12,42 @@
 // npm run build
 // Run command
 // truffle test .\test\DFEngine_deposit_claim_destroy.js > testDF_deposit_claim_destroy.log
+const runner = require("./helpers/DFEngine");
 
-collateralNames = new Array('DAI', 'PAX', 'TUSD', 'USDC');
-weightTest = new Array(0.1, 0.3, 0.3, 0.3);
-runConfig = [ 
-    {
-        'times':10,     
-        'data':[
-            {
-                'type':'deposit',
-                'times':20,
-                'data':[
-                    {}
-                ]
-            },
-            {
-                'type':'claim',
-                'data':[
-                    {}
-                ]
-            },          
-            {
-                'type':'destroy',
-                'data':[
-                    {}
-                ]
-            }
-        ],          
-    },   
+const collateralNames = new Array("DAI", "PAX", "TUSD", "USDC");
+const weightTest = new Array(0.1, 0.3, 0.3, 0.3);
+const runConfig = [
+  {
+    times: 1,
+    data: [
+      {
+        type: "deposit",
+        times: 2,
+        data: [{}],
+      },
+      {
+        type: "claim",
+        data: [{}],
+      },
+      {
+        type: "destroy",
+        data: [{}],
+      },
+    ],
+  },
 ];
 
-require('./DFEngine.js');
-
+describe("DFEngine deposit claim destroy", () => {
+  for (let configIndex = 0; configIndex < runConfig.length; configIndex++) {
+    it("Config " + configIndex, async () => {
+      const accounts = await web3.eth.getAccounts();
+      await runner.runConfig(
+        collateralNames,
+        weightTest,
+        runConfig,
+        configIndex,
+        accounts
+      );
+    });
+  }
+});

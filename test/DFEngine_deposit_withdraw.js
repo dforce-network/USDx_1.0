@@ -12,28 +12,38 @@
 // npm run build
 // Run command
 // truffle test .\test\DFEngine_deposit_withdraw.js > testDF_deposit_withdraw.log
-collateralNames = new Array('DAI', 'PAX', 'TUSD', 'USDC');
-weightTest = new Array(0.1, 0.3, 0.3, 0.3);
-runConfig = [ 
-    {
-        'times':500,     
-        'data':[
-            {
-                'type':'deposit',
-                'times':20,
-                'data':[
-                    {}
-                ]
-            },            
-            {
-                'type':'withdraw',
-                'data':[
-                    {}
-                ]
-            }
-        ],          
-    },
-      
+const runner = require("./helpers/DFEngine");
+
+const collateralNames = new Array("DAI", "PAX", "TUSD", "USDC");
+const weightTest = new Array(0.1, 0.3, 0.3, 0.3);
+const runConfig = [
+  {
+    times: 10,
+    data: [
+      {
+        type: "deposit",
+        times: 20,
+        data: [{}],
+      },
+      {
+        type: "withdraw",
+        data: [{}],
+      },
+    ],
+  },
 ];
 
-require('./DFEngine.js');
+describe("DFEngine deposit withdraw", async () => {
+  for (let configIndex = 0; configIndex < runConfig.length; configIndex++) {
+    it("Config " + configIndex, async () => {
+      const accounts = await web3.eth.getAccounts();
+      await runner.runConfig(
+        collateralNames,
+        weightTest,
+        runConfig,
+        configIndex,
+        accounts
+      );
+    });
+  }
+});
