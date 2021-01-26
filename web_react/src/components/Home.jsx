@@ -7,6 +7,7 @@ import IconButton from '@material-ui/core/IconButton';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import 'antd/dist/antd.css';
 import { Tooltip, Progress, Select, Drawer } from 'antd';
+import Web3 from 'web3';
 
 // abis
 import abiTokens from '../abi/abiTokens';
@@ -117,8 +118,10 @@ export default class Home extends React.Component {
             TUSDonPool: '0.00',
             USDConPool: '0.00'
         }
+
         if (window.web3) {
-            this.Web3 = window.web3;
+            this.Web3 = this.new_web3 = window.new_web3 = new Web3(window.web3.currentProvider || null);
+            console.log(this.new_web3);
 
             this.Web3.version.getNetwork((err, net) => {
                 console.log(net);
@@ -270,14 +273,23 @@ export default class Home extends React.Component {
                         <img src={right_net} alt="" />
                         <span>Note: You are currently connected to the Rinkeby Testnet</span>
                     </div>
-                    <div className='topTips redBg' style={{ display: this.state.isConnected && this.state.netType !== 'Rinkeby' && this.state.netType !== 'Main' ? 'block' : 'none' }}>
-                        <img src={error_net} alt="" />
-                        <span>USDx is currently only available on Mainnet or the Rinkeby Testnet</span>
-                    </div>
-                    {/* <div className='topTips redBg' style={{display: !this.state.isConnected ? 'block':'none'}}>
-                        <img src={error_net} alt=""/>
-                        <span>Please enable MetaMask or visit this page in a Web3 browser to interact with the dForce protocol</span>
-                    </div> */}
+
+                    {
+                        this.state.isConnected && this.state.netType === 'Kovan' &&
+                        <div className='topTips'>
+                            <img src={right_net} alt="" />
+                            <span>Note: You are currently connected to the Kovan Testnet</span>
+                        </div>
+                    }
+
+                    {
+                        this.state.isConnected && this.state.netType !== 'Rinkeby' && this.state.netType !== 'Main' && this.state.netType !== 'Kovan' &&
+                        <div className='topTips redBg'>
+                            <img src={error_net} alt="" />
+                            <span>USDx is currently only available on Mainnet or the Kovan/Rinkeby Testnet</span>
+                        </div>
+                    }
+
                     <Header
                         status={this.state}
                         DisconnectMetamask={() => { this.DisconnectMetamask() }}
@@ -4133,7 +4145,7 @@ export default class Home extends React.Component {
                     num,
                     {
                         from: this.state.accountAddress,
-                        gas: 900000,
+                        gas: Math.ceil(gasLimit * 1.2),
                         gasPrice: this.state.gasPrice
                     },
                     (err, ret) => {
@@ -4299,7 +4311,7 @@ export default class Home extends React.Component {
                     num,
                     {
                         from: this.state.accountAddress,
-                        gas: 900000,
+                        gas: Math.ceil(gasLimit * 1.2),
                         gasPrice: this.state.gasPrice
                     },
                     (err, ret) => {
@@ -4463,7 +4475,7 @@ export default class Home extends React.Component {
                     num,
                     {
                         from: this.state.accountAddress,
-                        gas: 900000,
+                        gas: Math.ceil(gasLimit * 1.2),
                         gasPrice: this.state.gasPrice
                     },
                     (err, ret) => {
@@ -4627,7 +4639,7 @@ export default class Home extends React.Component {
                     num,
                     {
                         from: this.state.accountAddress,
-                        gas: 900000,
+                        gas: Math.ceil(gasLimit * 1.2),
                         gasPrice: this.state.gasPrice
                     },
                     (err, ret) => {

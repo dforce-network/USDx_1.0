@@ -8,6 +8,6 @@ test/ERC20Token.js
 *.log
 *DFStore_t.sol
 DFEngine_test.js
-
+local
 .env
 package-lock.json
