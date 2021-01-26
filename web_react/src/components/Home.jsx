@@ -7,6 +7,7 @@ import IconButton from '@material-ui/core/IconButton';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import 'antd/dist/antd.css';
 import { Tooltip, Progress, Select, Drawer } from 'antd';
+import Web3 from 'web3';
 
 // abis
 import abiTokens from '../abi/abiTokens';
@@ -117,8 +118,10 @@ export default class Home extends React.Component {
             TUSDonPool: '0.00',
             USDConPool: '0.00'
         }
+
         if (window.web3) {
-            this.Web3 = window.web3;
+            this.Web3 = this.new_web3 = window.new_web3 = new Web3(window.web3.currentProvider || null);
+            console.log(this.new_web3);
 
             this.Web3.version.getNetwork((err, net) => {
                 console.log(net);
