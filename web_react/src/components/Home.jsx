@@ -1112,7 +1112,7 @@ export default class Home extends React.Component {
     }
     // getMaxNumToGenerateOnestep
     getMaxNumToGenerateOnestep() {
-        this.contractProtocolView.calcMaxMinting.call((err, ret) => {
+        this.contractProtocolView.calcMaxMinting.call({ from: this.state.accountAddress }, (err, ret) => {
             // console.log(err, ret);
             if (ret) {
                 this.setState({
@@ -1134,7 +1134,7 @@ export default class Home extends React.Component {
     }
     // getUserMaxToClaim
     getUserMaxToClaim() {
-        this.contractProtocolView.getUserMaxToClaim.call((err, ret) => {
+        this.contractProtocolView.getUserMaxToClaim.call({ from: this.state.accountAddress }, (err, ret) => {
             // console.log(err, ret);
             if (ret && ret.c[0] > 0) {
                 this.setState({
@@ -3939,7 +3939,7 @@ export default class Home extends React.Component {
 
     // *** get USDx For my Deposit ***
     getUSDXForDeposit(tokenID, amount) {
-        this.contractProtocolView.getUSDXForDeposit.call(tokenID, amount, (err, ret) => {
+        this.contractProtocolView.getUSDXForDeposit.call(tokenID, amount, { from: this.state.accountAddress }, (err, ret) => {
             console.log(err, ret);
             if (ret) {
                 if (this.state.toDepositNum === '' || Number(this.state.toDepositNum) === 0) {
