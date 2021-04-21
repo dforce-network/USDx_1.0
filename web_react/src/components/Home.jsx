@@ -1374,8 +1374,8 @@ export default class Home extends React.Component {
 
     // *** get User Withdraw Balance ***
     getUserWithdrawBalance() {
-        this.contractProtocolView.getUserWithdrawBalance.call((err, ret) => {
-            // console.log(err, ret);
+        this.contractProtocolView.getUserWithdrawBalance.call({ from: this.state.accountAddress }, (err, ret) => {
+            // console.log(ret);
             if (ret) {
                 var addressIDs = ret[0];
                 var myBalance = ret[1];
