@@ -16,7 +16,7 @@
     "web3": "^0.20.6"
   },
   "devDependencies": {
-    "node-sass": "^4.11.0",
+    "node-sass": "^9.0.0",
     "sass-loader": "^7.1.0",
     "autoprefixer": "6.7.2",
     "babel-core": "6.22.1",
@@ -44,7 +44,7 @@
     "fs-extra": "0.30.0",
     "html-webpack-plugin": "2.24.0",
     "http-proxy-middleware": "0.17.3",
-    "jest": "18.1.0",
+    "jest": "30.2.0",
     "json-loader": "0.5.4",
     "object-assign": "4.1.1",
     "postcss-loader": "1.2.2",
